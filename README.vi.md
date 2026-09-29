@@ -46,6 +46,13 @@ bạn bằng ngôn ngữ bạn dùng.
 
 Chọn một trong các cách dưới. Cách nào cũng cài cùng thư mục `skills/specflow/`.
 
+specflow chỉ gồm Markdown nên chạy ở mọi nơi agent chạy được: Windows 10 và 11,
+macOS và Linux (đã kiểm trên Ubuntu). Trong các đường dẫn dưới, `~` là thư mục
+home của bạn: `/home/<tên>` trên Linux, `/Users/<tên>` trên macOS và
+`%USERPROFILE%` (`C:\Users\<tên>`) trên Windows. Cả bốn agent dùng cùng các thư
+mục này trên cả ba hệ điều hành; không agent nào dùng `AppData` hay
+`~/Library` cho skill.
+
 ### Mọi agent, một lệnh (skills CLI)
 
 Cần Node.js. Lệnh cài vào mọi agent bạn liệt kê:
@@ -55,7 +62,8 @@ npx skills add vuquoctrungbk/specflow -a claude-code -a codex -a opencode -a ant
 ```
 
 Thêm `-g` để cài cho tài khoản người dùng thay vì cho dự án hiện tại. Mặc định
-CLI tạo symlink; thêm `--copy` nếu muốn chép file. OpenCode cũng đọc thư mục
+CLI tạo liên kết (trên Windows là junction, không cần quyền admin); thêm
+`--copy` nếu muốn chép file. OpenCode cũng đọc thư mục
 skill của Claude Code và Codex, nên khi đã cài cho một trong hai agent đó, bỏ
 `-a opencode` để không có hai skill trùng tên, rồi chép file lệnh OpenCode bằng
 tay (xem mục "Chép bằng tay"). Với Antigravity và `-g`, kiểm tra skill nằm ở
@@ -64,6 +72,8 @@ không, chuyển nó vào đó.
 
 ### Mọi agent, từ bản clone (script cài đặt)
 
+macOS và Linux (bash; bash 3.2 có sẵn trên macOS chạy được):
+
 ```bash
 git clone https://github.com/vuquoctrungbk/specflow.git
 cd specflow
@@ -71,11 +81,25 @@ cd specflow
 ./install.sh --agent claude --scope project --project-dir ~/code/my-app   # một agent, một dự án
 ```
 
-`--agent` nhận `claude`, `codex`, `opencode`, `antigravity` hoặc `all`, và có
-thể lặp lại. Bản đã cài được giữ nguyên, trừ khi bạn thêm `--force` để thay
-(dùng khi nâng cấp). Khi cài OpenCode cùng Claude Code hoặc Codex, script chỉ
-cài file lệnh cho OpenCode, vì OpenCode đã đọc thư mục skill của hai agent kia. Trên Windows, chạy script trong Git Bash hoặc WSL, hoặc
-chép thư mục bằng tay như dưới.
+Windows (Windows PowerShell 5.1 hoặc PowerShell 7):
+
+```powershell
+git clone https://github.com/vuquoctrungbk/specflow.git
+cd specflow
+powershell -ExecutionPolicy Bypass -File .\install.ps1 -Agent all
+powershell -ExecutionPolicy Bypass -File .\install.ps1 -Agent claude -Scope project -ProjectDir C:\code\my-app
+```
+
+`-ExecutionPolicy Bypass` chỉ áp cho lần chạy này; cần vì Windows mặc định chặn
+script chưa ký. Nếu tải file ZIP thay vì clone, chạy `Unblock-File .\install.ps1`
+trước.
+
+Hai script nhận cùng các tùy chọn: agent (`claude`, `codex`, `opencode`,
+`antigravity` hoặc `all`; `--agent` lặp lại được, `-Agent` nhận danh sách cách
+nhau bằng dấu phẩy), phạm vi (mặc định `user`, hoặc `project` kèm thư mục dự
+án), và force. Bản đã cài được giữ nguyên, trừ khi bạn dùng force để thay (dùng
+khi nâng cấp). Khi cài OpenCode cùng Claude Code hoặc Codex, script chỉ cài file
+lệnh cho OpenCode, vì OpenCode đã đọc thư mục skill của hai agent kia.
 
 ### Plugin marketplace của Claude Code
 
@@ -175,7 +199,8 @@ skills/specflow/
   assets/kit/              quy tắc và template (VERSION ghi phiên bản quy tắc)
 adapters/opencode/commands/specflow.md   lệnh /specflow cho OpenCode
 .claude-plugin/            manifest plugin và marketplace của Claude Code
-install.sh                 script cài cho bốn agent
+install.sh                 script cài cho macOS và Linux
+install.ps1                script cài cho Windows
 ```
 
 ## Xử lý sự cố
@@ -188,6 +213,13 @@ install.sh                 script cài cho bốn agent
   mục 1.2 và 7.
 - **Câu hỏi hiện dạng chữ thay vì nút chọn.** Agent không có công cụ hỏi ở chế
   độ hiện tại; trả lời theo dạng `1a, 2b`.
+- **Windows: agent chạy lệnh bằng PowerShell.** Codex trên Windows và một số
+  agent khác chạy lệnh trong PowerShell thay vì shell POSIX. specflow chạy các
+  lệnh kiểm của bộ kit bằng lệnh PowerShell tương đương nên không cần cấu hình
+  gì; cài Git for Windows để agent nào ưu tiên Git Bash dùng được nó.
+- **Windows: `install.sh` báo `$'\r': command not found`.** Dùng `install.ps1`,
+  hoặc chạy `install.sh` từ một bản clone mới trong Git Bash (repo giữ script
+  shell ở dạng xuống dòng LF).
 
 ## Giấy phép
 

@@ -81,6 +81,13 @@ the approved upstream documents. Read only what the manifest row lists for the
 stage; the manifest keeps each stage's context narrow on purpose, and
 `examples/` is never read while writing project documents.
 
+The kit writes its checks as POSIX shell commands (for example the `grep -rnE`
+search for leftover placeholders in PLAYBOOK section 4). When the runtime's
+shell is PowerShell or cmd, as for some agents on Windows, run an equivalent
+with the same pattern and the same paths (`Select-String -Pattern … -Path …`
+over the listed folders) rather than skipping the check; `git` commands run
+unchanged in any shell.
+
 ### 4. Interview the user with options
 
 The user asked to be consulted, and the kit forbids resolving an ambiguity

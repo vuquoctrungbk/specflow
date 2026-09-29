@@ -47,6 +47,12 @@ partner). specflow talks to you in the language you write in.
 
 Pick one method. All of them install the same `skills/specflow/` folder.
 
+specflow is Markdown only, so it runs wherever the agent runs: Windows 10 and
+11, macOS and Linux (tested on Ubuntu). In the paths below, `~` is your home
+folder: `/home/<you>` on Linux, `/Users/<you>` on macOS, and `%USERPROFILE%`
+(`C:\Users\<you>`) on Windows. Every agent uses these same folders on all
+three systems; none of them uses `AppData` or `~/Library` for skills.
+
 ### Any agent, one command (skills CLI)
 
 Needs Node.js. Installs into every agent you name:
@@ -56,7 +62,8 @@ npx skills add vuquoctrungbk/specflow -a claude-code -a codex -a opencode -a ant
 ```
 
 Add `-g` to install for your user instead of the current project. The CLI
-symlinks by default; add `--copy` to copy the files. OpenCode also reads the
+links by default (a junction on Windows, which needs no admin rights); add
+`--copy` to copy the files. OpenCode also reads the
 folders of Claude Code and Codex, so when you install for either of them, leave
 out `-a opencode` to avoid two skills with the same name, and add the OpenCode
 command file by hand (see "By hand"). For Antigravity with `-g`, check that the
@@ -65,6 +72,8 @@ documentation names; move it there if not.
 
 ### Any agent, from a clone (install script)
 
+macOS and Linux (bash; macOS's built-in bash 3.2 works):
+
 ```bash
 git clone https://github.com/vuquoctrungbk/specflow.git
 cd specflow
@@ -72,12 +81,26 @@ cd specflow
 ./install.sh --agent claude --scope project --project-dir ~/code/my-app   # one agent, one project
 ```
 
-`--agent` takes `claude`, `codex`, `opencode`, `antigravity` or `all` and can
-be repeated. An existing install is kept unless you pass `--force`, which
-replaces it (use it to upgrade). When OpenCode is installed together with
-Claude Code or Codex, the script gives OpenCode only its command file, because
-OpenCode already reads their skill folders. On Windows, run the script from Git Bash or
-WSL, or copy the folders by hand as below.
+Windows (Windows PowerShell 5.1 or PowerShell 7):
+
+```powershell
+git clone https://github.com/vuquoctrungbk/specflow.git
+cd specflow
+powershell -ExecutionPolicy Bypass -File .\install.ps1 -Agent all
+powershell -ExecutionPolicy Bypass -File .\install.ps1 -Agent claude -Scope project -ProjectDir C:\code\my-app
+```
+
+`-ExecutionPolicy Bypass` applies to this one run only; it is needed because
+Windows blocks unsigned scripts by default. Downloaded the ZIP instead of
+cloning? Run `Unblock-File .\install.ps1` first.
+
+Both scripts take the same options: the agent (`claude`, `codex`, `opencode`,
+`antigravity` or `all`; `--agent` can be repeated, `-Agent` takes a
+comma-separated list), the scope (`user` by default, or `project` with a
+project folder), and force. An existing install is kept unless you force,
+which replaces it (use it to upgrade). When OpenCode is installed together with
+Claude Code or Codex, the scripts give OpenCode only its command file, because
+OpenCode already reads their skill folders.
 
 ### Claude Code plugin marketplace
 
@@ -181,7 +204,8 @@ skills/specflow/
   assets/kit/              rules and templates (VERSION names the rules version)
 adapters/opencode/commands/specflow.md   /specflow command for OpenCode
 .claude-plugin/            Claude Code plugin and marketplace manifests
-install.sh                 installer for the four agents
+install.sh                 installer for macOS and Linux
+install.ps1                installer for Windows
 ```
 
 ## Troubleshooting
@@ -194,6 +218,13 @@ install.sh                 installer for the four agents
   kit's rules are in `specflow/PLAYBOOK.md` sections 1.2 and 7.
 - **Questions arrive as plain text instead of clickable options.** Your agent
   has no question tool in the current mode; answer in the `1a, 2b` form.
+- **Windows: the agent's shell is PowerShell.** Codex on Windows, and some
+  other agents, run commands in PowerShell rather than a POSIX shell. specflow
+  runs the kit's checks with PowerShell equivalents, so no setup is needed;
+  installing Git for Windows lets agents that prefer Git Bash use it.
+- **Windows: `install.sh` fails with `$'\r': command not found`.** Use
+  `install.ps1` instead, or run `install.sh` from a fresh clone in Git Bash
+  (the repository keeps shell scripts with LF line endings).
 
 ## License
 
