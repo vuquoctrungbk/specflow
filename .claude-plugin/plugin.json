@@ -1,0 +1,20 @@
+{
+  "name": "specflow",
+  "version": "1.0.0",
+  "description": "Spec-first project documents: Intake, SRS, wireframes, architecture, SPECs and plans, written through an interview with options and stopped at each approval gate.",
+  "author": {
+    "name": "vuquoctrungbk"
+  },
+  "homepage": "https://github.com/vuquoctrungbk/specflow",
+  "repository": "https://github.com/vuquoctrungbk/specflow",
+  "keywords": [
+    "srs",
+    "requirements",
+    "specification",
+    "wireframe",
+    "architecture",
+    "adr",
+    "spec-driven"
+  ],
+  "license": "MIT"
+}

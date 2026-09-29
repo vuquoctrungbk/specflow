@@ -1,0 +1,201 @@
+# specflow
+
+[Tiếng Việt](README.vi.md) · English
+
+**specflow** is an agent skill that writes the documents of a software project
+before any code is written, following a spec-first method. You describe
+what you want, attach whatever you have (a brief, meeting notes, a spreadsheet
+of requirements), and specflow:
+
+1. reads your request and the attachments,
+2. drafts the document from its template,
+3. asks you the questions it cannot settle, each with ready-made options and a
+   recommendation,
+4. completes the document, checks it against the stage's exit gate,
+5. and stops for your approval before the next stage.
+
+```text
+/specflow write the SRS for an internal meeting-room booking app for a 50-person company:
+staff see free slots, book and cancel; admins manage rooms; sign-in with the company Google Workspace
+```
+
+It runs in **Claude Code**, **Codex** (CLI, IDE extension and ChatGPT Codex),
+**OpenCode** and **Google Antigravity**.
+
+## What it produces
+
+The method is a three-step pipeline; each stage ends at a gate that a named
+person approves.
+
+| Step | Stage | Document | Gate |
+| --- | --- | --- | --- |
+| 1. Requirements | 0 Intake | `docs/intake/PROJECT_INTAKE.md`: goals, scope, routing (surfaces, stack profile), releases, approvers | Gate 0 |
+| | 0R Brownfield baseline | Codebase Summary, As-Is Architecture, Regression Baseline (existing code only) | Gate 0R |
+| | 1 SRS | `docs/srs/SRS.md`: ISO/IEC/IEEE 29148 structure, FR in EARS form, NFR mapped to ISO/IEC 25010, use cases, acceptance criteria | Gate 1 |
+| | 1W Wireframe | `docs/wireframes/`: one page per screen, FR ↔ screen traceability, WCAG 2.2 and Nielsen heuristic checks, deceptive-pattern check | Gate 1W |
+| 2. Design | 2 Architecture | `docs/ARCHITECTURE.md` and ADRs in `docs/adr/` | Gate 2 |
+| | 3 SPEC | `docs/specs/SPEC_*.md`: one executable contract per part of a release | Gate 3 (per release) |
+| 3. Plan | 4a Plan | `plans/<date>-<slug>/`: phases per SPEC, test tables, Definition of Ready | Gate 4 |
+| Execution | 4b, 5 | TDD coding, verification, docs sync | Gate 5 (per SPEC) |
+
+Documents follow the kit's language policy: prose in Vietnamese with full
+diacritics, technical terms and identifiers in English, unless the project's
+Intake records another document language (for example English for a foreign
+partner). specflow talks to you in the language you write in.
+
+## Install
+
+Pick one method. All of them install the same `skills/specflow/` folder.
+
+### Any agent, one command (skills CLI)
+
+Needs Node.js. Installs into every agent you name:
+
+```bash
+npx skills add vuquoctrungbk/specflow -a claude-code -a codex -a opencode -a antigravity
+```
+
+Add `-g` to install for your user instead of the current project. The CLI
+symlinks by default; add `--copy` to copy the files. OpenCode also reads the
+folders of Claude Code and Codex, so when you install for either of them, leave
+out `-a opencode` to avoid two skills with the same name, and add the OpenCode
+command file by hand (see "By hand"). For Antigravity with `-g`, check that the
+skill landed in `~/.gemini/config/skills/`, the global folder Antigravity's
+documentation names; move it there if not.
+
+### Any agent, from a clone (install script)
+
+```bash
+git clone https://github.com/vuquoctrungbk/specflow.git
+cd specflow
+./install.sh --agent all                                   # every agent, for your user
+./install.sh --agent claude --scope project --project-dir ~/code/my-app   # one agent, one project
+```
+
+`--agent` takes `claude`, `codex`, `opencode`, `antigravity` or `all` and can
+be repeated. An existing install is kept unless you pass `--force`, which
+replaces it (use it to upgrade). When OpenCode is installed together with
+Claude Code or Codex, the script gives OpenCode only its command file, because
+OpenCode already reads their skill folders. On Windows, run the script from Git Bash or
+WSL, or copy the folders by hand as below.
+
+### Claude Code plugin marketplace
+
+```text
+/plugin marketplace add vuquoctrungbk/specflow
+/plugin install specflow@specflow
+```
+
+Plugin skills are namespaced, so the command becomes `/specflow:specflow`.
+Install with the script or the skills CLI if you want the plain `/specflow`.
+
+### By hand
+
+Copy `skills/specflow/` (the whole folder) to the agent's skills directory:
+
+| Agent | For your user | For one project | Invoke with |
+| --- | --- | --- | --- |
+| Claude Code | `~/.claude/skills/specflow/` | `.claude/skills/specflow/` | `/specflow …` |
+| Codex | `~/.agents/skills/specflow/` | `.agents/skills/specflow/` | `$specflow …` or `/skills` |
+| OpenCode | `~/.config/opencode/skills/specflow/` | `.opencode/skills/specflow/` | `/specflow …` (needs the command file below) |
+| Antigravity | `~/.gemini/config/skills/specflow/` | `.agents/skills/specflow/` | `/specflow …` |
+
+OpenCode also reads skills from `.claude/skills/` and `.agents/skills/`. To get
+the `/specflow` slash command there, copy
+`adapters/opencode/commands/specflow.md` to `~/.config/opencode/commands/`
+(user) or `.opencode/commands/` (project). Without it OpenCode still uses the
+skill when you ask for it by name. Some Codex versions look in
+`~/.codex/skills/` instead of `~/.agents/skills/`; if `$specflow` is not
+listed, copy the folder there.
+
+Restart the agent (or open a new session) after installing.
+
+## Use it
+
+Start a session at the root of your project and call the skill with what you
+want. Attach or paste any material you have; specflow treats it as facts about
+the project.
+
+| Agent | Example |
+| --- | --- |
+| Claude Code | `/specflow write the SRS from the attached meeting notes` |
+| Codex | `$specflow write the intake for a field inspection mobile app, notes attached` |
+| OpenCode | `/specflow draft the architecture for the approved SRS` |
+| Antigravity | `/specflow make wireframes for release R1` |
+
+More requests it understands:
+
+- `/specflow start a new project: <brief>`: stage 0, the Intake.
+- `/specflow adopt specflow on this repository`: brownfield stages 0 and 0R.
+- `/specflow write the SPECs for release R1`: stage 3, one SPEC per turn.
+- `/specflow plan release R1`: stage 4a.
+- `/specflow continue`: resumes the stage in progress in a new session.
+- `approve gate 1, reviewer: Lan`: records the approval, with the reviewer's
+  name, and offers the next stage. The kit's own documents write this reply as
+  `Duyệt Gate N`; both forms work.
+
+### What a session looks like
+
+1. **First run in a project.** specflow asks before copying its kit (rules and
+   templates) into a `specflow/` folder in your repository. Commit it with your documents: the
+   documents cite it and later sessions read it.
+2. **Missing earlier stages.** Asking for an SRS in a project without an
+   approved Intake gives you two options: write the Intake first (recommended;
+   the details you gave for the SRS are kept for it), or supply an Intake you
+   already have. Each stage still passes its own gate.
+3. **Questions.** After a first draft, specflow asks at most five questions per
+   round, blocking and contract questions first. Each has two to four options,
+   the recommended one first with its reason. Claude Code shows clickable
+   choices; OpenCode uses its question tool; elsewhere you get a numbered list
+   and can answer `1a, 2c, 3: <your text>`.
+4. **The gate.** specflow ends with the files it changed, the exit-gate
+   checklist (which rows hold, which do not) and the open questions. The
+   approver named in the Intake reviews and replies `approve gate N` with their
+   name; only then is the document marked `approved` and the next stage
+   started.
+
+### Files in your project
+
+| Path | Written by | Notes |
+| --- | --- | --- |
+| `specflow/` | specflow, on first run | The rules and templates; not edited afterwards |
+| `docs/…`, `plans/…` | each stage | The documents above |
+| `CLAUDE.md` | stage 0 | Project context for later sessions, in every agent |
+| `.claude/rules/` | stage 2 | Coding rules for the chosen stack |
+| `AGENTS.md` | stage 0, on Codex, OpenCode, Antigravity | A short pointer to `CLAUDE.md`; an existing `AGENTS.md` is never overwritten |
+
+## Upgrade
+
+Reinstall with `./install.sh --agent … --force` or
+`npx skills add vuquoctrungbk/specflow …` again. A new specflow may carry a
+newer rules than the `specflow/` folder of a project; specflow tells you and
+leaves the choice to you, because changing the rules in the middle of a
+release can affect documents under review. See `CHANGELOG.md`.
+
+## Repository layout
+
+```text
+skills/specflow/
+  SKILL.md                 how the skill works
+  references/              routing, interview protocol, project setup
+  assets/kit/              rules and templates (VERSION names the rules version)
+adapters/opencode/commands/specflow.md   /specflow command for OpenCode
+.claude-plugin/            Claude Code plugin and marketplace manifests
+install.sh                 installer for the four agents
+```
+
+## Troubleshooting
+
+- **`/specflow` is not listed.** Start a new session; check the folder sits
+  directly under the skills directory (`…/skills/specflow/SKILL.md`). In
+  Codex use `$specflow`. In OpenCode install the command file.
+- **The agent writes code or skips a gate.** Reply with the gate rule: code
+  waits for an approved plan, and each stage waits for `approve gate N`. The
+  kit's rules are in `specflow/PLAYBOOK.md` sections 1.2 and 7.
+- **Questions arrive as plain text instead of clickable options.** Your agent
+  has no question tool in the current mode; answer in the `1a, 2b` form.
+
+## License
+
+MIT, including the kit in `skills/specflow/assets/kit/`.
+See [LICENSE](LICENSE).

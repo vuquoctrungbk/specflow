@@ -1,0 +1,14 @@
+{
+  "name": "specflow",
+  "owner": {
+    "name": "vuquoctrungbk"
+  },
+  "description": "specflow: spec-first project documents for Claude Code, written through an interview with options and approval gates.",
+  "plugins": [
+    {
+      "name": "specflow",
+      "source": "./",
+      "description": "Spec-first project documents, written through an interview with options and stopped at each approval gate."
+    }
+  ]
+}
