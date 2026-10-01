@@ -1,0 +1,396 @@
+{
+  "primitive": {
+    "color": {
+      "neutral": {
+        "0": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "hex": "#FFFFFF"
+          },
+          "$description": "fill: giá trị thô của màu nền sáng nhất; thay bằng thang màu của hướng thị giác đã chọn"
+        },
+        "100": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.94902,
+              0.94902,
+              0.94902
+            ],
+            "hex": "#F2F2F2"
+          },
+          "$description": "fill: giá trị thô của màu nền phụ"
+        },
+        "300": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.74902,
+              0.74902,
+              0.74902
+            ],
+            "hex": "#BFBFBF"
+          },
+          "$description": "fill: giá trị thô của màu đường viền"
+        },
+        "600": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.34902,
+              0.34902,
+              0.34902
+            ],
+            "hex": "#595959"
+          },
+          "$description": "fill: giá trị thô của màu chữ phụ"
+        },
+        "900": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.101961,
+              0.101961,
+              0.101961
+            ],
+            "hex": "#1A1A1A"
+          },
+          "$description": "fill: giá trị thô của màu chữ chính"
+        }
+      },
+      "accent": {
+        "600": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.25098,
+              0.25098,
+              0.25098
+            ],
+            "hex": "#404040"
+          },
+          "$description": "fill: giá trị thô của màu nhấn; thay bằng màu của hướng thị giác đã chọn"
+        }
+      }
+    },
+    "space": {
+      "0": {
+        "$type": "dimension",
+        "$value": {
+          "value": 0,
+          "unit": "px"
+        },
+        "$description": "fill: khoảng cách bằng không"
+      },
+      "1": {
+        "$type": "dimension",
+        "$value": {
+          "value": 4,
+          "unit": "px"
+        },
+        "$description": "fill: bậc spacing nhỏ nhất"
+      },
+      "2": {
+        "$type": "dimension",
+        "$value": {
+          "value": 8,
+          "unit": "px"
+        },
+        "$description": "fill: bậc spacing nhỏ"
+      },
+      "3": {
+        "$type": "dimension",
+        "$value": {
+          "value": 16,
+          "unit": "px"
+        },
+        "$description": "fill: bậc spacing vừa"
+      },
+      "4": {
+        "$type": "dimension",
+        "$value": {
+          "value": 24,
+          "unit": "px"
+        },
+        "$description": "fill: bậc spacing lớn"
+      }
+    },
+    "radius": {
+      "sm": {
+        "$type": "dimension",
+        "$value": {
+          "value": 4,
+          "unit": "px"
+        },
+        "$description": "fill: bo góc nhỏ"
+      },
+      "md": {
+        "$type": "dimension",
+        "$value": {
+          "value": 8,
+          "unit": "px"
+        },
+        "$description": "fill: bo góc vừa"
+      }
+    },
+    "font": {
+      "family": {
+        "base": {
+          "$type": "fontFamily",
+          "$value": [
+            "system-ui",
+            "sans-serif"
+          ],
+          "$description": "fill: họ chữ chính của hướng thị giác đã chọn"
+        }
+      },
+      "weight": {
+        "regular": {
+          "$type": "fontWeight",
+          "$value": 400,
+          "$description": "fill: độ đậm thường"
+        },
+        "bold": {
+          "$type": "fontWeight",
+          "$value": 700,
+          "$description": "fill: độ đậm cao"
+        }
+      },
+      "size": {
+        "sm": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0.875,
+            "unit": "rem"
+          },
+          "$description": "fill: cỡ chữ nhỏ"
+        },
+        "md": {
+          "$type": "dimension",
+          "$value": {
+            "value": 1,
+            "unit": "rem"
+          },
+          "$description": "fill: cỡ chữ nền, 1rem bằng 16px"
+        },
+        "lg": {
+          "$type": "dimension",
+          "$value": {
+            "value": 1.5,
+            "unit": "rem"
+          },
+          "$description": "fill: cỡ chữ tiêu đề"
+        }
+      },
+      "line-height": {
+        "base": {
+          "$type": "number",
+          "$value": 1.5,
+          "$description": "fill: hệ số chiều cao dòng của chữ nội dung"
+        }
+      }
+    },
+    "duration": {
+      "fast": {
+        "$type": "duration",
+        "$value": {
+          "value": 150,
+          "unit": "ms"
+        },
+        "$description": "fill: thời lượng chuyển động ngắn; giảm hoặc bỏ khi người dùng bật reduced motion"
+      }
+    },
+    "easing": {
+      "standard": {
+        "$type": "cubicBezier",
+        "$value": [
+          0.2,
+          0,
+          0,
+          1
+        ],
+        "$description": "fill: đường cong chuyển động chuẩn"
+      }
+    }
+  },
+  "semantic": {
+    "color": {
+      "background": {
+        "default": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.0}",
+          "$description": "fill: nền chính của trang"
+        },
+        "subtle": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.100}",
+          "$description": "fill: nền phụ, vùng nhóm nội dung"
+        }
+      },
+      "text": {
+        "default": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.900}",
+          "$description": "fill: chữ chính"
+        },
+        "muted": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.600}",
+          "$description": "fill: chữ phụ"
+        },
+        "on-action": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.0}",
+          "$description": "fill: chữ trên nền của hành động chính"
+        }
+      },
+      "action": {
+        "primary": {
+          "$type": "color",
+          "$value": "{primitive.color.accent.600}",
+          "$description": "fill: nền của hành động chính"
+        }
+      },
+      "border": {
+        "default": {
+          "$type": "color",
+          "$value": "{primitive.color.neutral.300}",
+          "$description": "fill: đường viền mặc định"
+        }
+      },
+      "focus": {
+        "ring": {
+          "$type": "color",
+          "$value": "{primitive.color.accent.600}",
+          "$description": "fill: viền hiển thị focus"
+        }
+      }
+    },
+    "space": {
+      "gap": {
+        "default": {
+          "$type": "dimension",
+          "$value": "{primitive.space.2}",
+          "$description": "fill: khoảng cách giữa các phần tử cạnh nhau"
+        }
+      },
+      "inset": {
+        "default": {
+          "$type": "dimension",
+          "$value": "{primitive.space.3}",
+          "$description": "fill: đệm trong của container"
+        }
+      }
+    },
+    "radius": {
+      "control": {
+        "$type": "dimension",
+        "$value": "{primitive.radius.sm}",
+        "$description": "fill: bo góc của control"
+      },
+      "container": {
+        "$type": "dimension",
+        "$value": "{primitive.radius.md}",
+        "$description": "fill: bo góc của container"
+      }
+    },
+    "typography": {
+      "body": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{primitive.font.family.base}",
+          "fontSize": "{primitive.font.size.md}",
+          "fontWeight": "{primitive.font.weight.regular}",
+          "lineHeight": "{primitive.font.line-height.base}"
+        },
+        "$description": "fill: kiểu chữ của nội dung"
+      },
+      "heading": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{primitive.font.family.base}",
+          "fontSize": "{primitive.font.size.lg}",
+          "fontWeight": "{primitive.font.weight.bold}",
+          "lineHeight": "{primitive.font.line-height.base}"
+        },
+        "$description": "fill: kiểu chữ của tiêu đề"
+      }
+    },
+    "shadow": {
+      "raised": {
+        "$type": "shadow",
+        "$value": {
+          "color": "{primitive.color.neutral.300}",
+          "offsetX": "{primitive.space.0}",
+          "offsetY": "{primitive.space.1}",
+          "blur": "{primitive.space.2}",
+          "spread": "{primitive.space.0}"
+        },
+        "$description": "fill: bóng của phần tử nổi lên khỏi nền"
+      }
+    },
+    "motion": {
+      "duration": {
+        "default": {
+          "$type": "duration",
+          "$value": "{primitive.duration.fast}",
+          "$description": "fill: thời lượng chuyển động mặc định"
+        }
+      },
+      "easing": {
+        "default": {
+          "$type": "cubicBezier",
+          "$value": "{primitive.easing.standard}",
+          "$description": "fill: đường cong chuyển động mặc định"
+        }
+      }
+    }
+  },
+  "component": {
+    "button": {
+      "background": {
+        "$type": "color",
+        "$value": "{semantic.color.action.primary}",
+        "$description": "fill: nền của nút"
+      },
+      "text": {
+        "$type": "color",
+        "$value": "{semantic.color.text.on-action}",
+        "$description": "fill: chữ của nút"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{semantic.radius.control}",
+        "$description": "fill: bo góc của nút"
+      },
+      "padding": {
+        "$type": "dimension",
+        "$value": "{semantic.space.inset.default}",
+        "$description": "fill: đệm trong của nút"
+      }
+    },
+    "field": {
+      "background": {
+        "$type": "color",
+        "$value": "{semantic.color.background.default}",
+        "$description": "fill: nền của trường nhập"
+      },
+      "border": {
+        "$type": "color",
+        "$value": "{semantic.color.border.default}",
+        "$description": "fill: viền của trường nhập"
+      }
+    }
+  }
+}

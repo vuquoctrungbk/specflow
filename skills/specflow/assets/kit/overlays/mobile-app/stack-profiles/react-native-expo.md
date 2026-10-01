@@ -1,7 +1,7 @@
 ---
 doc_type: profile
 status: stable
-version: 1.0.1
+version: 1.1.0
 language: vi-en
 surface: mobile-app
 profile: react-native-expo
@@ -102,6 +102,8 @@ Ghi chú:
 │   │   └── use-local-query.ts           # hook truy vấn lại khi bảng liên quan thay đổi
 │   ├── i18n/                            # cấu hình i18next và file chuỗi theo locale
 │   ├── config/env.ts                    # nơi duy nhất đọc biến EXPO_PUBLIC_, validate bằng Zod
+│   ├── theme/tokens.ts                  # ánh xạ từ docs/design-system/tokens.json, viết tay
+│   ├── theme/use-theme.ts               # hook trả token theo mode sáng hoặc tối của useColorScheme
 │   └── lib/
 │       ├── api/client.ts                # client openapi-fetch dùng chung
 │       ├── api/schema.d.ts              # kiểu sinh bởi openapi-typescript, không sửa, không commit
@@ -355,6 +357,7 @@ export function createApiClient(baseUrl: string, fetchImpl: typeof fetch = (inpu
 - Refresh token lưu bằng `SecureStore.setItemAsync` với `keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY` (đọc được khi đồng bộ chạy lúc máy đã mở khóa một lần, không đi theo bản sao lưu sang máy khác); access token chỉ giữ trong bộ nhớ.
 - Sao lưu: `app.json` đặt `android.allowBackup` là `false`. Trên iOS, `expo-sqlite` đặt cơ sở dữ liệu trong thư mục `Documents/SQLite` của ứng dụng, thuộc bản sao lưu iCloud và máy tính; ARCHITECTURE §9 ghi rủi ro này hoặc biện pháp riêng.
 - Chuỗi hiển thị: một instance i18next tạo bằng `createInstance()` và `initReactI18next`, locale lấy từ `getLocales()` của `expo-localization`, mỗi locale một file JSON trong `src/i18n/`; số nhiều dùng hậu tố `_one`, `_other`. Thành phần dùng `useTranslation`.
+- Theme: `src/theme/tokens.ts` ánh xạ từ token `semantic` của `docs/design-system/tokens.json` (mỗi mode một bộ giá trị) và là nơi duy nhất chứa giá trị màu, spacing, radius, cỡ chữ thô; `use-theme.ts` chọn bộ theo `useColorScheme` của `react-native`. Style của thành phần chỉ đọc giá trị từ hook này. Style Dictionary là lựa chọn để sinh file, không cài mặc định; khi chưa dùng, viết `tokens.ts` tay theo token và giữ khớp `tokens.json`.
 - Trợ năng: phần tử tương tác có `accessibilityRole` và `accessibilityLabel`; giá trị liệt kê (kết quả, trạng thái) đọc bằng nhãn trong file chuỗi, không đọc mã thô; thông báo trạng thái đồng bộ dùng `accessibilityLiveRegion="polite"` trên Android và `AccessibilityInfo.announceForAccessibility` trên iOS; test truy vấn bằng `getByRole`, `getByLabelText`. Phần tử mà flow Maestro chạm tới có `testID`.
 - Biến môi trường: chỉ biến có tiền tố `EXPO_PUBLIC_` được nhúng vào bản build, và chỉ khi mã đọc dạng `process.env.EXPO_PUBLIC_API_BASE_URL`, không đọc bằng chỉ mục chuỗi. `src/config/env.ts` là nơi duy nhất đọc biến:
 

@@ -2,7 +2,7 @@
 doc_type: agent-context
 status: draft
 version: 0.1.0
-template_version: 2.4.0
+template_version: 2.5.0
 language: vi-en
 parent: [docs/intake/PROJECT_INTAKE.md]
 overlays: []
@@ -39,7 +39,8 @@ docs/
 ├── adr/NNNN-<slug>.md
 ├── specs/SPEC_<FEATURE_KEY>.md
 ├── prompts/PROMPT_<NAME>.md          # chỉ khi dùng overlay ai-llm-app
-├── design-guidelines.md              # tùy chọn, khi có frontend
+├── design-system/DESIGN_SYSTEM.md    # khi có giao diện (Giai đoạn 1W): hệ thống thiết kế
+├── design-system/tokens.json         # token nguồn, định dạng DTCG
 └── brownfield/                       # chỉ dự án brownfield
     ├── CODEBASE_SUMMARY.md
     ├── AS_IS_ARCHITECTURE.md

@@ -1,7 +1,7 @@
 ---
 doc_type: overlay-section
 status: stable
-version: 1.1.0
+version: 1.2.0
 language: vi-en
 surface: mobile-app
 ---
@@ -184,6 +184,12 @@ Phần Mobile App của cột "Ánh xạ theo bề mặt" ở §7.1 ghi khóa ch
 - Danh sách dài dùng danh sách ảo hóa; truy vấn cục bộ có chỉ mục theo cột lọc và sắp xếp.
 - Thời gian mở ứng dụng tới màn hình đầu tiên có dữ liệu và kích thước bản build theo NFR-PERF; tác vụ nặng (đồng bộ, nén ảnh) không chạy trên luồng giao diện.
 - Token và secret chỉ lưu trong kho khóa của hệ điều hành; log và báo cáo crash không chứa token hay dữ liệu cá nhân.
+
+### Quy ước giao diện (UI Conventions)
+
+| Hạng mục | Quy ước |
+| --- | --- |
+| Design token | Màu, khoảng cách, cỡ chữ, bo góc lấy từ token; không dùng giá trị rời trong thành phần. Nguồn token: `docs/design-system/tokens.json`; file theme trong mã nguồn theo stack profile là ánh xạ từ `tokens.json`, viết tay theo bảng ánh xạ của profile hoặc sinh bằng công cụ dự án chọn, sửa cùng lúc với `tokens.json` và là nơi duy nhất được chứa giá trị màu, spacing, radius, cỡ chữ thô; chế độ sáng tối theo mode của token và cài đặt của hệ điều hành |
 
 <!-- PROFILE-SLOT: arch.conventions -->
 <!-- /SLOT-CONTENT -->

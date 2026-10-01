@@ -9,7 +9,7 @@ overlays: [backend-api, frontend-web]
 assembled_from:
   - core/02_Architecture_Core_Template.md@1.1.0
   - overlays/backend-api/architecture-sections.md@1.0.0
-  - overlays/frontend-web/architecture-sections.md@1.2.0
+  - overlays/frontend-web/architecture-sections.md@1.3.0
 ---
 
 # Tài liệu kiến trúc hệ thống (System Architecture Document): {{PROJECT_NAME}}
@@ -438,7 +438,7 @@ Phần Backend API của cột "Ánh xạ theo bề mặt" ở §7.1 ghi HTTP st
 
 | Hạng mục | Quy ước |
 | --- | --- |
-| Design token | Màu, khoảng cách, cỡ chữ, bo góc lấy từ token; không dùng giá trị rời trong thành phần. Nguồn token: <!-- fill: docs/design-guidelines.md nếu dự án có, hoặc file token của design system --> |
+| Design token | Màu, khoảng cách, cỡ chữ, bo góc lấy từ token; không dùng giá trị rời trong thành phần. Nguồn token: `docs/design-system/tokens.json`; file ánh xạ trong mã nguồn (biến CSS hoặc theme của thư viện giao diện) theo stack profile là ánh xạ từ `tokens.json`, viết tay theo bảng ánh xạ của profile hoặc sinh bằng công cụ dự án chọn, sửa cùng lúc với `tokens.json` và là nơi duy nhất được chứa giá trị màu, spacing, radius, cỡ chữ thô; theme của thư viện giao diện chỉ đổi qua token |
 | Đặt tên thành phần | Tên thành phần `PascalCase`, tên file `kebab-case`; một thành phần xuất ra mỗi file |
 | Trợ năng | Mức WCAG ở NFR-USAB; dùng thẻ ngữ nghĩa trước ARIA; mọi thao tác làm được bằng bàn phím; focus hiển thị rõ; tiêu chí đầy đủ ở `specflow/CONVENTIONS.md` mục 10.2 |
 | Chuỗi hiển thị | Khóa gồm tên tính năng và tên phần tử nối bằng dấu chấm, theo `camelCase`, ví dụ `{{MODULE_SLUG}}.submit`; không ghép chuỗi hiển thị bằng nối chuỗi |

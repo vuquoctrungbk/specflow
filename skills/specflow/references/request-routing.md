@@ -12,7 +12,7 @@ to recognise them from what a user types.
 | A new project, an idea, a brief, "intake", "khởi tạo dự án" | 0 Intake | Prompt 0 | None |
 | Adopting specflow on existing code, "brownfield", "dự án có sẵn" | 0 then 0R | Prompt 0 with the brownfield additions, then B0 to B2 in `specflow/brownfield/PLAYBOOK_BROWNFIELD.md`; later B3 (Gap Analysis, after the SRS) and B4 (Migration Plan, with stage 2) | None |
 | Requirements, "SRS", "đặc tả yêu cầu", use cases, FR or NFR | 1 SRS | Prompt 1 | Intake |
-| Screens, "wireframe", UI flow, mockups for the SRS | 1W Wireframe | Prompt 1W | SRS (and the Intake says stage 1W runs) |
+| Screens, "wireframe", UI flow, mockups for the SRS, design system, visual style | 1W Wireframe | Prompt 1W | SRS (and the Intake says stage 1W runs) |
 | "Architecture", tech stack, ADR, data model, deployment | 2 Architecture and ADR | Prompt 2 | SRS, and wireframes when stage 1W runs |
 | "SPEC", API contract, a feature spec of a release | 3 Spec, one SPEC per turn | Prompt 3 | ARCHITECTURE and its ADRs |
 | "Plan", implementation plan, phases of release R*n* | 4a Plan | Prompt 4 part A | Every SPEC of the release |

@@ -190,7 +190,7 @@ Các quy tắc dưới bổ sung PLAYBOOK mục 7. Phạm vi áp của phần th
 
 ```bash
 : "${BASE:?BASE chưa đặt}"
-pattern='<!-- (SLOT|PROFILE-SLOT|slot-hint|fill)[ :-]|[{][{][A-Z][A-Z0-9_]*[}][}]'
+pattern='<!-- (SLOT|PROFILE-SLOT|slot-hint|fill)[ :-]|[{][{][A-Z][A-Z0-9_]*[}][}]|"[$]description": *"fill:'
 paths=(docs plans CLAUDE.md .claude ':(exclude)docs/legacy')
 git diff -z --name-only --relative --no-ext-diff --diff-filter=d "$BASE" -- "${paths[@]}" |
   while IFS= read -r -d '' f; do

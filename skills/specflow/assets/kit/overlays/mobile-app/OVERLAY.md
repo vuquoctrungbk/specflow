@@ -1,7 +1,7 @@
 ---
 doc_type: overlay
 status: stable
-version: 1.2.0
+version: 1.3.0
 language: vi-en
 surface: mobile-app
 ---
@@ -78,6 +78,7 @@ Tự kiểm cùng checklist "Overlay đã áp" ở PLAYBOOK mục 4.
 Bề mặt này có giao diện nên dự án có Giai đoạn 1W (PLAYBOOK mục 2 và 2.2.1): Intake mục 14 ghi Giai đoạn 1W: Có, Intake mục 9 ghi người duyệt Gate 1W. Áp cho dự án có Intake tạo từ template Intake `1.3.0` trở lên.
 
 - ID màn hình `SCR-{MOD}-NN` đặt ở Giai đoạn 1, cột `SCR ID` của bảng Giao diện người dùng ở SRS §3 (khối `srs.external-interfaces` của overlay này). Giai đoạn 1W chi tiết hóa mỗi ID thành một trang `docs/wireframes/SCR-<MOD>-NN.md`, không thêm hay bớt màn hình. Dự án có cả web và mobile dùng chung một mã phân hệ: NN vẫn duy nhất theo MOD, màn hình web và màn hình mobile là hai ID khác nhau.
+- Hệ thống thiết kế: Giai đoạn 1W viết thêm `docs/design-system/DESIGN_SYSTEM.md` và `docs/design-system/tokens.json` theo CONVENTIONS mục 10.7, trước các trang màn hình; mỗi trang chọn một Template, dẫn Pattern và Component ID của tài liệu đó. Theme mặc định của thư viện giao diện của stack profile (Intake mục 14) chỉ là một hướng thị giác, dùng khi được chọn có chủ đích; profile `none` ghi chưa chọn thư viện và xét lại ở Giai đoạn 2.
 - Template `core/07_Wireframe_Template/` dùng chung cho mọi bề mặt có giao diện và không có slot; overlay không cung cấp khối cho wireframe. Cách điền riêng cho mobile:
 
 | Mục của template | Cách điền cho `mobile-app` |
@@ -89,4 +90,4 @@ Bề mặt này có giao diện nên dự án có Giai đoạn 1W (PLAYBOOK mụ
 | Ghi chú trợ năng | Theo CONVENTIONS mục 10.2 ở mức WCAG của NFR-USAB; tiêu chí viết theo ngữ web (trang, tiêu đề trang) áp theo WCAG2ICT. Con số của mobile: vùng chạm tối thiểu 44 × 44 pt trên iOS và 48 × 48 dp trên Android (cao hơn mức sàn của WCAG 2.5.8); chữ co giãn theo cỡ chữ hệ thống; trình đọc màn hình của hệ điều hành (VoiceOver, TalkBack) |
 | HTML low-fi (tùy chọn) | Một file tĩnh mỗi màn hình theo quy tắc an toàn ở CONVENTIONS mục 7, khung theo kích thước điện thoại; trang Markdown thắng khi hai bên lệch nhau |
 
-- Sau Gate 1W: bảng điều hướng ở ARCHITECTURE §3 (khối `arch.views`) có cột `SCR ID`, mỗi `SCR-*` của chỉ mục wireframe ít nhất một hàng (Gate 2); bảng Màn hình ở SPEC §3 (khối `spec.contract`) dẫn `SCR ID` và trang wireframe, không định nghĩa lại màn hình.
+- Sau Gate 1W: bảng điều hướng ở ARCHITECTURE §3 (khối `arch.views`) có cột `SCR ID`, mỗi `SCR-*` của chỉ mục wireframe ít nhất một hàng (Gate 2); bảng Màn hình ở SPEC §3 (khối `spec.contract`) dẫn `SCR ID` và trang wireframe, không định nghĩa lại màn hình. Ở Giai đoạn 2, ARCHITECTURE §7 ghi cách ánh xạ token thành mã nguồn (khối `arch.conventions`) và stack profile ghi công cụ ánh xạ; code chỉ đọc token đã ánh xạ.

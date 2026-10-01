@@ -1,7 +1,7 @@
 ---
 doc_type: playbook
 status: stable
-version: 2.7.0
+version: 2.8.0
 language: vi-en
 ---
 
@@ -37,7 +37,7 @@ Cột `Prompt` dưới là bảng đối chiếu duy nhất của bước, giai 
 
 | Bước | Giai đoạn | Gate | Prompt | Kết quả khi đạt |
 | --- | --- | --- | --- | --- |
-| 1. Yêu cầu | 0 Intake; 0R khi brownfield; 1 SRS; 1W Wireframe khi có giao diện | Gate 0; Gate 0R; Gate 1; Gate 1W | Prompt 0; Prompt B0 đến B2 (brownfield); Prompt 1; Prompt 1W | SRS và wireframe `approved`, bảng đối chiếu FR ↔ SCR khớp |
+| 1. Yêu cầu | 0 Intake; 0R khi brownfield; 1 SRS; 1W Wireframe khi có giao diện | Gate 0; Gate 0R; Gate 1; Gate 1W | Prompt 0; Prompt B0 đến B2 (brownfield); Prompt 1; Prompt 1W | SRS, wireframe và tài liệu hệ thống thiết kế `approved`, bảng đối chiếu FR ↔ SCR khớp |
 | 2. Thiết kế | 2 Architecture và ADR; 3 SPEC của đợt | Gate 2; Gate 3 theo đợt | Prompt 2; Prompt 3 (mỗi lượt một SPEC) | ARCHITECTURE, ADR và mọi SPEC của đợt `approved` |
 | 3. Kế hoạch | 4a plan của đợt | Gate 4 | Prompt 4 phần A | Plan của đợt phủ mọi SPEC của đợt, DoR đạt |
 | Thực thi | 4b Coding TDD; 5 Verify và Sync Docs | Gate 5 theo SPEC | Prompt 4 phần B, 5, 6 | Mỗi SPEC `implemented`; plan `completed` khi SPEC cuối của đợt xong |
@@ -72,7 +72,7 @@ flowchart TD
 | --- | --- | --- | --- | --- |
 | 0. Intake | Dự án gì, bề mặt nào, quy mô, ràng buộc | `core/00_Project_Intake_Template.md`; Agent Context của giai đoạn | `docs/intake/PROJECT_INTAKE.md`, `CLAUDE.md` khởi tạo | Chủ dự án |
 | 1. SRS | WHAT: nghiệp vụ, tác nhân, dữ liệu logic, use case, NFR, danh sách màn hình | SRS của giai đoạn | `docs/srs/` | Theo Intake |
-| 1W. Wireframe | Mỗi màn hình trông và điều hướng thế nào, FR nào hiện thực ở màn hình nào | `core/07_Wireframe_Template/` | `docs/wireframes/` | Theo Intake (Gate 1W) |
+| 1W. Wireframe | Mỗi màn hình trông và điều hướng thế nào, FR nào hiện thực ở màn hình nào, hệ thống thiết kế dùng chung | `core/07_Wireframe_Template/` | `docs/wireframes/`, `docs/design-system/` | Theo Intake (Gate 1W) |
 | 2. Architecture + ADR | WHERE và HOW: stack, C4, layout, schema, cross-cutting | Architecture của giai đoạn, `core/03_ADR_Template.md`, Agent Context của giai đoạn | `docs/ARCHITECTURE.md`, `docs/adr/`, `CLAUDE.md`, `.claude/rules/` | Theo Intake |
 | 3. Spec | Hợp đồng thực thi của một phần việc của đợt; mọi SPEC của đợt được duyệt ở Gate 3 | Spec của giai đoạn | `docs/specs/SPEC_<FEATURE_KEY>.md` | Theo Intake |
 | 4a. Implementation Plan | Chia việc của mọi SPEC trong đợt thành pha commit được | `core/05_Implementation_Plan_Template/` | `plans/{YYMMDD-HHmm}-{slug}/` | Theo Intake |
@@ -116,10 +116,11 @@ Dự án brownfield (Intake `mode: brownfield`) đi thêm các bước ở [brow
 
 Áp cho dự án mà Intake mục 14 ghi Giai đoạn 1W có (mục 2). Chạy sau Gate 1; dự án brownfield chạy sau khi Gate 1 duyệt cả SRS to-be và Gap Analysis, và vẽ giao diện to-be.
 
-- Nhiệm vụ: chi tiết hóa mọi màn hình có ở SRS §3, không thêm hay bớt màn hình. Mỗi `SCR ID` một trang `docs/wireframes/SCR-<MOD>-NN.md` từ `core/07_Wireframe_Template/`: mục đích, FR và AC, bố cục low-fi (khối `text` theo CONVENTIONS mục 7), bảng thành phần, năm trạng thái UI kèm AC, điều hướng vào và ra, ghi chú trợ năng.
+- Hệ thống thiết kế trước tiên, theo CONVENTIONS mục 10.7: agent đề xuất 2 đến 3 hướng thị giác, chủ dự án chọn đúng một (một lượt dừng giữa giai đoạn, ngoại lệ của mục 7 quy tắc 3; các hướng ghi vào `DESIGN_SYSTEM.md` `draft` trước khi dừng); rồi viết foundations, token (`tokens.json` và file mode), primitive và danh mục component, pattern, template vào `docs/design-system/` từ `core/07_Wireframe_Template/`, trước khi dựng trang màn hình.
+- Nhiệm vụ: chi tiết hóa mọi màn hình có ở SRS §3, không thêm hay bớt màn hình. Mỗi `SCR ID` một trang `docs/wireframes/SCR-<MOD>-NN.md` từ `core/07_Wireframe_Template/`: mục đích, FR và AC, bố cục low-fi (khối `text` theo CONVENTIONS mục 7), trang chọn đúng một Template và dẫn Pattern, Component đã có trong danh mục hệ thống thiết kế, bảng thành phần, năm trạng thái UI kèm AC, điều hướng vào và ra, ghi chú trợ năng.
 - Chỉ mục `docs/wireframes/00_WIREFRAME_INDEX.md`: danh mục màn hình lặp đúng tập `SCR ID` của SRS §3, sơ đồ điều hướng (`flowchart`), bảng đối chiếu có đúng một hàng cho mỗi FR ở SRS §6.1 có ưu tiên khác `Won't` (gộp master và module khi `docs_mode` là `modular`) theo chuỗi `FR → SCR` ở CONVENTIONS mục 4.
 - Tiêu chuẩn UI/UX theo CONVENTIONS mục 10: trang có dòng `Màn hình xác thực` và ghi chú trợ năng theo các tiêu chí WCAG 2.2 ở CONVENTIONS mục 10.2 với con số của nền tảng ở `OVERLAY.md`; chỉ mục có bảng đánh giá heuristic (CONVENTIONS mục 10.3) và bảng kiểm mẫu thiết kế lừa người dùng (CONVENTIONS mục 10.4). Người lập wireframe tự đánh giá, sửa vấn đề `Nghiêm trọng` và bỏ mẫu lừa người dùng trước khi trình Gate 1W; câu hỏi tự vấn ở CONVENTIONS mục 10.5 không chặn gate.
-- HTML low-fi ở `docs/wireframes/html/` là tùy chọn: chỉ tạo khi Intake mục 14 ghi Giai đoạn 1W là `Có, kèm HTML low-fi`; muốn thêm HTML sau Gate 0 thì sửa Intake mục 14 theo mục 8 trước. File HTML theo quy tắc an toàn ở CONVENTIONS mục 7; trang Markdown thắng khi hai bên lệch nhau.
+- HTML low-fi ở `docs/wireframes/html/` là tùy chọn: chỉ tạo khi Intake mục 14 ghi Giai đoạn 1W là `Có, kèm HTML low-fi`; muốn thêm HTML sau Gate 0 thì sửa Intake mục 14 theo mục 8 trước. HTML đọc hệ thống thiết kế qua biến CSS khai báo từ token (CONVENTIONS mục 10.7); file HTML theo quy tắc an toàn ở CONVENTIONS mục 7; trang Markdown thắng khi hai bên lệch nhau.
 - Chỉ mục và từng trang dùng cùng tập trạng thái với SRS (CONVENTIONS mục 3); version và thay đổi sau khi duyệt theo mục 8.
 - Lệch giữa wireframe và SRS (màn hình thêm, bớt hay đổi; FR thiếu; AC không khớp với trạng thái của màn hình) có hai trường hợp:
   - Wireframe vẽ sai hoặc sót so với SRS đã duyệt (trang quên một trạng thái có AC, thiếu thành phần mà FR cần, điều hướng sai): sửa wireframe cho khớp SRS; SRS không đổi.
@@ -128,7 +129,7 @@ Dự án brownfield (Intake `mode: brownfield`) đi thêm các bước ở [brow
 
 | Tiêu chí | Kiểm chứng |
 | --- | --- |
-| Chỉ mục và mọi trang wireframe `approved`, version từ `1.0.0` | Frontmatter và Version History; checker trên ví dụ (tài liệu `approved` có version từ `1.0.0`) |
+| Chỉ mục, mọi trang wireframe và tài liệu hệ thống thiết kế `approved`, version từ `1.0.0` | Frontmatter và Version History; checker trên ví dụ (tài liệu `approved` có version từ `1.0.0`) |
 | Tập `SCR ID` ở SRS §3, danh mục màn hình của chỉ mục và bảng đối chiếu trùng nhau; mỗi `SCR ID` có trang | SRS §3, chỉ mục, `docs/wireframes/`; checker trên ví dụ |
 | Bảng đối chiếu phủ mọi FR ở SRS §6.1 có ưu tiên khác `Won't`, mỗi FR đúng một hàng ghi `SCR-*`, `Không có giao diện` kèm lý do, hoặc (brownfield) `Giữ nguyên` kèm dẫn Regression Baseline §5 | Chỉ mục, SRS §6.1; checker trên ví dụ (trừ việc dẫn Regression Baseline §5) |
 | Mọi trang dẫn ít nhất một FR có thật; AC mà trang dẫn có ở SRS §8 và thuộc FR của trang | Trang, SRS §6.1, §8; checker trên ví dụ |
@@ -139,6 +140,10 @@ Dự án brownfield (Intake `mode: brownfield`) đi thêm các bước ở [brow
 | Chỉ mục: bảng đánh giá heuristic có đúng một hàng cho mỗi khóa `H1` đến `H10` ở CONVENTIONS mục 10.3, không hàng nào có mức `Nghiêm trọng`; vấn đề `Nhỏ` có cách xử lý | Chỉ mục, các trang; checker trên ví dụ (đủ hàng, mức hợp lệ, không còn `Nghiêm trọng` ở chỉ mục `approved`) |
 | Chỉ mục: không còn mẫu thiết kế lừa người dùng; bảng kiểm có đúng một hàng cho mỗi khóa `DP1` đến `DP5` ở CONVENTIONS mục 10.4, mọi hàng `Không có` kèm căn cứ | Chỉ mục, các trang, sơ đồ điều hướng; checker trên ví dụ (đủ hàng, mọi hàng `Không có` ở chỉ mục `approved`) |
 | Trang: có dòng Màn hình xác thực; mục trợ năng ghi từng tiêu chí ở CONVENTIONS mục 10.2 hoặc N/A kèm lý do | Trang; checker trên ví dụ (dòng Màn hình xác thực, `3.3.8` khi Có) |
+| Hướng thị giác: 2 đến 3 hướng có căn cứ, chủ dự án chọn một, lý do ghi ở tài liệu; theme mặc định của thư viện chỉ khi được chọn có chủ đích | Tài liệu hệ thống thiết kế; checker trên ví dụ (hình dạng bảng hướng) |
+| Token: `tokens.json` và file mode theo DTCG ở CONVENTIONS mục 10.7, ba tầng; mọi cặp ở bảng tương phản đạt `1.4.3`, `1.4.11` ở mọi mode | `docs/design-system/`; tính lại từng hàng bảng tương phản theo CONVENTIONS mục 10.7 (không tính nhẩm); checker trên ví dụ |
+| Danh mục: mỗi trang có đúng một Template, mọi Template, Pattern, Component mà trang dẫn có trong danh mục, danh mục không có component, pattern hay template không dùng | Trang, tài liệu hệ thống thiết kế; checker trên ví dụ |
+| HTML của trang: biến CSS trong `:root` khớp token của mode áp cho bề mặt của trang; ngoài `:root`, màu, spacing, radius và `font-size` chỉ dùng `var(--…)` hoặc từ khóa được phép ở CONVENTIONS mục 10.7 | `docs/wireframes/html/`; checker trên ví dụ |
 
 ### 2.3. Giai đoạn 2: Architecture + ADR
 
@@ -149,6 +154,7 @@ Dự án brownfield (Intake `mode: brownfield`) đi thêm các bước ở [brow
 - Lập bảng `NFR → tactic → ADR`, security architecture, test strategy, CI/CD.
 - ADR: kiểu kiến trúc (ARCHITECTURE §1.3) có ADR riêng; mỗi lựa chọn đánh dấu `có ADR` (CONVENTIONS mục 1) và mỗi lệch stack profile được một ADR bao phủ, một ADR có thể gom nhiều lựa chọn cùng chủ đề (ví dụ mô hình token). Lựa chọn không đánh dấu chỉ cần ghi giá trị.
 - Hoàn thiện `CLAUDE.md` (lệnh verify, Golden Rules tóm tắt) và `.claude/rules/`; ô Điều kiện pass của hàng Coverage trong bảng lệnh verify ghi con số ngưỡng của `NFR-MAINT` (SRS §7) thay cho câu chung "≥ ngưỡng của `NFR-MAINT`".
+- Có Giai đoạn 1W: ghi cách sinh token vào code ở ARCHITECTURE theo overlay và profile; theme của thư viện đặt qua token.
 - Exit gate: mọi tiêu chí ở bảng dưới đạt. Người duyệt đối chiếu từng hàng (cột Kiểm chứng theo mục 2).
 
 | Tiêu chí | Kiểm chứng |
@@ -161,6 +167,7 @@ Dự án brownfield (Intake `mode: brownfield`) đi thêm các bước ở [brow
 | Schema khớp mô hình dữ liệu logic; tập giá trị của enum khớp state machine của SRS | ARCHITECTURE §5, SRS §4, §10.1; checker trên ví dụ (enum khớp state machine) |
 | Có Giai đoạn 1W: mỗi `SCR-*` của chỉ mục wireframe có hàng ở bảng route (web) hoặc bảng điều hướng (mobile) của ARCHITECTURE, cột `SCR ID` | ARCHITECTURE §3, chỉ mục wireframe |
 | Không còn câu hỏi `BLOCKING`; ARCHITECTURE `approved`, mọi ADR liên quan `accepted` | Frontmatter; mục Giả định và câu hỏi mở; checker trên ví dụ (câu hỏi `BLOCKING` trong tài liệu `approved`) |
+| Có `docs/design-system/` (trang từ template `1.4.0`, COMPATIBILITY mục 1): ARCHITECTURE ghi nguồn token `docs/design-system/tokens.json` và file ánh xạ token trong code | ARCHITECTURE, mục quy ước giao diện |
 
 ### 2.4. Giai đoạn 3: Spec
 
@@ -267,7 +274,7 @@ Template của giai đoạn là file tương ứng trong `starters/<starter>/` n
 6. Chạy lệnh kiểm tra sót, kết quả MUST rỗng:
 
 ```bash
-grep -rnE '<!-- (SLOT|PROFILE-SLOT|slot-hint|fill)[ :-]|\{\{[A-Z][A-Z0-9_]*\}\}' docs/ plans/ CLAUDE.md .claude/ 2>/dev/null
+grep -rnE '<!-- (SLOT|PROFILE-SLOT|slot-hint|fill)[ :-]|\{\{[A-Z][A-Z0-9_]*\}\}|"\$description": *"fill:' docs/ plans/ CLAUDE.md .claude/ 2>/dev/null
 ```
 
 Checklist "Overlay đã áp", tự kiểm ở exit gate của giai đoạn tương ứng; một ô chỉ tick khi cả nội dung overlay và nội dung profile đã vào tài liệu:
@@ -308,15 +315,15 @@ Agent nạp đúng những gì giai đoạn cần. "Của giai đoạn" theo đ�
 | --- | --- | --- |
 | 0. Intake | Brief, `specflow/PLAYBOOK.md` mục 1 đến 7, `specflow/CONVENTIONS.md`, `specflow/core/00_Project_Intake_Template.md`; trước khi chốt routing: mục `(Tech Stack)` của mọi stack profile thuộc overlay đang cân nhắc, để xét profile khớp (mục 3); sau khi chốt routing: Agent Context của giai đoạn, `OVERLAY.md` và profile đã chọn | File section của overlay và phần còn lại của profile khi chưa chốt routing, template SRS, Architecture, Spec |
 | 1. SRS | `CLAUDE.md`, `specflow/PLAYBOOK.md` mục 2.2 và 4 đến 7, `specflow/CONVENTIONS.md`, Intake, SRS của giai đoạn, `OVERLAY.md` | Overlay và profile không được chọn, profile (SRS không dùng placeholder nguồn `Profile`), template Architecture và Spec, mã nguồn |
-| 1W. Wireframe | `CLAUDE.md`, `specflow/PLAYBOOK.md` mục 2.2.1 và 4 đến 8, `specflow/CONVENTIONS.md` mục 1, 3, 4, 6, 7, 10, Intake, SRS (§1.2, §2.2, §2.4, §2.5, §3, §4, §5, §6, §7, §8, §9, §10.2; master và mọi module nếu `modular`), `specflow/core/07_Wireframe_Template/`, `OVERLAY.md` của bề mặt có giao diện | Stack profile, file section của overlay, template Architecture và Spec, mã nguồn |
-| 2. Architecture + ADR | `CLAUDE.md`, `specflow/PLAYBOOK.md` mục 2.3 và 4 đến 7, `specflow/CONVENTIONS.md`, Intake, SRS (master và mô hình dữ liệu chung nếu `modular`; khi đó thêm §6.3 của mọi file module), chỉ mục wireframe `docs/wireframes/00_WIREFRAME_INDEX.md` khi có Giai đoạn 1W, Architecture và Agent Context của giai đoạn, `OVERLAY.md`, profile, `specflow/core/03_ADR_Template.md`, `specflow/overlays/<surface>/agent-rules/` khi không có starter | Overlay và profile không được chọn, template Spec, mã nguồn |
-| 3. Spec | `CLAUDE.md`, `specflow/PLAYBOOK.md` mục 2.4 và 4 đến 7, `specflow/CONVENTIONS.md` mục 1, 3, 4, `docs/ARCHITECTURE.md`, phần SRS chứa FR của SPEC đang viết, cột FR ID và Bản phát hành ở SRS §6.1 (master và mọi module khi `modular`), frontmatter của mọi SPEC trong `docs/specs/` và §1.5 của SPEC thuộc đợt (khóa `release`; SPEC không có khóa thì đọc §1.5 của nó, đợt theo Bản phát hành của FR, mục 2.4), cột TC ID ở §9 của mọi SPEC cùng mã phân hệ (đánh số TC tiếp theo, CONVENTIONS mục 4), chỉ mục wireframe và trang wireframe của các `SCR-*` mà FR đang viết dẫn, ADR được tham chiếu, Spec của giai đoạn, profile, mã nguồn hiện có của phân hệ theo ARCHITECTURE §4; overlay `ai-llm-app`: Prompt Spec của các prompt tính năng dùng, hoặc `specflow/overlays/ai-llm-app/Prompt_Spec_Template.md` khi viết Prompt Spec mới | Phần còn lại của SRS module khác, nội dung SPEC khác ngoài frontmatter, §1.5 và cột TC ID ở §9 (trừ SPEC phụ thuộc ghi trong §1), trang wireframe khác, mã nguồn của phân hệ khác |
+| 1W. Wireframe | `CLAUDE.md`, `specflow/PLAYBOOK.md` mục 2.2.1 và 4 đến 8, `specflow/CONVENTIONS.md` mục 1, 3, 4, 6, 7, 10, Intake, SRS (§1.2, §2.2, §2.4, §2.5, §3, §4, §5, §6, §7, §8, §9, §10.2; master và mọi module nếu `modular`), `specflow/core/07_Wireframe_Template/`, `OVERLAY.md` của bề mặt có giao diện, `docs/design-system/` khi sửa lại | Stack profile, file section của overlay, template Architecture và Spec, mã nguồn |
+| 2. Architecture + ADR | `CLAUDE.md`, `specflow/PLAYBOOK.md` mục 2.3 và 4 đến 7, `specflow/CONVENTIONS.md`, Intake, SRS (master và mô hình dữ liệu chung nếu `modular`; khi đó thêm §6.3 của mọi file module), chỉ mục wireframe `docs/wireframes/00_WIREFRAME_INDEX.md` khi có Giai đoạn 1W, `docs/design-system/tokens.json`, file mode và mục Token của `DESIGN_SYSTEM.md` khi có `docs/design-system/`, Architecture và Agent Context của giai đoạn, `OVERLAY.md`, profile, `specflow/core/03_ADR_Template.md`, `specflow/overlays/<surface>/agent-rules/` khi không có starter | Overlay và profile không được chọn, template Spec, mã nguồn |
+| 3. Spec | `CLAUDE.md`, `specflow/PLAYBOOK.md` mục 2.4 và 4 đến 7, `specflow/CONVENTIONS.md` mục 1, 3, 4, `docs/ARCHITECTURE.md`, phần SRS chứa FR của SPEC đang viết, cột FR ID và Bản phát hành ở SRS §6.1 (master và mọi module khi `modular`), frontmatter của mọi SPEC trong `docs/specs/` và §1.5 của SPEC thuộc đợt (khóa `release`; SPEC không có khóa thì đọc §1.5 của nó, đợt theo Bản phát hành của FR, mục 2.4), cột TC ID ở §9 của mọi SPEC cùng mã phân hệ (đánh số TC tiếp theo, CONVENTIONS mục 4), chỉ mục wireframe và trang wireframe của các `SCR-*` mà FR đang viết dẫn, mục danh mục hệ thống thiết kế (`CMP-*`, `PAT-*`, `TPL-*`) mà các trang đó dẫn, ADR được tham chiếu, Spec của giai đoạn, profile, mã nguồn hiện có của phân hệ theo ARCHITECTURE §4; overlay `ai-llm-app`: Prompt Spec của các prompt tính năng dùng, hoặc `specflow/overlays/ai-llm-app/Prompt_Spec_Template.md` khi viết Prompt Spec mới | Phần còn lại của SRS module khác, nội dung SPEC khác ngoài frontmatter, §1.5 và cột TC ID ở §9 (trừ SPEC phụ thuộc ghi trong §1), trang wireframe khác, mã nguồn của phân hệ khác |
 | 4a. Plan | `CLAUDE.md`, `specflow/PLAYBOOK.md` mục 2.4, 2.5, 4, 6, 7, 10.1, `specflow/CONVENTIONS.md` mục 3, 4, 9, mọi SPEC trong `spec_ids` của đợt, hàng SRS §6.1 của FR có Bản phát hành bằng đợt và hàng SRS §8 của AC mà SPEC của đợt dẫn; có Giai đoạn 1W: chỉ mục wireframe và trang của các `SCR-*` mà SPEC của đợt dẫn ở §3; ARCHITECTURE §1, §4, §5, §7, `specflow/core/05_Implementation_Plan_Template/` | SRS toàn văn (chỉ đọc các hàng đã nêu), trang wireframe không được SPEC của đợt dẫn, SPEC ngoài đợt |
-| 4b. Coding | `CLAUDE.md`, `specflow/PLAYBOOK.md` mục 7, plan và pha đang làm, SPEC theo `spec_id` của pha, ARCHITECTURE §1, §4 đến §7, file trong File Diff, file phụ thuộc ghi ở SPEC §1; overlay `ai-llm-app`: Prompt Spec của các prompt SPEC dùng | File ngoài File Diff và ngoài danh sách phụ thuộc; file trong `specflow/` ngoài PLAYBOOK và CONVENTIONS |
+| 4b. Coding | `CLAUDE.md`, `specflow/PLAYBOOK.md` mục 7, plan và pha đang làm, SPEC theo `spec_id` của pha, ARCHITECTURE §1, §4 đến §7, file trong File Diff, file phụ thuộc ghi ở SPEC §1, mục danh mục hệ thống thiết kế mà trang wireframe của SPEC dẫn, `docs/design-system/tokens.json` khi pha có file token trong File Diff; overlay `ai-llm-app`: Prompt Spec của các prompt SPEC dùng | File ngoài File Diff và ngoài danh sách phụ thuộc; file trong `specflow/` ngoài PLAYBOOK và CONVENTIONS |
 | 5. Verify và Sync | `CLAUDE.md`, `specflow/PLAYBOOK.md` mục 2.6, 2.7, 4, 8, 10.2, 11, `specflow/CONVENTIONS.md` mục 9, SPEC đang đóng, plan, `git diff` trên khoảng commit của SPEC, kết quả verify, ARCHITECTURE §2.1, §12, ADR liên quan, hàng `NFR-MAINT` của SRS §8 (ngưỡng coverage); khi Sync Docs: SRS §8 chứa AC và NFR mà SPEC nhận, Prompt Spec của các prompt SPEC dùng (overlay `ai-llm-app`: §9.1 để ghi kết quả đánh giá), tài liệu gốc cần sửa theo mục 8 và `specflow/core/03_ADR_Template.md` khi tạo ADR; brownfield: `specflow/brownfield/PLAYBOOK_BROWNFIELD.md` mục 7 | Không giới hạn thêm |
 | Resume | `CLAUDE.md`, `specflow/PLAYBOOK.md` mục 2, 2.7, 6, 7, 9, `specflow/PROMPTS.md` và mục của giai đoạn đang dở, tài liệu hoặc plan đang dở, tài liệu thượng nguồn trong `parent` của nó; plan đang dở thì thêm SPEC theo `spec_id` của pha đang dở | Tài liệu của giai đoạn đã đóng không nằm trong `parent` |
 
-Dự án có Intake tạo từ template Intake cũ hơn `1.3.0`: mọi hàng nạp thêm `specflow/COMPATIBILITY.md`.
+Dự án có Intake tạo từ template Intake cũ hơn `1.3.0`, hoặc có wireframe từ template chỉ mục cũ hơn `1.3.0` hay template trang cũ hơn `1.4.0`: mọi hàng nạp thêm `specflow/COMPATIBILITY.md`.
 
 Mọi hàng kết thúc ở một gate: khi dừng ở gate hoặc nhận "Duyệt Gate N", agent nạp thêm `specflow/PLAYBOOK.md` mục 2.7 và mục 8.
 
@@ -362,6 +369,7 @@ Quy trình change request:
 | Wireframe: bố cục, thành phần, trạng thái, điều hướng, sau khi SPEC dẫn `SCR-*` đó đã `approved` | SPEC dẫn `SCR-*` đó (§3, §9), plan, test giao diện và e2e | Wireframe tăng MINOR (PATCH khi chỉ làm rõ, không đổi nghĩa). SPEC chuyển `in-review` và được cập nhật theo mục này. Plan đã qua Gate 4 thêm hoặc sửa pha, người duyệt Gate 4 duyệt lại. SPEC đã `implemented` thì theo bước 7 ở trên |
 | SRS §6.1: đổi Bản phát hành của FR | SPEC dẫn FR đó ở §1.5 (khóa `release`), plan của đợt cũ và đợt mới | Bỏ FR khỏi §1.5 của SPEC đợt cũ, hoặc đặt SPEC đó `superseded` khi mọi FR của nó chuyển đi; đưa FR vào §1.5 của SPEC có `release` bằng đợt mới. Cập nhật `spec_ids` và pha ở plan của hai đợt; người duyệt Gate 3 và Gate 4 của từng đợt duyệt lại. FR mà SPEC `implemented` đã thực hiện thì không đổi đợt; thay đổi theo bước 7 ở trên |
 | SPEC §9: TC được chốt hoặc đổi | SRS §8 | Cập nhật cột TC ở SRS §8 cho AC và NFR mà SPEC nhận (CONVENTIONS mục 4); tăng PATCH version SRS |
+| Hệ thống thiết kế: token, file mode, danh mục component, pattern, template, sau Gate 1W | Trang dẫn mục đổi, HTML low-fi, file ánh xạ token trong code, ARCHITECTURE hàng Design token, SPEC dẫn trang | `DESIGN_SYSTEM.md` tăng version và ghi Version History cho mọi đổi của nó và của `tokens.json` (file JSON không có frontmatter, không thêm trường lạ vào token); đổi token thì tính lại bảng tương phản ở mọi mode; trang bị ảnh hưởng theo dòng Wireframe ở trên; đổi hướng thị giác thì duyệt lại Gate 1W |
 | SRS: NFR | ARCHITECTURE §8 (`NFR → tactic`), ADR | Cập nhật tactic, ghi ADR nếu đổi quyết định |
 | SRS: mô hình dữ liệu | ARCHITECTURE §5, SPEC §4 (migration) | Cập nhật schema, thêm migration |
 | ARCHITECTURE: schema, conventions, Error Code Registry | Mọi SPEC tham chiếu | Cập nhật contract và bảng lỗi |
@@ -386,7 +394,7 @@ Prompt nằm ở [PROMPTS.md](PROMPTS.md).
 | SRS | Mô hình dữ liệu logic theo bề mặt; bề mặt có lưu trữ quan hệ có `erDiagram` Crow's foot | [ ] |
 | SRS | Mọi use case có Exception flow kèm mã lỗi có trong Error Code Registry | [ ] |
 | SRS | Ma trận Given-When-Then nối `FR → AC → TC`; NFR có chỉ số, cách đo, ngưỡng; status `approved` | [ ] |
-| Wireframe | Không có Giai đoạn 1W (không có giao diện) ghi N/A. Gate 1W đạt: mọi tiêu chí ở bảng exit gate mục 2.2.1, kể cả hàng Màn hình xác thực và mục trợ năng của trang | [ ] |
+| Wireframe | Không có Giai đoạn 1W (không có giao diện) ghi N/A. Gate 1W đạt: mọi tiêu chí ở bảng exit gate mục 2.2.1, kể cả hàng Màn hình xác thực, mục trợ năng của trang và tài liệu hệ thống thiết kế (khi wireframe từ chỉ mục `1.3.0`, trang `1.4.0`) | [ ] |
 | ARCHITECTURE | Tech stack ghi phiên bản chính xác, không còn "A hoặc B" | [ ] |
 | ARCHITECTURE | Schema vật lý hoàn chỉnh, migrate được ngay (nếu có lưu trữ) | [ ] |
 | ARCHITECTURE | Layout phân tầng rõ, có bảng `MOD → thành phần → thư mục`; có Error Code Registry và bảng `NFR → tactic`; status `approved` | [ ] |

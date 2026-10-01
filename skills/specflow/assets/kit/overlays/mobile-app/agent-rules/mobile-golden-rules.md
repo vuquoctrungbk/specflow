@@ -2,7 +2,7 @@
 doc_type: agent-rule
 status: draft
 version: 0.1.0
-template_version: 1.1.0
+template_version: 1.2.0
 language: vi-en
 paths: ["{{SOURCE_GLOB}}"]
 parent: [docs/ARCHITECTURE.md]
@@ -22,6 +22,7 @@ assembled_from: []
 - MUST NOT bỏ thay đổi chưa đồng bộ mà người dùng không biết: đăng xuất, xóa dữ liệu, xung đột và bị từ chối đều hiển thị trước.
 - Mỗi màn hình hiện thực đủ năm trạng thái giao diện; bản ghi sửa được khi mất mạng hiển thị trạng thái đồng bộ theo SPEC §3.
 - Mọi chuỗi hiển thị lấy qua khóa chuỗi theo locale; MUST NOT viết cứng văn bản hiển thị trong thành phần.
+- MUST NOT viết màu, spacing, radius hay cỡ chữ thô trong mã giao diện; chỉ đọc token của `docs/design-system/tokens.json` qua theme của ứng dụng. File theme đó (theme object), viết tay hoặc sinh bằng công cụ, là nơi duy nhất được chứa giá trị thô và MUST khớp `tokens.json`. Theme của thư viện giao diện chỉ đổi qua token. Dự án chưa có `docs/design-system/` (wireframe từ template trang cũ hơn `1.4.0`) giữ nguồn token ghi ở ARCHITECTURE.
 - Token và secret chỉ lưu trong kho khóa của hệ điều hành; MUST NOT ghi token hay dữ liệu cá nhân vào log, báo cáo crash hay bộ nhớ không mã hóa ngoài cơ sở dữ liệu cục bộ đã khai báo.
 - Xin quyền hệ điều hành ngay trước khi dùng tính năng cần quyền, kèm giải thích; xử lý trường hợp bị từ chối.
 - Migration của cơ sở dữ liệu cục bộ chỉ thêm mới; MUST NOT sửa, gộp hay xóa migration đã phát hành.

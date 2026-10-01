@@ -12,7 +12,7 @@ Bộ template đã ghép sẵn cho dự án có hai bề mặt `backend-api` và
 | [SPEC_Frontend_Template.md](SPEC_Frontend_Template.md) | `core/04_Spec_Core_Template.md` + `overlays/frontend-web/spec-contract-sections.md` | `docs/specs/SPEC_<FEATURE_KEY>.md` cho màn hình | 3 |
 | [CLAUDE.md.template](CLAUDE.md.template) | `core/06_Agent_Context_Template.md` + `verify-commands.md` của hai overlay + rule của hai overlay (Phụ lục A.3, A.4) | `CLAUDE.md`, `.claude/rules/` | 0 và 2 |
 
-Template dùng thẳng từ core, không qua starter: [Intake](../../core/00_Project_Intake_Template.md), [Wireframe](../../core/07_Wireframe_Template/00_Wireframe_Index_Template.md) (Giai đoạn 1W, cho bề mặt `frontend-web`), [ADR](../../core/03_ADR_Template.md), [Implementation Plan](../../core/05_Implementation_Plan_Template/plan.md).
+Template dùng thẳng từ core, không qua starter: [Intake](../../core/00_Project_Intake_Template.md), [Wireframe](../../core/07_Wireframe_Template/00_Wireframe_Index_Template.md) (Giai đoạn 1W, cho bề mặt `frontend-web`), [Hệ thống thiết kế](../../core/07_Wireframe_Template/Design_System_Template.md) và [token](../../core/07_Wireframe_Template/Design_Tokens_Template.json) (cùng Giai đoạn 1W), [ADR](../../core/03_ADR_Template.md), [Implementation Plan](../../core/05_Implementation_Plan_Template/plan.md).
 
 ## Cách dùng
 

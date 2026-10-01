@@ -1,7 +1,7 @@
 ---
 doc_type: conventions
 status: stable
-version: 2.7.0
+version: 2.8.0
 language: vi-en
 ---
 
@@ -55,6 +55,9 @@ Hợp đồng kỹ thuật bắt buộc cho mọi template, overlay, stack profi
 | `{{EFFORT}}` | Ước lượng công | Số + `h` hoặc `d` | Agent |
 | `{{SPEC_ID}}` | ID spec | `SPEC-{MOD}-NNN` | Người dùng, Agent |
 | `{{SCR_ID}}` | ID màn hình của wireframe | `SCR-{MOD}-NN`, xem mục 4 | Agent |
+| `{{COMPONENT_ID}}` | ID component của hệ thống thiết kế | `CMP-NN`, xem mục 4 | Agent |
+| `{{PATTERN_ID}}` | ID pattern của hệ thống thiết kế | `PAT-NN`, xem mục 4 | Agent |
+| `{{TEMPLATE_ID}}` | ID template của hệ thống thiết kế | `TPL-NN`, xem mục 4 | Agent |
 | `{{SCREEN_NAME}}` | Tên màn hình trong wireframe và sơ đồ điều hướng | Văn bản tự do | Agent |
 | `{{ENTRY_POINT}}` | Điểm vào của màn hình | Web: route dạng `/{{ROUTE_PATH}}`; mobile: deep link hoặc tên màn hình trong navigator | Agent |
 | `{{ADR_NUMBER}}` | Số ADR | `NNNN` | Agent |
@@ -165,17 +168,17 @@ Mọi file `.md` của bộ mẫu (trừ `README.md`, `CHANGELOG.md`) và mọi 
 
 `doc_type` hợp lệ:
 
-- Tài liệu dự án: `intake`, `srs`, `srs-module`, `wireframe-index`, `wireframe-screen`, `architecture`, `adr`, `spec`, `prompt-spec`, `implementation-plan`, `implementation-phase`, `agent-context`, `agent-rule`.
+- Tài liệu dự án: `intake`, `srs`, `srs-module`, `wireframe-index`, `wireframe-screen`, `design-system`, `architecture`, `adr`, `spec`, `prompt-spec`, `implementation-plan`, `implementation-phase`, `agent-context`, `agent-rule`.
 - Tài liệu brownfield: `codebase-summary`, `as-is-architecture`, `regression-baseline`, `gap-analysis`, `migration-plan`.
 - File hạ tầng của bộ mẫu: `playbook`, `conventions`, `overlay`, `overlay-section`, `profile`, `spec-addendum`.
 
-`wireframe-index` là chỉ mục wireframe `docs/wireframes/00_WIREFRAME_INDEX.md`; chỉ mục không đặt tên `README.md` vì `README.md` được miễn frontmatter. `wireframe-screen` là trang của một màn hình, `docs/wireframes/SCR-<MOD>-NN.md`. Hai loại này thuộc Giai đoạn 1W (PLAYBOOK mục 2.2.1), áp cho dự án có Intake tạo từ template Intake `1.3.0` trở lên.
+`wireframe-index` là chỉ mục wireframe `docs/wireframes/00_WIREFRAME_INDEX.md`; chỉ mục không đặt tên `README.md` vì `README.md` được miễn frontmatter. `wireframe-screen` là trang của một màn hình, `docs/wireframes/SCR-<MOD>-NN.md`. Hai loại này thuộc Giai đoạn 1W (PLAYBOOK mục 2.2.1), áp cho dự án có Intake tạo từ template Intake `1.3.0` trở lên. `design-system` là tài liệu hệ thống thiết kế `docs/design-system/DESIGN_SYSTEM.md` (CONVENTIONS mục 10.7); thuộc Giai đoạn 1W, áp cho dự án có chỉ mục wireframe từ template chỉ mục `1.3.0` trở lên và ít nhất một trang từ template trang `1.4.0` trở lên.
 
 Trạng thái hợp lệ theo `doc_type` (`scripts/check-templates.sh` đọc bảng này). Tài liệu có `status: approved` có `version` từ `1.0.0` trở lên.
 
 | `doc_type` | Trạng thái |
 | --- | --- |
-| `intake`, `srs`, `srs-module`, `wireframe-index`, `wireframe-screen`, `architecture`, `prompt-spec`, `agent-context`, `agent-rule`, `codebase-summary`, `as-is-architecture`, `regression-baseline`, `gap-analysis`, `migration-plan` | `draft`, `in-review`, `approved`, `superseded` |
+| `intake`, `srs`, `srs-module`, `wireframe-index`, `wireframe-screen`, `design-system`, `architecture`, `prompt-spec`, `agent-context`, `agent-rule`, `codebase-summary`, `as-is-architecture`, `regression-baseline`, `gap-analysis`, `migration-plan` | `draft`, `in-review`, `approved`, `superseded` |
 | `spec` | `draft`, `in-review`, `approved`, `implemented`, `superseded` |
 | `adr` | `proposed`, `accepted`, `rejected`, `deprecated`, `superseded` |
 | `implementation-plan` | `pending`, `in-progress`, `completed` |
@@ -194,6 +197,9 @@ Trạng thái hợp lệ theo `doc_type` (`scripts/check-templates.sh` đọc b�
 | Business rule | `BR-NNN` | SRS §5 |
 | Yêu cầu chức năng | `FR-{MOD}-NNN` | SRS §6 |
 | Màn hình (wireframe) | `SCR-{MOD}-NN`, file `docs/wireframes/SCR-<MOD>-NN.md` | SRS §3, cột `SCR ID` của bảng Giao diện người dùng; trang wireframe ở Giai đoạn 1W chi tiết hóa |
+| Component (hệ thống thiết kế) | `CMP-NN` | `docs/design-system/DESIGN_SYSTEM.md` (CONVENTIONS mục 10.7) |
+| Pattern (hệ thống thiết kế) | `PAT-NN` | `docs/design-system/DESIGN_SYSTEM.md` (CONVENTIONS mục 10.7) |
+| Template (hệ thống thiết kế) | `TPL-NN` | `docs/design-system/DESIGN_SYSTEM.md` (CONVENTIONS mục 10.7) |
 | Yêu cầu phi chức năng | `NFR-{CAT}-NN`, CAT thuộc `PERF`, `SEC`, `RELI`, `MAINT`, `USAB`, `FLEX`, `SAFE`, `I18N`, `LEGAL`, `OBS`, `DATA`, `COMPAT`, `COST`; ánh xạ sang ISO/IEC 25010 ở mục 8 | SRS §7 |
 | Tiêu chí nghiệm thu | `AC-{MOD}-NN` | SRS §8 |
 | Test case | `TC-{MOD}-{TYPE}-NN`, TYPE thuộc `UNIT`, `INT`, `E2E`, `CTR`, `CONC`, `LOAD`, `A11Y`, `VIS`, `EVAL`, `INJ`, `COST`, `SMOKE`, `REG` | SRS §8 (dự kiến), SPEC §9 (chốt); `REG` ở Regression Baseline §6.1 |
@@ -257,7 +263,8 @@ docs/
 ├── adr/NNNN-<slug>.md
 ├── specs/SPEC_<FEATURE_KEY>.md
 ├── prompts/PROMPT_<NAME>.md          # chỉ khi dùng overlay ai-llm-app
-├── design-guidelines.md              # tùy chọn, khi có frontend
+├── design-system/DESIGN_SYSTEM.md    # khi có giao diện (Giai đoạn 1W): hệ thống thiết kế
+├── design-system/tokens.json         # token nguồn, định dạng DTCG
 └── brownfield/                       # chỉ dự án brownfield
     ├── CODEBASE_SUMMARY.md
     ├── AS_IS_ARCHITECTURE.md
@@ -276,14 +283,18 @@ Implementation Plan và report nằm trong `plans/` theo định dạng ở CONV
 
 Khối của các bản trước vẫn hợp lệ: dự án đang dùng khối cũ không phải sửa `CLAUDE.md`, và `scripts/check-templates.sh` chấp nhận khối hiện tại cùng mọi khối cũ dưới đây. Mỗi khối cũ có nhãn riêng và được ghi thành diff so với khối hiện tại ở trên, theo thứ tự dòng của khối hiện tại. Dòng `+` đứng ngay sau một dòng `-` là dòng đổi: khối cũ có dòng `-` ở vị trí của dòng `+` đó. Dòng `+` không có dòng `-` ngay trước nó là dòng chèn thêm: khối cũ không có dòng đó. Mọi dòng khác của khối hiện tại giống hệt khối cũ.
 
-- `docs-layout-legacy-2.0`: khối của bản `2.0.0` và `2.1.0`, định dạng plan theo `ak plan` và chưa có `docs/wireframes/`.
-- `docs-layout-legacy-2.2`: khối của bản `2.2.0` và `2.3.0`, chưa có `docs/wireframes/`.
+- `docs-layout-legacy-2.0`: khối của bản `2.0.0` và `2.1.0`, định dạng plan theo `ak plan` và chưa có `docs/wireframes/` và `docs/design-system/`.
+- `docs-layout-legacy-2.2`: khối của bản `2.2.0` và `2.3.0`, chưa có `docs/wireframes/` và `docs/design-system/`.
+- `docs-layout-legacy-2.4`: khối của các bản `2.4.0` đến `2.7.0`, chưa có `docs/design-system/`.
 
 <!-- BEGIN: docs-layout-legacy-2.0 -->
 ```diff
 +├── wireframes/00_WIREFRAME_INDEX.md  # khi có giao diện (Giai đoạn 1W): chỉ mục, đối chiếu FR
 +├── wireframes/SCR-<MOD>-NN.md        # một trang cho mỗi màn hình
 +├── wireframes/html/SCR-<MOD>-NN.html # tùy chọn: HTML tĩnh low-fi
+-├── design-guidelines.md              # tùy chọn, khi có frontend
++├── design-system/DESIGN_SYSTEM.md    # khi có giao diện (Giai đoạn 1W): hệ thống thiết kế
++├── design-system/tokens.json         # token nguồn, định dạng DTCG
 -plans/{YYMMDD-HHmm}-{slug}/plan.md    # Implementation Plan, định dạng ak plan
 +plans/{YYMMDD-HHmm}-{slug}/plan.md    # Implementation Plan, định dạng ở CONVENTIONS mục 9
 -Implementation Plan và report nằm trong `plans/` theo định dạng của `ak plan`; không tạo `IMPLEMENTATION_PLAN.md` ở gốc. Khi rule toàn cục và tài liệu specflow mâu thuẫn về bố cục hoặc quy trình tài liệu, tài liệu specflow thắng trong phạm vi dự án này. Các rule toàn cục khác (development rules, git, process management) vẫn có hiệu lực.
@@ -296,23 +307,34 @@ Khối của các bản trước vẫn hợp lệ: dự án đang dùng khối c
 +├── wireframes/00_WIREFRAME_INDEX.md  # khi có giao diện (Giai đoạn 1W): chỉ mục, đối chiếu FR
 +├── wireframes/SCR-<MOD>-NN.md        # một trang cho mỗi màn hình
 +├── wireframes/html/SCR-<MOD>-NN.html # tùy chọn: HTML tĩnh low-fi
+-├── design-guidelines.md              # tùy chọn, khi có frontend
++├── design-system/DESIGN_SYSTEM.md    # khi có giao diện (Giai đoạn 1W): hệ thống thiết kế
++├── design-system/tokens.json         # token nguồn, định dạng DTCG
 ```
 <!-- END: docs-layout-legacy-2.2 -->
+
+<!-- BEGIN: docs-layout-legacy-2.4 -->
+```diff
+-├── design-guidelines.md              # tùy chọn, khi có frontend
++├── design-system/DESIGN_SYSTEM.md    # khi có giao diện (Giai đoạn 1W): hệ thống thiết kế
++├── design-system/tokens.json         # token nguồn, định dạng DTCG
+```
+<!-- END: docs-layout-legacy-2.4 -->
 
 ## 7. Định dạng (Formatting)
 
 - Không dùng LaTeX. Dùng ký tự `≤ ≥ ≠ × Σ →` và đặt công thức trong inline code, ví dụ `total = Σ line_amount`.
 - Mọi sơ đồ dùng Mermaid (`flowchart`, `sequenceDiagram`, `erDiagram`, `stateDiagram-v2`); C4 vẽ bằng `flowchart`. Không vẽ khung ASCII. Cây thư mục dùng khối `text`.
 - Bảng markdown luôn có hàng header. Khối code luôn có nhãn ngôn ngữ. Không dùng emoji.
-- Tên file: template lõi và template brownfield `NN_Name_Template.md`; template Implementation Plan là thư mục `core/05_Implementation_Plan_Template/` theo mục 9; template wireframe là thư mục `core/07_Wireframe_Template/` gồm `00_Wireframe_Index_Template.md` (chỉ mục) và `SCR_Screen_Template.md` (trang màn hình); template bổ sung của overlay `Name_Template.md`; file section của overlay `kebab-case.md`, trừ `OVERLAY.md`; stack profile `stack-profiles/<profile>.md`; starter `<DOC>_Template.md` và `CLAUDE.md.template`; file hạ tầng viết hoa như `PLAYBOOK.md`, `PROMPTS.md`, `COMPATIBILITY.md`, `PLAYBOOK_BROWNFIELD.md`, `Spec_Brownfield_Addendum.md`.
+- Tên file: template lõi và template brownfield `NN_Name_Template.md`; template Implementation Plan là thư mục `core/05_Implementation_Plan_Template/` theo mục 9; template wireframe là thư mục `core/07_Wireframe_Template/` gồm `00_Wireframe_Index_Template.md` (chỉ mục), `SCR_Screen_Template.md` (trang màn hình), `Design_System_Template.md` (tài liệu hệ thống thiết kế) và `Design_Tokens_Template.json` (token mẫu); template bổ sung của overlay `Name_Template.md`; file section của overlay `kebab-case.md`, trừ `OVERLAY.md`; stack profile `stack-profiles/<profile>.md`; starter `<DOC>_Template.md` và `CLAUDE.md.template`; file hạ tầng viết hoa như `PLAYBOOK.md`, `PROMPTS.md`, `COMPATIBILITY.md`, `PLAYBOOK_BROWNFIELD.md`, `Spec_Brownfield_Addendum.md`.
 - Heading của core và template brownfield đánh số (`## N.`, `### N.M.`), trừ template Implementation Plan (theo mục 9), mục `## Documentation Layout` và phụ lục của Agent Context; heading trong khối SLOT-CONTENT và PROFILE-CONTENT không đánh số.
 - Mục bắt buộc theo `doc_type` (heading chứa đúng chuỗi, script đọc các dòng dưới):
   - `Assumptions & Open Questions`: mọi template và tài liệu sinh ra, trừ `implementation-phase`, `agent-rule`.
-  - `Version History`: `intake`, `srs`, `srs-module`, `wireframe-index`, `wireframe-screen`, `architecture`, `spec`, `prompt-spec`, `codebase-summary`, `as-is-architecture`, `regression-baseline`, `gap-analysis`, `migration-plan`.
+  - `Version History`: `intake`, `srs`, `srs-module`, `wireframe-index`, `wireframe-screen`, `design-system`, `architecture`, `spec`, `prompt-spec`, `codebase-summary`, `as-is-architecture`, `regression-baseline`, `gap-analysis`, `migration-plan`.
   - `Failure Modes`, `Eval Metric`: `prompt-spec`.
 - Template không chứa ví dụ nghiệp vụ; ví dụ nằm trong `examples/<overlay>/`.
 - Bố cục low-fi của trang wireframe (áp cho dự án có Intake tạo từ template Intake `1.3.0` trở lên) viết trong một khối `text`, không dùng ảnh hay công cụ vẽ. Khối chia màn hình thành vùng xếp từ trên xuống; mỗi vùng mở bằng một dòng `== Tên vùng ==` (ví dụ `== Header ==`, `== Nội dung ==`), các vùng cạnh nhau ghi trên cùng dòng mở, phân cách bằng ` | `. Dưới dòng mở, mỗi thành phần một dòng thụt hai dấu cách: `[Nhãn]` cho nút, `Nhãn: [____]` cho trường nhập, `( ) Nhãn` và `[ ] Nhãn` cho lựa chọn, `...` cho phần lặp của danh sách; dòng chữ thường là văn bản hoặc nhãn tĩnh; thành phần con thụt thêm hai dấu cách dưới thành phần cha (ví dụ các trường của một dòng danh sách); hộp thoại hay lớp phủ là một vùng `== Hộp thoại: Tên ==` đặt sau vùng mà nó che. Nhãn trùng cột thành phần của bảng thành phần trên trang. Khối chỉ vẽ trạng thái `Success`; bốn trạng thái còn lại mô tả ở bảng trạng thái của trang. Màn hình form mà `Success` là rời màn hình (chuyển trang, thông báo thay cho form) thì khối vẽ trạng thái `Initial` và ghi điều đó ngay dưới khối.
-- HTML low-fi của wireframe là tùy chọn, mỗi màn hình một file tĩnh `docs/wireframes/html/SCR-<MOD>-NN.html` (áp cho dự án có Intake tạo từ template Intake `1.3.0` trở lên). File MUST chỉ dùng CSS viết trong thẻ `<style>` của chính file, thang xám, dữ liệu mẫu tự đặt (không dùng dữ liệu người thật, secret hay URL nội bộ) và có thẻ `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:">` đặt trong `<head>` (trình duyệt bỏ qua thẻ này khi nó nằm ngoài `<head>`). File MUST NOT có thẻ script, thuộc tính sự kiện `on...=`, thẻ `iframe`, `object`, `embed`, `base`, form gửi đi, stylesheet hay `@import` ngoài, thư viện CSS ngoài, dấu `\` trong thẻ `<style>` hay thuộc tính `style` (escape CSS), hay `&` trong thuộc tính `style` (thực thể HTML); và MUST NOT có URL `http:`, `https:` hay bắt đầu bằng `//` ở mọi thuộc tính nhận URL (`src`, `srcset`, `href`, `poster`, `background`, `ping`, `cite`, `data`), `url(` hoặc hàm CSS khác nhận URL như `image-set(`. Link chỉ trỏ tới file `SCR-*.html` cùng thư mục để bấm chuyển màn hình, hoặc tới `#id` trong cùng file (ví dụ để xem trạng thái khác bằng `:target`), kể cả dạng `SCR-*.html#id`. Khi HTML và trang Markdown lệch nhau, trang Markdown thắng.
+- HTML low-fi của wireframe là tùy chọn, mỗi màn hình một file tĩnh `docs/wireframes/html/SCR-<MOD>-NN.html` (áp cho dự án có Intake tạo từ template Intake `1.3.0` trở lên). File MUST chỉ dùng CSS viết trong thẻ `<style>` của chính file, dữ liệu mẫu tự đặt (không dùng dữ liệu người thật, secret hay URL nội bộ) và có thẻ `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:">` đặt trong `<head>` (trình duyệt bỏ qua thẻ này khi nó nằm ngoài `<head>`). Thang xám chỉ áp cho HTML của trang từ template trang cũ hơn `1.4.0`; HTML của trang từ template trang `1.4.0` trở lên dùng biến CSS đọc từ token theo CONVENTIONS mục 10.7, không bắt buộc thang xám. File MUST NOT có thẻ script, thuộc tính sự kiện `on...=`, thẻ `iframe`, `object`, `embed`, `base`, form gửi đi, stylesheet hay `@import` ngoài, thư viện CSS ngoài, dấu `\` trong thẻ `<style>` hay thuộc tính `style` (escape CSS), hay `&` trong thuộc tính `style` (thực thể HTML); và MUST NOT có URL `http:`, `https:` hay bắt đầu bằng `//` ở mọi thuộc tính nhận URL (`src`, `srcset`, `href`, `poster`, `background`, `ping`, `cite`, `data`), `url(` hoặc hàm CSS khác nhận URL như `image-set(`. Link chỉ trỏ tới file `SCR-*.html` cùng thư mục để bấm chuyển màn hình, hoặc tới `#id` trong cùng file (ví dụ để xem trạng thái khác bằng `:target`), kể cả dạng `SCR-*.html#id`. Khi HTML và trang Markdown lệch nhau, trang Markdown thắng.
 - Link markdown chỉ dùng trong file hạ tầng và `README.md`, trỏ tới file của bộ mẫu bằng đường dẫn tương đối tồn tại. Nội dung sẽ được chép vào tài liệu dự án (template, starter, khối SLOT-CONTENT và PROFILE-CONTENT) ghi đường dẫn bằng inline code, không dùng link; ngoại lệ duy nhất là link từ `plan.md` tới file pha `phase-NN-<slug>.md` cùng thư mục trong bảng Phases của Implementation Plan.
 
 ## 8. Chất lượng yêu cầu trong SRS (Requirement Quality)
@@ -404,7 +426,7 @@ Mục này là nguồn duy nhất của quy tắc thiết kế giao diện mà w
 | Learnability | Trạng thái `Initial` của trang; sơ đồ điều hướng của chỉ mục |
 | Operability | Bố cục low-fi, bảng thành phần, mục trợ năng của trang (bàn phím, focus, vùng chạm) |
 | User error protection | Trạng thái `Error` và AC của trang; heuristic `H5`, `H9` |
-| User engagement | Không xét ở wireframe low-fi: thuộc thiết kế thị giác và chuyển động |
+| User engagement | Hướng thị giác và motion ở hệ thống thiết kế (10.7); không xét trên trang low-fi |
 | Inclusivity | Mục trợ năng của trang; câu hỏi tự vấn ở 10.5 |
 | User assistance | Mục trợ năng của trang; lối vào trợ giúp ở sơ đồ điều hướng (tiêu chí 3.2.6) |
 | Self-descriptiveness | Nhãn ở bảng thành phần và bố cục low-fi; heuristic `H2`, `H6` |
@@ -482,10 +504,74 @@ Các câu hỏi dưới không chặn gate và không có hàng ở chỉ mục;
 ### 10.6. Hướng dẫn theo nền tảng (Platform Guidance)
 
 - Con số và hướng dẫn cấu trúc của nền tảng (vùng chạm tối thiểu, breakpoint, vùng an toàn, mẫu điều hướng, cử chỉ quay lại) ghi ở mục Giai đoạn 1W của `OVERLAY.md` của bề mặt, vì Giai đoạn 1W đọc file đó mà không đọc file section của overlay.
-- Phong cách thị giác của Material 3, Apple Human Interface Guidelines và Fluent 2 (màu, vật liệu, bo góc, chuyển động) không thuộc wireframe low-fi.
+- Phong cách thị giác thuộc hệ thống thiết kế ở 10.7.
 - Ứng dụng không chạy trên web áp tiêu chí WCAG viết theo ngữ web (trang, tiêu đề trang) theo WCAG2ICT của W3C, không tự suy diễn.
 
-### 10.7. Tham khảo (References)
+### 10.7. Hệ thống thiết kế (Design System)
+
+Mục này là nguồn duy nhất của quy tắc hệ thống thiết kế theo tầng (layered design system) dùng ở Giai đoạn 1W. Áp cho dự án có Intake tạo từ template Intake `1.3.0` trở lên và có Giai đoạn 1W; xét theo từng file như câu mở mục 10: chỉ mục wireframe từ template chỉ mục `1.3.0`, trang wireframe từ template trang `1.4.0`. Tài liệu tạo từ template cũ hơn vẫn hợp lệ cho tới khi được nâng lên theo PLAYBOOK mục 8 (COMPATIBILITY mục 5).
+
+Bảy tầng, từ nền tảng tới trải nghiệm:
+
+| Tầng | Nội dung | Nơi ghi |
+| --- | --- | --- |
+| Foundation | Màu theo vai trò, typography, spacing, grid và breakpoint, iconography, elevation, radius, motion, giọng nội dung | `docs/design-system/DESIGN_SYSTEM.md` |
+| Token | Giá trị máy đọc được của Foundation, theo DTCG, ba tầng `primitive`, `semantic`, `component` | `docs/design-system/tokens.json` (và file mode) |
+| Primitive | Phần tử thị giác nhỏ nhất dùng token trực tiếp (màu nền, cỡ chữ, khoảng cách) | `docs/design-system/DESIGN_SYSTEM.md` |
+| Component | Đơn vị giao diện có anatomy, variant, state riêng, ghép từ primitive và token | `docs/design-system/DESIGN_SYSTEM.md` |
+| Pattern | Cách giải quyết một vấn đề tương tác, ghép nhiều component | `docs/design-system/DESIGN_SYSTEM.md` |
+| Template | Cấu trúc vùng dùng chung cho nhiều trang, ghép pattern và component | `docs/design-system/DESIGN_SYSTEM.md` |
+| Experience | Một màn hình cụ thể, chọn một Template và dẫn Pattern, Component | Trang `SCR-*` |
+
+Hướng thị giác (visual direction): agent đề xuất 2 đến 3 hướng, mỗi hướng dẫn căn cứ ở thương hiệu, người dùng, lĩnh vực và giọng điệu của dự án; chủ dự án chọn đúng một hướng, tài liệu ghi lý do chọn. Theme mặc định của thư viện giao diện (ví dụ Material 3, Apple Human Interface Guidelines, Fluent 2) là một hướng như mọi hướng khác, chỉ dùng khi được chọn có chủ đích, không phải mặc định của bộ mẫu; tài liệu có dòng "Theme mặc định của thư viện" ghi `Không dùng` hoặc `Dùng có chủ đích` kèm lý do. Material 3, Apple HIG, Fluent 2 chỉ là tham khảo hoặc một hướng được chọn, không phải quy tắc bắt buộc.
+
+Foundations: màu theo vai trò (không theo tên màu), typography (thang cỡ chữ, độ đậm, chiều cao dòng), spacing, grid và breakpoint (con số nền tảng dẫn `OVERLAY.md`, xem 10.6), iconography, elevation, radius, motion kèm chế độ giảm chuyển động (reduced motion), giọng nội dung.
+
+Token (Design Token), theo DTCG Format Module 2025.10 (Design Tokens Community Group):
+
+- Tập kiểu `$type` mà bộ mẫu chấp nhận, đúng 13 kiểu của DTCG:
+
+  | Kiểu DTCG | Ghi chú |
+  | --- | --- |
+  | `color` | `$value` là object `colorSpace`, `components`, `hex` |
+  | `dimension` | `$value` là object `value`, `unit` |
+  | `fontFamily` | |
+  | `fontWeight` | |
+  | `duration` | |
+  | `cubicBezier` | |
+  | `number` | |
+  | `strokeStyle` | |
+  | `border` | Composite |
+  | `transition` | Composite |
+  | `shadow` | Composite |
+  | `gradient` | Composite |
+  | `typography` | Composite |
+
+- Ba nhóm tầng cố định, mỗi tầng một quy tắc alias:
+
+  | Nhóm tầng | Quy tắc alias |
+  | --- | --- |
+  | `primitive` | Có giá trị trực tiếp, không alias |
+  | `semantic` | Alias tới token `primitive`; token composite được phép khi mọi giá trị con là alias xuống `primitive` |
+  | `component` | Alias tới token `semantic`; token composite được phép khi mọi giá trị con là alias xuống `semantic` |
+
+- Alias chỉ viết dạng `{a.b.c}`; bộ mẫu không dùng `$ref`, `$extends` hay `$root` của DTCG. `$type` phân giải theo đúng thứ tự: của chính token, rồi của token đích khi token là alias, rồi của nhóm gần nhất chứa token.
+- `color`: `$value` là object có `colorSpace` bằng `srgb`, `components` khớp `hex` với sai lệch không quá 1/255 mỗi kênh, và `hex`; `hex` là nguồn duy nhất cho tính tương phản, cho CSS và cho công cụ sinh token khác.
+- `dimension`: `$value` là object có `value` (số) và `unit` (`px` hoặc `rem`).
+- Tên token không bắt đầu bằng `$` và không chứa `{`, `}`, `.`.
+- Mode (sáng, tối, theo nền tảng): `tokens.json` là mode mặc định của dự án. Mỗi mode khác là một file `tokens.<mode>.json`, chỉ khai báo lại các token `semantic` đã có ở `tokens.json`, giữ nguyên `$type`; không có file resolver riêng. Dự án có cả web và mobile dùng một hệ thống token: token `semantic` dùng chung, mode phân biệt theo nền tảng khi cần.
+- Tên biến CSS của một token là đường dẫn token bỏ tên nhóm tầng, nối các đoạn còn lại bằng `-` (ví dụ `semantic.color.text.default` thành `--color-text-default`); hai token khác nhau không được cho ra cùng một tên biến.
+- Code và HTML chỉ dùng token `semantic` và `component`, không dùng thẳng token `primitive`.
+
+Tương phản (contrast) theo cặp: tài liệu có một bảng cặp màu, mỗi hàng ghi token màu trước (chữ hoặc hình), token màu nền, token typography của chữ (cột Token chữ; ghi `Không` ở hàng phi văn bản), mode, loại (`chữ` hoặc `phi văn bản`), tỷ lệ tương phản đã tính và ngưỡng áp dụng. Chữ lớn theo định nghĩa WCAG được suy ra từ token typography ở cột Token chữ, không do người viết tự khai: `fontSize` từ 24px, hoặc từ 18,66px khi `fontWeight` từ 700 trở lên; `rem` tính theo 16px = 1rem. Ngưỡng theo WCAG 2.2: tiêu chí `1.4.3` (chữ thường 4.5:1, chữ lớn 3:1) và `1.4.11` (phi văn bản 3:1), luôn ở mức AA bất kể mức ở NFR-USAB; tính riêng theo từng mode từ giá trị `hex` của token. Cách tính, một nguồn cho mọi nơi: phân giải alias của mỗi token trong mode của hàng tới một màu đục (không có `alpha` nhỏ hơn 1); mỗi kênh `c` của `hex` (0 đến 255) chia 255, rồi lấy `c / 12.92` khi `c` không quá 0.04045, ngược lại `((c + 0.055) / 1.055)^2.4`; độ chói tương đối `L = 0.2126·R + 0.7152·G + 0.0722·B`; tỷ lệ `(L sáng + 0.05) / (L tối + 0.05)`, làm tròn xuống 2 chữ số, không làm tròn lên (4.499 ghi 4.49, không đạt 4.5). Tự kiểm không cần `scripts/`: tính từng hàng của bảng bằng một lệnh chạy được (`awk`, `python3` hay `node`), không tính nhẩm; checker của bộ mẫu chỉ là lựa chọn khi dự án có.
+
+Danh mục (catalog) component, pattern, template: ID dạng `CMP-NN`, `PAT-NN`, `TPL-NN` (CONVENTIONS mục 4), đánh số trong phạm vi dự án. Nội dung tối thiểu của mỗi mục: component (anatomy, variant, state, hành vi bàn phím theo mẫu WAI-ARIA APG, token dùng, bề mặt áp dụng); pattern (vấn đề giải quyết, khi dùng, khi không dùng, component dùng, luồng, trạng thái); template (cấu trúc vùng, pattern dùng, component dùng, bề mặt áp dụng, thay đổi theo breakpoint). Danh mục chỉ liệt kê mục được ít nhất một trang dùng, trực tiếp hoặc gián tiếp qua cột Component dùng của một mục khác đang được dùng; không liệt kê mục không dùng.
+
+Trang (Experience): mỗi trang chọn đúng một `TPL-*`; dòng Pattern ghi `PAT-*` hoặc `Không`; mỗi hàng của bảng thành phần có cột `Component ID` dẫn một `CMP-*` có trong danh mục. Vùng của bố cục low-fi (CONVENTIONS mục 7) theo đúng vùng mà Template đã chọn định nghĩa.
+
+Chỉ dùng token: HTML low-fi của trang từ template trang `1.4.0` trở lên (file `docs/wireframes/html/SCR-<MOD>-NN.html` thuộc trang `SCR-<MOD>-NN.md` cùng tên) khai báo biến CSS trong khối `:root`, theo giá trị của mode có cột Áp khi ghi bề mặt của trang; trang không ghi mode nào thì `:root` theo mode mặc định. Ngoài khối `:root`, phần giá trị khai báo trong `<style>` không được chứa màu thô (`#…`, `rgb(`, `hsl(`, `oklch(`, `oklab(`); các thuộc tính spacing (`margin`, `padding`, `gap`, `row-gap`, `column-gap`, `inset`, `top`, `right`, `bottom`, `left`, kể cả dạng viết tắt như `margin-top`), radius (`border-radius` và các biến thể góc) và `font-size` chỉ được dùng `var(--…)` hoặc một trong các từ khóa `0`, `auto`, `100%`, `inherit`, `initial`, `unset`. Thuộc tính khác (khung thiết bị như `max-width`, độ dày viền) vẫn được ghi giá trị `px` thô. Quy tắc thang xám ở CONVENTIONS mục 7 chỉ còn áp cho HTML của trang từ template cũ hơn `1.4.0`; mọi quy tắc an toàn khác ở mục 7 giữ nguyên. Code (ngoài HTML low-fi) chỉ dùng token theo golden rule của overlay, áp khi dự án có `docs/design-system/`: màu, spacing, radius và cỡ chữ thô chỉ nằm ở file ánh xạ token trong code (biến CSS hoặc theme object). File đó là ánh xạ từ `tokens.json`, viết tay theo bảng ánh xạ của stack profile hoặc sinh bằng công cụ dự án chọn (bộ mẫu không cài công cụ build token), sửa cùng lúc với `tokens.json`; mọi nơi khác chỉ dùng token.
+
+### 10.8. Tham khảo (References)
 
 Các tài liệu dưới chỉ để tham khảo khi cần giải thích sâu hơn; không là nguồn của quy tắc MUST, vì nội dung của chúng đã được phủ bởi các chuẩn ở 10.1 đến 10.4.
 

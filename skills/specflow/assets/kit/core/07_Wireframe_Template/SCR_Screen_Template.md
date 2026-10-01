@@ -2,21 +2,23 @@
 doc_type: wireframe-screen
 status: draft
 version: 0.1.0
-template_version: 1.3.0
+template_version: 1.4.0
 language: vi-en
-parent: [docs/wireframes/00_WIREFRAME_INDEX.md]
+parent: [docs/wireframes/00_WIREFRAME_INDEX.md, docs/design-system/DESIGN_SYSTEM.md]
 overlays: []
 assembled_from: []
 ---
 
 # Wireframe màn hình (Screen Wireframe): {{SCR_ID}} {{SCREEN_NAME}}
 
-<!-- fill: Chép thành docs/wireframes/SCR-<MOD>-NN.md ở Giai đoạn 1W (PLAYBOOK mục 2.2.1), một file cho mỗi SCR ID ở danh mục màn hình của chỉ mục; tên file là SCR ID cộng đuôi .md. parent thêm SRS chứa FR của màn hình (docs/srs/SRS.md, hoặc master và module khi modular). overlays ghi bề mặt của màn hình. assembled_from ghi "core/07_Wireframe_Template/SCR_Screen_Template.md@<template_version>". Template dùng chung cho mọi bề mặt có giao diện, không có slot: khác biệt giữa web và mobile ghi ở các chú thích fill dưới và ở mục Giai đoạn 1W trong OVERLAY.md của overlay. Trang chỉ chi tiết hóa màn hình đã có ở SRS §3: không định nghĩa FR, AC hay trường dữ liệu mới; thiếu thì ghi câu hỏi BLOCKING ở mục 7 kèm đề xuất sửa SRS theo PLAYBOOK mục 8. Trạng thái, version và thay đổi sau khi duyệt theo SRS. -->
+<!-- fill: Chép thành docs/wireframes/SCR-<MOD>-NN.md ở Giai đoạn 1W (PLAYBOOK mục 2.2.1), một file cho mỗi SCR ID ở danh mục màn hình của chỉ mục; tên file là SCR ID cộng đuôi .md. parent thêm SRS chứa FR của màn hình (docs/srs/SRS.md, hoặc master và module khi modular); DESIGN_SYSTEM.md là tài liệu hệ thống thiết kế ở docs/design-system/, nguồn của Template, Pattern và Component mà trang dẫn (CONVENTIONS mục 10.7). overlays ghi bề mặt của màn hình. assembled_from ghi "core/07_Wireframe_Template/SCR_Screen_Template.md@<template_version>". Template dùng chung cho mọi bề mặt có giao diện, không có slot: khác biệt giữa web và mobile ghi ở các chú thích fill dưới và ở mục Giai đoạn 1W trong OVERLAY.md của overlay. Trang chỉ chi tiết hóa màn hình đã có ở SRS §3: không định nghĩa FR, AC hay trường dữ liệu mới; thiếu thì ghi câu hỏi BLOCKING ở mục 7 kèm đề xuất sửa SRS theo PLAYBOOK mục 8. Trạng thái, version và thay đổi sau khi duyệt theo SRS. -->
 
 ## 1. Mục đích, FR và AC (Purpose, FR & AC)
 
 - Mục đích: <!-- fill: 1 đến 2 câu, người dùng làm được gì ở màn hình này; khớp cột Mục đích của SRS §3 -->
 - Bề mặt: <!-- fill: tên overlay của màn hình, ví dụ frontend-web hoặc mobile-app -->
+- Template: `{{TEMPLATE_ID}}` <!-- fill: đúng một TPL-NN có trong danh mục Template của DESIGN_SYSTEM.md mục 7; vùng ở mục 2 theo đúng vùng của Template này (CONVENTIONS mục 10.7) -->
+- Pattern: <!-- fill: các PAT-NN có trong danh mục Pattern của DESIGN_SYSTEM.md mục 6 mà màn hình dùng, phân cách dấu phẩy; ghi Không khi màn hình không dùng pattern nào -->
 - Điểm vào: `{{ENTRY_POINT}}` <!-- fill: web: route như cột Route của SRS §3; mobile: deep link, hoặc tên màn hình trong navigator khi không mở được bằng deep link; khớp danh mục màn hình của chỉ mục -->
 - Tác nhân: `ACT_{{ROLE_CODE}}`
 - Bản phát hành: {{RELEASE}}
@@ -30,7 +32,7 @@ assembled_from: []
 
 ## 2. Bố cục low-fi (Low-fi Layout)
 
-<!-- fill: Khối text theo CONVENTIONS mục 7, chỉ vẽ trạng thái Success (màn hình form mà Success là rời màn hình thì vẽ Initial và ghi điều đó dưới khối); bốn trạng thái còn lại mô tả ở mục 4. Chia màn hình thành vùng xếp từ trên xuống; mỗi vùng mở bằng dòng "== Tên vùng ==", vùng cạnh nhau ghi trên cùng dòng mở, phân cách bằng " | ". Dưới dòng mở, mỗi thành phần một dòng thụt hai dấu cách: [Nhãn] cho nút, "Nhãn: [____]" cho trường nhập, "( ) Nhãn" và "[ ] Nhãn" cho lựa chọn, "..." cho phần lặp của danh sách. Nhãn trùng cột Thành phần ở mục 3. Web: vẽ ở breakpoint nhỏ nhất của SRS §2.5, không cuộn ngang ở độ rộng đó trừ nội dung cần hai chiều (tiêu chí 1.4.10 ở CONVENTIONS mục 10.2), ghi thay đổi bố cục ở breakpoint lớn hơn dưới khối. Mobile: vẽ ở hướng dọc; thanh điều hướng, thanh tab và vùng an toàn (safe area) là vùng riêng khi màn hình có. Không dùng ảnh hay công cụ vẽ. -->
+<!-- fill: Khối text theo CONVENTIONS mục 7, chỉ vẽ trạng thái Success (màn hình form mà Success là rời màn hình thì vẽ Initial và ghi điều đó dưới khối); bốn trạng thái còn lại mô tả ở mục 4. Chia màn hình thành vùng xếp từ trên xuống, tên vùng theo vùng của Template ở mục 1; mỗi vùng mở bằng dòng "== Tên vùng ==", vùng cạnh nhau ghi trên cùng dòng mở, phân cách bằng " | ". Dưới dòng mở, mỗi thành phần một dòng thụt hai dấu cách: [Nhãn] cho nút, "Nhãn: [____]" cho trường nhập, "( ) Nhãn" và "[ ] Nhãn" cho lựa chọn, "..." cho phần lặp của danh sách. Nhãn trùng cột Thành phần ở mục 3. Web: vẽ ở breakpoint nhỏ nhất của SRS §2.5, không cuộn ngang ở độ rộng đó trừ nội dung cần hai chiều (tiêu chí 1.4.10 ở CONVENTIONS mục 10.2), ghi thay đổi bố cục ở breakpoint lớn hơn dưới khối. Mobile: vẽ ở hướng dọc; thanh điều hướng, thanh tab và vùng an toàn (safe area) là vùng riêng khi màn hình có. Không dùng ảnh hay công cụ vẽ. -->
 
 ```text
 == Header ==
@@ -42,15 +44,15 @@ assembled_from: []
   [{{COMPONENT_NAME}}]
 ```
 
-HTML low-fi: <!-- fill: chọn một: `docs/wireframes/html/{{SCR_ID}}.html` | Không. HTML là tùy chọn, chỉ tạo khi Intake mục 14 ghi Giai đoạn 1W: Có, kèm HTML low-fi. Khi có: một file tĩnh docs/wireframes/html/SCR-<MOD>-NN.html cho màn hình này, theo quy tắc an toàn ở CONVENTIONS mục 7: không có thẻ script hay thuộc tính sự kiện, không tải tài nguyên ngoài, có thẻ meta Content-Security-Policy như CONVENTIONS mục 7, chỉ CSS viết trong thẻ style của file, thang xám, dữ liệu mẫu tự đặt (không dùng dữ liệu người thật, secret hay URL nội bộ), link chỉ tới file SCR-*.html cùng thư mục. Đường dẫn ghi giống ô File HTML của danh mục màn hình. Khi HTML và trang này lệch nhau, trang này thắng. -->
+HTML low-fi: <!-- fill: chọn một: `docs/wireframes/html/{{SCR_ID}}.html` | Không. HTML là tùy chọn, chỉ tạo khi Intake mục 14 ghi Giai đoạn 1W: Có, kèm HTML low-fi. Khi có: một file tĩnh docs/wireframes/html/SCR-<MOD>-NN.html cho màn hình này, theo quy tắc an toàn ở CONVENTIONS mục 7: không có thẻ script hay thuộc tính sự kiện, không tải tài nguyên ngoài, có thẻ meta Content-Security-Policy như CONVENTIONS mục 7, chỉ CSS viết trong thẻ style của file, khối :root khai báo biến CSS lấy từ token của docs/design-system/tokens.json (tên biến và quy tắc chỉ dùng token theo CONVENTIONS mục 10.7) thay cho thang xám, dữ liệu mẫu tự đặt (không dùng dữ liệu người thật, secret hay URL nội bộ), link chỉ tới file SCR-*.html cùng thư mục. Đường dẫn ghi giống ô File HTML của danh mục màn hình. Khi HTML và trang này lệch nhau, trang này thắng. -->
 
 ## 3. Bảng thành phần (Components)
 
-<!-- fill: Một hàng cho mỗi thành phần ở khối bố cục, cùng nhãn. Trường ở SRS §4 ghi tên thực thể hoặc view model và tên trường ở SRS §4.2 mà thành phần hiển thị hoặc nhận; ghi Không khi thành phần không gắn dữ liệu. Thao tác ghi việc người dùng làm và kết quả (điều hướng, gửi dữ liệu, đổi trạng thái), dẫn FR. -->
+<!-- fill: Một hàng cho mỗi thành phần ở khối bố cục, cùng nhãn. Component ID là CMP-NN có trong danh mục Component của DESIGN_SYSTEM.md mục 5; thành phần chưa có trong danh mục thì thêm vào danh mục trước, không tự đặt ID ở trang. Trường ở SRS §4 ghi tên thực thể hoặc view model và tên trường ở SRS §4.2 mà thành phần hiển thị hoặc nhận; ghi Không khi thành phần không gắn dữ liệu. Thao tác ghi việc người dùng làm và kết quả (điều hướng, gửi dữ liệu, đổi trạng thái), dẫn FR. -->
 
-| Thành phần | Loại | Dữ liệu hiển thị | Trường ở SRS §4 | Thao tác |
+| Thành phần | Component ID | Dữ liệu hiển thị | Trường ở SRS §4 | Thao tác |
 | --- | --- | --- | --- | --- |
-| {{COMPONENT_NAME}} | <!-- fill: chọn một: vùng \| văn bản \| hình ảnh \| nút \| liên kết \| trường nhập \| lựa chọn \| danh sách \| bảng \| thông báo --> | <!-- fill --> | <!-- fill --> | <!-- fill --> |
+| {{COMPONENT_NAME}} | `{{COMPONENT_ID}}` | <!-- fill --> | <!-- fill --> | <!-- fill --> |
 
 ## 4. Trạng thái giao diện (UI States)
 

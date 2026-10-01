@@ -1,7 +1,7 @@
 ---
 doc_type: profile
 status: stable
-version: 1.0.0
+version: 1.1.0
 language: vi-en
 surface: frontend-web
 profile: nextjs-app-router
@@ -87,7 +87,7 @@ Ghi chú:
 ├── src/
 │   ├── app/                             # route của App Router
 │   │   ├── layout.tsx                   # layout gốc: provider chuỗi hiển thị, provider truy vấn
-│   │   ├── globals.css                  # Tailwind và design token
+│   │   ├── globals.css                  # Tailwind; biến token ánh xạ từ docs/design-system/tokens.json
 │   │   └── {{ROUTE_PATH}}/
 │   │       ├── page.tsx                 # server component, ghép thành phần của tính năng
 │   │       ├── loading.tsx              # trạng thái Loading của route
@@ -230,6 +230,7 @@ export const apiClient = createClient<paths>({
 
   export const env = EnvSchema.parse({ NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL });
   ```
+- Token: token `semantic` của `docs/design-system/tokens.json` thành biến CSS trong `:root` của `src/app/globals.css` (mode khác ghi đè trong bộ chọn mode tương ứng); khối `@theme inline` ánh xạ biến đó thành utility của Tailwind; biến của shadcn (`--background`, `--foreground`, `--primary` và các biến còn lại) trỏ tới biến token, không giữ giá trị riêng. Style `base-nova` chỉ là khung thành phần, màu và spacing của nó đổi qua token. Style Dictionary là lựa chọn để sinh file, không cài mặc định; khi chưa dùng, viết biến CSS tay theo tên biến ở CONVENTIONS mục 10.7 và giữ khớp `tokens.json`. `globals.css` là nơi duy nhất chứa giá trị màu, spacing, radius, cỡ chữ thô.
 - Next.js chèn phần tử `#__next-route-announcer__` có `role="alert"`; test truy vấn thông báo lỗi lọc theo nội dung, ví dụ `getByRole("alert").filter({ hasText: ... })`.
 <!-- /PROFILE-CONTENT -->
 

@@ -1,7 +1,7 @@
 ---
 doc_type: playbook
 status: stable
-version: 2.7.0
+version: 2.8.0
 language: vi-en
 ---
 
@@ -20,6 +20,7 @@ Mỗi quy tắc dưới chỉ áp dụng khi tài liệu tương ứng được 
 | Exit gate SRS đầy đủ theo EARS và ISO/IEC/IEEE 29148 §5.2.5 đến §5.2.7 (PLAYBOOK mục 2.2) | SRS `1.1.0` | CONVENTIONS mục 3 |
 | Khóa frontmatter `release` của SPEC (PLAYBOOK mục 2.4) | SPEC `1.2.0` | CONVENTIONS mục 3 |
 | Tiêu chuẩn UI/UX của wireframe: dòng Màn hình xác thực, tiêu chí WCAG 2.2 ở CONVENTIONS mục 10.2, bảng đánh giá heuristic (mục 10.3), bảng kiểm mẫu thiết kế lừa người dùng (mục 10.4) | Wireframe `1.2.0`, xét theo từng file (chỉ mục theo `template_version` của chỉ mục, trang theo `template_version` của trang) | CONVENTIONS mục 3 |
+| Hệ thống thiết kế (CONVENTIONS mục 10.7), dòng Template và Pattern, cột Component ID, HTML đọc token; hàng Gate 1W về hướng, token, danh mục, HTML; hàng Gate 2 và Definition of Ready về hệ thống thiết kế; nhiệm vụ ánh xạ token của Prompt 2 và golden rule chỉ dùng token | chỉ mục `1.3.0`, trang `1.4.0`, xét theo từng file | CONVENTIONS mục 3 |
 
 ## 2. Dự án có Intake cũ hơn `1.3.0`
 
@@ -60,3 +61,6 @@ Bốn quy tắc dưới thêm ở bản `2.3.0` của bộ mẫu, chỉ áp cho 
 - SRS tạo từ template SRS cũ hơn `1.1.0`: dùng exit gate Giai đoạn 1 của bản đó, không theo bảng exit gate ở PLAYBOOK mục 2.2, cho tới khi được nâng lên theo PLAYBOOK mục 8.
 - SPEC tạo từ template SPEC cũ hơn `1.2.0`: không có khóa frontmatter `release` và không phải thêm khóa này; đợt của SPEC đó là Bản phát hành của các FR ở §1.5 (PLAYBOOK mục 2.4).
 - Wireframe (chỉ mục hoặc trang) tạo từ template wireframe cũ hơn `1.2.0`: không cần dòng Màn hình xác thực, ghi chú theo tiêu chí WCAG 2.2 ở CONVENTIONS mục 10.2, bảng đánh giá heuristic (mục 10.3) hay bảng kiểm mẫu thiết kế lừa người dùng (mục 10.4); vẫn hợp lệ cho tới khi được nâng lên theo PLAYBOOK mục 8.
+- Wireframe từ chỉ mục cũ hơn template chỉ mục `1.3.0` hay trang cũ hơn template trang `1.4.0` không cần hệ thống thiết kế; HTML của trang đó giữ thang xám. Muốn nâng thì tạo `docs/design-system/`, nâng chỉ mục và từng trang như một thay đổi MINOR theo PLAYBOOK mục 8, người duyệt Gate 1W duyệt lại. Dự án không có `tokens.json` thì hàng Design token ở ARCHITECTURE ghi nguồn token mà dự án đang dùng. Dự án brownfield có sẵn thư mục `docs/design-system/` (ví dụ bản xuất của Storybook hay zeroheight) chuyển nó vào `docs/legacy/` theo `brownfield/PLAYBOOK_BROWNFIELD.md` (mục chuyển tài liệu cũ) trước khi tạo hệ thống thiết kế to-be.
+- Thêm trang mới vào wireframe có chỉ mục cũ hơn template chỉ mục `1.3.0`: nâng cả chỉ mục và các trang theo gạch trước, không tạo trang `1.4.0` đứng riêng dưới chỉ mục cũ, để mọi màn hình của dự án dựng từ cùng một hệ thống.
+- Dự án đã qua Gate 2 mà nâng theo gạch trước: ARCHITECTURE sửa hàng Design token và mục quy ước giao diện như một thay đổi MINOR theo PLAYBOOK mục 8 (người duyệt Gate 2 duyệt lại); SPEC và plan đã duyệt theo các dòng Wireframe và Hệ thống thiết kế ở mục 8. Khi đó MUST chép dòng golden rule chỉ dùng token của template `1.2.0` (frontend-web, mobile-app) vào file golden rule đã có ở `.claude/rules/`, đúng một bản, và cập nhật `assembled_from` của file đó. Code hiện có dùng giá trị thô chuyển sang file ánh xạ token qua SPEC hoặc plan của đợt sau, không sửa ngoài plan. Dự án chọn không nâng thì không thêm golden rule, giữ nguồn token ghi ở ARCHITECTURE, và chấp nhận cảnh báo MINOR về `assembled_from` của file golden rule.

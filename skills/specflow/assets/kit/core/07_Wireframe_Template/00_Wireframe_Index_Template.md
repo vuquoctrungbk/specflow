@@ -2,21 +2,22 @@
 doc_type: wireframe-index
 status: draft
 version: 0.1.0
-template_version: 1.2.0
+template_version: 1.3.0
 language: vi-en
-parent: []
+parent: [docs/design-system/DESIGN_SYSTEM.md]
 overlays: []
 assembled_from: []
 ---
 
 # Chỉ mục wireframe (Wireframe Index): {{PROJECT_NAME}}
 
-<!-- fill: Chép thành docs/wireframes/00_WIREFRAME_INDEX.md ở Giai đoạn 1W (PLAYBOOK mục 2.2.1), chỉ khi Intake mục 14 ghi Giai đoạn 1W: Có, hoặc Có, kèm HTML low-fi. parent ghi SRS chứa bảng Giao diện người dùng và FR của màn hình: docs/srs/SRS.md khi docs_mode là monolithic; docs/srs/00_SRS_MASTER.md cùng các file SRS_MODULE_<NAME>.md có FR giao diện khi modular. overlays ghi các bề mặt có giao diện của dự án theo thứ tự ở Intake. assembled_from ghi "core/07_Wireframe_Template/00_Wireframe_Index_Template.md@<template_version>". Template dùng chung cho mọi bề mặt có giao diện, không có slot: khác biệt giữa web và mobile ghi ở các chú thích fill dưới và ở mục Giai đoạn 1W trong OVERLAY.md của overlay. Trạng thái, version và thay đổi sau khi duyệt theo SRS (CONVENTIONS mục 3, PLAYBOOK mục 8). Chỉ mục không định nghĩa màn hình, FR hay AC: danh sách màn hình có một nguồn là SRS §3, FR ở SRS §6.1, AC ở SRS §8. Tiêu chuẩn UI/UX (lối vào trợ giúp ở mục 3, mục 5, mục 6) theo CONVENTIONS mục 10; chú thích fill chỉ dẫn về đó, không viết lại quy tắc. -->
+<!-- fill: Chép thành docs/wireframes/00_WIREFRAME_INDEX.md ở Giai đoạn 1W (PLAYBOOK mục 2.2.1), chỉ khi Intake mục 14 ghi Giai đoạn 1W: Có, hoặc Có, kèm HTML low-fi. parent ghi SRS chứa bảng Giao diện người dùng và FR của màn hình: docs/srs/SRS.md khi docs_mode là monolithic; docs/srs/00_SRS_MASTER.md cùng các file SRS_MODULE_<NAME>.md có FR giao diện khi modular. parent thêm docs/design-system/DESIGN_SYSTEM.md, tài liệu hệ thống thiết kế viết cùng Giai đoạn 1W (CONVENTIONS mục 10.7). overlays ghi các bề mặt có giao diện của dự án theo thứ tự ở Intake. assembled_from ghi "core/07_Wireframe_Template/00_Wireframe_Index_Template.md@<template_version>". Template dùng chung cho mọi bề mặt có giao diện, không có slot: khác biệt giữa web và mobile ghi ở các chú thích fill dưới và ở mục Giai đoạn 1W trong OVERLAY.md của overlay. Trạng thái, version và thay đổi sau khi duyệt theo SRS (CONVENTIONS mục 3, PLAYBOOK mục 8). Chỉ mục không định nghĩa màn hình, FR hay AC: danh sách màn hình có một nguồn là SRS §3, FR ở SRS §6.1, AC ở SRS §8. Tiêu chuẩn UI/UX (lối vào trợ giúp ở mục 3, mục 5, mục 6) theo CONVENTIONS mục 10; chú thích fill chỉ dẫn về đó, không viết lại quy tắc. -->
 
 ## 1. Phạm vi và bề mặt (Scope & Surfaces)
 
 - Nguồn danh sách màn hình: bảng Giao diện người dùng ở SRS §3, cột `SCR ID`. Chỉ mục lặp đúng tập `SCR ID` đó; không thêm, bớt hay đổi màn hình ở đây.
 - Bản phát hành có màn hình: <!-- fill: các nhãn đợt ở cột Bản phát hành của SRS §6.1 mà FR của màn hình thuộc về, ví dụ R1, R2 -->
+- Hệ thống thiết kế: `docs/design-system/DESIGN_SYSTEM.md` <!-- fill: đường dẫn tài liệu hệ thống thiết kế của dự án; token nguồn ở docs/design-system/tokens.json (CONVENTIONS mục 10.7) -->
 - Loại dự án: <!-- fill: chọn một: greenfield \| brownfield. Brownfield: wireframe vẽ giao diện to-be sau Gap Analysis; màn hình không đổi ghi Giữ nguyên ở ô SCR ID của SRS §3, không có trang và không có hàng ở danh mục; ảnh chụp giao diện hiện tại ở Regression Baseline §5 -->
 
 | Bề mặt | Kiểu điểm vào | Số màn hình | Ghi chú |
@@ -59,7 +60,7 @@ Lối vào trợ giúp: <!-- fill: tiêu chí 3.2.6 ở CONVENTIONS mục 10.2: 
 | `H1` | Visibility of System Status | <!-- fill: trang, trạng thái hoặc cạnh của sơ đồ điều hướng đã xem và điều thấy được --> | <!-- fill: chọn một: Nghiêm trọng \| Nhỏ \| Không có --> | <!-- fill: việc đã sửa; với vấn đề còn Nhỏ: AQ-NN ở mục 7 hoặc lý do chấp nhận; tên bề mặt khi vấn đề chỉ thuộc một bề mặt; Không khi không tìm thấy vấn đề nào --> |
 | `H2` | Match Between the System and the Real World | <!-- fill --> | <!-- fill: chọn một: Nghiêm trọng \| Nhỏ \| Không có --> | <!-- fill --> |
 | `H3` | User Control and Freedom | <!-- fill --> | <!-- fill: chọn một: Nghiêm trọng \| Nhỏ \| Không có --> | <!-- fill --> |
-| `H4` | Consistency and Standards | <!-- fill --> | <!-- fill: chọn một: Nghiêm trọng \| Nhỏ \| Không có --> | <!-- fill --> |
+| `H4` | Consistency and Standards | <!-- fill: đối chiếu các trang với danh mục Component, Pattern, Template của DESIGN_SYSTEM.md: cùng một việc dùng cùng một Component ID --> | <!-- fill: chọn một: Nghiêm trọng \| Nhỏ \| Không có --> | <!-- fill --> |
 | `H5` | Error Prevention | <!-- fill --> | <!-- fill: chọn một: Nghiêm trọng \| Nhỏ \| Không có --> | <!-- fill --> |
 | `H6` | Recognition Rather than Recall | <!-- fill --> | <!-- fill: chọn một: Nghiêm trọng \| Nhỏ \| Không có --> | <!-- fill --> |
 | `H7` | Flexibility and Efficiency of Use | <!-- fill --> | <!-- fill: chọn một: Nghiêm trọng \| Nhỏ \| Không có --> | <!-- fill --> |
