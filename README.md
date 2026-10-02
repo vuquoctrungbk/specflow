@@ -32,7 +32,7 @@ person approves.
 | 1. Requirements | 0 Intake | `docs/intake/PROJECT_INTAKE.md`: goals, scope, routing (surfaces, stack profile), releases, approvers | Gate 0 |
 | | 0R Brownfield baseline | Codebase Summary, As-Is Architecture, Regression Baseline (existing code only) | Gate 0R |
 | | 1 SRS | `docs/srs/SRS.md`: ISO/IEC/IEEE 29148 structure, FR in EARS form, NFR mapped to ISO/IEC 25010, use cases, acceptance criteria | Gate 1 |
-| | 1W Wireframe | `docs/wireframes/`: one page per screen, FR ↔ screen traceability, design system (visual direction, tokens, component catalog), WCAG 2.2 and Nielsen heuristic checks, deceptive-pattern check | Gate 1W |
+| | 1W Wireframe | `docs/wireframes/`: one page per screen, FR ↔ screen traceability, design system (visual direction, tokens, component catalog), priority information, primary action and edge content per page, numbered layout zones, WCAG 2.2 and Nielsen heuristic checks, deceptive-pattern check | Gate 1W |
 | 2. Design | 2 Architecture | `docs/ARCHITECTURE.md` and ADRs in `docs/adr/` | Gate 2 |
 | | 3 SPEC | `docs/specs/SPEC_*.md`: one executable contract per part of a release | Gate 3 (per release) |
 | 3. Plan | 4a Plan | `plans/<date>-<slug>/`: phases per SPEC, test tables, Definition of Ready | Gate 4 |

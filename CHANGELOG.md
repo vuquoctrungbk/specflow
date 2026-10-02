@@ -4,6 +4,25 @@ All notable changes to specflow. Versions follow Semantic Versioning. The
 version of the rules and templates that a release carries is in
 `skills/specflow/assets/kit/VERSION`.
 
+## [1.2.0] - 2026-10-02
+
+### Added
+
+- Each wireframe page now states its priority information (one to three items,
+  the first one at the top of the layout), its primary action (a label from the
+  page's component table, or `Không` with a reason), and its edge content (edge
+  cases taken from the SRS constraints and how the page shows them).
+- Low-fi layouts number their zones (`== 1. Header ==`, side by side
+  `== 2. List | 3. Detail ==`, dialogs `== 4. Hộp thoại: Name ==`), so review
+  comments can point at a screen ID plus a zone number. The HTML wireframe
+  carries the same numbers.
+
+### Changed
+
+- The kit carries rules 2.9.1. The new lines apply to pages from screen
+  template 1.5.0; pages from 1.4.0 stay valid, and one wireframe set may mix
+  both (see `COMPATIBILITY.md` in the kit).
+
 ## [1.1.0] - 2026-10-01
 
 ### Added

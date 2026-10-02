@@ -31,7 +31,7 @@ Intake duyệt.
 | 1. Yêu cầu | 0 Intake | `docs/intake/PROJECT_INTAKE.md`: mục tiêu, phạm vi, định tuyến (bề mặt, stack profile), các đợt phát hành, người duyệt | Gate 0 |
 | | 0R Mốc brownfield | Codebase Summary, As-Is Architecture, Regression Baseline (chỉ dự án đã có code) | Gate 0R |
 | | 1 SRS | `docs/srs/SRS.md`: cấu trúc ISO/IEC/IEEE 29148, FR viết theo EARS, NFR ánh xạ ISO/IEC 25010, use case, tiêu chí nghiệm thu | Gate 1 |
-| | 1W Wireframe | `docs/wireframes/`: mỗi màn hình một trang, đối chiếu FR ↔ màn hình, hệ thống thiết kế (hướng thị giác, token, danh mục component), kiểm WCAG 2.2 và heuristic Nielsen, kiểm mẫu thiết kế lừa người dùng | Gate 1W |
+| | 1W Wireframe | `docs/wireframes/`: mỗi màn hình một trang, đối chiếu FR ↔ màn hình, hệ thống thiết kế (hướng thị giác, token, danh mục component), thông tin ưu tiên, hành động chính và nội dung biên của từng trang, đánh số vùng bố cục, kiểm WCAG 2.2 và heuristic Nielsen, kiểm mẫu thiết kế lừa người dùng | Gate 1W |
 | 2. Thiết kế | 2 Architecture | `docs/ARCHITECTURE.md` và ADR trong `docs/adr/` | Gate 2 |
 | | 3 SPEC | `docs/specs/SPEC_*.md`: mỗi phần việc của một đợt một hợp đồng thực thi | Gate 3 (theo đợt) |
 | 3. Kế hoạch | 4a Plan | `plans/<ngày>-<slug>/`: các pha theo SPEC, bảng test, Definition of Ready | Gate 4 |

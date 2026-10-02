@@ -1,7 +1,7 @@
 ---
 doc_type: playbook
 status: stable
-version: 2.8.0
+version: 2.9.0
 language: vi-en
 ---
 
@@ -62,7 +62,7 @@ Nhiệm vụ:
 1. Đề xuất 2 đến 3 hướng thị giác theo specflow/CONVENTIONS.md mục 10.7 (căn cứ ở thương hiệu, người dùng, lĩnh vực và giọng điệu từ Intake, SRS và câu trả lời của bạn), nêu rõ theme mặc định của thư viện giao diện là một hướng như mọi hướng khác. Ghi các hướng đã đề xuất vào docs/design-system/DESIGN_SYSTEM.md (status draft, chỉ có mục 1, cột Chọn ghi Không ở mọi hàng) để Prompt Resume thấy dấu vết, rồi dừng hỏi bạn chọn đúng một hướng (một lượt hỏi trong giai đoạn, không phải gate).
 2. Sau khi bạn chọn: tạo docs/design-system/DESIGN_SYSTEM.md, docs/design-system/tokens.json và file mode (khi cần) từ specflow/core/07_Wireframe_Template/, ghi lý do chọn hướng, foundations, ba tầng token, primitive và danh mục component, pattern, template; tự tính bảng tương phản theo specflow/CONVENTIONS.md mục 10.7.
 3. Tạo docs/wireframes/00_WIREFRAME_INDEX.md: danh mục màn hình gồm đúng tập SCR ID ở bảng Giao diện người dùng của SRS §3, sơ đồ điều hướng, bảng đối chiếu có đúng một hàng cho mỗi FR ở SRS §6.1 có ưu tiên khác Won't (FR Won't không có hàng), ghi SCR-* hoặc "Không có giao diện" kèm lý do; dự án brownfield ghi "Giữ nguyên" cho màn hình không đổi.
-4. Mỗi SCR ID một trang trong docs/wireframes/, tên file là SCR ID cộng đuôi .md: mục đích, FR và AC, bố cục low-fi trong khối text theo specflow/CONVENTIONS.md mục 7, chọn đúng một Template và dẫn Pattern, Component đã có trong danh mục hệ thống thiết kế, bảng thành phần kèm Component ID, năm trạng thái UI kèm AC, điều hướng vào và ra, dòng Màn hình xác thực, ghi chú trợ năng theo specflow/CONVENTIONS.md mục 10.2 và con số của OVERLAY.md. Không thêm màn hình ngoài SRS §3.
+4. Mỗi SCR ID một trang trong docs/wireframes/, tên file là SCR ID cộng đuôi .md: mục đích, thông tin ưu tiên, hành động chính, FR và AC, bố cục low-fi trong khối text có số vùng theo specflow/CONVENTIONS.md mục 7 kèm dòng nội dung biên, chọn đúng một Template và dẫn Pattern, Component đã có trong danh mục hệ thống thiết kế, bảng thành phần kèm Component ID, năm trạng thái UI kèm AC, điều hướng vào và ra, dòng Màn hình xác thực, ghi chú trợ năng theo specflow/CONVENTIONS.md mục 10.2 và con số của OVERLAY.md. Không thêm màn hình ngoài SRS §3.
 5. HTML low-fi trong docs/wireframes/html/ chỉ tạo khi Intake mục 14 ghi Giai đoạn 1W "Có, kèm HTML low-fi", khai báo biến CSS từ token theo specflow/CONVENTIONS.md mục 10.7, theo quy tắc an toàn ở specflow/CONVENTIONS.md mục 7. Intake ghi "Có" mà tôi muốn HTML thì đề xuất sửa Intake mục 14 theo PLAYBOOK mục 8 trước.
 6. Lệch với SRS (màn hình thêm, bớt hay đổi; FR thiếu; AC không khớp trạng thái) theo PLAYBOOK mục 2.2.1: wireframe vẽ sai hoặc sót so với SRS thì sửa wireframe. SRS thiếu hoặc sai thì không sửa wireframe để che chỗ lệch; ghi câu hỏi BLOCKING ở chỉ mục kèm đề xuất sửa SRS; khi tôi đồng ý, sửa SRS theo PLAYBOOK mục 8 (tăng version, Version History, status in-review) để người duyệt Gate 1 duyệt lại.
 7. Ở chỉ mục, điền bảng đánh giá heuristic theo specflow/CONVENTIONS.md mục 10.3 và bảng kiểm mẫu thiết kế lừa người dùng theo mục 10.4 cho toàn bộ chỉ mục và các trang; sửa vấn đề Nghiêm trọng và bỏ mẫu lừa người dùng trước khi dừng. Cần đổi SRS để sửa thì làm như nhiệm vụ 6.

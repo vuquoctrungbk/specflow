@@ -2,7 +2,7 @@
 doc_type: wireframe-screen
 status: draft
 version: 0.1.0
-template_version: 1.4.0
+template_version: 1.5.0
 language: vi-en
 parent: [docs/wireframes/00_WIREFRAME_INDEX.md, docs/design-system/DESIGN_SYSTEM.md]
 overlays: []
@@ -16,6 +16,8 @@ assembled_from: []
 ## 1. Mục đích, FR và AC (Purpose, FR & AC)
 
 - Mục đích: <!-- fill: 1 đến 2 câu, người dùng làm được gì ở màn hình này; khớp cột Mục đích của SRS §3 -->
+- Thông tin ưu tiên: <!-- fill: 1 đến 3 thông tin người dùng cần nhất để làm việc chính của màn hình, xếp theo thứ tự ưu tiên, phân cách dấu chấm phẩy; mỗi mục là trường ở SRS §4.2 hoặc nhãn ở mục 3. Thông tin thứ nhất đứng đầu và nổi nhất ở bố cục mục 2 (CONVENTIONS mục 10.7) -->
+- Hành động chính: <!-- fill: đúng một hành động người dùng đến màn hình để làm, ghi nhãn trong cặp backtick trùng một ô cột Thành phần ở mục 3, có thể kèm một câu sau; ghi Không kèm lý do khi màn hình chỉ để xem, hoặc khi các hành động ngang hàng có chủ đích (ví dụ chọn giữa hai bản, để không dẫn người dùng) -->
 - Bề mặt: <!-- fill: tên overlay của màn hình, ví dụ frontend-web hoặc mobile-app -->
 - Template: `{{TEMPLATE_ID}}` <!-- fill: đúng một TPL-NN có trong danh mục Template của DESIGN_SYSTEM.md mục 7; vùng ở mục 2 theo đúng vùng của Template này (CONVENTIONS mục 10.7) -->
 - Pattern: <!-- fill: các PAT-NN có trong danh mục Pattern của DESIGN_SYSTEM.md mục 6 mà màn hình dùng, phân cách dấu phẩy; ghi Không khi màn hình không dùng pattern nào -->
@@ -32,19 +34,21 @@ assembled_from: []
 
 ## 2. Bố cục low-fi (Low-fi Layout)
 
-<!-- fill: Khối text theo CONVENTIONS mục 7, chỉ vẽ trạng thái Success (màn hình form mà Success là rời màn hình thì vẽ Initial và ghi điều đó dưới khối); bốn trạng thái còn lại mô tả ở mục 4. Chia màn hình thành vùng xếp từ trên xuống, tên vùng theo vùng của Template ở mục 1; mỗi vùng mở bằng dòng "== Tên vùng ==", vùng cạnh nhau ghi trên cùng dòng mở, phân cách bằng " | ". Dưới dòng mở, mỗi thành phần một dòng thụt hai dấu cách: [Nhãn] cho nút, "Nhãn: [____]" cho trường nhập, "( ) Nhãn" và "[ ] Nhãn" cho lựa chọn, "..." cho phần lặp của danh sách. Nhãn trùng cột Thành phần ở mục 3. Web: vẽ ở breakpoint nhỏ nhất của SRS §2.5, không cuộn ngang ở độ rộng đó trừ nội dung cần hai chiều (tiêu chí 1.4.10 ở CONVENTIONS mục 10.2), ghi thay đổi bố cục ở breakpoint lớn hơn dưới khối. Mobile: vẽ ở hướng dọc; thanh điều hướng, thanh tab và vùng an toàn (safe area) là vùng riêng khi màn hình có. Không dùng ảnh hay công cụ vẽ. -->
+<!-- fill: Khối text theo CONVENTIONS mục 7, chỉ vẽ trạng thái Success (màn hình form mà Success là rời màn hình thì vẽ Initial và ghi điều đó dưới khối); bốn trạng thái còn lại mô tả ở mục 4. Chia màn hình thành vùng xếp từ trên xuống, tên vùng theo vùng của Template ở mục 1; mỗi vùng mở bằng dòng "== N. Tên vùng ==", vùng cạnh nhau ghi trên cùng dòng mở, phân cách bằng " | " (ví dụ "== 2. Danh sách | 3. Chi tiết =="), hộp thoại là vùng "== N. Hộp thoại: Tên ==". Số N đánh liên tiếp từ 1 trên trang theo thứ tự đọc, từ trên xuống và từ trái sang phải; số không thuộc tên vùng, góp ý ghi SCR ID cộng số vùng. Dưới dòng mở, mỗi thành phần một dòng thụt hai dấu cách: [Nhãn] cho nút, "Nhãn: [____]" cho trường nhập, "( ) Nhãn" và "[ ] Nhãn" cho lựa chọn, "..." cho phần lặp của danh sách. Nhãn trùng cột Thành phần ở mục 3. Web: vẽ ở breakpoint nhỏ nhất của SRS §2.5, không cuộn ngang ở độ rộng đó trừ nội dung cần hai chiều (tiêu chí 1.4.10 ở CONVENTIONS mục 10.2), ghi thay đổi bố cục ở breakpoint lớn hơn dưới khối. Mobile: vẽ ở hướng dọc; thanh điều hướng, thanh tab và vùng an toàn (safe area) là vùng riêng khi màn hình có. Không dùng ảnh hay công cụ vẽ. -->
 
 ```text
-== Header ==
+== 1. Header ==
   [{{COMPONENT_NAME}}]
-== Nội dung ==
+== 2. Nội dung ==
   {{COMPONENT_NAME}}: [____]
   ...
-== Footer ==
+== 3. Footer ==
   [{{COMPONENT_NAME}}]
 ```
 
-HTML low-fi: <!-- fill: chọn một: `docs/wireframes/html/{{SCR_ID}}.html` | Không. HTML là tùy chọn, chỉ tạo khi Intake mục 14 ghi Giai đoạn 1W: Có, kèm HTML low-fi. Khi có: một file tĩnh docs/wireframes/html/SCR-<MOD>-NN.html cho màn hình này, theo quy tắc an toàn ở CONVENTIONS mục 7: không có thẻ script hay thuộc tính sự kiện, không tải tài nguyên ngoài, có thẻ meta Content-Security-Policy như CONVENTIONS mục 7, chỉ CSS viết trong thẻ style của file, khối :root khai báo biến CSS lấy từ token của docs/design-system/tokens.json (tên biến và quy tắc chỉ dùng token theo CONVENTIONS mục 10.7) thay cho thang xám, dữ liệu mẫu tự đặt (không dùng dữ liệu người thật, secret hay URL nội bộ), link chỉ tới file SCR-*.html cùng thư mục. Đường dẫn ghi giống ô File HTML của danh mục màn hình. Khi HTML và trang này lệch nhau, trang này thắng. -->
+Nội dung biên: <!-- fill: ca biên của dữ liệu trên màn hình, lấy từ ràng buộc đã có ở SRS (từ điển dữ liệu §4.2, quy tắc nghiệp vụ, luồng của FR), không đặt giới hạn mới (giá trị dài nhất, trường trống, số 0, danh sách nhiều trang) và cách màn hình hiển thị từng ca (xuống dòng, cắt kèm cách xem đủ, phân trang); ghi Không kèm lý do khi màn hình không hiển thị dữ liệu hay SRS không có ràng buộc nào cho dữ liệu đó -->
+
+HTML low-fi: <!-- fill: chọn một: `docs/wireframes/html/{{SCR_ID}}.html` | Không. HTML là tùy chọn, chỉ tạo khi Intake mục 14 ghi Giai đoạn 1W: Có, kèm HTML low-fi. Khi có: một file tĩnh docs/wireframes/html/SCR-<MOD>-NN.html cho màn hình này, tiêu đề vùng (hoặc chú thích HTML trước khối của vùng khi không có tiêu đề) mang cùng số vùng như khối bố cục, theo quy tắc an toàn ở CONVENTIONS mục 7: không có thẻ script hay thuộc tính sự kiện, không tải tài nguyên ngoài, có thẻ meta Content-Security-Policy như CONVENTIONS mục 7, chỉ CSS viết trong thẻ style của file, khối :root khai báo biến CSS lấy từ token của docs/design-system/tokens.json (tên biến và quy tắc chỉ dùng token theo CONVENTIONS mục 10.7) thay cho thang xám, dữ liệu mẫu tự đặt (không dùng dữ liệu người thật, secret hay URL nội bộ), link chỉ tới file SCR-*.html cùng thư mục. Đường dẫn ghi giống ô File HTML của danh mục màn hình. Khi HTML và trang này lệch nhau, trang này thắng. -->
 
 ## 3. Bảng thành phần (Components)
 
