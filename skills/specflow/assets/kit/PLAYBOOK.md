@@ -1,7 +1,7 @@
 ---
 doc_type: playbook
 status: stable
-version: 2.10.0
+version: 2.10.1
 language: vi-en
 ---
 
@@ -225,12 +225,12 @@ Gate 3 theo đợt đạt khi mọi SPEC của đợt đạt bảng trên và m�
 - Đối soát roadmap (có roadmap, mục 2): chạy ở đây cho SPEC đang đóng và ở Prompt Resume cho cả roadmap; dán kết quả vào báo cáo dừng. Lệch thì báo vị trí, không tự sửa SRS hay SPEC; roadmap sai so với SRS thì sửa roadmap.
   1. Mỗi FR ở SRS §6.1 có Ưu tiên khác `Won't` và mỗi NFR mức Must ở SRS §7 có đúng một dòng; không có dòng thừa. Brownfield: FR có Việc cần làm `Giữ nguyên` ở Gap Analysis §2 không có dòng.
   2. Ưu tiên, Đợt của dòng FR và Cách kiểm chứng của dòng NFR khớp SRS.
-  3. Cột SPEC khớp SPEC §1.5; cột Pha khớp plan; thứ tự dòng theo CONVENTIONS mục 11.
+  3. Cột SPEC khớp §1.5 của các SPEC đã qua Gate 3; cột Pha khớp plan đã qua Gate 4; SPEC và plan còn bản nháp chưa tính (CONVENTIONS mục 11); thứ tự dòng theo CONVENTIONS mục 11.
   4. Dòng `Xong` có hàng ở mục 4 với TC có trong SPEC §9 và chạy pass, commit có trong `git log`.
   5. Dòng `Đã xác nhận` có tag có trong `git tag`, hàng ở mục 5, và mọi SPEC ở cột SPEC của nó `implemented`.
   6. Không dòng nào `Xong` khi một dòng đứng trước nó trong cùng đợt còn `Chưa làm`, trừ dòng `Bỏ`.
   7. Số đếm ở mục 1 khớp mục 2.
-  8. Đợt đã có plan: mọi dòng FR của đợt có SPEC và Pha. Đợt đã đóng (plan `completed`): mọi dòng của đợt, kể cả dòng NFR có Đợt đóng là đợt đó, đã `Đã xác nhận` hoặc được báo kèm lý do.
+  8. Đợt đã có plan đã duyệt: mọi dòng FR của đợt có SPEC và Pha. Đợt đã đóng (plan `completed`): mọi dòng của đợt, kể cả dòng NFR có Đợt đóng là đợt đó, đã `Đã xác nhận` hoặc được báo kèm lý do.
 - Thứ tự đóng một SPEC: Prompt 5 (verify), Prompt 6 (đồng bộ tài liệu, SPEC `implemented`), rồi dừng chờ "Duyệt Gate 5". Gate 5 xét sau Prompt 6 vì một phần Definition of Done hoàn tất ở Prompt 6.
 - Exit gate: Definition of Done (mục 10.2) đạt.
 

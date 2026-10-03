@@ -1,7 +1,7 @@
 ---
 doc_type: conventions
 status: stable
-version: 2.10.0
+version: 2.10.1
 language: vi-en
 ---
 
@@ -614,11 +614,12 @@ Mục 2.1, Yêu cầu chức năng:
 
 - Đúng một dòng cho mỗi FR ở SRS §6.1 có Ưu tiên khác `Won't`; không có dòng cho FR khác, trừ dòng `Bỏ`. Dự án brownfield: FR có Việc cần làm `Giữ nguyên` ở Gap Analysis §2 không có dòng (`brownfield/PLAYBOOK_BROWNFIELD.md` mục 5.3 quy tắc 6). Dòng của FR mà SRS vẫn còn phải làm không được ở trạng thái `Bỏ`.
 - Tên, Ưu tiên và Đợt bằng cột Tên chức năng, Ưu tiên và Bản phát hành của FR ở SRS §6.1.
+- SPEC và Pha chỉ tính tài liệu đã qua gate: SPEC có `version` từ `1.0.0` (đã qua Gate 3), plan có `version` từ `1.0.0` (đã qua Gate 4). SPEC hay plan còn bản nháp `0.x` chưa được ghi vào roadmap, đúng với việc cột SPEC điền khi nhận "Duyệt Gate 3" và cột Pha khi nhận "Duyệt Gate 4" (PLAYBOOK mục 2.7).
 - SPEC liệt kê `spec_id` của mọi SPEC không `superseded` có FR ở §1.5, cách nhau dấu phẩy, theo số pha đầu tiên của SPEC (SPEC chưa có pha xếp sau, theo tên file); `Chưa có` khi chưa có SPEC nào. Dòng `Xong` hay `Đã xác nhận` phải có SPEC, và mọi pha của mọi SPEC đó có `status: done`.
 - Pha là các số pha của plan có `spec_id` của các SPEC đó: `N` khi một pha, `N đến M` khi các pha liền nhau, các khoảng cách nhau dấu phẩy khi không liền; `Chưa có` khi chưa có pha nào.
-- Thứ tự: theo đợt (thứ tự hàng ở mục 1); trong một đợt, dòng có Pha xếp theo số pha đầu tiên trong plan của đợt đó, cùng SPEC theo thứ tự FR ở SPEC §1.5; dòng chưa có Pha đứng sau, theo Ưu tiên `Must`, `Should`, `Could` rồi thứ tự ở SRS §6.1. Dòng `Bỏ` không xét thứ tự. Cột `#` đánh số liên tục từ 1.
+- Thứ tự: theo đợt (thứ tự hàng ở mục 1); trong một đợt, dòng có Pha xếp theo số pha đầu tiên trong plan của đợt đó, cùng SPEC theo thứ tự FR ở SPEC §1.5; dòng chưa có Pha đứng sau, theo Ưu tiên `Must`, `Should`, `Could` rồi thứ tự ở SRS §6.1 (SRS `modular`: thứ tự phân hệ ở bảng §6 của file master, rồi thứ tự trong file phân hệ). Dòng `Bỏ` không xét thứ tự. Cột `#` đánh số liên tục từ 1.
 - Làm theo thứ tự: không dòng nào `Xong` hay `Đã xác nhận` khi một dòng đứng trước nó trong cùng đợt còn `Chưa làm`.
-- Đợt đã có plan (`plan.md` có `release` là đợt đó): mọi dòng của đợt có SPEC và Pha.
+- Đợt đã có plan đã duyệt (`plan.md` có `release` là đợt đó và `version` từ `1.0.0`): mọi dòng của đợt có SPEC và Pha.
 
 Mục 2.2, Yêu cầu phi chức năng mức Must:
 

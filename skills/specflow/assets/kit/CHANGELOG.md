@@ -4,6 +4,18 @@ All notable changes to specflow. Versions follow Semantic Versioning. The
 version of the rules and templates that a release carries is in
 `skills/specflow/assets/kit/VERSION`.
 
+## [1.3.1] - 2026-10-03
+
+### Fixed
+
+- The roadmap counts only SPECs and plans that passed their gate (version
+  1.0.0 or later). Before, a draft SPEC or plan made a correct roadmap look out
+  of date between writing the SPECs and approving Gate 3, or between writing
+  the plan and approving Gate 4.
+- With a modular SRS, FRs without a phase follow the module order of the
+  master file's section 6 table.
+- The kit carries rules 2.10.1.
+
 ## [1.3.0] - 2026-10-03
 
 ### Added

@@ -1,6 +1,6 @@
 {
   "name": "specflow",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Spec-first project documents: Intake, SRS, wireframes, architecture, SPECs and plans, written through an interview with options and stopped at each approval gate.",
   "author": {
     "name": "vuquoctrungbk"
