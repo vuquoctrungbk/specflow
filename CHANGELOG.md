@@ -4,6 +4,31 @@ All notable changes to specflow. Versions follow Semantic Versioning. The
 version of the rules and templates that a release carries is in
 `skills/specflow/assets/kit/VERSION`.
 
+## [1.3.0] - 2026-10-03
+
+### Added
+
+- Project roadmap. Once the SRS passes Gate 1, specflow builds
+  `docs/ROADMAP.md`: every FR other than `Won't` and every Must NFR, in the
+  order the work will be done, with its SPEC, phases, status, evidence and the
+  tag of each confirmed SPEC. The coding agent follows the plan's phase order,
+  never skips a row that is still `Chưa làm`, updates the roadmap after each
+  phase, reconciles it with the SRS, SPECs, plans and git at every stop, and
+  only marks rows `Đã xác nhận` (with an annotated tag) when the reviewer
+  approves Gate 5. New ideas raised while coding go to the roadmap's New
+  Requests section and wait for a decision.
+- The Intake gains a `Định dạng tag` row (default `{release}-{feature-key}`);
+  a SPEC that passes Gate 5 again gets a `-2`, `-3` suffix.
+- The coding agent stops when the same test or verify command fails with the
+  same error after three fixes in a row, and reports what it tried.
+
+### Changed
+
+- The kit carries rules 2.10.0. Gate 5 is approved after Prompt 6, once the
+  SPEC is `implemented`. The roadmap rules apply to projects whose Intake is
+  1.4.0 or newer; older projects stay valid and can upgrade as described in
+  `COMPATIBILITY.md` in the kit.
+
 ## [1.2.0] - 2026-10-02
 
 ### Added

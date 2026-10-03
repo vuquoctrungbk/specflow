@@ -1,7 +1,7 @@
 ---
 doc_type: playbook
 status: stable
-version: 2.9.0
+version: 2.10.0
 language: vi-en
 ---
 
@@ -9,7 +9,7 @@ language: vi-en
 
 Chạy từng prompt trong phiên Claude Code ở gốc dự án. Mỗi prompt nêu file phải đọc, file phải sinh và điều kiện dừng. Bạn thay các placeholder (CONVENTIONS mục 1) trước khi gửi; `<starter>`, `<surface>`, `<NAME>`, `<slug>`, `{YYMMDD-HHmm}` và placeholder `{{RELEASE_SLUG}}` là giá trị agent tự xác định từ Routing Decision, `{{RELEASE}}` và ngày giờ hiện tại; bạn không thay chúng. "Của giai đoạn" theo định nghĩa ở PLAYBOOK mục 4. Dự án brownfield áp thêm phần bổ sung cho từng prompt ở mục 6.1 của `brownfield/PLAYBOOK_BROWNFIELD.md` và dùng Prompt B0 đến B4 ở mục 6 của file đó.
 
-Dự án có Intake tạo từ template Intake cũ hơn `1.3.0`: đọc thêm `specflow/COMPATIBILITY.md` mục 3 trước khi dùng prompt. Dự án có Intake từ `1.3.0` nhưng chỉ mục wireframe cũ hơn `1.3.0` hay trang cũ hơn `1.4.0`: đọc thêm `specflow/COMPATIBILITY.md` mục 1 và mục 5 để biết phần hệ thống thiết kế không áp cho wireframe đó; thêm trang mới vào wireframe như vậy thì nâng cả bộ theo mục 5 trước.
+Dự án có Intake tạo từ template Intake cũ hơn `1.3.0`: đọc thêm `specflow/COMPATIBILITY.md` mục 3 trước khi dùng prompt. Dự án có Intake từ `1.3.0` nhưng chỉ mục wireframe cũ hơn `1.3.0` hay trang cũ hơn `1.4.0`: đọc thêm `specflow/COMPATIBILITY.md` mục 1 và mục 5 để biết phần hệ thống thiết kế không áp cho wireframe đó; thêm trang mới vào wireframe như vậy thì nâng cả bộ theo mục 5 trước. Dự án có Intake cũ hơn `1.4.0` không có roadmap: bỏ qua mọi việc ở `docs/ROADMAP.md` trong các prompt dưới (`specflow/COMPATIBILITY.md` mục 5).
 
 Câu mở đầu "X đã duyệt" của các prompt dưới, và các hàng Intake, SPEC, Plan trạng thái `approved` ở Definition of Ready (PLAYBOOK mục 10.1), đều theo thủ tục duyệt gate ở PLAYBOOK mục 2.7.
 
@@ -119,8 +119,8 @@ Phần A, lập plan. Đọc: theo specflow/PLAYBOOK.md mục 6, hàng "4a. Plan
 Tạo plans/{YYMMDD-HHmm}-release-{{RELEASE_SLUG}}/ (tên gợi ý theo CONVENTIONS mục 9) gồm plan.md và các phase-NN-<slug>.md. plan.md có release: {{RELEASE}} và spec_ids liệt kê mọi SPEC của đợt (SPEC có khóa release thì khóa đó bằng {{RELEASE}}); mỗi pha có spec_id thuộc spec_ids; pha của một SPEC đứng liền nhau, SPEC cung cấp contract đứng trước SPEC tiêu thụ, và ở mỗi bề mặt SPEC mang nền tảng dùng chung của bề mặt đứng trước SPEC khác của bề mặt đó (PLAYBOOK mục 2.4, 2.5). Khi có Giai đoạn 1W, thứ tự pha giao diện và e2e theo luồng điều hướng của chỉ mục wireframe; mỗi FR của đợt có pha thực hiện qua SPEC chứa nó. Pha của mỗi SPEC phủ hết File Diff và mọi TC ở §9 của SPEC đó. Mỗi pha: tập con File Diff, TC phải pass, lệnh verify, commit message. Plan theo định dạng ở specflow/CONVENTIONS.md mục 9; chạy lệnh kiểm tra sót ở PLAYBOOK mục 4.
 Dừng sau phần A để tôi duyệt plan và DoR (Gate 4, PLAYBOOK mục 2.5 và 10.1).
 
-Phần B, chỉ chạy khi tôi đã duyệt plan. Đọc: theo specflow/PLAYBOOK.md mục 6, hàng "4b. Coding" và dòng áp cho mọi hàng. Thực thi lần lượt pha của SPEC đầu tiên chưa implemented. Mỗi pha: viết test đỏ, viết code tới khi xanh, refactor, chạy lệnh verify, đánh dấu checkbox, commit theo Conventional Commits bằng tiếng Anh. Chỉ sửa file trong File Diff của SPEC theo spec_id của pha.
-Dừng khi: mọi pha của SPEC đó xong và lệnh verify trong CLAUDE.md đều đạt. Dừng; bạn chạy Prompt 5 và 6 cho SPEC đó rồi gửi lại phần B cho SPEC tiếp theo. Cũng dừng khi gặp mâu thuẫn theo PLAYBOOK mục 7.
+Phần B, chỉ chạy khi tôi đã duyệt plan. Đọc: theo specflow/PLAYBOOK.md mục 6, hàng "4b. Coding" và dòng áp cho mọi hàng. Thực thi lần lượt pha của SPEC đầu tiên chưa implemented. Mỗi pha: viết test đỏ, viết code tới khi xanh, refactor, chạy lệnh verify, đánh dấu checkbox, commit theo Conventional Commits bằng tiếng Anh. Chỉ sửa file trong File Diff của SPEC theo spec_id của pha. Có roadmap (Intake 1.4.0 trở lên: thiếu docs/ROADMAP.md thì báo và dựng theo PLAYBOOK mục 2.7 trước): trước mỗi pha đọc docs/ROADMAP.md và kiểm pha kế tiếp của plan không nhảy qua dòng Chưa làm nào; sau mỗi pha cập nhật roadmap theo PLAYBOOK mục 2.5; yêu cầu mới ghi vào mục 3 của roadmap, không làm.
+Dừng khi: mọi pha của SPEC đó xong, lệnh verify trong CLAUDE.md đều đạt và (có roadmap) dòng của SPEC đã Xong kèm bằng chứng, kết quả đối soát roadmap ở PLAYBOOK mục 2.6 dán vào báo cáo dừng. Dừng; bạn chạy Prompt 5 và 6 cho SPEC đó rồi gửi lại phần B cho SPEC tiếp theo. Cũng dừng khi gặp mâu thuẫn theo PLAYBOOK mục 7, hoặc khi cùng một lệnh test hay verify hỏng cùng lỗi sau 3 lần sửa (PLAYBOOK mục 7 quy tắc 11).
 ```
 
 ## Prompt 5: Verify và Review
@@ -135,6 +135,7 @@ Nhiệm vụ:
 2. Xác định khoảng commit của SPEC theo PLAYBOOK mục 2.6: từ cha của commit pha đầu tiên tới commit pha cuối cùng có spec_id {{SPEC_ID}}. So git diff trên khoảng đó với File Diff của SPEC (bỏ qua tài liệu và plan); liệt kê file thừa hoặc thiếu.
 3. Đối chiếu code với SPEC: contract, mã lỗi, thuật toán, authorization matrix, event; liệt kê mọi khác biệt kèm file:line.
 4. Kiểm tra mọi TC trong SPEC §9 có test đúng file và tên ghi trong bảng, và đang pass.
+5. Có roadmap: chạy đối soát ở PLAYBOOK mục 2.6 cho các dòng của SPEC này; báo đạt hay lệch cho từng bước.
 
 Dừng khi: có báo cáo đạt hoặc không đạt cho mọi tiêu chí DoD (mục 10.2), trừ hàng ghi "hoàn tất ở Prompt 6" (Prompt 6 mới cập nhật trạng thái tài liệu). Không sửa tài liệu ở bước này; sửa code chỉ khi tôi đồng ý.
 ```
@@ -153,8 +154,10 @@ Nhiệm vụ:
 4. Mỗi khác biệt đã chấp nhận so với SPEC hoặc ARCHITECTURE: tạo ADR, cập nhật tài liệu gốc theo PLAYBOOK mục 8.
 5. Chạy lệnh kiểm tra sót ở PLAYBOOK mục 4.
 6. Tính năng gọi mô hình ngôn ngữ: ghi kết quả của job đánh giá (phiên bản prompt, mô hình, chỉ số, token, đạt hay không) vào Prompt Spec §9.1.
+7. Có roadmap: dòng có mọi SPEC đã xong ở trạng thái Xong (chưa Đã xác nhận), mục 4 có bằng chứng theo TC đã chốt ở §9, mục 1 khớp số đếm (specflow/CONVENTIONS.md mục 11). SPEC là SPEC cuối của một đợt: mỗi dòng NFR có Đợt đóng là đợt đó và đã có bằng chứng ở SRS §8 chuyển Xong kèm hàng ở mục 4; dòng NFR chưa có bằng chứng giữ Chưa làm và được liệt kê trong báo cáo dừng. Không đặt Đã xác nhận và không tạo tag: việc đó làm khi nhận "Duyệt Gate 5" (PLAYBOOK mục 2.7).
+8. Commit các tài liệu và roadmap vừa sửa thành một commit tài liệu, ngoài khoảng commit của SPEC.
 
-Dừng khi: tài liệu khớp code, DoD mục 10.2 đạt cho SPEC này, danh sách thay đổi tài liệu đã báo.
+Dừng khi: tài liệu khớp code, DoD mục 10.2 đạt cho SPEC này, danh sách thay đổi tài liệu đã báo. Dừng và chờ "Duyệt Gate 5" cho SPEC này (PLAYBOOK mục 2.6, 2.7).
 ```
 
 ## Prompt Resume: tiếp tục trong phiên mới
@@ -168,7 +171,8 @@ Nhiệm vụ:
 1. Xác định giai đoạn đang dở: tài liệu trong docs/ (kể cả docs/wireframes/ của Giai đoạn 1W) còn status draft hoặc in-review, hoặc plan trong plans/ còn pha in-progress hay todo. Xác định đợt đang làm: release của plan đang dở, hoặc đợt của SPEC còn draft hay in-review.
 2. Đọc tài liệu hoặc plan đang dở và các tài liệu trong parent của nó; plan đang dở thì đọc SPEC theo spec_id của pha đang dở. Tóm tắt trạng thái: phần đã xong, SPEC nào của đợt đã implemented, phần còn lại, Open Questions.
 3. Nếu đang ở Giai đoạn 4b: chạy lệnh verify trong CLAUDE.md để xác nhận trạng thái thật; checkbox [x] mà verify hỏng thì báo trước khi làm tiếp.
-4. Tiếp tục bước chưa xong đầu tiên theo đúng prompt của giai đoạn đó ở specflow/PROMPTS.md; dự án brownfield theo cả mục 6 của specflow/brownfield/PLAYBOOK_BROWNFIELD.md.
+4. Intake tạo từ template Intake 1.4.0 trở lên và đã qua Gate 1 mà thiếu docs/ROADMAP.md: báo, rồi dựng theo specflow/PLAYBOOK.md mục 2.7. Có docs/ROADMAP.md: đọc nó cùng specflow/CONVENTIONS.md mục 11, chạy đối soát ở specflow/PLAYBOOK.md mục 2.6 cho cả roadmap, báo tiến độ theo mục 1 và mọi lệch trước khi làm tiếp; việc kế tiếp là pha todo đầu tiên của plan, miễn nó không nhảy qua dòng Chưa làm nào (PLAYBOOK mục 2.5).
+5. Tiếp tục bước chưa xong đầu tiên theo đúng prompt của giai đoạn đó ở specflow/PROMPTS.md; dự án brownfield theo cả mục 6 của specflow/brownfield/PLAYBOOK_BROWNFIELD.md.
 
 Dừng khi: gặp điều kiện dừng của prompt giai đoạn đó, hoặc gặp mâu thuẫn theo PLAYBOOK mục 7.
 ```

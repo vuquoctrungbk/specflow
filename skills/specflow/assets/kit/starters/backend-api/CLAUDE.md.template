@@ -2,12 +2,12 @@
 doc_type: agent-context
 status: draft
 version: 0.1.0
-template_version: 2.5.0
+template_version: 2.6.0
 language: vi-en
 parent: [docs/intake/PROJECT_INTAKE.md]
 overlays: [backend-api]
 assembled_from:
-  - core/06_Agent_Context_Template.md@2.5.0
+  - core/06_Agent_Context_Template.md@2.6.0
   - overlays/backend-api/verify-commands.md@1.0.0
   - overlays/backend-api/agent-rules/backend-golden-rules.md@1.0.0
 ---
@@ -26,12 +26,13 @@ Dự án này dùng bố cục tài liệu specflow. Bỏ qua bộ tên tài li�
 | `code-standards.md` | ARCHITECTURE §1 (Golden Rules), §7 (conventions) và `.claude/rules/` |
 | `deployment-guide.md` | ARCHITECTURE §8 (Deployment) và §11 (CI/CD) |
 | `codebase-summary.md` | ARCHITECTURE §4 (layout); dự án brownfield dùng `docs/brownfield/CODEBASE_SUMMARY.md` |
-| `project-roadmap.md` | Implementation Plan trong `plans/` và phạm vi trong SRS §1.2 |
+| `project-roadmap.md` | `docs/ROADMAP.md` (dự án có Intake tạo từ template Intake `1.4.0` trở lên), Implementation Plan trong `plans/` và phạm vi trong SRS §1.2 |
 
 ```text
 specflow/                                 # bộ mẫu specflow, chỉ đọc
 docs/
 ├── intake/PROJECT_INTAKE.md
+├── ROADMAP.md                        # Intake 1.4.0 trở lên: việc phải làm, tiến độ, mốc (CONVENTIONS mục 11)
 ├── srs/SRS.md                        # monolithic
 ├── srs/00_SRS_MASTER.md              # modular: tổng quan, NFR, mô hình dữ liệu chung
 ├── srs/SRS_MODULE_<NAME>.md          # modular: use case của từng phân hệ
@@ -82,6 +83,8 @@ Chế độ lưu trữ SRS của dự án: `{{DOCS_MODE}}` (PLAYBOOK mục 5).
 - Intake tạo từ template Intake cũ hơn `1.3.0`: dự án làm theo tính năng như bản `2.3.0` của bộ mẫu (PLAYBOOK mục 2): không có Giai đoạn 1W và đợt, mỗi tính năng một SPEC và một plan; `specflow/COMPATIBILITY.md` mục 2 và 3 nêu phần thay đổi cho nhánh này.
 <!-- fill: Intake tạo từ template Intake 1.3.0 trở lên thì xóa dòng trên; Intake cũ hơn thì giữ dòng trên và ghi Giai đoạn 1W của dự án này là Không. -->
 - Không viết code khi Definition of Ready (PLAYBOOK mục 10.1) chưa đạt. Dừng ở mỗi gate để người duyệt quyết định.
+- Roadmap `docs/ROADMAP.md` (CONVENTIONS mục 11) là danh sách việc phải làm: đọc đầu mỗi phiên; khi code làm theo thứ tự pha của plan và không nhảy qua dòng `Chưa làm` nào; cập nhật sau mỗi pha (PLAYBOOK mục 2.5); yêu cầu mới ghi vào mục 3 của roadmap, không làm ngay; chỉ đặt `Đã xác nhận` và đánh tag khi nhận "Duyệt Gate 5" (PLAYBOOK mục 2.7).
+<!-- fill: Intake tạo từ template Intake cũ hơn 1.4.0 thì xóa dòng trên (dự án không có roadmap, specflow/COMPATIBILITY.md mục 5). -->
 - Mỗi lượt chỉ làm một giai đoạn; kết thúc lượt bằng danh sách file đã đổi, checklist exit gate và Open Questions.
 - Chi tiết: `.claude/rules/docs-workflow.md`.
 <!-- fill: Dự án brownfield giữ ba dòng dưới; dự án greenfield xóa ba dòng này. -->
@@ -98,14 +101,14 @@ Chế độ lưu trữ SRS của dự án: `{{DOCS_MODE}}` (PLAYBOOK mục 5).
 | Viết hoặc sửa ARCHITECTURE, ADR | Intake, SRS, chỉ mục wireframe khi có Giai đoạn 1W, template Architecture của giai đoạn, profile, `specflow/core/03_ADR_Template.md` | Template Spec, mã nguồn |
 | Viết SPEC của đợt | `docs/ARCHITECTURE.md`, phần SRS chứa FR, cột FR ID và Bản phát hành ở SRS §6.1, frontmatter của mọi SPEC và §1.5 của SPEC thuộc đợt (khóa `release`; SPEC không có khóa thì đọc §1.5 của nó, đợt theo Bản phát hành của FR, PLAYBOOK mục 2.4), cột TC ID ở §9 của mọi SPEC cùng mã phân hệ (đánh số TC tiếp theo, CONVENTIONS mục 4), chỉ mục wireframe và trang wireframe của các `SCR-*` mà FR dẫn, ADR liên quan, mã nguồn của phân hệ | Phần còn lại của SRS module khác, nội dung SPEC khác ngoài frontmatter, §1.5 và cột TC ID ở §9, trang wireframe khác, mã nguồn của phân hệ khác |
 | Lập plan của đợt | Mọi SPEC trong `spec_ids` của đợt, hàng SRS §6.1 của FR thuộc đợt và hàng SRS §8 của AC mà SPEC của đợt dẫn, chỉ mục wireframe và trang của các `SCR-*` mà SPEC của đợt dẫn (khi có Giai đoạn 1W), ARCHITECTURE §1, §4, §5, §7, `specflow/core/05_Implementation_Plan_Template/` | SRS toàn văn (chỉ đọc các hàng đã nêu), trang wireframe không được SPEC của đợt dẫn, SPEC ngoài đợt |
-| Code | Plan và pha đang làm, SPEC theo `spec_id` của pha, ARCHITECTURE §1, §4 đến §7, file trong File Diff | File ngoài File Diff, SPEC khác |
+| Code | `docs/ROADMAP.md` khi có, plan và pha đang làm, SPEC theo `spec_id` của pha, ARCHITECTURE §1, §4 đến §7, file trong File Diff | File ngoài File Diff, SPEC khác |
 | Mọi việc | File này | `examples/` của bộ mẫu, bộ mẫu cũ |
 
 Bảng đầy đủ: `specflow/PLAYBOOK.md` mục 6.
 
 ## 4. Lệnh build, test và verify (Build, Test & Verify)
 
-Chạy trước mỗi commit; điều kiện pass theo PLAYBOOK mục 11. Lệnh nào báo lỗi thì dừng, sửa, chạy lại cả bộ.
+Chạy trước mỗi commit; điều kiện pass theo PLAYBOOK mục 11. Lệnh nào báo lỗi thì dừng, sửa, chạy lại cả bộ. Cùng một lệnh test hay verify vẫn hỏng cùng lỗi sau 3 lần sửa liên tiếp, kể cả trong vòng đỏ sang xanh, thì dừng, báo lỗi, các cách đã thử và phương án (PLAYBOOK mục 7 quy tắc 11).
 
 | Hạng mục | Lệnh | Điều kiện pass |
 | --- | --- | --- |
@@ -141,6 +144,8 @@ Tài liệu viết tiếng Việt có dấu, thuật ngữ kỹ thuật giữ ti
 - Conventional Commits bằng tiếng Anh; một commit cho mỗi pha của Implementation Plan; message mô tả hành vi, không chứa ID quy trình.
 - Không commit secret, file biến môi trường thật, dữ liệu cá nhân.
 - Chỉ commit file trong File Diff của SPEC đang làm, cộng tài liệu và plan được cập nhật.
+- SPEC qua Gate 5: annotated tag trên commit pha cuối của SPEC theo dòng Định dạng tag ở Intake mục 14; push tag khi người duyệt cho phép.
+<!-- fill: Intake tạo từ template Intake cũ hơn 1.4.0 thì xóa dòng trên (không có dòng Định dạng tag). -->
 
 ## 9. Giả định và câu hỏi mở (Assumptions & Open Questions)
 

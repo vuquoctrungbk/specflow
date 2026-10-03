@@ -18,7 +18,8 @@ to recognise them from what a user types.
 | "Plan", implementation plan, phases of release R*n* | 4a Plan | Prompt 4 part A | Every SPEC of the release |
 | Code a phase of an approved plan | 4b Coding TDD | Prompt 4 part B | The plan, with the Definition of Ready met |
 | Verify, review, check a SPEC against the code | 5 Verify | Prompt 5 | The SPEC's phases coded |
-| Update the documents after code changed | 5 Sync Docs | Prompt 6 | The SPEC's verify report from Prompt 5 passed |
+| Update the documents after code changed | 5 Sync Docs | Prompt 6, then stop for Gate 5 | The SPEC's verify report from Prompt 5 passed |
+| "Roadmap", progress, "còn thiếu gì", "tiến độ", what is left to build | The stage in progress, after reconciling `docs/ROADMAP.md` (Intake 1.4.0 or later) | Prompt Resume (step 4 reconciles the roadmap by `specflow/PLAYBOOK.md` section 2.6) | Gate 1 (the roadmap is built when Gate 1 is approved) |
 | "Continue", "tiếp tục", a new session on an existing project | The stage in progress | Prompt Resume | As for that stage |
 | "Duyệt Gate N", "approve gate N", or a list of failed rows | The stage of gate N | `specflow/PLAYBOOK.md` section 2.7 | Gate N's documents |
 
@@ -38,7 +39,7 @@ passed Gate 3 earlier. A document in `draft` or `in-review` has not passed.
 
 Read, in this order: `docs/intake/PROJECT_INTAKE.md`,
 `docs/srs/`, `docs/wireframes/00_WIREFRAME_INDEX.md`, `docs/ARCHITECTURE.md`
-and `docs/adr/`, `docs/specs/`, `plans/`. The Intake's Routing Decision tells
+and `docs/adr/`, `docs/specs/`, `plans/`, `docs/ROADMAP.md`. The Intake's Routing Decision tells
 you the overlays, the starter, whether stage 1W runs, and the planned
 releases; its section 9 names the approver of each gate.
 

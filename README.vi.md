@@ -30,12 +30,12 @@ Intake duyệt.
 | --- | --- | --- | --- |
 | 1. Yêu cầu | 0 Intake | `docs/intake/PROJECT_INTAKE.md`: mục tiêu, phạm vi, định tuyến (bề mặt, stack profile), các đợt phát hành, người duyệt | Gate 0 |
 | | 0R Mốc brownfield | Codebase Summary, As-Is Architecture, Regression Baseline (chỉ dự án đã có code) | Gate 0R |
-| | 1 SRS | `docs/srs/SRS.md`: cấu trúc ISO/IEC/IEEE 29148, FR viết theo EARS, NFR ánh xạ ISO/IEC 25010, use case, tiêu chí nghiệm thu | Gate 1 |
+| | 1 SRS | `docs/srs/SRS.md`: cấu trúc ISO/IEC/IEEE 29148, FR viết theo EARS, NFR ánh xạ ISO/IEC 25010, use case, tiêu chí nghiệm thu; khi được duyệt, `docs/ROADMAP.md` liệt kê mọi FR và NFR mức Must phải làm, theo thứ tự | Gate 1 |
 | | 1W Wireframe | `docs/wireframes/`: mỗi màn hình một trang, đối chiếu FR ↔ màn hình, hệ thống thiết kế (hướng thị giác, token, danh mục component), thông tin ưu tiên, hành động chính và nội dung biên của từng trang, đánh số vùng bố cục, kiểm WCAG 2.2 và heuristic Nielsen, kiểm mẫu thiết kế lừa người dùng | Gate 1W |
 | 2. Thiết kế | 2 Architecture | `docs/ARCHITECTURE.md` và ADR trong `docs/adr/` | Gate 2 |
 | | 3 SPEC | `docs/specs/SPEC_*.md`: mỗi phần việc của một đợt một hợp đồng thực thi | Gate 3 (theo đợt) |
 | 3. Kế hoạch | 4a Plan | `plans/<ngày>-<slug>/`: các pha theo SPEC, bảng test, Definition of Ready | Gate 4 |
-| Thực thi | 4b, 5 | Code theo TDD, kiểm chứng, đồng bộ tài liệu | Gate 5 (theo SPEC) |
+| Thực thi | 4b, 5 | Code theo TDD theo thứ tự của plan, cập nhật roadmap sau mỗi pha và đối soát ở mỗi lần dừng, kiểm chứng, đồng bộ tài liệu; ở Gate 5 các dòng roadmap của SPEC được xác nhận và gắn tag | Gate 5 (theo SPEC) |
 
 Tài liệu theo quy ước ngôn ngữ của bộ kit: diễn giải tiếng Việt có dấu, thuật
 ngữ kỹ thuật và định danh giữ tiếng Anh, trừ khi Intake của dự án ghi ngôn ngữ

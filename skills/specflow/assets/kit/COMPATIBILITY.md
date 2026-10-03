@@ -1,7 +1,7 @@
 ---
 doc_type: playbook
 status: stable
-version: 2.9.0
+version: 2.10.0
 language: vi-en
 ---
 
@@ -15,6 +15,7 @@ Mỗi quy tắc dưới chỉ áp dụng khi tài liệu tương ứng được 
 
 | Quy tắc | Áp từ template | Khóa đọc |
 | --- | --- | --- |
+| Roadmap `docs/ROADMAP.md` (CONVENTIONS mục 11), dòng Định dạng tag ở Intake mục 14, việc ở roadmap khi nhận lời duyệt gate (PLAYBOOK mục 2.7), đối soát roadmap (PLAYBOOK mục 2.6), hàng roadmap ở Definition of Done, mục 7 quy tắc 12 | Intake `1.4.0` | CONVENTIONS mục 3 |
 | Quy trình 3 bước, Giai đoạn 1W và Gate 1W, Gate 3 và plan theo đợt, cột `SCR ID` ở SRS §3 và ARCHITECTURE, khóa `release` của SPEC theo đợt, đổi SPEC đã `implemented` theo đợt, hàng Giai đoạn 1W ở Definition of Ready | Intake `1.3.0` | CONVENTIONS mục 3 |
 | Profile khớp (PLAYBOOK mục 3), đếm phân hệ loại trừ cross-cutting (PLAYBOOK mục 5), dòng lệnh verify riêng cho brownfield ở `CLAUDE.md` khởi tạo (PLAYBOOK mục 2.1), thứ tự và giới hạn 5 câu hỏi ở Giai đoạn 0 (PLAYBOOK mục 7 quy tắc 3) | Intake `1.2.0` | CONVENTIONS mục 3 |
 | Exit gate SRS đầy đủ theo EARS và ISO/IEC/IEEE 29148 §5.2.5 đến §5.2.7 (PLAYBOOK mục 2.2) | SRS `1.1.0` | CONVENTIONS mục 3 |
@@ -66,3 +67,4 @@ Bốn quy tắc dưới thêm ở bản `2.3.0` của bộ mẫu, chỉ áp cho 
 - Trang tạo từ template trang `1.4.0` không cần dòng Thông tin ưu tiên, Hành động chính, Nội dung biên hay số vùng, và vẫn hợp lệ. Một bộ wireframe được có cả trang `1.4.0` lẫn trang `1.5.0`: trang mới tạo từ `1.5.0`; trang `1.4.0` có thể nâng khi được sửa theo PLAYBOOK mục 8 (không bắt buộc), bằng cách thêm ba dòng, đánh số vùng và đổi `template_version`, `assembled_from` lên `1.5.0`.
 - Thêm trang mới vào wireframe có chỉ mục cũ hơn template chỉ mục `1.3.0`: nâng cả chỉ mục và các trang theo gạch trước, không tạo trang từ `1.4.0` trở lên đứng riêng dưới chỉ mục cũ, để mọi màn hình của dự án dựng từ cùng một hệ thống.
 - Dự án đã qua Gate 2 mà nâng theo gạch trước: ARCHITECTURE sửa hàng Design token và mục quy ước giao diện như một thay đổi MINOR theo PLAYBOOK mục 8 (người duyệt Gate 2 duyệt lại); SPEC và plan đã duyệt theo các dòng Wireframe và Hệ thống thiết kế ở mục 8. Khi đó MUST chép dòng golden rule chỉ dùng token của template `1.2.0` (frontend-web, mobile-app) vào file golden rule đã có ở `.claude/rules/`, đúng một bản, và cập nhật `assembled_from` của file đó. Code hiện có dùng giá trị thô chuyển sang file ánh xạ token qua SPEC hoặc plan của đợt sau, không sửa ngoài plan. Dự án chọn không nâng thì không thêm golden rule, giữ nguồn token ghi ở ARCHITECTURE, và chấp nhận cảnh báo MINOR về `assembled_from` của file golden rule.
+- Dự án có Intake cũ hơn template Intake `1.4.0`: không có roadmap, các việc ở roadmap trong PLAYBOOK và PROMPTS bỏ qua, hàng roadmap ở Definition of Done ghi N/A. Giới hạn 3 lần sửa ở PLAYBOOK mục 7 quy tắc 11 áp cho mọi dự án. Muốn dùng roadmap thì nâng Intake lên `1.4.0` như một thay đổi MINOR theo PLAYBOOK mục 8 (thêm dòng Định dạng tag, người duyệt Gate 0 duyệt lại), rồi dựng `docs/ROADMAP.md` theo PLAYBOOK mục 2.7 như khi nhận "Duyệt Gate 1", điền cột SPEC và Pha theo SPEC và plan đã có; dòng của SPEC đã `implemented` ghi `Xong` kèm bằng chứng, không đặt `Đã xác nhận` và không đánh tag lùi cho SPEC đã đóng.

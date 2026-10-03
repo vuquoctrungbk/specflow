@@ -1,7 +1,7 @@
 ---
 doc_type: playbook
 status: stable
-version: 2.9.1
+version: 2.10.0
 language: vi-en
 ---
 
@@ -45,6 +45,7 @@ Cột `Prompt` dưới là bảng đối chiếu duy nhất của bước, giai 
 
 - Giai đoạn 1W có khi dự án có bề mặt giao diện: overlay `frontend-web` hoặc `mobile-app`, hoặc bề mặt khác có màn hình. Intake mục 14 ghi Giai đoạn 1W có hay không; dự án không có giao diện (chỉ `backend-api`, `ai-llm-app`) ghi Không và Gate 1W ghi N/A ở Intake mục 9.
 - Đợt phát hành (release) là nhãn ở cột Bản phát hành của SRS §6.1, ví dụ `R1`; tên các đợt dự kiến ghi ở Intake. Bước 2 và bước 3 chạy cho từng đợt theo thứ tự: Giai đoạn 2 chạy một lần ở đợt đầu, đợt sau chỉ cập nhật ARCHITECTURE và ADR theo mục 8 khi cần; Giai đoạn 3 viết mọi SPEC của đợt; Giai đoạn 4a lập một plan cho cả đợt. Thực thi đi theo từng SPEC trong plan; đợt xong thì lặp lại từ Giai đoạn 3 cho đợt tiếp theo.
+- Roadmap (dự án có Intake tạo từ template Intake `1.4.0` trở lên): `docs/ROADMAP.md` theo `core/08_Roadmap_Template.md` và CONVENTIONS mục 11 là danh sách việc phải làm mà coding agent bám theo. Agent dựng nó khi nhận "Duyệt Gate 1", điền dần ở Gate 3 và Gate 4, cập nhật sau mỗi pha, đối soát ở mục 2.6 và đánh dấu `Đã xác nhận` khi nhận "Duyệt Gate 5" (mục 2.7). Roadmap dẫn xuất từ SRS: lệch thì SRS thắng.
 - Dự án brownfield: Giai đoạn 1W chạy sau Gap Analysis và vẽ giao diện to-be ([brownfield/PLAYBOOK_BROWNFIELD.md](brownfield/PLAYBOOK_BROWNFIELD.md) mục 2).
 
 Quy tắc trong file này viết cho tài liệu tạo từ template hiện hành. Dự án có tài liệu (Intake, SRS, SPEC hoặc wireframe) tạo từ template cũ hơn đọc `COMPATIBILITY.md` để biết phần khác đi, kể cả cách nâng lên template hiện hành.
@@ -71,7 +72,7 @@ flowchart TD
 | Giai đoạn | Trả lời câu hỏi | Template | Đầu ra trong dự án | Người duyệt gate |
 | --- | --- | --- | --- | --- |
 | 0. Intake | Dự án gì, bề mặt nào, quy mô, ràng buộc | `core/00_Project_Intake_Template.md`; Agent Context của giai đoạn | `docs/intake/PROJECT_INTAKE.md`, `CLAUDE.md` khởi tạo | Chủ dự án |
-| 1. SRS | WHAT: nghiệp vụ, tác nhân, dữ liệu logic, use case, NFR, danh sách màn hình | SRS của giai đoạn | `docs/srs/` | Theo Intake |
+| 1. SRS | WHAT: nghiệp vụ, tác nhân, dữ liệu logic, use case, NFR, danh sách màn hình | SRS của giai đoạn; `core/08_Roadmap_Template.md` khi nhận "Duyệt Gate 1" | `docs/srs/`; `docs/ROADMAP.md` (Intake `1.4.0` trở lên, mục 2.7) | Theo Intake |
 | 1W. Wireframe | Mỗi màn hình trông và điều hướng thế nào, FR nào hiện thực ở màn hình nào, hệ thống thiết kế dùng chung | `core/07_Wireframe_Template/` | `docs/wireframes/`, `docs/design-system/` | Theo Intake (Gate 1W) |
 | 2. Architecture + ADR | WHERE và HOW: stack, C4, layout, schema, cross-cutting | Architecture của giai đoạn, `core/03_ADR_Template.md`, Agent Context của giai đoạn | `docs/ARCHITECTURE.md`, `docs/adr/`, `CLAUDE.md`, `.claude/rules/` | Theo Intake |
 | 3. Spec | Hợp đồng thực thi của một phần việc của đợt; mọi SPEC của đợt được duyệt ở Gate 3 | Spec của giai đoạn | `docs/specs/SPEC_<FEATURE_KEY>.md` | Theo Intake |
@@ -213,6 +214,7 @@ Gate 3 theo đợt đạt khi mọi SPEC của đợt đạt bảng trên và m�
 
 - 4b. Thực thi từng pha theo thứ tự, lần lượt từng SPEC của plan: chạy test đỏ trước, viết code tới khi xanh, refactor, chạy verify, cập nhật checkbox của pha, commit một lần mỗi pha theo Conventional Commits bằng tiếng Anh.
 - Chỉ sửa file trong File Diff của SPEC mà pha thuộc về (`spec_id` của pha). Cần file khác thì dừng và đề xuất sửa SPEC.
+- Có roadmap (mục 2): thứ tự pha do plan quyết; roadmap kiểm không việc nào bị bỏ qua. Trước mỗi pha, agent đọc `docs/ROADMAP.md`: pha kế tiếp của plan không được nhảy qua dòng, tức không có dòng `Chưa làm` nào đứng trước các dòng mà pha đó hiện thực; dòng đầu tiên còn `Chưa làm` hay `Đang làm` mà chưa có Pha thì dừng và báo (FR chưa có SPEC hay pha). Khi bắt đầu pha, mọi dòng mà pha hiện thực chuyển `Đang làm` và mục 1 ghi chúng cùng SPEC, pha. Một dòng chuyển `Xong` khi mọi pha của mọi SPEC ở cột SPEC của nó đã xong và verify đạt; mục 4 có hàng bằng chứng (TC đã pass, commit pha cuối) và mục 1 cập nhật số đếm. Sửa roadmap sau commit pha cuối được commit cùng tài liệu ở Prompt 6. Ý tưởng hay yêu cầu phát sinh ghi vào mục 3 của roadmap, không làm. Giới hạn số lần sửa theo mục 7 quy tắc 11.
 
 ### 2.6. Giai đoạn 5: Verify và Sync Docs
 
@@ -220,11 +222,32 @@ Gate 3 theo đợt đạt khi mọi SPEC của đợt đạt bảng trên và m�
 - Chạy đủ cổng verify ở mục 11; đối chiếu code với SPEC (contract, thuật toán, mã lỗi) và `git diff` trên khoảng commit của SPEC với File Diff của SPEC đó.
 - Cập nhật: SPEC `implemented`, các pha của SPEC sang `done`, plan `completed` khi mọi SPEC trong `spec_ids` đã `implemented` (nếu không, `in-progress`), bảng test trong SPEC §9 ghi đúng file test và tên test, version tài liệu tăng theo mục 8. Tính năng gọi mô hình ngôn ngữ: kết quả của job đánh giá ghi vào Prompt Spec §9.1; việc ghi này không đổi prompt nên không tăng version của Prompt Spec.
 - Mọi khác biệt so với SPEC hoặc ARCHITECTURE phải có ADR.
+- Đối soát roadmap (có roadmap, mục 2): chạy ở đây cho SPEC đang đóng và ở Prompt Resume cho cả roadmap; dán kết quả vào báo cáo dừng. Lệch thì báo vị trí, không tự sửa SRS hay SPEC; roadmap sai so với SRS thì sửa roadmap.
+  1. Mỗi FR ở SRS §6.1 có Ưu tiên khác `Won't` và mỗi NFR mức Must ở SRS §7 có đúng một dòng; không có dòng thừa. Brownfield: FR có Việc cần làm `Giữ nguyên` ở Gap Analysis §2 không có dòng.
+  2. Ưu tiên, Đợt của dòng FR và Cách kiểm chứng của dòng NFR khớp SRS.
+  3. Cột SPEC khớp SPEC §1.5; cột Pha khớp plan; thứ tự dòng theo CONVENTIONS mục 11.
+  4. Dòng `Xong` có hàng ở mục 4 với TC có trong SPEC §9 và chạy pass, commit có trong `git log`.
+  5. Dòng `Đã xác nhận` có tag có trong `git tag`, hàng ở mục 5, và mọi SPEC ở cột SPEC của nó `implemented`.
+  6. Không dòng nào `Xong` khi một dòng đứng trước nó trong cùng đợt còn `Chưa làm`, trừ dòng `Bỏ`.
+  7. Số đếm ở mục 1 khớp mục 2.
+  8. Đợt đã có plan: mọi dòng FR của đợt có SPEC và Pha. Đợt đã đóng (plan `completed`): mọi dòng của đợt, kể cả dòng NFR có Đợt đóng là đợt đó, đã `Đã xác nhận` hoặc được báo kèm lý do.
+- Thứ tự đóng một SPEC: Prompt 5 (verify), Prompt 6 (đồng bộ tài liệu, SPEC `implemented`), rồi dừng chờ "Duyệt Gate 5". Gate 5 xét sau Prompt 6 vì một phần Definition of Done hoàn tất ở Prompt 6.
 - Exit gate: Definition of Done (mục 10.2) đạt.
 
 ### 2.7. Cách duyệt gate (Gate Approval)
 
 Người duyệt của mỗi gate là người ghi ở hàng tương ứng của bảng Gate ở Intake mục 9. Agent dừng ở gate, gửi danh sách file đã tạo hoặc sửa cùng checklist exit gate đã tự kiểm (mục 7 quy tắc 9). Người duyệt đối chiếu từng hàng của bảng exit gate của giai đoạn đó; đạt hết thì gửi "Duyệt Gate N" kèm tên mình, chưa đạt thì gửi lại các hàng chưa đạt để agent sửa. Khi nhận "Duyệt Gate N": agent đặt `status: approved` cho tài liệu của gate đó, `version: 1.0.0` nếu là lần duyệt đầu (lần duyệt lại sau đó tăng version theo mục 8), và thêm một hàng ở mục Version History của tài liệu ghi tên người duyệt và ngày duyệt. Gate 2 thêm bước chuyển ADR liên quan từ `proposed` sang `accepted`. Gate 4 đặt `version: 1.0.0` cho plan và thêm hàng Version History như trên, nhưng giữ `status: pending` của plan cho tới khi bắt đầu code (bảng trạng thái `implementation-plan` ở CONVENTIONS mục 3 không có `approved`). Agent MUST NOT tự đặt `approved` hay `accepted` khi chưa nhận lời duyệt (nguyên tắc 2, mục 1.2). Duyệt lại một tài liệu sau khi sửa theo mục 8 đi đúng thủ tục này.
+
+Có roadmap (mục 2), lời duyệt gate còn kéo theo việc ở `docs/ROADMAP.md` (CONVENTIONS mục 11):
+
+| Nhận | Việc ở roadmap |
+| --- | --- |
+| "Duyệt Gate 1" | Dựng roadmap từ `core/08_Roadmap_Template.md`: mục 1 một hàng cho mỗi đợt theo thứ tự ở Intake, mục 2.1 một dòng cho mỗi FR có Ưu tiên khác `Won't`, mục 2.2 một dòng cho mỗi NFR mức Must với Đợt đóng là đợt đầu, cột SPEC và Pha ghi `Chưa có`, mọi dòng `Chưa làm`. Thứ tự lúc này đã định sẵn bởi SRS (đợt, ưu tiên, thứ tự ở §6.1), nên không cần duyệt riêng |
+| "Duyệt Gate 3" | Điền cột SPEC theo §1.5 của các SPEC vừa duyệt, cả cột SPEC của mục 2.2 |
+| "Duyệt Gate 4" | Điền cột Pha theo plan, xếp lại mục 2.1 theo thứ tự pha và sắp lại cột SPEC của mục 2.2 theo thứ tự mới |
+| "Duyệt Gate 5" của một SPEC | Chỉ làm khi SPEC đã `implemented` (Prompt 6 đã chạy); chưa thì báo và chờ. Tạo annotated tag trên commit pha cuối của SPEC theo dòng Định dạng tag ở Intake mục 14 (lần qua Gate 5 thứ hai trở đi của cùng SPEC thêm hậu tố `-2`, `-3`), chỉ push khi người duyệt cho phép; thêm một hàng ở mục 5. Mỗi dòng `Xong` mà mọi SPEC ở cột SPEC của nó đã `implemented` chuyển `Đã xác nhận`, Tag ở mục 4 ghi tag vừa tạo. Dòng NFR `Xong` có Đợt đóng là đợt của SPEC và mọi dòng FR của đợt đó đã `Đã xác nhận`: chuyển `Đã xác nhận` cùng tag đó. Commit các sửa này thành một commit tài liệu riêng sau tag |
+
+Agent MUST NOT đặt `Đã xác nhận` khi chưa nhận "Duyệt Gate 5" của SPEC chứa dòng đó.
 
 ## 3. Định tuyến overlay (Overlay Routing)
 
@@ -323,9 +346,11 @@ Agent nạp đúng những gì giai đoạn cần. "Của giai đoạn" theo đ�
 | 5. Verify và Sync | `CLAUDE.md`, `specflow/PLAYBOOK.md` mục 2.6, 2.7, 4, 8, 10.2, 11, `specflow/CONVENTIONS.md` mục 9, SPEC đang đóng, plan, `git diff` trên khoảng commit của SPEC, kết quả verify, ARCHITECTURE §2.1, §12, ADR liên quan, hàng `NFR-MAINT` của SRS §8 (ngưỡng coverage); khi Sync Docs: SRS §8 chứa AC và NFR mà SPEC nhận, Prompt Spec của các prompt SPEC dùng (overlay `ai-llm-app`: §9.1 để ghi kết quả đánh giá), tài liệu gốc cần sửa theo mục 8 và `specflow/core/03_ADR_Template.md` khi tạo ADR; brownfield: `specflow/brownfield/PLAYBOOK_BROWNFIELD.md` mục 7 | Không giới hạn thêm |
 | Resume | `CLAUDE.md`, `specflow/PLAYBOOK.md` mục 2, 2.7, 6, 7, 9, `specflow/PROMPTS.md` và mục của giai đoạn đang dở, tài liệu hoặc plan đang dở, tài liệu thượng nguồn trong `parent` của nó; plan đang dở thì thêm SPEC theo `spec_id` của pha đang dở | Tài liệu của giai đoạn đã đóng không nằm trong `parent` |
 
-Dự án có Intake tạo từ template Intake cũ hơn `1.3.0`, hoặc có wireframe từ template chỉ mục cũ hơn `1.3.0` hay template trang cũ hơn `1.4.0`: mọi hàng nạp thêm `specflow/COMPATIBILITY.md`.
+Dự án có Intake tạo từ template Intake cũ hơn `1.4.0`, hoặc có wireframe từ template chỉ mục cũ hơn `1.3.0` hay template trang cũ hơn `1.4.0`: mọi hàng nạp thêm `specflow/COMPATIBILITY.md`.
 
 Mọi hàng kết thúc ở một gate: khi dừng ở gate hoặc nhận "Duyệt Gate N", agent nạp thêm `specflow/PLAYBOOK.md` mục 2.7 và mục 8.
+
+Có roadmap (mục 2): hàng 4b, 5, Resume và lúc nhận "Duyệt Gate 1", "Duyệt Gate 3", "Duyệt Gate 4", "Duyệt Gate 5" nạp thêm `docs/ROADMAP.md`, `specflow/CONVENTIONS.md` mục 11 và `specflow/PLAYBOOK.md` mục 2.5, 2.6; khi nhận "Duyệt Gate 5" nạp thêm dòng Định dạng tag ở Intake mục 14.
 
 Mọi giai đoạn: MUST NOT đọc `examples/` hoặc bộ mẫu cũ khi sinh tài liệu dự án, để không rò rỉ nội dung ví dụ. Dự án brownfield dùng thêm bảng ở mục 4 của `brownfield/PLAYBOOK_BROWNFIELD.md`.
 
@@ -341,6 +366,8 @@ Mọi giai đoạn: MUST NOT đọc `examples/` hoặc bộ mẫu cũ khi sinh t
 8. Không sửa file trong `specflow/`. Không đánh số lại ID đã duyệt; ID bỏ đi ghi `deprecated`, không tái sử dụng.
 9. Mỗi lượt chỉ sinh tài liệu của một giai đoạn. Kết thúc lượt bằng: danh sách file đã tạo hoặc sửa, checklist exit gate đã tự kiểm, Open Questions còn lại. Agent tự kiểm đúng các hàng exit gate (kể cả DoR ở mục 10.1) mà nó đọc được theo danh mục nạp ngữ cảnh của mục 6; hàng cần tài liệu mà manifest của giai đoạn đó không nạp (ví dụ SRS toàn văn ở Giai đoạn 4a) để người duyệt kiểm.
 10. Nhận "Duyệt Gate N": làm theo mục 2.7.
+11. Cùng một lệnh test hoặc verify hỏng cùng một lỗi sau 3 lần sửa liên tiếp trong một pha (kể cả vòng đỏ sang xanh của TDD): dừng, báo lệnh, lỗi, các cách đã thử và các phương án; không sửa tiếp khi chưa có hướng từ người dùng. Bộ đếm chỉ về 0 khi người dùng đã cho hướng.
+12. Có roadmap (mục 2): chỉ làm việc có dòng trong roadmap, theo thứ tự ở mục 2.5; yêu cầu mới ghi vào mục 3 của roadmap rồi chờ quyết định, không làm ngay. Dự án có Intake tạo từ template Intake `1.4.0` trở lên đã qua Gate 1 mà thiếu `docs/ROADMAP.md`: báo, rồi dựng theo mục 2.7 trước khi làm tiếp.
 
 ## 8. Quản trị thay đổi (Change Management)
 
@@ -371,6 +398,9 @@ Quy trình change request:
 | SPEC §9: TC được chốt hoặc đổi | SRS §8 | Cập nhật cột TC ở SRS §8 cho AC và NFR mà SPEC nhận (CONVENTIONS mục 4); tăng PATCH version SRS |
 | Hệ thống thiết kế: token, file mode, danh mục component, pattern, template, sau Gate 1W | Trang dẫn mục đổi, HTML low-fi, file ánh xạ token trong code, ARCHITECTURE hàng Design token, SPEC dẫn trang | `DESIGN_SYSTEM.md` tăng version và ghi Version History cho mọi đổi của nó và của `tokens.json` (file JSON không có frontmatter, không thêm trường lạ vào token); đổi token thì tính lại bảng tương phản ở mọi mode; trang bị ảnh hưởng theo dòng Wireframe ở trên; đổi hướng thị giác thì duyệt lại Gate 1W |
 | SRS: NFR | ARCHITECTURE §8 (`NFR → tactic`), ADR | Cập nhật tactic, ghi ADR nếu đổi quyết định |
+| SRS §6.1 hoặc §7 (có roadmap): thêm, bỏ FR hay NFR Must, đổi Ưu tiên, Bản phát hành hay Cách kiểm chứng | `docs/ROADMAP.md` | Thêm dòng `Chưa làm` (NFR Must thêm sau Gate 1 có Đợt đóng là đợt đang làm), đặt dòng của yêu cầu bỏ đi hay chuyển `Won't` sang `Bỏ` (giữ dòng để còn thấy lịch sử), sửa ô chép từ SRS, xếp lại thứ tự và cập nhật mục 1 |
+| SPEC đã `implemented` đổi theo bước 7 ở trên (có roadmap) | `docs/ROADMAP.md` | Dòng FR của SPEC về `Chưa làm`, bỏ hàng của chúng ở mục 4; giữ hàng cũ ở mục 5. Lần qua Gate 5 sau đó đánh tag có hậu tố `-2`, `-3` (mục 2.7) |
+| Roadmap mục 3: người duyệt quyết "Đưa vào change request" | Tài liệu ghi ở cột Quyết định | Đi theo quy trình change request ở trên, bắt đầu từ tài liệu đó; roadmap đổi theo dòng trên khi SRS đổi |
 | SRS: mô hình dữ liệu | ARCHITECTURE §5, SPEC §4 (migration) | Cập nhật schema, thêm migration |
 | ARCHITECTURE: schema, conventions, Error Code Registry | Mọi SPEC tham chiếu | Cập nhật contract và bảng lỗi |
 | ARCHITECTURE: tech stack | ADR, `CLAUDE.md`, `.claude/rules/` | Ghi ADR, cập nhật lệnh verify |
@@ -404,6 +434,7 @@ Prompt nằm ở [PROMPTS.md](PROMPTS.md).
 | SPEC | Bảng test SPEC §9 đủ AC và INV; NFR ở §1.5 mà SRS §8 kiểm bằng Test có TC theo CONVENTIONS mục 4; mỗi Core Invariant có test `CONC`; status `approved` | [ ] |
 | SPEC | Có Giai đoạn 1W: SPEC của FR có giao diện dẫn `SCR-*` của FR đó ở bảng Màn hình §3; không có thì ghi N/A | [ ] |
 | Prompt Spec | Bề mặt không gọi mô hình ngôn ngữ ghi N/A. Mỗi prompt mà SPEC dùng có Prompt Spec `approved` với ID đặt ở SRS §4.1 và bộ dữ liệu đủ mẫu trong `evals/` | [ ] |
+| Roadmap | Dự án có Intake cũ hơn `1.4.0` ghi N/A. `docs/ROADMAP.md` có; mọi dòng FR của đợt có SPEC, và mỗi SPEC đó có pha trong plan (cột Pha điền khi nhận "Duyệt Gate 4"); đối soát ở mục 2.6 không lệch | [ ] |
 | Plan | Plan trong `plans/` đúng định dạng ở CONVENTIONS mục 9, pha phủ hết File Diff, đã duyệt. Plan theo đợt: `release` và `spec_ids` gồm mọi SPEC của đợt, khóa `release` của SPEC (nếu có) khớp quy tắc ở mục 2.5, mỗi SPEC có pha, pha của mỗi SPEC phủ File Diff của SPEC đó | [ ] |
 | Brownfield | Greenfield ghi N/A. Tiêu chí DoR ở `brownfield/PLAYBOOK_BROWNFIELD.md` mục 7 đạt: Gate 0R, Gap Analysis và Migration Plan `approved`, SPEC áp phụ lục brownfield | [ ] |
 | Open Questions | Không còn câu hỏi `BLOCKING` trong mọi tài liệu thượng nguồn | [ ] |
@@ -422,6 +453,7 @@ DoD xét cho từng SPEC ở Gate 5, trên khoảng commit của SPEC (mục 2.6
 | Không có dependency mới ngoài tech stack đã duyệt hoặc ADR `accepted` | [ ] |
 | SPEC `implemented`, các pha của SPEC `done`; plan `completed` khi mọi SPEC trong `spec_ids` đã `implemented` (plan một SPEC: plan hoàn tất); ADR cho mọi deviation, version tài liệu đã tăng (hoàn tất ở Prompt 6) | [ ] |
 | Lệnh kiểm tra sót ở mục 4 trả về rỗng | [ ] |
+| Có roadmap (dự án có Intake cũ hơn `1.4.0` ghi N/A): dòng của SPEC `Xong` với bằng chứng ở mục 4; đối soát ở mục 2.6 không còn lệch; plan chỉ `completed` khi không còn dòng `Chưa làm` của đợt | [ ] |
 | Brownfield (greenfield ghi N/A): tiêu chí DoD ở `brownfield/PLAYBOOK_BROWNFIELD.md` mục 7 đạt | [ ] |
 | Open Questions đã giải quyết hoặc được hoãn có người chịu trách nhiệm | [ ] |
 

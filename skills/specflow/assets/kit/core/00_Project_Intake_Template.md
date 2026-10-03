@@ -2,7 +2,7 @@
 doc_type: intake
 status: draft
 version: 0.1.0
-template_version: 1.3.0
+template_version: 1.4.0
 language: vi-en
 overlays: []
 assembled_from: []
@@ -152,6 +152,7 @@ Loại dữ liệu hệ thống xử lý: <!-- fill: liệt kê dữ liệu cá 
 | `mode` | <!-- fill: chọn một: greenfield \| brownfield, khớp mục 4 --> |
 | `docs_mode` | `{{DOCS_MODE}}` |
 | Giai đoạn 1W (Wireframe) | <!-- fill: chọn một: Có \| Có, kèm HTML low-fi \| Không. Có khi overlays có frontend-web hoặc mobile-app, hoặc bề mặt khác có màn hình; Không thì Gate 1W ở mục 9 ghi N/A (PLAYBOOK mục 2) --> |
+| Định dạng tag | `{release}-{feature-key}` <!-- fill: mẫu tên tag mà agent đánh khi một SPEC qua Gate 5 (CONVENTIONS mục 11); giữ mặc định hoặc ghi mẫu khác của dự án trong backtick, ví dụ `v{release}-{feature-key}` --> |
 | Người duyệt | Theo mục 9 |
 
 | Overlay | Stack profile | Lý do chọn |

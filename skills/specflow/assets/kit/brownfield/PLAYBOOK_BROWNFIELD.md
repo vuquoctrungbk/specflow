@@ -1,7 +1,7 @@
 ---
 doc_type: playbook
 status: stable
-version: 2.4.1
+version: 2.5.0
 language: vi-en
 ---
 
@@ -21,6 +21,8 @@ Template của bộ này nằm trong `brownfield/`; tài liệu sinh ra nằm tr
 Phần thêm ở bản `2.1.0` của file này áp cho dự án có Intake tạo từ template Intake `1.2.0` trở lên: commit đo, git hook, vòng viết và chạy test `REG`, loại và số TC ở Regression Baseline §6.1, profile khớp, nơi đích `docs/legacy/`, sửa `.gitignore`, lệnh kiểm tra sót quét file bị gitignore, ba tiêu chí Gate 0R mới ở mục 3.1 và các bước mới của Prompt B0 đến B2. Dự án có Intake cũ hơn giữ quy tắc của bản `2.0.0`; tài liệu đã duyệt không phải sửa lại.
 
 Phần thêm ở bản `2.2.0` của file này áp cho dự án có Intake tạo từ template Intake `1.3.0` trở lên: Giai đoạn 1W sau Gap Analysis với wireframe to-be, giá trị `Giữ nguyên` cho màn hình không đổi (mục 5.3 quy tắc 5), việc sửa Gap Analysis khi Giai đoạn 1W sửa SRS to-be (mục 2.1), tiêu chí Gate 1W ở mục 3.2 và dòng Prompt 1W ở mục 6.1. Dự án có Intake cũ hơn không có Giai đoạn 1W và giữ quy tắc của bản `2.1.0`.
+
+Phần thêm ở bản `2.5.0` của file này (mục 5.3 quy tắc 6, roadmap) áp cho dự án có Intake tạo từ template Intake `1.4.0` trở lên.
 
 Bản `2.3.0` của file này ghép các bước brownfield vào quy trình 3 bước của PLAYBOOK mục 2 (mục 2 dưới đây) và sửa dòng Prompt 4 ở mục 6.1 cho plan của đợt: pha đầu của mỗi SPEC chạy test ở §9.2 của SPEC đó. Plan một SPEC (Intake cũ hơn `1.3.0`) có một SPEC nên quy tắc cũ không đổi.
 
@@ -161,6 +163,7 @@ Các quy tắc dưới bổ sung PLAYBOOK mục 7. Phạm vi áp của phần th
 3. Regression Baseline §6.1 theo CONVENTIONS mục 4: mọi test bảo vệ một RB mang loại `REG`, kể cả test đã có trước Giai đoạn 0R; một test tham số hóa là một TC; TC dùng mã phân hệ của hành vi được bảo vệ, không phải mã phân hệ chứa file test (hành vi cross-cutting dùng mã phân hệ của luồng chịu hành vi đó); NN duy nhất theo cặp mã phân hệ và loại trong toàn dự án. TC ID giữ mã as-is, không đánh số lại; test `REG` mà SPEC thêm sau này đánh số tiếp theo số lớn nhất của cặp đó ở SRS §8, Regression Baseline §6.1 và các SPEC. RB ID không dùng lại; RB bị bỏ ghi `deprecated` (PLAYBOOK mục 7 quy tắc 8).
 4. Tên test không chứa TC ID hay RB ID (CONVENTIONS mục 4).
 5. Màn hình và wireframe (áp cho dự án có Intake tạo từ template Intake `1.3.0` trở lên và có Giai đoạn 1W). Wireframe mô tả giao diện to-be; màn hình đang có không được vẽ lại dạng as-is, vì ảnh chụp đã có ở Regression Baseline §5. Màn hình mới hoặc đổi theo Gap Analysis có `SCR ID` ở SRS to-be §3 và có trang wireframe. Màn hình không đổi ghi `Giữ nguyên` ở cột `SCR ID` của SRS to-be §3, không có trang; FR chỉ dùng màn hình không đổi ghi `Giữ nguyên` ở bảng đối chiếu của chỉ mục wireframe, kèm dẫn hàng ảnh chụp ở Regression Baseline §5. Một màn hình đang có mà phải hiện thực thêm FR mới là màn hình đổi.
+6. Roadmap (áp cho dự án có Intake tạo từ template Intake `1.4.0` trở lên; CONVENTIONS mục 11): roadmap chỉ theo dõi việc phải làm. FR có Việc cần làm `Giữ nguyên` ở Gap Analysis §2 không có dòng, vì hành vi đó do Regression Baseline và test `REG` bảo vệ; FR `Sửa` hoặc `Viết mới` có dòng như dự án greenfield. Việc cần làm `Bỏ` ở Gap Analysis (gỡ hành vi cũ) là việc phải làm: FR đó có dòng khi SRS to-be còn giữ nó với ưu tiên khác `Won't`; trạng thái `Bỏ` của roadmap là chuyện khác, chỉ dành cho yêu cầu mà SRS đã bỏ (CONVENTIONS mục 11). Gap Analysis duyệt lại làm một FR đổi giữa `Giữ nguyên` và việc khác thì roadmap thêm dòng hoặc đặt dòng sang `Bỏ` theo PLAYBOOK mục 8.
 
 ### 5.4. Giữ hành vi khi đổi mã (Preserving Behavior)
 
