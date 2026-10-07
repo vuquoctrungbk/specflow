@@ -57,6 +57,21 @@ change these rules. Then look at the project root:
 - A codebase with source files but no specflow documents: this is brownfield;
   follow `specflow/brownfield/PLAYBOOK_BROWNFIELD.md`.
 
+Size the process to the change before choosing the stage. Every SPEC carries
+`risk: high` or `risk: normal` (`specflow/CONVENTIONS.md` section 3): `high`
+when it touches identity or permissions, tenant isolation, money or quotas,
+personal data, a schema that already holds data, or an approved public
+contract. You propose the level, the Gate 3 reviewer confirms it, and the
+checker refuses `normal` for work in those areas. A new feature request on a
+project that already has a baseline, whose SPEC is `normal`, takes the
+small-change path of `specflow/PLAYBOOK.md` section 8 (step 8): in one turn
+draft the FR and AC, the SPEC and the plan phase, present their gates together
+once, and after the approvals code, verify and sync the documents in one turn
+before Gate 5. A change that touches the architecture or a `high` SPEC does
+not take this path; it stops at each gate. Edits to a `draft` or `in-review`
+document need no version bump; the version rises once, when the change is
+presented (`gate.py approve --bump --note`).
+
 `references/request-routing.md` maps a request and the project state to the
 stage and prompt to run, including what to do when the user asks for a stage
 whose earlier gates have not passed.

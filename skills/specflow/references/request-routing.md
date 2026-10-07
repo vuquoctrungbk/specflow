@@ -20,6 +20,7 @@ to recognise them from what a user types.
 | Verify, review, check a SPEC against the code | 5 Verify | Prompt 5 | The SPEC's phases coded |
 | Update the documents after code changed | 5 Sync Docs | Prompt 6, then stop for Gate 5 | The SPEC's verify report from Prompt 5 passed |
 | "Roadmap", progress, "còn thiếu gì", "tiến độ", what is left to build | The stage in progress, after reconciling `docs/ROADMAP.md` (Intake 1.4.0 or later) | Prompt Resume (step 4 reconciles the roadmap by `specflow/PLAYBOOK.md` section 2.6) | Gate 1 (the roadmap is built when Gate 1 is approved) |
+| One more feature or a change on a project whose first release is done | By risk: `normal` takes the small-change path (PLAYBOOK section 8 step 8), presenting the SRS, SPEC and plan gates together; `high`, or a change of the architecture, goes through each stage as a new release | Prompts 1, 3, 4 and 6 in one turn for `normal`; one prompt per turn for `high` | Gate 5 of the earlier release |
 | "Continue", "tiếp tục", a new session on an existing project | The stage in progress | Prompt Resume | As for that stage |
 | "Duyệt Gate N", "approve gate N", or a list of failed rows | The stage of gate N | `specflow/PLAYBOOK.md` section 2.7 | Gate N's documents |
 
