@@ -1,7 +1,7 @@
 ---
 doc_type: overlay-section
 status: stable
-version: 1.0.1
+version: 1.1.0
 language: vi-en
 surface: backend-api
 ---
@@ -48,35 +48,7 @@ surface: backend-api
 
 ### Fragment OpenAPI 3.1 (OpenAPI Fragment)
 
-<!-- fill: Fragment đủ để sinh client và chạy contract test: path, method đúng với bảng Endpoint, operationId camelCase, security, requestBody với schema thật, mọi response trong ma trận lỗi, response thành công và response lỗi có schema của envelope (khai báo trong components), mỗi loại phần tử của `error.details` có thuộc tính khai báo rõ để client sinh được kiểu. Khi hiện thực, SPEC gộp fragment vào openapi/openapi.yaml, file này nằm trong File Diff. -->
-
-```yaml
-openapi: 3.1.0
-paths:
-  /api/v1/{{RESOURCE_PATH}}:
-    post:
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: {}
-      responses:
-        "201":
-          description: "Tạo thành công"
-          content:
-            application/json:
-              schema: {}
-        "400":
-          description: VALIDATION_ERROR
-        "401":
-          description: UNAUTHENTICATED
-        "403":
-          description: FORBIDDEN
-        "429":
-          description: RATE_LIMITED
-```
+<!-- fill: Thay dòng này bằng một dòng bắt đầu bằng "Tệp đi kèm:" theo CONVENTIONS mục 7, trỏ tới tệp cạnh SPEC này có tên là tên tệp SPEC bỏ đuôi .md cộng ".openapi.yaml", kèm danh sách operationId của fragment. Tạo tệp đó từ khung specflow/overlays/backend-api/spec-openapi-fragment-template.yaml. Fragment đủ để sinh client và chạy contract test: path, method đúng với bảng Endpoint, operationId camelCase, security, requestBody với schema thật, mọi response trong ma trận lỗi, response thành công và response lỗi có schema của envelope (khai báo trong components), mỗi loại phần tử của `error.details` có thuộc tính khai báo rõ để client sinh được kiểu. Khi hiện thực, SPEC gộp fragment vào openapi/openapi.yaml, file này nằm trong File Diff. -->
 <!-- /SLOT-CONTENT -->
 
 <!-- SLOT-CONTENT: spec.test-types -->

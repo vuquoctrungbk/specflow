@@ -2,15 +2,16 @@
 doc_type: spec
 status: draft
 version: 0.1.0
-template_version: 1.2.0
+template_version: 1.4.0
 language: vi-en
 spec_id: "{{SPEC_ID}}"
 release: "{{RELEASE}}"
+risk: high
 module_id: "{{MODULE_ID}}"
 parent: [docs/ARCHITECTURE.md]
 overlays: [frontend-web]
 assembled_from:
-  - core/04_Spec_Core_Template.md@1.2.0
+  - core/04_Spec_Core_Template.md@1.4.0
   - overlays/frontend-web/spec-contract-sections.md@1.2.0
 ---
 
@@ -23,6 +24,7 @@ assembled_from:
 ### 1.1. Mục tiêu kỹ thuật (Technical Objective)
 
 - SPEC ID: `{{SPEC_ID}}`
+- Mức rủi ro: <!-- fill: high hoặc normal, kèm lý do trong một câu; sửa khóa risk ở frontmatter cho khớp. high khi SPEC chạm xác thực hay phân quyền, cô lập giữa người thuê, tiền hay hạn ngạch, dữ liệu cá nhân, schema đang có dữ liệu, hoặc hợp đồng công khai đã duyệt (CONVENTIONS mục 3) -->
 - Mục tiêu: <!-- fill: tính năng làm gì, cho ai, trong 2 đến 4 câu; nêu FR chính. -->
 
 ### 1.2. Bất biến cốt lõi (Core Invariants)
@@ -224,7 +226,7 @@ sequenceDiagram
 
 ## 9. Kiểm thử (Tests)
 
-> Coding agent MUST viết test theo bảng này trước khi viết logic (TDD). Mỗi AC ở §1.5 có ít nhất một TC; mỗi bất biến ở §1.2 có ít nhất một TC loại `CONC`; mỗi NFR ở §1.5 mà SRS §8 kiểm bằng Test có TC ghi NFR đó ở cột "AC hoặc INV", trừ khi TC của nó đã nằm ở SPEC khác. TC đánh số tiếp sau số lớn nhất đã có ở SRS §8 và các SPEC khác (CONVENTIONS mục 4); sau khi chốt, cập nhật SRS §8 theo bảng này. Bảng ghi đúng file và tên của từng test; tên test mô tả hành vi bằng tiếng Anh, không chứa TC ID (CONVENTIONS mục 4).
+> Coding agent MUST viết test theo bảng này trước khi viết logic (TDD). Mỗi AC ở §1.5 có ít nhất một TC; mỗi bất biến ở §1.2 có ít nhất một TC loại `CONC`; mỗi NFR ở §1.5 mà SRS §8 kiểm bằng Test có TC ghi NFR đó ở cột "AC hoặc INV", trừ khi TC của nó đã nằm ở SPEC khác. TC lấy số kế tiếp ở `docs/INDEX.md` mục 3 (CONVENTIONS mục 4). Bảng ghi đúng file và tên của từng test; tên test mô tả hành vi bằng tiếng Anh, không chứa TC ID (CONVENTIONS mục 4).
 
 ### 9.1. Danh sách test bắt buộc (Required Tests)
 

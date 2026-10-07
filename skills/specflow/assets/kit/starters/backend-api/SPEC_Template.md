@@ -2,16 +2,17 @@
 doc_type: spec
 status: draft
 version: 0.1.0
-template_version: 1.2.0
+template_version: 1.4.0
 language: vi-en
 spec_id: "{{SPEC_ID}}"
 release: "{{RELEASE}}"
+risk: high
 module_id: "{{MODULE_ID}}"
 parent: [docs/ARCHITECTURE.md]
 overlays: [backend-api]
 assembled_from:
-  - core/04_Spec_Core_Template.md@1.2.0
-  - overlays/backend-api/spec-contract-sections.md@1.0.1
+  - core/04_Spec_Core_Template.md@1.4.0
+  - overlays/backend-api/spec-contract-sections.md@1.1.0
 ---
 
 # Đặc tả kỹ thuật (Technical Specification): {{FEATURE_NAME}}
@@ -23,6 +24,7 @@ assembled_from:
 ### 1.1. Mục tiêu kỹ thuật (Technical Objective)
 
 - SPEC ID: `{{SPEC_ID}}`
+- Mức rủi ro: <!-- fill: high hoặc normal, kèm lý do trong một câu; sửa khóa risk ở frontmatter cho khớp. high khi SPEC chạm xác thực hay phân quyền, cô lập giữa người thuê, tiền hay hạn ngạch, dữ liệu cá nhân, schema đang có dữ liệu, hoặc hợp đồng công khai đã duyệt (CONVENTIONS mục 3) -->
 - Mục tiêu: <!-- fill: tính năng làm gì, cho ai, trong 2 đến 4 câu; nêu FR chính. -->
 
 ### 1.2. Bất biến cốt lõi (Core Invariants)
@@ -117,35 +119,7 @@ Hình dạng contract phụ thuộc bề mặt. Mọi mã lỗi dùng trong mụ
 
 ### Fragment OpenAPI 3.1 (OpenAPI Fragment)
 
-<!-- fill: Fragment đủ để sinh client và chạy contract test: path, method đúng với bảng Endpoint, operationId camelCase, security, requestBody với schema thật, mọi response trong ma trận lỗi, response thành công và response lỗi có schema của envelope (khai báo trong components), mỗi loại phần tử của `error.details` có thuộc tính khai báo rõ để client sinh được kiểu. Khi hiện thực, SPEC gộp fragment vào openapi/openapi.yaml, file này nằm trong File Diff. -->
-
-```yaml
-openapi: 3.1.0
-paths:
-  /api/v1/{{RESOURCE_PATH}}:
-    post:
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: {}
-      responses:
-        "201":
-          description: "Tạo thành công"
-          content:
-            application/json:
-              schema: {}
-        "400":
-          description: VALIDATION_ERROR
-        "401":
-          description: UNAUTHENTICATED
-        "403":
-          description: FORBIDDEN
-        "429":
-          description: RATE_LIMITED
-```
+<!-- fill: Thay dòng này bằng một dòng bắt đầu bằng "Tệp đi kèm:" theo CONVENTIONS mục 7, trỏ tới tệp cạnh SPEC này có tên là tên tệp SPEC bỏ đuôi .md cộng ".openapi.yaml", kèm danh sách operationId của fragment. Tạo tệp đó từ khung specflow/overlays/backend-api/spec-openapi-fragment-template.yaml. Fragment đủ để sinh client và chạy contract test: path, method đúng với bảng Endpoint, operationId camelCase, security, requestBody với schema thật, mọi response trong ma trận lỗi, response thành công và response lỗi có schema của envelope (khai báo trong components), mỗi loại phần tử của `error.details` có thuộc tính khai báo rõ để client sinh được kiểu. Khi hiện thực, SPEC gộp fragment vào openapi/openapi.yaml, file này nằm trong File Diff. -->
 
 ## 4. Migration và dữ liệu (Migration & Data)
 
@@ -218,7 +192,7 @@ sequenceDiagram
 
 ## 9. Kiểm thử (Tests)
 
-> Coding agent MUST viết test theo bảng này trước khi viết logic (TDD). Mỗi AC ở §1.5 có ít nhất một TC; mỗi bất biến ở §1.2 có ít nhất một TC loại `CONC`; mỗi NFR ở §1.5 mà SRS §8 kiểm bằng Test có TC ghi NFR đó ở cột "AC hoặc INV", trừ khi TC của nó đã nằm ở SPEC khác. TC đánh số tiếp sau số lớn nhất đã có ở SRS §8 và các SPEC khác (CONVENTIONS mục 4); sau khi chốt, cập nhật SRS §8 theo bảng này. Bảng ghi đúng file và tên của từng test; tên test mô tả hành vi bằng tiếng Anh, không chứa TC ID (CONVENTIONS mục 4).
+> Coding agent MUST viết test theo bảng này trước khi viết logic (TDD). Mỗi AC ở §1.5 có ít nhất một TC; mỗi bất biến ở §1.2 có ít nhất một TC loại `CONC`; mỗi NFR ở §1.5 mà SRS §8 kiểm bằng Test có TC ghi NFR đó ở cột "AC hoặc INV", trừ khi TC của nó đã nằm ở SPEC khác. TC lấy số kế tiếp ở `docs/INDEX.md` mục 3 (CONVENTIONS mục 4). Bảng ghi đúng file và tên của từng test; tên test mô tả hành vi bằng tiếng Anh, không chứa TC ID (CONVENTIONS mục 4).
 
 ### 9.1. Danh sách test bắt buộc (Required Tests)
 

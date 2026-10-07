@@ -1,7 +1,7 @@
 ---
 doc_type: profile
 status: stable
-version: 1.1.0
+version: 1.1.1
 language: vi-en
 surface: mobile-app
 profile: react-native-expo
@@ -327,7 +327,9 @@ export function createApiClient(baseUrl: string, fetchImpl: typeof fetch = (inpu
     return { rows, error };
   }
   ```
-- Bộ máy đồng bộ bọc lượt đồng bộ bằng `createSingleFlight`, chạy thêm đúng một lượt cho kích hoạt đến giữa chừng khi lượt kết thúc `done` hoặc `offline`; kích hoạt: một lần khi mở xong cơ sở dữ liệu, `addNetworkStateListener` của `expo-network` (khi `isInternetReachable` là `true`), `AppState` (khi ứng dụng trở lại `active`), kéo để làm mới (`RefreshControl`), và bộ hẹn giờ khi ứng dụng đang mở. Bốn kích hoạt đầu bỏ giờ hẹn của backoff trước khi đồng bộ (chỉ giữ thời gian chờ `429` của thiết bị); khi một lượt kết thúc, bộ hẹn giờ đặt tới hết thời gian chờ `429` khi chưa có lượt nào chạy sau nó, nếu không thì tới giờ hẹn gần nhất còn chờ, kể cả giờ hẹn đã qua trong lúc lượt đó chạy (khi đó dùng độ trễ một giây thay vì bỏ qua), trừ khi lượt kết thúc bằng `auth-required` hoặc `failed`; lượt đầu tiên chạy sau khi hết thời gian chờ `429` xóa nó, nên thời gian chờ đó không đặt thêm bộ hẹn giờ nào; bộ hẹn giờ bị hủy khi ứng dụng xuống nền hoặc khi gỡ đăng ký. Làm mới phiên khi gặp `401` dùng `createSingleFlight(refresh, () => false)` để một loạt `401` chỉ làm mới một lần.
+- Bộ máy đồng bộ bọc lượt đồng bộ bằng `createSingleFlight`, chạy thêm đúng một lượt cho kích hoạt đến giữa chừng khi lượt kết thúc `done` hoặc `offline`; kích hoạt: một lần khi mở xong cơ sở dữ liệu, `addNetworkStateListener` của `expo-network` (khi `isInternetReachable` là `true`), `AppState` (khi ứng dụng trở lại `active`), kéo để làm mới (`RefreshControl`), và bộ hẹn giờ khi ứng dụng đang mở.
+  - Bốn kích hoạt đầu bỏ giờ hẹn của backoff trước khi đồng bộ (chỉ giữ thời gian chờ `429` của thiết bị); khi một lượt kết thúc, bộ hẹn giờ đặt tới hết thời gian chờ `429` khi chưa có lượt nào chạy sau nó, nếu không thì tới giờ hẹn gần nhất còn chờ, kể cả giờ hẹn đã qua trong lúc lượt đó chạy (khi đó dùng độ trễ một giây thay vì bỏ qua), trừ khi lượt kết thúc bằng `auth-required` hoặc `failed`; lượt đầu tiên chạy sau khi hết thời gian chờ `429` xóa nó, nên thời gian chờ đó không đặt thêm bộ hẹn giờ nào; bộ hẹn giờ bị hủy khi ứng dụng xuống nền hoặc khi gỡ đăng ký.
+  - Làm mới phiên khi gặp `401` dùng `createSingleFlight(refresh, () => false)` để một loạt `401` chỉ làm mới một lần.
 
   ```typescript
   // Runs one task at a time; calls that arrive during a run share it and schedule exactly one more run.

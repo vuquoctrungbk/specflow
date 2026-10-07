@@ -2,12 +2,12 @@
 doc_type: srs
 status: draft
 version: 0.1.0
-template_version: 1.2.0
+template_version: 1.3.0
 language: vi-en
 parent: [docs/intake/PROJECT_INTAKE.md]
 overlays: [backend-api, frontend-web]
 assembled_from:
-  - core/01_SRS_Template.md@1.2.0
+  - core/01_SRS_Template.md@1.3.0
   - overlays/backend-api/srs-sections.md@1.0.0
   - overlays/frontend-web/srs-sections.md@1.2.1
 ---
@@ -330,15 +330,15 @@ erDiagram
 
 ## 8. Truy xuất nguồn gốc và nghiệm thu (Traceability & Acceptance Matrix)
 
-<!-- fill: Bảng thứ nhất: mỗi FR có ít nhất một AC; mỗi AC có ít nhất một TC dự kiến. TC chốt ở SPEC §9; khi SPEC chốt, cập nhật TC ở cả hai bảng của mục này theo SPEC §9 (CONVENTIONS mục 4). Ngoại lệ quan trọng của use case cần AC riêng. Bảng thứ hai: mỗi NFR áp dụng ở §7 có một dòng; cột cuối ghi TC dự kiến khi kiểm bằng Test, hoặc bằng chứng và nơi lưu khi kiểm bằng Inspection, Demo, Analysis. -->
+<!-- fill: Bảng thứ nhất: mỗi FR có ít nhất một AC. TC không ghi ở đây: TC nằm ở SPEC §9, bảng tra AC tới TC ở docs/INDEX.md mục 5 (CONVENTIONS mục 4). Ngoại lệ quan trọng của use case cần AC riêng. Bảng thứ hai: mỗi NFR áp dụng ở §7 có một dòng; cột cuối ghi bằng chứng và nơi lưu khi kiểm bằng Inspection, Demo, Analysis, và ghi `Test ở SPEC §9` khi kiểm bằng Test. -->
 
-| FR ID | AC ID | Kịch bản nghiệm thu (Given-When-Then) | TC dự kiến |
-| --- | --- | --- | --- |
-| FR-{{MODULE_CODE}}-001 | AC-{{MODULE_CODE}}-01 | **Given:** <!-- fill --><br>**When:** <!-- fill --><br>**Then:** <!-- fill: kết quả đo được, gồm trạng thái dữ liệu --> | TC-{{MODULE_CODE}}-UNIT-01 |
-
-| NFR ID | Cách kiểm chứng | TC hoặc bằng chứng dự kiến |
+| FR ID | AC ID | Kịch bản nghiệm thu (Given-When-Then) |
 | --- | --- | --- |
-| NFR-PERF-01 | <!-- fill: khớp cột Cách kiểm chứng ở §7 --> | <!-- fill: ví dụ TC-{MOD}-LOAD-01, hoặc báo cáo cấu hình và nơi lưu --> |
+| FR-{{MODULE_CODE}}-001 | AC-{{MODULE_CODE}}-01 | **Given:** <!-- fill --><br>**When:** <!-- fill --><br>**Then:** <!-- fill: kết quả đo được, gồm trạng thái dữ liệu --> |
+
+| NFR ID | Cách kiểm chứng | Bằng chứng |
+| --- | --- | --- |
+| NFR-PERF-01 | <!-- fill: khớp cột Cách kiểm chứng ở §7 --> | <!-- fill: bằng chứng và nơi lưu, hoặc `Test ở SPEC §9` --> |
 
 ## 9. Giả định và câu hỏi mở (Assumptions & Open Questions)
 

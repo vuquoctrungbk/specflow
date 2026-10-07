@@ -1,0 +1,25 @@
+openapi: 3.1.0
+paths:
+  /api/v1/{{RESOURCE_PATH}}:
+    post:
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {}
+      responses:
+        "201":
+          description: "Tạo thành công"
+          content:
+            application/json:
+              schema: {}
+        "400":
+          description: VALIDATION_ERROR
+        "401":
+          description: UNAUTHENTICATED
+        "403":
+          description: FORBIDDEN
+        "429":
+          description: RATE_LIMITED

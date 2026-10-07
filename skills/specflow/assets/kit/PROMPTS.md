@@ -1,7 +1,7 @@
 ---
 doc_type: playbook
 status: stable
-version: 2.10.0
+version: 3.0.0
 language: vi-en
 ---
 
@@ -42,8 +42,8 @@ Template: SRS của giai đoạn (specflow/starters/<starter>/SRS_Template.md n�
 
 Nhiệm vụ:
 1. Tạo SRS theo docs_mode của Intake (monolithic: docs/srs/SRS.md; modular: docs/srs/00_SRS_MASTER.md và docs/srs/SRS_MODULE_<NAME>.md).
-2. Điền đủ mọi mục: sơ đồ bối cảnh, tác nhân, ràng buộc (gồm vận hành, bộ nhớ, thích ứng nơi triển khai), chuẩn phải tuân thủ, giao diện ngoài, mô hình dữ liệu logic, Business Rules, FR có phát biểu EARS theo specflow/CONVENTIONS.md mục 8 và use case có exception flow kèm mã lỗi, NFR đo được kèm cách kiểm chứng, ma trận FR → AC → TC và bảng NFR ở §8.
-3. Bề mặt có giao diện: bảng Giao diện người dùng ở SRS §3 liệt kê mọi màn hình, mỗi màn hình một SCR ID dạng SCR-{MOD}-NN theo specflow/CONVENTIONS.md mục 4; cột FR liệt kê mọi FR mà màn hình hiện thực, kể cả thành phần dùng chung như nút Đăng xuất ở header. Cột Bản phát hành ở §6.1 dùng đúng tên đợt ở Intake mục 6.
+2. Điền đủ mọi mục: sơ đồ bối cảnh, tác nhân, ràng buộc (gồm vận hành, bộ nhớ, thích ứng nơi triển khai), chuẩn phải tuân thủ, giao diện ngoài, mô hình dữ liệu logic, Business Rules, FR có phát biểu EARS theo specflow/CONVENTIONS.md mục 8 và use case có exception flow kèm mã lỗi, NFR đo được kèm cách kiểm chứng, ma trận FR → AC và bảng NFR ở §8 (TC không ghi ở SRS).
+3. Bề mặt có giao diện: bảng Giao diện người dùng ở SRS §3 liệt kê mọi màn hình, mỗi màn hình một SCR ID dạng SCR-{MOD}-NN theo specflow/CONVENTIONS.md mục 4; cột FR liệt kê mọi FR mà màn hình hiện thực, kể cả thành phần dùng chung như nút Đăng xuất ở header. Cột Bản phát hành ở §6.1 dùng đúng tên đợt ở Intake mục 6; chia FR sao cho mỗi đợt là một lát cắt dọc 1 đến 3 SPEC, đợt đầu gồm nền tảng và một luồng đầu cuối (specflow/PLAYBOOK.md mục 2), và đề xuất thêm đợt ở Intake khi một đợt quá lớn.
 4. Chép mọi câu ở mục Assumptions & Open Questions của Intake có ghi "trả lời trước Gate 1" mà chưa có câu trả lời vào SRS §9 với BLOCKING: Có, dẫn ID của Intake (PLAYBOOK mục 7 quy tắc 3).
 5. Tự kiểm checklist Overlay đã áp cho 3 slot SRS và chạy lệnh kiểm tra sót ở PLAYBOOK mục 4.
 
@@ -62,9 +62,9 @@ Nhiệm vụ:
 1. Đề xuất 2 đến 3 hướng thị giác theo specflow/CONVENTIONS.md mục 10.7 (căn cứ ở thương hiệu, người dùng, lĩnh vực và giọng điệu từ Intake, SRS và câu trả lời của bạn), nêu rõ theme mặc định của thư viện giao diện là một hướng như mọi hướng khác. Ghi các hướng đã đề xuất vào docs/design-system/DESIGN_SYSTEM.md (status draft, chỉ có mục 1, cột Chọn ghi Không ở mọi hàng) để Prompt Resume thấy dấu vết, rồi dừng hỏi bạn chọn đúng một hướng (một lượt hỏi trong giai đoạn, không phải gate).
 2. Sau khi bạn chọn: tạo docs/design-system/DESIGN_SYSTEM.md, docs/design-system/tokens.json và file mode (khi cần) từ specflow/core/07_Wireframe_Template/, ghi lý do chọn hướng, foundations, ba tầng token, primitive và danh mục component, pattern, template; tự tính bảng tương phản theo specflow/CONVENTIONS.md mục 10.7.
 3. Tạo docs/wireframes/00_WIREFRAME_INDEX.md: danh mục màn hình gồm đúng tập SCR ID ở bảng Giao diện người dùng của SRS §3, sơ đồ điều hướng, bảng đối chiếu có đúng một hàng cho mỗi FR ở SRS §6.1 có ưu tiên khác Won't (FR Won't không có hàng), ghi SCR-* hoặc "Không có giao diện" kèm lý do; dự án brownfield ghi "Giữ nguyên" cho màn hình không đổi.
-4. Mỗi SCR ID một trang trong docs/wireframes/, tên file là SCR ID cộng đuôi .md: mục đích, thông tin ưu tiên, hành động chính, FR và AC, bố cục low-fi trong khối text có số vùng theo specflow/CONVENTIONS.md mục 7 kèm dòng nội dung biên, chọn đúng một Template và dẫn Pattern, Component đã có trong danh mục hệ thống thiết kế, bảng thành phần kèm Component ID, năm trạng thái UI kèm AC, điều hướng vào và ra, dòng Màn hình xác thực, ghi chú trợ năng theo specflow/CONVENTIONS.md mục 10.2 và con số của OVERLAY.md. Không thêm màn hình ngoài SRS §3.
+4. Màn có thao tác ghi, hiển thị phụ thuộc quyền hoặc dữ liệu cá nhân: một trang riêng. Màn còn lại: vẽ trong mockup của luồng ở chỉ mục và ghi Theo luồng ở danh mục màn hình (specflow/PLAYBOOK.md mục 2.2.1). Trang riêng nằm trong docs/wireframes/, tên file là SCR ID cộng đuôi .md: mục đích, thông tin ưu tiên, hành động chính, FR và AC, bố cục low-fi trong khối text có số vùng theo specflow/CONVENTIONS.md mục 7 kèm dòng nội dung biên, chọn đúng một Template và dẫn Pattern, Component đã có trong danh mục hệ thống thiết kế, bảng thành phần kèm Component ID, năm trạng thái UI kèm AC, điều hướng vào và ra, dòng Màn hình xác thực, ghi chú trợ năng theo specflow/CONVENTIONS.md mục 10.2 và con số của OVERLAY.md. Không thêm màn hình ngoài SRS §3.
 5. HTML low-fi trong docs/wireframes/html/ chỉ tạo khi Intake mục 14 ghi Giai đoạn 1W "Có, kèm HTML low-fi", khai báo biến CSS từ token theo specflow/CONVENTIONS.md mục 10.7, theo quy tắc an toàn ở specflow/CONVENTIONS.md mục 7. Intake ghi "Có" mà tôi muốn HTML thì đề xuất sửa Intake mục 14 theo PLAYBOOK mục 8 trước.
-6. Lệch với SRS (màn hình thêm, bớt hay đổi; FR thiếu; AC không khớp trạng thái) theo PLAYBOOK mục 2.2.1: wireframe vẽ sai hoặc sót so với SRS thì sửa wireframe. SRS thiếu hoặc sai thì không sửa wireframe để che chỗ lệch; ghi câu hỏi BLOCKING ở chỉ mục kèm đề xuất sửa SRS; khi tôi đồng ý, sửa SRS theo PLAYBOOK mục 8 (tăng version, Version History, status in-review) để người duyệt Gate 1 duyệt lại.
+6. Lệch với SRS (màn hình thêm, bớt hay đổi; FR thiếu; AC không khớp trạng thái) theo PLAYBOOK mục 2.2.1: wireframe vẽ sai hoặc sót so với SRS thì sửa wireframe. SRS thiếu hoặc sai thì không sửa wireframe để che chỗ lệch; ghi câu hỏi BLOCKING ở chỉ mục kèm đề xuất sửa SRS; khi tôi đồng ý, sửa SRS theo PLAYBOOK mục 8 để người duyệt Gate 1 duyệt lại.
 7. Ở chỉ mục, điền bảng đánh giá heuristic theo specflow/CONVENTIONS.md mục 10.3 và bảng kiểm mẫu thiết kế lừa người dùng theo mục 10.4 cho toàn bộ chỉ mục và các trang; sửa vấn đề Nghiêm trọng và bỏ mẫu lừa người dùng trước khi dừng. Cần đổi SRS để sửa thì làm như nhiệm vụ 6.
 8. Chạy lệnh kiểm tra sót ở PLAYBOOK mục 4.
 
@@ -101,13 +101,14 @@ Template: Spec của giai đoạn cho đúng bề mặt (file SPEC trong specflo
 Nhiệm vụ:
 1. Tạo docs/specs/SPEC_{{FEATURE_KEY}}.md với ID {{SPEC_ID}} và khóa frontmatter release: {{RELEASE}}. Mọi FR ở §1.5 có Bản phát hành {{RELEASE}} ở SRS §6.1.
 2. Khóa File Diff và bảng MUST NOT touch. SPEC đầu tiên của mỗi bề mặt trong đợt nhận nền tảng dùng chung của bề mặt đó (khung dự án, cấu hình, thư viện dùng chung, hạ tầng test) vào File Diff; SPEC đầu tiên của cả đợt là SPEC không tiêu thụ contract của SPEC khác cùng đợt. SPEC sau của cùng bề mặt không lặp lại, cần sửa file đó thì ghi ở §2.1 (PLAYBOOK mục 2.4). Điền contract, migration, thuật toán có sơ đồ tuần tự, ranh giới transaction và idempotency, authorization matrix, event, observability, rollout.
-3. Bề mặt có giao diện: bảng Màn hình ở §3 dẫn SCR-* và trang wireframe của từng màn hình; không định nghĩa lại màn hình.
+3. Bề mặt có giao diện: bảng Màn hình ở §3 dẫn SCR-* và trang wireframe của màn hình, hoặc mockup của luồng ở chỉ mục với màn ghi Theo luồng; không định nghĩa lại màn hình.
 4. Bảng test gắn AC và TC, ghi file và tên từng test; mỗi Core Invariant có một test CONC; tên test mô tả hành vi, không chứa TC ID.
 5. Mã lỗi dùng đúng Error Code Registry; thiếu mã thì ghi Open Question, không tự thêm vào ARCHITECTURE.
-6. Tính năng gọi mô hình ngôn ngữ (overlay ai-llm-app): trước SPEC, viết hoặc cập nhật Prompt Spec docs/prompts/PROMPT_<NAME>.md từ specflow/overlays/ai-llm-app/Prompt_Spec_Template.md và bộ dữ liệu trong evals/; SPEC tham chiếu Prompt Spec.
-7. Cuối lượt, từ cột Bản phát hành ở SRS §6.1 và §1.5 của các SPEC thuộc đợt {{RELEASE}} (kể cả SPEC này), liệt kê FR có Bản phát hành {{RELEASE}} chưa nằm trong §1.5 của SPEC nào của đợt, kèm đề xuất SPEC tiếp theo (tính năng, phân hệ, bề mặt).
+6. Giữ SPEC trong trần kích thước của CONVENTIONS mục 7; khối máy đọc dài đặt ở tệp đi kèm cạnh SPEC. Lấy số TC kế tiếp ở docs/INDEX.md mục 3 khi dự án có chỉ mục.
+7. Tính năng gọi mô hình ngôn ngữ (overlay ai-llm-app): trước SPEC, viết hoặc cập nhật Prompt Spec docs/prompts/PROMPT_<NAME>.md từ specflow/overlays/ai-llm-app/Prompt_Spec_Template.md và bộ dữ liệu trong evals/; SPEC tham chiếu Prompt Spec.
+8. Cuối lượt, từ cột Bản phát hành ở SRS §6.1 và §1.5 của các SPEC thuộc đợt {{RELEASE}} (kể cả SPEC này), liệt kê FR có Bản phát hành {{RELEASE}} chưa nằm trong §1.5 của SPEC nào của đợt, kèm đề xuất SPEC tiếp theo (tính năng, phân hệ, bề mặt).
 
-Dừng khi: SPEC và Prompt Spec ở status in-review, exit gate của SPEC ở mục 2.4 đã tự kiểm. Không viết code. Chạy lại prompt này cho SPEC tiếp theo tới khi danh sách ở nhiệm vụ 7 rỗng; khi đó tự kiểm bảng Gate 3 theo đợt ở mục 2.4 và dừng ở Gate 3.
+Dừng khi: SPEC và Prompt Spec ở status in-review, exit gate của SPEC ở mục 2.4 đã tự kiểm. Không viết code. Chạy lại prompt này cho SPEC tiếp theo tới khi danh sách ở nhiệm vụ 8 rỗng; khi đó tự kiểm bảng Gate 3 theo đợt ở mục 2.4 và dừng ở Gate 3.
 ```
 
 ## Prompt 4: Implementation Plan của đợt và Coding TDD
@@ -116,11 +117,11 @@ Dừng khi: SPEC và Prompt Spec ở status in-review, exit gate của SPEC ở 
 Mọi SPEC của đợt {{RELEASE}} đã duyệt ở Gate 3.
 
 Phần A, lập plan. Đọc: theo specflow/PLAYBOOK.md mục 6, hàng "4a. Plan" và dòng áp cho mọi hàng.
-Tạo plans/{YYMMDD-HHmm}-release-{{RELEASE_SLUG}}/ (tên gợi ý theo CONVENTIONS mục 9) gồm plan.md và các phase-NN-<slug>.md. plan.md có release: {{RELEASE}} và spec_ids liệt kê mọi SPEC của đợt (SPEC có khóa release thì khóa đó bằng {{RELEASE}}); mỗi pha có spec_id thuộc spec_ids; pha của một SPEC đứng liền nhau, SPEC cung cấp contract đứng trước SPEC tiêu thụ, và ở mỗi bề mặt SPEC mang nền tảng dùng chung của bề mặt đứng trước SPEC khác của bề mặt đó (PLAYBOOK mục 2.4, 2.5). Khi có Giai đoạn 1W, thứ tự pha giao diện và e2e theo luồng điều hướng của chỉ mục wireframe; mỗi FR của đợt có pha thực hiện qua SPEC chứa nó. Pha của mỗi SPEC phủ hết File Diff và mọi TC ở §9 của SPEC đó. Mỗi pha: tập con File Diff, TC phải pass, lệnh verify, commit message. Plan theo định dạng ở specflow/CONVENTIONS.md mục 9; chạy lệnh kiểm tra sót ở PLAYBOOK mục 4.
+Tạo plans/{YYMMDD-HHmm}-release-{{RELEASE_SLUG}}/ (tên gợi ý theo CONVENTIONS mục 9) gồm plan.md và các phase-NN-<slug>.md. plan.md có release: {{RELEASE}} và spec_ids liệt kê mọi SPEC của đợt (SPEC có khóa release thì khóa đó bằng {{RELEASE}}); mỗi pha có spec_id thuộc spec_ids và mục Đọc trước liệt kê mục của SPEC và ARCHITECTURE pha cần (lấy số mục bằng scripts/project-index.py --outline); pha của một SPEC đứng liền nhau, SPEC cung cấp contract đứng trước SPEC tiêu thụ, và ở mỗi bề mặt SPEC mang nền tảng dùng chung của bề mặt đứng trước SPEC khác của bề mặt đó (PLAYBOOK mục 2.4, 2.5). Khi có Giai đoạn 1W, thứ tự pha giao diện và e2e theo luồng điều hướng của chỉ mục wireframe; mỗi FR của đợt có pha thực hiện qua SPEC chứa nó. Pha của mỗi SPEC phủ hết File Diff và mọi TC ở §9 của SPEC đó. Mỗi pha: tập con File Diff, TC phải pass, lệnh verify, commit message. Plan theo định dạng ở specflow/CONVENTIONS.md mục 9; chạy lệnh kiểm tra sót ở PLAYBOOK mục 4.
 Dừng sau phần A để tôi duyệt plan và DoR (Gate 4, PLAYBOOK mục 2.5 và 10.1).
 
 Phần B, chỉ chạy khi tôi đã duyệt plan. Đọc: theo specflow/PLAYBOOK.md mục 6, hàng "4b. Coding" và dòng áp cho mọi hàng. Thực thi lần lượt pha của SPEC đầu tiên chưa implemented. Mỗi pha: viết test đỏ, viết code tới khi xanh, refactor, chạy lệnh verify, đánh dấu checkbox, commit theo Conventional Commits bằng tiếng Anh. Chỉ sửa file trong File Diff của SPEC theo spec_id của pha. Có roadmap (Intake 1.4.0 trở lên: thiếu docs/ROADMAP.md thì báo và dựng theo PLAYBOOK mục 2.7 trước): trước mỗi pha đọc docs/ROADMAP.md và kiểm pha kế tiếp của plan không nhảy qua dòng Chưa làm nào; sau mỗi pha cập nhật roadmap theo PLAYBOOK mục 2.5; yêu cầu mới ghi vào mục 3 của roadmap, không làm.
-Dừng khi: mọi pha của SPEC đó xong, lệnh verify trong CLAUDE.md đều đạt và (có roadmap) dòng của SPEC đã Xong kèm bằng chứng, kết quả đối soát roadmap ở PLAYBOOK mục 2.6 dán vào báo cáo dừng. Dừng; bạn chạy Prompt 5 và 6 cho SPEC đó rồi gửi lại phần B cho SPEC tiếp theo. Cũng dừng khi gặp mâu thuẫn theo PLAYBOOK mục 7, hoặc khi cùng một lệnh test hay verify hỏng cùng lỗi sau 3 lần sửa (PLAYBOOK mục 7 quy tắc 11).
+Dừng khi: mọi pha của SPEC đó xong, lệnh verify trong CLAUDE.md đều đạt và (có roadmap) dòng của SPEC đã Xong kèm bằng chứng, kết quả đối soát roadmap ở PLAYBOOK mục 2.6 dán vào báo cáo dừng. SPEC risk: high, hoặc không ghi risk: dừng; bạn chạy Prompt 5 và 6 cho SPEC đó rồi gửi lại phần B cho SPEC tiếp theo. SPEC risk: normal: làm luôn verify theo checklist và đồng bộ tài liệu (Prompt 5 và 6) trong lượt này rồi dừng chờ "Duyệt Gate 5". Cũng dừng khi gặp mâu thuẫn theo PLAYBOOK mục 7, hoặc khi cùng một lệnh test hay verify hỏng cùng lỗi sau 3 lần sửa (PLAYBOOK mục 7 quy tắc 11).
 ```
 
 ## Prompt 5: Verify và Review
@@ -130,12 +131,14 @@ Các pha có spec_id {{SPEC_ID}} của plans/{{PLAN_DIR}} đã xong. Kiểm ch�
 
 Đọc: theo specflow/PLAYBOOK.md mục 6, hàng "5. Verify và Sync" và dòng áp cho mọi hàng; SPEC {{SPEC_ID}}, plan.
 
+Mức rủi ro (PLAYBOOK mục 2.6): SPEC risk: normal làm nhiệm vụ 1, 2, 4, 5 theo checklist rồi làm luôn Prompt 6 trong cùng lượt. SPEC risk: high, hoặc SPEC không ghi risk, làm đủ 1 đến 5 bằng agent ngữ cảnh mới, thêm thử đột biến cho mọi điều kiện phân quyền và phạm vi, và dừng trước Prompt 6.
+
 Nhiệm vụ:
 1. Chạy đủ lệnh verify trong CLAUDE.md; báo kết quả từng lệnh kèm exit code.
 2. Xác định khoảng commit của SPEC theo PLAYBOOK mục 2.6: từ cha của commit pha đầu tiên tới commit pha cuối cùng có spec_id {{SPEC_ID}}. So git diff trên khoảng đó với File Diff của SPEC (bỏ qua tài liệu và plan); liệt kê file thừa hoặc thiếu.
 3. Đối chiếu code với SPEC: contract, mã lỗi, thuật toán, authorization matrix, event; liệt kê mọi khác biệt kèm file:line.
 4. Kiểm tra mọi TC trong SPEC §9 có test đúng file và tên ghi trong bảng, và đang pass.
-5. Có roadmap: chạy đối soát ở PLAYBOOK mục 2.6 cho các dòng của SPEC này; báo đạt hay lệch cho từng bước.
+5. Có roadmap: chạy đối soát ở PLAYBOOK mục 2.6; báo đạt hay lệch.
 
 Dừng khi: có báo cáo đạt hoặc không đạt cho mọi tiêu chí DoD (mục 10.2), trừ hàng ghi "hoàn tất ở Prompt 6" (Prompt 6 mới cập nhật trạng thái tài liệu). Không sửa tài liệu ở bước này; sửa code chỉ khi tôi đồng ý.
 ```
@@ -143,19 +146,18 @@ Dừng khi: có báo cáo đạt hoặc không đạt cho mọi tiêu chí DoD (
 ## Prompt 6: Sync Docs
 
 ```text
-Verify đã đạt cho SPEC {{SPEC_ID}} của plans/{{PLAN_DIR}}. Đồng bộ tài liệu.
+Verify đã đạt cho SPEC {{SPEC_ID}} của plans/{{PLAN_DIR}}. Đồng bộ tài liệu. Nhiều SPEC risk: normal của cùng đợt được đồng bộ trong một lượt.
 
-Đọc: theo specflow/PLAYBOOK.md mục 6, hàng "5. Verify và Sync" và dòng áp cho mọi hàng; SPEC {{SPEC_ID}}, plan, báo cáo verify, tài liệu gốc cần sửa ở nhiệm vụ 4.
+Đọc: theo specflow/PLAYBOOK.md mục 6, hàng "5. Verify và Sync" và dòng áp cho mọi hàng; SPEC {{SPEC_ID}}, plan, báo cáo verify, tài liệu gốc cần sửa ở nhiệm vụ 3.
 
 Nhiệm vụ:
-1. SPEC: status implemented, bảng test §9 ghi đúng file test và tên test, tăng version, ghi Version History.
+1. SPEC: bảng test §9 ghi đúng file test và tên test; rồi chạy python3 specflow/scripts/gate.py . implemented kèm --note mô tả thay đổi và đường dẫn SPEC, để đặt status implemented, tăng version và ghi Version History (thêm --bump minor khi thay đổi vượt mức PATCH của PLAYBOOK mục 8).
 2. Plan: các pha có spec_id {{SPEC_ID}} sang done ở frontmatter và cột Status của bảng Phases (specflow/CONVENTIONS.md mục 9); status của plan là completed khi mọi SPEC trong spec_ids đã implemented, nếu không là in-progress.
-3. SRS §8: cập nhật TC của các AC và NFR mà SPEC nhận theo SPEC §9, tăng PATCH version SRS.
-4. Mỗi khác biệt đã chấp nhận so với SPEC hoặc ARCHITECTURE: tạo ADR, cập nhật tài liệu gốc theo PLAYBOOK mục 8.
-5. Chạy lệnh kiểm tra sót ở PLAYBOOK mục 4.
-6. Tính năng gọi mô hình ngôn ngữ: ghi kết quả của job đánh giá (phiên bản prompt, mô hình, chỉ số, token, đạt hay không) vào Prompt Spec §9.1.
-7. Có roadmap: dòng có mọi SPEC đã xong ở trạng thái Xong (chưa Đã xác nhận), mục 4 có bằng chứng theo TC đã chốt ở §9, mục 1 khớp số đếm (specflow/CONVENTIONS.md mục 11). SPEC là SPEC cuối của một đợt: mỗi dòng NFR có Đợt đóng là đợt đó và đã có bằng chứng ở SRS §8 chuyển Xong kèm hàng ở mục 4; dòng NFR chưa có bằng chứng giữ Chưa làm và được liệt kê trong báo cáo dừng. Không đặt Đã xác nhận và không tạo tag: việc đó làm khi nhận "Duyệt Gate 5" (PLAYBOOK mục 2.7).
-8. Commit các tài liệu và roadmap vừa sửa thành một commit tài liệu, ngoài khoảng commit của SPEC.
+3. Mỗi khác biệt đã chấp nhận so với SPEC hoặc ARCHITECTURE: tạo ADR, cập nhật tài liệu gốc theo PLAYBOOK mục 8.
+4. Chạy specflow/scripts/check-templates.sh --project . và sửa mọi lỗi nó báo ở tài liệu vừa sửa.
+5. Tính năng gọi mô hình ngôn ngữ: ghi kết quả của job đánh giá (phiên bản prompt, mô hình, chỉ số, token, đạt hay không) vào Prompt Spec §9.1.
+6. Có roadmap: dòng có mọi SPEC đã xong ở trạng thái Xong (chưa Đã xác nhận), mục 4 có bằng chứng theo TC đã chốt ở §9, mục 1 khớp số đếm (specflow/CONVENTIONS.md mục 11). SPEC là SPEC cuối của một đợt: mỗi dòng NFR có Đợt đóng là đợt đó và đã có bằng chứng ở SRS §8 chuyển Xong kèm hàng ở mục 4; dòng NFR chưa có bằng chứng giữ Chưa làm và được liệt kê trong báo cáo dừng. Không đặt Đã xác nhận và không tạo tag: việc đó làm khi nhận "Duyệt Gate 5" (PLAYBOOK mục 2.7).
+7. Commit các tài liệu và roadmap vừa sửa thành một commit tài liệu, ngoài khoảng commit của SPEC.
 
 Dừng khi: tài liệu khớp code, DoD mục 10.2 đạt cho SPEC này, danh sách thay đổi tài liệu đã báo. Dừng và chờ "Duyệt Gate 5" cho SPEC này (PLAYBOOK mục 2.6, 2.7).
 ```
@@ -165,14 +167,37 @@ Dừng khi: tài liệu khớp code, DoD mục 10.2 đạt cho SPEC này, danh s
 ```text
 Tiếp tục dự án {{PROJECT_NAME}} trong phiên mới.
 
-Đọc: CLAUDE.md, specflow/PLAYBOOK.md mục 2, 6 và 7, specflow/PROMPTS.md; dự án brownfield đọc thêm specflow/brownfield/PLAYBOOK_BROWNFIELD.md mục 2, 4 và 5.
+Đọc: theo specflow/PLAYBOOK.md mục 6, hàng "Resume"; dự án brownfield đọc thêm specflow/brownfield/PLAYBOOK_BROWNFIELD.md mục 2, 4 và 5.
 
 Nhiệm vụ:
 1. Xác định giai đoạn đang dở: tài liệu trong docs/ (kể cả docs/wireframes/ của Giai đoạn 1W) còn status draft hoặc in-review, hoặc plan trong plans/ còn pha in-progress hay todo. Xác định đợt đang làm: release của plan đang dở, hoặc đợt của SPEC còn draft hay in-review.
-2. Đọc tài liệu hoặc plan đang dở và các tài liệu trong parent của nó; plan đang dở thì đọc SPEC theo spec_id của pha đang dở. Tóm tắt trạng thái: phần đã xong, SPEC nào của đợt đã implemented, phần còn lại, Open Questions.
+2. Đọc trang gate mới nhất ở docs/gates/ và bản ghi trạng thái phiên trước ở plans/reports/ khi có, rồi tài liệu hoặc plan đang dở; pha đang dở thì đọc các mục ở Đọc trước của pha. Tài liệu thượng nguồn chỉ đọc mục cần, tra qua docs/INDEX.md. Tóm tắt trạng thái: phần đã xong, SPEC nào của đợt đã implemented, phần còn lại, Open Questions.
 3. Nếu đang ở Giai đoạn 4b: chạy lệnh verify trong CLAUDE.md để xác nhận trạng thái thật; checkbox [x] mà verify hỏng thì báo trước khi làm tiếp.
-4. Intake tạo từ template Intake 1.4.0 trở lên và đã qua Gate 1 mà thiếu docs/ROADMAP.md: báo, rồi dựng theo specflow/PLAYBOOK.md mục 2.7. Có docs/ROADMAP.md: đọc nó cùng specflow/CONVENTIONS.md mục 11, chạy đối soát ở specflow/PLAYBOOK.md mục 2.6 cho cả roadmap, báo tiến độ theo mục 1 và mọi lệch trước khi làm tiếp; việc kế tiếp là pha todo đầu tiên của plan, miễn nó không nhảy qua dòng Chưa làm nào (PLAYBOOK mục 2.5).
+4. Intake tạo từ template Intake 1.4.0 trở lên và đã qua Gate 1 mà thiếu docs/ROADMAP.md: báo, rồi dựng theo specflow/PLAYBOOK.md mục 2.7. Có docs/ROADMAP.md: chạy đối soát ở specflow/PLAYBOOK.md mục 2.6, báo tiến độ theo mục 1 và mọi lệch trước khi làm tiếp; việc kế tiếp là pha todo đầu tiên của plan, miễn nó không nhảy qua dòng Chưa làm nào (PLAYBOOK mục 2.5).
 5. Tiếp tục bước chưa xong đầu tiên theo đúng prompt của giai đoạn đó ở specflow/PROMPTS.md; dự án brownfield theo cả mục 6 của specflow/brownfield/PLAYBOOK_BROWNFIELD.md.
 
 Dừng khi: gặp điều kiện dừng của prompt giai đoạn đó, hoặc gặp mâu thuẫn theo PLAYBOOK mục 7.
 ```
+
+## Work packet cho agent con (Work Packet)
+
+Dùng khi giao một phần việc của Prompt 3, 4B, 5 hoặc 6 cho agent con (PLAYBOOK mục 7 quy tắc 13). Agent con chỉ biết những gì packet ghi, nên packet phải tự đủ và ngắn: khoảng 40 dòng, dẫn đường dẫn file phải đọc chứ không chép nội dung vào packet.
+
+```text
+Mục tiêu: <mục tiêu, một câu>
+Đọc (lát đọc, tra số mục ở docs/INDEX.md hoặc mục Đọc trước của pha): <các `tệp §mục`>
+Chỉ được sửa: <danh sách tệp> (hoặc "không sửa file nào")
+Dừng khi: <điều kiện dừng>
+Ngân sách: <số> lượt gọi công cụ; vượt thì dừng và báo cáo cái đã có
+Báo cáo cuối:
+Status: DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT
+Summary: một đến hai câu
+Concerns: tùy chọn
+```
+
+| Prompt | Mục tiêu | Lát đọc | Chỉ được sửa | Dừng khi |
+| --- | --- | --- | --- | --- |
+| 3 | Viết một SPEC của đợt | Hàng "3. Spec" ở PLAYBOOK mục 6, theo mục | SPEC đó và tệp đi kèm của nó | SPEC đủ mục, trong trần kích thước, điều phối đã chạy `check-templates.sh --project .` |
+| 4B | Làm một pha | Mục Đọc trước của pha | Bảng File của pha | Test của pha xanh, lệnh verify đạt, một commit |
+| 5 | Review và kiểm chứng một SPEC | Hàng "5. Verify và Sync" ở PLAYBOOK mục 6 | Không sửa file nào | Báo cáo phát hiện kèm `file:line` |
+| 6 | Đồng bộ tài liệu của một SPEC | Hàng "5. Verify và Sync" ở PLAYBOOK mục 6, bảng thay đổi ở mục 8 | Tài liệu mà bảng mục 8 nêu cho thay đổi này | Mọi hàng đối chiếu khớp; điều phối chạy `gate.py implemented` |

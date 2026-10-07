@@ -14,7 +14,7 @@ repository. When they agree, copy the contents of this skill's
 not project content). The result is the file set `specflow/PLAYBOOK.md`
 section 1.4 lists: `PLAYBOOK.md`, `PROMPTS.md`, `COMPATIBILITY.md`,
 `CONVENTIONS.md`, `CHANGELOG.md`, `core/`, `overlays/`, `starters/`,
-`brownfield/`.
+`brownfield/`, `scripts/`.
 
 Suggest committing `specflow/` with the documents, because approvers and later
 sessions review the documents against the rules that were in force when they

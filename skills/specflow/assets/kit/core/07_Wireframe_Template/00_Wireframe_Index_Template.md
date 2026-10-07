@@ -2,7 +2,7 @@
 doc_type: wireframe-index
 status: draft
 version: 0.1.0
-template_version: 1.3.0
+template_version: 1.4.0
 language: vi-en
 parent: [docs/design-system/DESIGN_SYSTEM.md]
 overlays: []
@@ -30,11 +30,13 @@ assembled_from: []
 
 | SCR ID | Tên | Điểm vào | Tác nhân | FR | Bản phát hành | File HTML |
 | --- | --- | --- | --- | --- | --- | --- |
-| {{SCR_ID}} | {{SCREEN_NAME}} | `{{ENTRY_POINT}}` | `ACT_{{ROLE_CODE}}` | FR-{{MODULE_CODE}}-001 | {{RELEASE}} | <!-- fill: chọn một: `docs/wireframes/html/{{SCR_ID}}.html` \| Không --> |
+| {{SCR_ID}} | {{SCREEN_NAME}} | `{{ENTRY_POINT}}` | `ACT_{{ROLE_CODE}}` | FR-{{MODULE_CODE}}-001 | {{RELEASE}} | <!-- fill: chọn một: `docs/wireframes/html/{{SCR_ID}}.html` \| Không \| Theo luồng (màn không có trang riêng, vẽ trong mockup của luồng ở mục 3) --> |
 
 ## 3. Sơ đồ điều hướng (Navigation Map)
 
 <!-- fill: Mỗi màn hình của danh mục là một nút, nhãn gồm SCR ID và tên; cạnh là điều hướng chính, nhãn cạnh là thao tác hoặc điều kiện (ví dụ chưa đăng nhập, lưu thành công). Web: ghi route cần đăng nhập và điều hướng bằng nút quay lại của trình duyệt khi khác luồng thường. Mobile: ghi màn hình mở được bằng deep link hoặc thông báo đẩy, nhóm tab hoặc stack của navigator, và nơi cử chỉ quay lại của hệ thống đưa người dùng tới. Sơ đồ khớp mục điều hướng vào và ra của từng trang. -->
+
+<!-- fill: Mockup theo luồng. Với mỗi luồng có màn ghi Theo luồng ở danh mục: một tiêu đề `### Luồng: <tên>` và một khối `text` low-fi vẽ lần lượt các màn đó, mỗi màn mở đầu bằng SCR ID, kèm trạng thái rỗng và lỗi khi màn có. Không có màn nào ghi Theo luồng thì xóa chú thích này. -->
 
 ```mermaid
 flowchart LR

@@ -1,7 +1,7 @@
 ---
 doc_type: conventions
 status: stable
-version: 2.10.1
+version: 3.0.0
 language: vi-en
 ---
 
@@ -160,6 +160,7 @@ Mọi file `.md` của bộ mẫu (trừ `README.md`, `CHANGELOG.md`) và mọi 
 | `stack_profile_none` | Tài liệu sinh ra có nguồn cần stack profile (ARCHITECTURE, SPEC, `CLAUDE.md`, rule trong `.claude/rules/`) khi ít nhất một bề mặt của nó không có profile khớp; không dùng ở tài liệu khác. Áp cho dự án có Intake tạo từ template Intake `1.2.0` trở lên | Danh sách tên overlay (bề mặt) không có profile khớp, ví dụ `[backend-api]`. Bề mặt khác của cùng tài liệu vẫn ghi profile ở `assembled_from`. `scripts/check-templates.sh` không đòi mục `stack-profiles/` cho bề mặt có tên trong danh sách, và báo lỗi khi bề mặt có tên trong danh sách mà `assembled_from` vẫn có profile của nó |
 | `spec_id` | Spec, implementation phase; implementation plan tạo từ template plan `1.1.0` trở xuống | `SPEC-{MOD}-NNN`. Ở pha của plan theo đợt, `spec_id` là một phần tử của `spec_ids` của `plan.md` |
 | `release` | Implementation plan tạo từ template plan `1.2.0` trở lên; spec tạo từ template SPEC `1.2.0` trở lên ở dự án có Intake tạo từ template Intake `1.3.0` trở lên | Đúng một nhãn ở cột Bản phát hành của SRS §6.1, ví dụ `R1`. Plan: đợt mà plan thực hiện (mục 9). Spec: đợt của SPEC; mọi FR ở SPEC §1.5 có Bản phát hành bằng nhãn này (PLAYBOOK mục 2.4), trừ SPEC `superseded` (PLAYBOOK mục 8). SPEC tạo từ template cũ hơn không có khóa và vẫn hợp lệ; đợt của nó là Bản phát hành của các FR ở §1.5. Dự án có Intake cũ hơn `1.3.0` không ghi khóa này ở SPEC |
+| `risk` | Spec tạo từ template SPEC `1.4.0` trở lên | `high` hoặc `normal`; SPEC cũ hơn không ghi khóa này được coi là `high`. `high` khi SPEC chạm xác thực hay phân quyền, cô lập giữa người thuê, tiền hay hạn ngạch, dữ liệu cá nhân, schema đang có dữ liệu, hoặc hợp đồng công khai đã duyệt; còn lại `normal`. Agent đề xuất mức, người duyệt Gate 3 xác nhận và đổi được. SPEC `normal` có ở §1.1 một dòng `- Mức rủi ro:` nêu lý do và giữ File Diff ở §2 của chính nó, đường dẫn trong backtick. `scripts/check-templates.sh` là lưới tối thiểu, không thay người duyệt: nó từ chối `normal` khi một đường dẫn ở File Diff mang từ của các vùng trên (ví dụ `auth`, `login`, `session`, `tenant`, `billing`, `payment`, `personal`), nằm trong vùng mà Intake mục 14 khai ở hàng `Vùng rủi ro cao`, hoặc là file schema, migration hay hợp đồng công khai có mô tả thay đổi phá hủy (xóa, đổi tên, đổi kiểu, `NOT NULL`). Mức này quyết định cách đóng SPEC (PLAYBOOK mục 2.6) và việc dừng chờ duyệt khi sửa (PLAYBOOK mục 8) |
 | `spec_ids` | Implementation plan tạo từ template plan `1.2.0` trở lên | YAML list `SPEC-{MOD}-NNN`: mọi SPEC của đợt `release` mà plan thực hiện (mục 9) |
 | `prompt_id` | Prompt spec | `PROMPT-{MOD}-NNN` |
 | `paths` | Rule trong `.claude/rules/` | Danh sách glob mà rule áp dụng (khóa của Claude Code) |
@@ -203,7 +204,7 @@ Trạng thái hợp lệ theo `doc_type` (`scripts/check-templates.sh` đọc b�
 | Template (hệ thống thiết kế) | `TPL-NN` | `docs/design-system/DESIGN_SYSTEM.md` (CONVENTIONS mục 10.7) |
 | Yêu cầu phi chức năng | `NFR-{CAT}-NN`, CAT thuộc `PERF`, `SEC`, `RELI`, `MAINT`, `USAB`, `FLEX`, `SAFE`, `I18N`, `LEGAL`, `OBS`, `DATA`, `COMPAT`, `COST`; ánh xạ sang ISO/IEC 25010 ở mục 8 | SRS §7 |
 | Tiêu chí nghiệm thu | `AC-{MOD}-NN` | SRS §8 |
-| Test case | `TC-{MOD}-{TYPE}-NN`, TYPE thuộc `UNIT`, `INT`, `E2E`, `CTR`, `CONC`, `LOAD`, `A11Y`, `VIS`, `EVAL`, `INJ`, `COST`, `SMOKE`, `REG` | SRS §8 (dự kiến), SPEC §9 (chốt); `REG` ở Regression Baseline §6.1 |
+| Test case | `TC-{MOD}-{TYPE}-NN`, TYPE thuộc `UNIT`, `INT`, `E2E`, `CTR`, `CONC`, `LOAD`, `A11Y`, `VIS`, `EVAL`, `INJ`, `COST`, `SMOKE`, `REG` | SPEC §9; `REG` ở Regression Baseline §6.1 |
 | Quyết định kiến trúc | `ADR-NNNN`, file `docs/adr/NNNN-<slug>.md` | ARCHITECTURE §12 |
 | Spec | `SPEC-{MOD}-NNN`, file `docs/specs/SPEC_<FEATURE_KEY>.md` | SPEC frontmatter và §1 |
 | Prompt (overlay `ai-llm-app`) | `PROMPT-{MOD}-NNN`, file `docs/prompts/PROMPT_<NAME>.md` | SRS §4.1 (bảng bộ dữ liệu đánh giá); Prompt Spec frontmatter và §1 dùng lại |
@@ -220,10 +221,10 @@ Chuỗi truy xuất bắt buộc:
 
 - `GOAL → FR, NFR`: cột Nguồn của FR (bảng thuộc tính SRS §6.1) và của NFR (SRS §7) dẫn `GOAL-NN` khi yêu cầu phục vụ một mục tiêu; mỗi `GOAL-NN` ở Intake được ít nhất một FR hoặc NFR dẫn. Áp cho SRS tạo từ template SRS `1.2.0` trở lên và Intake tạo từ template Intake `1.1.0` trở lên.
 - `FR → SCR` (áp cho dự án có Intake tạo từ template Intake `1.3.0` trở lên và có Giai đoạn 1W): cột FR của bảng Giao diện người dùng ở SRS §3 và bảng đối chiếu của chỉ mục wireframe. Danh sách màn hình có một nguồn là SRS §3. Chỉ mục wireframe lặp lại danh sách đó ở danh mục màn hình, và người duyệt Gate 1W đối chiếu hai nơi (`scripts/check-templates.sh` kiểm điều này trên ví dụ của bộ mẫu); SPEC chỉ dẫn `SCR-*`, không định nghĩa màn hình. Bảng đối chiếu có đúng một hàng cho mỗi FR ở SRS §6.1 có ưu tiên khác `Won't` (FR `Won't` không được làm nên không có hàng), ghi một trong: các `SCR-*` hiện thực FR; `Không có giao diện` kèm lý do; hoặc, ở dự án brownfield, `Giữ nguyên` kèm dẫn ảnh chụp ở Regression Baseline §5. Trang wireframe dẫn ít nhất một FR có thật; AC mà trang dẫn có ở SRS §8 và thuộc một FR của trang. Cột FR ở hàng của một màn hình trong bảng Giao diện người dùng ở SRS §3 liệt kê đúng các FR mà màn hình đó hiện thực, tức đúng các FR có hàng đối chiếu ghi `SCR ID` của màn hình; hai nơi lệch nhau thì sửa SRS theo PLAYBOOK mục 8.
-- `FR → AC → TC` trong SRS §8; `AC → TC → file test → tên test` trong SPEC §9. SPEC §9 ghi đúng file và tên test của từng TC. Tên test mô tả hành vi bằng tiếng Anh, ví dụ `rejects an expired access token`; không đưa TC ID hay ID quy trình vào tên test, chú thích mã, tên migration hay commit message, vì các ID này thuộc tài liệu và truy vết qua bảng.
+- `FR → AC` trong SRS §8; `AC → TC → file test → tên test` trong SPEC §9, là nơi duy nhất ghi TC cùng với file pha. Bảng tra AC và NFR tới TC của cả dự án do `scripts/project-index.py` sinh ở `docs/INDEX.md` mục 5. SRS tạo từ template SRS cũ hơn `1.3.0` còn cột TC ở §8: cột đó không cập nhật nữa và không được đối chiếu với SPEC. SPEC §9 ghi đúng file và tên test của từng TC. Tên test mô tả hành vi bằng tiếng Anh, ví dụ `rejects an expired access token`; không đưa TC ID hay ID quy trình vào tên test, chú thích mã, tên migration hay commit message, vì các ID này thuộc tài liệu và truy vết qua bảng.
 - Mỗi Core Invariant `INV-NN` của spec có ít nhất một `TC-{MOD}-CONC-NN`.
-- `NFR → TC`: SPEC §9 nhận `NFR-*` ở cột "AC hoặc INV". Một NFR ở SPEC §1.5 có cách kiểm `Test` ở bảng NFR của SRS §8 thì SPEC đó có test ghi NFR ở §9, hoặc ít nhất một TC mà SRS §8 lên kế hoạch cho NFR đã có trong SPEC §9 của một SPEC của dự án (NFR dùng chung nhiều phân hệ có thể được kiểm bởi test của phân hệ khác). TC dự kiến của phân hệ chưa có SPEC vẫn được ghi ở SRS §8. NFR kiểm bằng `Inspection`, `Demo` hoặc `Analysis` không cần TC. TC chạy trên môi trường thật (tải, smoke) được lên lịch ở plan như TC khác: pha viết kịch bản test và kiểm kịch bản chạy được; lần chạy trên staging ghi ở ARCHITECTURE §11, chặn bước triển khai production chứ không chặn Definition of Done của tính năng. Áp cho SRS tạo từ template SRS `1.2.0` trở lên.
-- Đánh số TC: NN của `TC-{MOD}-{TYPE}-NN` duy nhất theo cặp (MOD, TYPE) trong toàn dự án. SPEC mới đánh số tiếp sau số lớn nhất đã có ở SRS §8, Regression Baseline §6.1 và các SPEC khác; test `REG` của brownfield theo cùng quy tắc (`brownfield/PLAYBOOK_BROWNFIELD.md` mục 5.3). SRS §8 ghi TC dự kiến; khi SPEC chốt TC, Sync Docs cập nhật SRS §8 theo SPEC §9, để mỗi TC ở SRS §8 của một AC hay NFR mà SPEC đã nhận có trong SPEC §9. Hai quy tắc này áp cho SPEC tạo từ template SPEC `1.1.0` trở lên. Ở Regression Baseline §6.1, mọi test bảo vệ một `RB-*` mang loại `REG`, kể cả test có sẵn trước Giai đoạn 0R, vì loại ghi vai trò bảo vệ hành vi chứ không ghi kiểu test; một test tham số hóa là một TC; TC dùng mã phân hệ của hành vi được bảo vệ, không phải mã phân hệ chứa file test. Ba quy tắc này và việc tính §6.1 khi đánh số áp cho dự án có Intake tạo từ template Intake `1.2.0` trở lên; ID đã duyệt không đánh số lại.
+- `NFR → TC`: SPEC §9 nhận `NFR-*` ở cột "AC hoặc INV". Một NFR ở SPEC §1.5 có cách kiểm `Test` ở bảng NFR của SRS §8 thì SPEC đó có test ghi NFR ở §9 (NFR dùng chung nhiều phân hệ có thể được kiểm bởi test của một SPEC khác đã ghi NFR đó ở §9 của nó). NFR kiểm bằng `Inspection`, `Demo` hoặc `Analysis` không cần TC. TC chạy trên môi trường thật (tải, smoke) được lên lịch ở plan như TC khác: pha viết kịch bản test và kiểm kịch bản chạy được; lần chạy trên staging ghi ở ARCHITECTURE §11, chặn bước triển khai production chứ không chặn Definition of Done của tính năng. Áp cho SRS tạo từ template SRS `1.2.0` trở lên.
+- Đánh số TC: NN của `TC-{MOD}-{TYPE}-NN` duy nhất theo cặp (MOD, TYPE) trong toàn dự án. SPEC mới lấy số kế tiếp ở `docs/INDEX.md` mục 3 (viết nhiều SPEC trong một lượt thì dựng lại chỉ mục sau mỗi SPEC, để hai SPEC không lấy cùng số), tính trên mọi SPEC, Regression Baseline §6.1 và cột TC còn lại ở SRS cũ; test `REG` của brownfield theo cùng quy tắc (`brownfield/PLAYBOOK_BROWNFIELD.md` mục 5.3). Ở Regression Baseline §6.1, mọi test bảo vệ một `RB-*` mang loại `REG`, kể cả test có sẵn trước Giai đoạn 0R, vì loại ghi vai trò bảo vệ hành vi chứ không ghi kiểu test; một test tham số hóa là một TC; TC dùng mã phân hệ của hành vi được bảo vệ, không phải mã phân hệ chứa file test. Ba quy tắc này và việc tính §6.1 khi đánh số áp cho dự án có Intake tạo từ template Intake `1.2.0` trở lên; ID đã duyệt không đánh số lại.
 - `NFR → tactic → ADR` trong ARCHITECTURE §8; `MOD → thành phần → thư mục` trong ARCHITECTURE §4.
 - `FR, NFR → dòng roadmap → SPEC → pha → commit → tag` trong `docs/ROADMAP.md` (mục 11), áp cho dự án có Intake tạo từ template Intake `1.4.0` trở lên.
 - Mỗi mã lỗi xuất hiện ở SRS hoặc SPEC MUST có trong Error Code Registry.
@@ -256,6 +257,8 @@ specflow/                                 # bộ mẫu specflow, chỉ đọc
 docs/
 ├── intake/PROJECT_INTAKE.md
 ├── ROADMAP.md                        # Intake 1.4.0 trở lên: việc phải làm, tiến độ, mốc (CONVENTIONS mục 11)
+├── INDEX.md                          # chỉ mục sinh bởi specflow/scripts/project-index.py, không sửa tay
+├── gates/GATE-N.md                   # sổ duyệt của từng gate, do specflow/scripts/gate.py ghi, không sửa tay
 ├── srs/SRS.md                        # monolithic
 ├── srs/00_SRS_MASTER.md              # modular: tổng quan, NFR, mô hình dữ liệu chung
 ├── srs/SRS_MODULE_<NAME>.md          # modular: use case của từng phân hệ
@@ -263,8 +266,10 @@ docs/
 ├── wireframes/SCR-<MOD>-NN.md        # một trang cho mỗi màn hình
 ├── wireframes/html/SCR-<MOD>-NN.html # tùy chọn: HTML tĩnh low-fi
 ├── ARCHITECTURE.md
+├── architecture/                     # tệp đi kèm của ARCHITECTURE (CONVENTIONS mục 7)
 ├── adr/NNNN-<slug>.md
 ├── specs/SPEC_<FEATURE_KEY>.md
+├── specs/SPEC_<FEATURE_KEY>.*        # tệp đi kèm của SPEC, không phải .md (CONVENTIONS mục 7)
 ├── prompts/PROMPT_<NAME>.md          # chỉ khi dùng overlay ai-llm-app
 ├── design-system/DESIGN_SYSTEM.md    # khi có giao diện (Giai đoạn 1W): hệ thống thiết kế
 ├── design-system/tokens.json         # token nguồn, định dạng DTCG
@@ -284,69 +289,15 @@ CLAUDE.md
 Implementation Plan và report nằm trong `plans/` theo định dạng ở CONVENTIONS mục 9 (không cần công cụ riêng); không tạo `IMPLEMENTATION_PLAN.md` ở gốc. Khi rule toàn cục và tài liệu specflow mâu thuẫn về bố cục hoặc quy trình tài liệu, tài liệu specflow thắng trong phạm vi dự án này. Các rule toàn cục khác (development rules, git, process management) vẫn có hiệu lực.
 <!-- END: docs-layout-override -->
 
-Khối của các bản trước vẫn hợp lệ: dự án đang dùng khối cũ không phải sửa `CLAUDE.md`, và `scripts/check-templates.sh` chấp nhận khối hiện tại cùng mọi khối cũ dưới đây. Mỗi khối cũ có nhãn riêng và được ghi thành diff so với khối hiện tại ở trên, theo thứ tự dòng của khối hiện tại. Dòng `+` đứng ngay sau một dòng `-` là dòng đổi: khối cũ có dòng `-` ở vị trí của dòng `+` đó. Dòng `+` không có dòng `-` ngay trước nó là dòng chèn thêm: khối cũ không có dòng đó. Mọi dòng khác của khối hiện tại giống hệt khối cũ.
-
-- `docs-layout-legacy-2.0`: khối của bản `2.0.0` và `2.1.0`, định dạng plan theo `ak plan` và chưa có `docs/wireframes/`, `docs/design-system/`, `docs/ROADMAP.md`.
-- `docs-layout-legacy-2.2`: khối của bản `2.2.0` và `2.3.0`, chưa có `docs/wireframes/`, `docs/design-system/`, `docs/ROADMAP.md`.
-- `docs-layout-legacy-2.4`: khối của các bản `2.4.0` đến `2.7.0`, chưa có `docs/design-system/` và `docs/ROADMAP.md`.
-- `docs-layout-legacy-2.8`: khối của các bản `2.8.0` đến `2.9.1`, chưa có `docs/ROADMAP.md`.
-
-<!-- BEGIN: docs-layout-legacy-2.0 -->
-```diff
--| `project-roadmap.md` | Implementation Plan trong `plans/` và phạm vi trong SRS §1.2 |
-+| `project-roadmap.md` | `docs/ROADMAP.md` (dự án có Intake tạo từ template Intake `1.4.0` trở lên), Implementation Plan trong `plans/` và phạm vi trong SRS §1.2 |
-+├── ROADMAP.md                        # Intake 1.4.0 trở lên: việc phải làm, tiến độ, mốc (CONVENTIONS mục 11)
-+├── wireframes/00_WIREFRAME_INDEX.md  # khi có giao diện (Giai đoạn 1W): chỉ mục, đối chiếu FR
-+├── wireframes/SCR-<MOD>-NN.md        # một trang cho mỗi màn hình
-+├── wireframes/html/SCR-<MOD>-NN.html # tùy chọn: HTML tĩnh low-fi
--├── design-guidelines.md              # tùy chọn, khi có frontend
-+├── design-system/DESIGN_SYSTEM.md    # khi có giao diện (Giai đoạn 1W): hệ thống thiết kế
-+├── design-system/tokens.json         # token nguồn, định dạng DTCG
--plans/{YYMMDD-HHmm}-{slug}/plan.md    # Implementation Plan, định dạng ak plan
-+plans/{YYMMDD-HHmm}-{slug}/plan.md    # Implementation Plan, định dạng ở CONVENTIONS mục 9
--Implementation Plan và report nằm trong `plans/` theo định dạng của `ak plan`; không tạo `IMPLEMENTATION_PLAN.md` ở gốc. Khi rule toàn cục và tài liệu specflow mâu thuẫn về bố cục hoặc quy trình tài liệu, tài liệu specflow thắng trong phạm vi dự án này. Các rule toàn cục khác (development rules, git, process management) vẫn có hiệu lực.
-+Implementation Plan và report nằm trong `plans/` theo định dạng ở CONVENTIONS mục 9 (không cần công cụ riêng); không tạo `IMPLEMENTATION_PLAN.md` ở gốc. Khi rule toàn cục và tài liệu specflow mâu thuẫn về bố cục hoặc quy trình tài liệu, tài liệu specflow thắng trong phạm vi dự án này. Các rule toàn cục khác (development rules, git, process management) vẫn có hiệu lực.
-```
-<!-- END: docs-layout-legacy-2.0 -->
-
-<!-- BEGIN: docs-layout-legacy-2.2 -->
-```diff
--| `project-roadmap.md` | Implementation Plan trong `plans/` và phạm vi trong SRS §1.2 |
-+| `project-roadmap.md` | `docs/ROADMAP.md` (dự án có Intake tạo từ template Intake `1.4.0` trở lên), Implementation Plan trong `plans/` và phạm vi trong SRS §1.2 |
-+├── ROADMAP.md                        # Intake 1.4.0 trở lên: việc phải làm, tiến độ, mốc (CONVENTIONS mục 11)
-+├── wireframes/00_WIREFRAME_INDEX.md  # khi có giao diện (Giai đoạn 1W): chỉ mục, đối chiếu FR
-+├── wireframes/SCR-<MOD>-NN.md        # một trang cho mỗi màn hình
-+├── wireframes/html/SCR-<MOD>-NN.html # tùy chọn: HTML tĩnh low-fi
--├── design-guidelines.md              # tùy chọn, khi có frontend
-+├── design-system/DESIGN_SYSTEM.md    # khi có giao diện (Giai đoạn 1W): hệ thống thiết kế
-+├── design-system/tokens.json         # token nguồn, định dạng DTCG
-```
-<!-- END: docs-layout-legacy-2.2 -->
-
-<!-- BEGIN: docs-layout-legacy-2.4 -->
-```diff
--| `project-roadmap.md` | Implementation Plan trong `plans/` và phạm vi trong SRS §1.2 |
-+| `project-roadmap.md` | `docs/ROADMAP.md` (dự án có Intake tạo từ template Intake `1.4.0` trở lên), Implementation Plan trong `plans/` và phạm vi trong SRS §1.2 |
-+├── ROADMAP.md                        # Intake 1.4.0 trở lên: việc phải làm, tiến độ, mốc (CONVENTIONS mục 11)
--├── design-guidelines.md              # tùy chọn, khi có frontend
-+├── design-system/DESIGN_SYSTEM.md    # khi có giao diện (Giai đoạn 1W): hệ thống thiết kế
-+├── design-system/tokens.json         # token nguồn, định dạng DTCG
-```
-<!-- END: docs-layout-legacy-2.4 -->
-
-<!-- BEGIN: docs-layout-legacy-2.8 -->
-```diff
--| `project-roadmap.md` | Implementation Plan trong `plans/` và phạm vi trong SRS §1.2 |
-+| `project-roadmap.md` | `docs/ROADMAP.md` (dự án có Intake tạo từ template Intake `1.4.0` trở lên), Implementation Plan trong `plans/` và phạm vi trong SRS §1.2 |
-+├── ROADMAP.md                        # Intake 1.4.0 trở lên: việc phải làm, tiến độ, mốc (CONVENTIONS mục 11)
-```
-<!-- END: docs-layout-legacy-2.8 -->
+Khối của các bản trước vẫn hợp lệ: dự án đang dùng khối cũ không phải sửa `CLAUDE.md`. `scripts/check-templates.sh` chấp nhận khối hiện tại cùng mọi khối cũ ghi ở `COMPATIBILITY.md` mục 6.
 
 ## 7. Định dạng (Formatting)
 
 - Không dùng LaTeX. Dùng ký tự `≤ ≥ ≠ × Σ →` và đặt công thức trong inline code, ví dụ `total = Σ line_amount`.
 - Mọi sơ đồ dùng Mermaid (`flowchart`, `sequenceDiagram`, `erDiagram`, `stateDiagram-v2`); C4 vẽ bằng `flowchart`. Không vẽ khung ASCII. Cây thư mục dùng khối `text`.
 - Bảng markdown luôn có hàng header. Khối code luôn có nhãn ngôn ngữ. Không dùng emoji.
+- Trần kích thước của tài liệu dự án: một SPEC dài tối đa 500 dòng, tài liệu ARCHITECTURE tối đa 800 dòng, một dòng của hai loại tài liệu này tối đa 1.000 ký tự. Agent đọc tài liệu theo mục, nên tài liệu dài và dòng dài làm mỗi lần đọc tốn nhiều hơn mức cần. Tài liệu vượt trần MUST chuyển khối máy đọc ra tệp đi kèm theo gạch đầu dòng dưới; ô bảng dài thì tách thành nhiều hàng hoặc thành danh sách dưới bảng. `scripts/check-templates.sh` báo lỗi với SPEC tạo từ template SPEC `1.3.0` trở lên và ARCHITECTURE tạo từ template Architecture `1.2.0` trở lên; tài liệu tạo từ template cũ hơn chỉ nhận cảnh báo. Trần dòng tính cả dòng trong khối code và frontmatter. Ngoại lệ so với cách đọc phiên bản ở mục 3: để trần xét phiên bản template, checker lấy phiên bản mới hơn giữa `template_version` và mục core của `assembled_from`, và tài liệu không ghi cả hai khóa chịu trần; nhờ đó hạ một trong hai khóa không né được trần.
+- Tệp đi kèm (companion file), chỉ dùng cho SPEC và ARCHITECTURE: một khối máy đọc của SPEC hoặc ARCHITECTURE (hợp đồng API, lược đồ dữ liệu, mã mẫu, cây thư mục, sơ đồ Mermaid dài) được phép nằm ở một tệp riêng thay cho khối code trong tài liệu. Tại chỗ của khối, tài liệu ghi một dòng bắt đầu bằng `Tệp đi kèm:`, tiếp theo là đường dẫn tính từ gốc dự án đặt trong inline code và một câu nói tệp chứa gì. Tệp đi kèm không phải file markdown. Tệp đi kèm của SPEC đặt cạnh SPEC, tên là tên tệp SPEC bỏ đuôi `.md`, thêm một tên ngắn và đuôi của định dạng, ví dụ `docs/specs/SPEC_ORDER_CREATE.openapi.yaml`; tệp đi kèm của ARCHITECTURE đặt trong `docs/architecture/`, ví dụ `docs/architecture/schema.prisma`. Tệp đi kèm là một phần của tài liệu dẫn nó: cùng version, cùng lần duyệt, và sửa tệp là sửa tài liệu theo PLAYBOOK mục 8. Mỗi tệp đi kèm được đúng một tài liệu dẫn; `scripts/check-templates.sh` kiểm tệp có thật, đặt đúng chỗ và có đúng một tài liệu dẫn.
 - Tên file: template lõi và template brownfield `NN_Name_Template.md`; template Implementation Plan là thư mục `core/05_Implementation_Plan_Template/` theo mục 9; template wireframe là thư mục `core/07_Wireframe_Template/` gồm `00_Wireframe_Index_Template.md` (chỉ mục), `SCR_Screen_Template.md` (trang màn hình), `Design_System_Template.md` (tài liệu hệ thống thiết kế) và `Design_Tokens_Template.json` (token mẫu); template bổ sung của overlay `Name_Template.md`; file section của overlay `kebab-case.md`, trừ `OVERLAY.md`; stack profile `stack-profiles/<profile>.md`; starter `<DOC>_Template.md` và `CLAUDE.md.template`; file hạ tầng viết hoa như `PLAYBOOK.md`, `PROMPTS.md`, `COMPATIBILITY.md`, `PLAYBOOK_BROWNFIELD.md`, `Spec_Brownfield_Addendum.md`.
 - Heading của core và template brownfield đánh số (`## N.`, `### N.M.`), trừ template Implementation Plan (theo mục 9), mục `## Documentation Layout` và phụ lục của Agent Context; heading trong khối SLOT-CONTENT và PROFILE-CONTENT không đánh số.
 - Mục bắt buộc theo `doc_type` (heading chứa đúng chuỗi, script đọc các dòng dưới):
@@ -421,6 +372,7 @@ Từ mơ hồ (Vague Terms, 29148 §5.2.7). Cột Phát biểu yêu cầu của 
 - `plan.md` có bảng Phases: mỗi file pha có đúng một dòng, cột Phase là link tương đối tới file đó, cột Status khớp `status` của pha. Cột Status so khớp không phân biệt hoa thường; `Pending` tương đương `todo`, `In progress` tương đương `in-progress`, `Completed` tương đương `done`.
 - Không có link trong bảng Phases trỏ tới file pha không tồn tại.
 - `plan.md` tạo từ template plan `1.3.0` trở lên có mục `Lịch sử phiên bản (Version History)`.
+- File pha tạo từ template pha `1.3.0` trở lên có mục `Đọc trước (Read First)`: mỗi dòng là một tài liệu của dự án trong inline code, theo sau là các mục cần đọc dạng `§1.5, §2, §9`. `scripts/check-templates.sh` báo lỗi khi tài liệu không tồn tại, khi một dòng không có mục nào, hoặc khi tài liệu không có tiêu đề mang số mục đó. Pha chỉ nạp các mục này của SPEC và ARCHITECTURE, không nạp toàn văn (PLAYBOOK mục 6, hàng 4b).
 
 Plan theo đợt phát hành (Release Plan). Áp cho dự án có Intake tạo từ template Intake `1.3.0` trở lên; plan của các dự án này tạo từ template plan `1.2.0` trở lên. Một plan thực hiện mọi SPEC của một đợt (PLAYBOOK mục 2.5):
 
@@ -630,7 +582,7 @@ Mục 2.2, Yêu cầu phi chức năng mức Must:
 Mục 3, 4, 5 và mục 1:
 
 - Mục 3: cột Quyết định là `Chờ`, `Đưa vào change request` kèm tài liệu bị đổi, hoặc `Bỏ` kèm lý do. Không có yêu cầu thì một hàng `Không có`.
-- Mục 4: mỗi dòng `Xong` hoặc `Đã xác nhận` ở mục 2 có đúng một hàng, và không có hàng cho dòng khác. Bằng chứng: dòng FR ghi ID các TC có ở §9 của SPEC của dòng; dòng NFR ghi bằng chứng theo SRS §8, có ID TC khi Cách kiểm chứng là `Test`. Commit là hash rút gọn hay đầy đủ (7 đến 40 ký tự hexa). Tag là `Chưa có` khi dòng `Xong`.
+- Mục 4: mỗi dòng `Xong` hoặc `Đã xác nhận` ở mục 2 có đúng một hàng, và không có hàng cho dòng khác. Bằng chứng: dòng FR ghi ID các TC có ở §9 của SPEC của dòng; dòng NFR ghi bằng chứng theo SRS §8; khi Cách kiểm chứng là `Test` thì ghi ID các TC ở SPEC §9 có tên NFR đó. Commit là hash rút gọn hay đầy đủ (7 đến 40 ký tự hexa). Tag là `Chưa có` khi dòng `Xong`.
 - Dòng `Đã xác nhận` có tag ở mục 4, tag đó có hàng ở mục 5 (với dòng FR: hàng của một SPEC của dòng), và mọi SPEC của dòng FR có `status: implemented`.
 - Mục 5: một hàng cho mỗi lần một SPEC qua Gate 5: Tag (không lặp; lần thứ hai trở đi của cùng SPEC thêm hậu tố `-2`, `-3`), SPEC của dự án, Commit (hexa như mục 4), Ngày, Người duyệt, Cách rollback. Hàng mới nhất của mỗi SPEC có tag là tag của ít nhất một hàng ở mục 4, trừ khi SPEC đang được sửa lại theo PLAYBOOK mục 8 (dòng của nó đã về `Chưa làm`); hàng cũ hơn giữ để còn rollback được.
 - Mục 1: một hàng cho mỗi đợt ở SRS §6.1, không thiếu, không lặp, theo thứ tự đợt ở Intake (mục Mốc thời gian). Tổng là số dòng FR của đợt cộng số dòng NFR có Đợt đóng là đợt đó, không tính dòng `Bỏ`; Xong đếm dòng `Xong` hoặc `Đã xác nhận`; Đã xác nhận đếm dòng `Đã xác nhận`; Hoàn thành là Đã xác nhận chia Tổng nhân 100, làm tròn xuống, kèm `%`. Dòng `- Đang làm:` ghi `Không` khi không dòng nào `Đang làm`, nếu không thì ghi ID mọi dòng `Đang làm`, kèm SPEC và pha.

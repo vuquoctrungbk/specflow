@@ -7,7 +7,7 @@ effort: "{{EFFORT}}"
 dependencies: []
 doc_type: implementation-phase
 version: 0.1.0
-template_version: 1.2.0
+template_version: 1.3.0
 language: vi-en
 spec_id: "{{SPEC_ID}}"
 parent: ["docs/specs/SPEC_{{FEATURE_KEY}}.md"]
@@ -23,6 +23,13 @@ assembled_from: []
 
 - SPEC: `{{SPEC_ID}}` tại `docs/specs/SPEC_{{FEATURE_KEY}}.md`, một phần tử của `spec_ids` ở `plan.md`.
 - Mục tiêu của pha: <!-- fill: 1 đến 2 câu, nêu AC hoặc INV mà pha này làm cho đạt -->
+
+## Đọc trước (Read First)
+
+<!-- fill: Mỗi dòng một tài liệu và các mục agent phải đọc để làm pha này, dạng `đường dẫn` §mục, §mục. Lấy số mục bằng `python3 <thư mục kit>/scripts/project-index.py . --outline <tệp>`. Giữ ba dòng dưới nếu đúng, thêm mục SPEC hay ARCHITECTURE khác mà pha cần (ví dụ §3 cho pha DTO, §5 cho pha migration), và xóa chú thích này. Tệp đi kèm chỉ ghi khi pha cần nội dung của nó -->
+
+- `docs/specs/SPEC_{{FEATURE_KEY}}.md` §1.5, §2, §9
+- `docs/ARCHITECTURE.md` §4
 
 ## Yêu cầu (Requirements)
 

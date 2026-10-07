@@ -2,7 +2,7 @@
 doc_type: architecture
 status: draft
 version: 0.1.0
-template_version: 1.1.0
+template_version: 1.2.0
 language: vi-en
 parent: [docs/intake/PROJECT_INTAKE.md]
 overlays: []

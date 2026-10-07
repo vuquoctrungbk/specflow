@@ -2,12 +2,12 @@
 doc_type: architecture
 status: draft
 version: 0.1.0
-template_version: 1.1.0
+template_version: 1.2.0
 language: vi-en
 parent: [docs/intake/PROJECT_INTAKE.md]
 overlays: [backend-api, frontend-web]
 assembled_from:
-  - core/02_Architecture_Core_Template.md@1.1.0
+  - core/02_Architecture_Core_Template.md@1.2.0
   - overlays/backend-api/architecture-sections.md@1.0.0
   - overlays/frontend-web/architecture-sections.md@1.3.0
 ---

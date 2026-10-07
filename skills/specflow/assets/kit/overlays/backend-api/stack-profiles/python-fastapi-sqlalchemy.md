@@ -1,7 +1,7 @@
 ---
 doc_type: profile
 status: stable
-version: 1.0.0
+version: 1.0.1
 language: vi-en
 surface: backend-api
 profile: python-fastapi-sqlalchemy
@@ -533,7 +533,7 @@ class RecordResponse(BaseModel):
 - Tên trường trong Python là `snake_case`; JSON ra ngoài dùng `camelCase` qua `serialization_alias`, khớp quy ước envelope ở ARCHITECTURE §6.2.
 - `from_attributes=True` cho response để dựng thẳng từ đối tượng ORM.
 - Ràng buộc độ dài và miền giá trị ghi ngay trong kiểu (`StringConstraints`, `Literal`, `Field(ge=..., le=...)`), nên tài liệu OpenAPI sinh ra mang đúng ràng buộc của SPEC.
-- Route khai báo kiểu trả về `Envelope[{{ENTITY_NAME}}Response]` và các mã lỗi riêng của nó trong `responses`; fragment OpenAPI trong SPEC là phần cắt ra từ `openapi/openapi.yaml` đã xuất, không viết tay.
+- Route khai báo kiểu trả về `Envelope[{{ENTITY_NAME}}Response]` và các mã lỗi riêng của nó trong `responses`; fragment OpenAPI của SPEC (tệp đi kèm của SPEC) là phần cắt ra từ `openapi/openapi.yaml` đã xuất, không viết tay.
 <!-- /PROFILE-CONTENT -->
 
 ### 4.5. Công cụ test (cho SPEC §9)

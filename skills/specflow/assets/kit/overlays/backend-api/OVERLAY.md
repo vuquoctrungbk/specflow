@@ -30,7 +30,7 @@ Dạng test `CONC` của bề mặt này: gửi N request song song (N ≥ 10) t
 | `arch.schema` | [architecture-sections.md](architecture-sections.md) | Quy tắc schema vật lý và schema theo DSL | Có |
 | `arch.conventions` | [architecture-sections.md](architecture-sections.md) | Quy ước API HTTP, ánh xạ mã lỗi sang HTTP, transaction | Có |
 | `arch.deployment` | [architecture-sections.md](architecture-sections.md) | Đóng gói, migration khi triển khai, phát hành, rollback | Không |
-| `spec.contract` | [spec-contract-sections.md](spec-contract-sections.md) | Endpoint, DTO, phản hồi, ma trận lỗi, fragment OpenAPI 3.1 | Có |
+| `spec.contract` | [spec-contract-sections.md](spec-contract-sections.md) | Endpoint, DTO, phản hồi, ma trận lỗi, fragment OpenAPI 3.1 ở tệp đi kèm (khung: `spec-openapi-fragment-template.yaml`) | Có |
 | `spec.test-types` | [spec-contract-sections.md](spec-contract-sections.md) | Unit, integration, e2e, contract, `CONC`, load smoke | Có |
 | `playbook.verify-commands` | [verify-commands.md](verify-commands.md) | Bảng lệnh verify | Không |
 

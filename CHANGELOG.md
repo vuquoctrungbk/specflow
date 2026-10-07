@@ -4,6 +4,46 @@ All notable changes to specflow. Versions follow Semantic Versioning. The
 version of the rules and templates that a release carries is in
 `skills/specflow/assets/kit/VERSION`.
 
+## [2.0.0] - 2026-10-07
+
+The kit carries rules 3.0.0. The process now scales with what a change touches
+and how risky it is, not with the number of documents. This is a major release
+because the rules for changing and closing documents differ from 1.x.
+
+### Added
+
+- `risk: high|normal` on every SPEC. The agent proposes the level, the Gate 3
+  reviewer confirms it, and the checker refuses `normal` when the File Diff
+  touches identity, tenancy, money, personal data, a schema that holds data or
+  a published contract. `high` keeps the independent review with mutation
+  testing; `normal` is verified by checklist and synced in the same turn.
+- A small-change path: one request on a project that already has a baseline,
+  whose SPEC is `normal`, is drafted in one turn, presented to its gates once,
+  then coded, verified and synced before Gate 5.
+- `scripts/gate.py` records a gate approval (status, version, history row,
+  `docs/gates/GATE-N.md`, index) and refuses a batch with an open `BLOCKING`
+  question, a wrong status, or a checker error in the presented document.
+  `approve --bump --note` raises a version once, when the change is presented.
+- Releases are vertical slices of one to three SPECs; the checker enforces the
+  order of releases. Spikes, flow-based wireframes (`Theo luồng`), a `small`
+  project size that merges stops, and a Read First section in each plan phase.
+
+### Changed
+
+- A `draft` or `in-review` document is edited freely; its version rises once,
+  at the gate. Only a change to a public contract, a schema, security, scope
+  or a `high` SPEC stops for approval; other changes are approved once, with
+  the pull request.
+- Test cases live only in SPEC section 9; `docs/INDEX.md` section 5 maps
+  AC and NFR to them. The SRS no longer carries a TC column.
+- Acceptance run on one small feature: a probe run with a `normal` SPEC cost
+  about half of the 2.10.1 baseline, but two later runs, where the agent rated
+  the same feature `high`, cost 7% less on average and read 30% more cache
+  (the independent review is extra work the old rules did not require). The
+  saving of the light path rests on one run.
+- The kit carries rules 3.0.0 and its scripts: the checker, the index, the
+  gate script.
+
 ## [1.3.1] - 2026-10-03
 
 ### Fixed
