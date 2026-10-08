@@ -1,7 +1,7 @@
 ---
 doc_type: playbook
 status: stable
-version: 3.1.0
+version: 3.2.0
 language: vi-en
 ---
 
@@ -30,6 +30,7 @@ Mỗi quy tắc dưới chỉ áp dụng khi tài liệu tương ứng được 
 | Hệ thống thiết kế (CONVENTIONS mục 10.7), dòng Template và Pattern, cột Component ID, HTML đọc token; hàng Gate 1W về hướng, token, danh mục, HTML; hàng Gate 2 và Definition of Ready về hệ thống thiết kế; nhiệm vụ ánh xạ token của Prompt 2 và golden rule chỉ dùng token | chỉ mục `1.3.0`, trang `1.4.0`, xét theo từng file | CONVENTIONS mục 3 |
 | Dòng Thông tin ưu tiên, Hành động chính và Nội dung biên, số vùng của bố cục low-fi (CONVENTIONS mục 7 và 10.7) | Trang wireframe `1.5.0`, xét theo từng trang | CONVENTIONS mục 3 |
 | Giá trị `Có, kèm HTML đầy đủ` của Giai đoạn 1W và HTML đầy đủ của mỗi trang (CONVENTIONS mục 7). Intake cũ hơn `1.6.0` ghi `Có` hoặc `Có, kèm HTML low-fi`: HTML vẫn tùy chọn, chỉ theo quy tắc an toàn và token | Intake `1.6.0` (giá trị ở mục 14), xét theo từng dự án | CONVENTIONS mục 7 |
+| Pha dựng màn hình dẫn trang wireframe và file HTML ở `Đọc trước`, và giai đoạn code dựng lại đúng màn đã duyệt (PLAYBOOK mục 2.5) | Pha `1.3.0` ở dự án có HTML, xét theo từng pha | CONVENTIONS mục 9 |
 
 ## 2. Dự án có Intake cũ hơn `1.3.0`
 

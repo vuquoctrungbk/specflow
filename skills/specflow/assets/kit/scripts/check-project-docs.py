@@ -345,8 +345,12 @@ def check_flow_screens(docs):
                        "`text` block under its flow (PLAYBOOK §2.2.1)")
 
 
-def check_read_first(everything):
-    """A phase lists the sections of the SPEC and the architecture it needs, so the agent reads those and not the files."""
+def check_read_first(everything, root):
+    """A phase lists the sections of the SPEC and the architecture it needs, so the agent reads those and not the files.
+
+    A phase that builds a screen also reads the approved HTML of that screen, so it rebuilds the design instead of
+    making a second one (PLAYBOOK §2.5).
+    """
     by_path = {d.path: d for d in everything}
     companions = {name for d in everything for _n, name in d.companions}
     for doc in everything:
@@ -361,8 +365,16 @@ def check_read_first(everything):
             report("ERROR", doc.path, "no entry in the section Đọc trước (Read First): list each document to read as "
                    "`path` §section (CONVENTIONS §9)")
             continue
+        screens, drawings = {}, set()
         for n, m in entries:
             name, rest = m.groups()
+            if re.fullmatch(r"docs/wireframes/html/SCR-[A-Z0-9-]+\.html", name):
+                drawings.add(name)
+                if not (root / name).is_file():
+                    report("ERROR", f"{doc.path}:{n}", f"Read First names {name}, which does not exist (CONVENTIONS §9)")
+                continue  # an HTML screen is read whole, like a companion file
+            if (m2 := re.fullmatch(r"docs/wireframes/(SCR-[A-Z0-9-]+)\.md", name)):
+                screens[f"docs/wireframes/html/{m2.group(1)}.html"] = n
             refs = SECTION_REF_RE.findall(rest)
             where = f"{doc.path}:{n}"
             target = by_path.get(name)
@@ -376,6 +388,10 @@ def check_read_first(everything):
                 for ref in refs:
                     if not any(re.match(rf"{re.escape(ref)}\.?\s", text) for _line, _lv, text in target.headings):
                         report("ERROR", where, f"{name} has no section §{ref} (CONVENTIONS §9)")
+        for html, n in sorted(screens.items()):
+            if html not in drawings and (root / html).is_file():
+                report("ERROR", f"{doc.path}:{n}", f"Read First names the page of a screen but not {html}, the approved "
+                       "screen the phase rebuilds (PLAYBOOK §2.5)")
 
 
 def check_sizes(doc):
@@ -480,7 +496,7 @@ def main(argv):
         check_table_shape(doc)
         check_sizes(doc)
     check_duplicates(docs)
-    check_read_first(everything)
+    check_read_first(everything, root)
     check_risk(docs)
     check_release_order(docs)
     check_flow_screens(docs)

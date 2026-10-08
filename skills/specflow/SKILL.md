@@ -3,7 +3,7 @@ name: specflow
 description: Spec-first software documentation with the specflow method. Turns a request plus any attached brief, notes or files into gated project documents (Project Intake, SRS per ISO/IEC/IEEE 29148, wireframes checked against the SRS, Architecture and ADRs, SPECs of a release, implementation plan), asking the user focused questions with options before completing each document, and stopping at each gate for approval. Use when the user types /specflow or $specflow, when the project has a specflow/ folder, or when the user wants the specflow method to write, continue, review or approve an Intake, SRS, requirements spec, wireframe, architecture, ADR, SPEC or implementation plan, or to adopt it on an existing codebase. Not for writing application code before the plan is approved, generic prose documents, or editing the specflow rules themselves.
 license: MIT
 metadata:
-  version: 2.1.0
+  version: 2.2.0
   rules: see assets/kit/VERSION
 ---
 

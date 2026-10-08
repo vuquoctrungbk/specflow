@@ -4,6 +4,24 @@ All notable changes to specflow. Versions follow Semantic Versioning. The
 version of the rules and templates that a release carries is in
 `skills/specflow/assets/kit/VERSION`.
 
+## [2.2.0] - 2026-10-08
+
+The kit carries rules 3.2.0. The approved screen now binds the coding stage, so
+a screen is designed once instead of twice.
+
+### Changed
+
+- A phase that builds a screen reads the approved HTML of that screen and
+  rebuilds it — zones, components, states and tokens — instead of designing a
+  second version; a different design means changing the wireframe and having it
+  approved again. The Read First section of such a phase names the screen page
+  and its HTML file, and the checker refuses a phase that names the page but not
+  the drawing.
+- The Definition of Done and the verify prompt compare the built screen with the
+  approved HTML.
+- The screen page owns structure, components, states, acceptance criteria and
+  navigation; the HTML owns the visual decisions the page cannot express.
+
 ## [2.1.0] - 2026-10-08
 
 The kit carries rules 3.1.0. A wireframe stage now produces a full screen in

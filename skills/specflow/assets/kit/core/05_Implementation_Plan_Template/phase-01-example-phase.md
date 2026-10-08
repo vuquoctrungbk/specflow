@@ -26,7 +26,7 @@ assembled_from: []
 
 ## Đọc trước (Read First)
 
-<!-- fill: Mỗi dòng một tài liệu và các mục agent phải đọc để làm pha này, dạng `đường dẫn` §mục, §mục. Lấy số mục bằng `python3 <thư mục kit>/scripts/project-index.py . --outline <tệp>`. Giữ ba dòng dưới nếu đúng, thêm mục SPEC hay ARCHITECTURE khác mà pha cần (ví dụ §3 cho pha DTO, §5 cho pha migration), và xóa chú thích này. Tệp đi kèm chỉ ghi khi pha cần nội dung của nó -->
+<!-- fill: Mỗi dòng một tài liệu và các mục agent phải đọc để làm pha này, dạng `đường dẫn` §mục, §mục. Lấy số mục bằng `python3 <thư mục kit>/scripts/project-index.py . --outline <tệp>`. Giữ ba dòng dưới nếu đúng, thêm mục SPEC hay ARCHITECTURE khác mà pha cần; pha dựng một màn hình dẫn thêm trang wireframe của màn và, khi dự án có HTML, file `docs/wireframes/html/SCR-<MOD>-NN.html` (đọc cả file, không ghi §mục), vì pha dựng lại đúng màn đã duyệt (PLAYBOOK mục 2.5) (ví dụ §3 cho pha DTO, §5 cho pha migration), và xóa chú thích này. Tệp đi kèm chỉ ghi khi pha cần nội dung của nó -->
 
 - `docs/specs/SPEC_{{FEATURE_KEY}}.md` §1.5, §2, §9
 - `docs/ARCHITECTURE.md` §4

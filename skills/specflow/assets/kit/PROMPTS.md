@@ -1,7 +1,7 @@
 ---
 doc_type: playbook
 status: stable
-version: 3.1.0
+version: 3.2.0
 language: vi-en
 ---
 
@@ -131,7 +131,7 @@ Các pha có spec_id {{SPEC_ID}} của plans/{{PLAN_DIR}} đã xong. Kiểm ch�
 
 Đọc: theo specflow/PLAYBOOK.md mục 6, hàng "5. Verify và Sync" và dòng áp cho mọi hàng; SPEC {{SPEC_ID}}, plan.
 
-Mức rủi ro (PLAYBOOK mục 2.6): SPEC risk: normal làm nhiệm vụ 1, 2, 4, 5 theo checklist rồi làm luôn Prompt 6 trong cùng lượt. SPEC risk: high, hoặc SPEC không ghi risk, làm đủ 1 đến 5 bằng agent ngữ cảnh mới, thêm thử đột biến cho mọi điều kiện phân quyền và phạm vi, và dừng trước Prompt 6.
+Mức rủi ro (PLAYBOOK mục 2.6): SPEC risk: normal làm nhiệm vụ 1, 2, 4, 5, 6 theo checklist rồi làm luôn Prompt 6 trong cùng lượt. SPEC risk: high, hoặc SPEC không ghi risk, làm đủ 1 đến 5 bằng agent ngữ cảnh mới, thêm thử đột biến cho mọi điều kiện phân quyền và phạm vi, và dừng trước Prompt 6.
 
 Nhiệm vụ:
 1. Chạy đủ lệnh verify trong CLAUDE.md; báo kết quả từng lệnh kèm exit code.
@@ -139,6 +139,7 @@ Nhiệm vụ:
 3. Đối chiếu code với SPEC: contract, mã lỗi, thuật toán, authorization matrix, event; liệt kê mọi khác biệt kèm file:line.
 4. Kiểm tra mọi TC trong SPEC §9 có test đúng file và tên ghi trong bảng, và đang pass.
 5. Có roadmap: chạy đối soát ở PLAYBOOK mục 2.6; báo đạt hay lệch.
+6. Bề mặt có giao diện và có HTML đã duyệt (còn lại ghi N/A): so màn đã dựng với file HTML của màn ở docs/wireframes/html/ về vùng, thành phần, trạng thái và token; liệt kê khác biệt.
 
 Dừng khi: có báo cáo đạt hoặc không đạt cho mọi tiêu chí DoD (mục 10.2), trừ hàng ghi "hoàn tất ở Prompt 6" (Prompt 6 mới cập nhật trạng thái tài liệu). Không sửa tài liệu ở bước này; sửa code chỉ khi tôi đồng ý.
 ```

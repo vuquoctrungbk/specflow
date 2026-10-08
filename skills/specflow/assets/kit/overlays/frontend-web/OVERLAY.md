@@ -87,6 +87,6 @@ Bề mặt này có giao diện nên dự án có Giai đoạn 1W (PLAYBOOK mụ
 | Năm trạng thái UI | Theo yêu cầu chung cho mọi màn hình ở SRS §3; `Loading` gồm cả lúc đang gửi, nút gửi bị khóa |
 | Điều hướng vào và ra | Tham số route hoặc query; route cần đăng nhập; hành vi của nút quay lại của trình duyệt khi khác luồng thường |
 | Ghi chú trợ năng | Theo CONVENTIONS mục 10.2 ở mức WCAG của NFR-USAB. Con số của web: vùng bấm tối thiểu 24 × 24 CSS px, hoặc vùng nhỏ hơn đặt đủ xa để vòng tròn đường kính 24 CSS px đặt ở tâm của nó không chạm vùng bấm khác hay vòng tròn của vùng nhỏ khác (WCAG 2.5.8, mức AA); reflow xét ở breakpoint nhỏ nhất của SRS §2.5 (WCAG 1.4.10) |
-| HTML đầy đủ (theo Intake mục 14) | Một file tĩnh mỗi trang theo CONVENTIONS mục 7: bố cục đúng ở breakpoint nhỏ nhất và lớn nhất của SRS §2.5 (`@media`), mở trực tiếp bằng trình duyệt; trang Markdown thắng khi hai bên lệch nhau |
+| HTML đầy đủ (theo Intake mục 14) | Một file tĩnh mỗi trang theo CONVENTIONS mục 7: bố cục đúng ở breakpoint nhỏ nhất và lớn nhất của SRS §2.5 (`@media`), mở trực tiếp bằng trình duyệt; giai đoạn code dựng lại đúng màn này (PLAYBOOK mục 2.5) |
 
 - Sau Gate 1W: bảng route ở ARCHITECTURE §3 (khối `arch.views`) có cột `SCR ID`, mỗi `SCR-*` của chỉ mục wireframe ít nhất một hàng (Gate 2); bảng Màn hình ở SPEC §3 (khối `spec.contract`) dẫn `SCR ID` và trang wireframe, không định nghĩa lại màn hình. Ở Giai đoạn 2, ARCHITECTURE §7 ghi cách ánh xạ token thành mã nguồn (khối `arch.conventions`) và stack profile ghi công cụ ánh xạ; code chỉ đọc token đã ánh xạ.
