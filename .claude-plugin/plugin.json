@@ -1,7 +1,7 @@
 {
   "name": "specflow",
   "version": "2.2.0",
-  "description": "Spec-first project documents: Intake, SRS, wireframes, architecture, SPECs and plans, written through an interview with options and stopped at each approval gate.",
+  "description": "Spec-first, spec-driven documents for AI coding agents: Intake, SRS (PRD), wireframes with a design system and full HTML screens, architecture, SPECs, plans and a roadmap, written through an interview with options and stopped at each approval gate.",
   "author": {
     "name": "vuquoctrungbk"
   },
@@ -14,7 +14,23 @@
     "wireframe",
     "architecture",
     "adr",
-    "spec-driven"
+    "spec-driven",
+    "prd",
+    "product-requirements",
+    "spec-first",
+    "spec-driven-development",
+    "software-documentation",
+    "ai-coding-agent",
+    "design-system",
+    "tdd",
+    "roadmap",
+    "iso-29148",
+    "ears",
+    "approval-gates",
+    "claude-code",
+    "codex",
+    "opencode",
+    "antigravity"
   ],
   "license": "MIT"
 }

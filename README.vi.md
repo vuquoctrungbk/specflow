@@ -21,6 +21,37 @@ nhân viên xem lịch trống, đặt, hủy; quản trị viên quản lý ph�
 Skill chạy trên **Claude Code**, **Codex** (CLI, extension trong IDE và Codex
 trong ChatGPT), **OpenCode** và **Google Antigravity**.
 
+## Vì sao dùng specflow
+
+Agent lập trình AI viết code rất nhanh, và cũng viết sai rất nhanh khi yêu cầu
+còn mơ hồ. Prompt dài hơn không sửa được điều đó, một bản PRD không ai cập nhật
+cũng vậy: ý định nằm trong cuộc trò chuyện, không nằm trong tài liệu mà phiên
+sau, người duyệt và các bài test cùng dẫn chiếu được.
+
+specflow đưa các quyết định vào tài liệu trước khi có code, và giữ chúng nối với
+nhau:
+
+- **Một chuỗi liền, không hổng.** Yêu cầu → màn hình → SPEC → test case → dòng
+  roadmap. Mỗi FR truy được hai chiều, và bộ kiểm báo yêu cầu không có màn hình,
+  SPEC không có test, hay dòng roadmap không có bằng chứng.
+- **Con người duyệt từng bước.** Mỗi gate ghi rõ người duyệt; `gate.py` ghi lời
+  duyệt kèm version và dòng lịch sử, nên agent không tự đánh dấu việc của mình
+  là đã duyệt.
+- **Thiết kế một lần.** Giai đoạn wireframe cho ra màn hình HTML đầy đủ từ hệ
+  thống thiết kế, và giai đoạn code dựng lại đúng màn đó thay vì tự nghĩ ra bản
+  thiết kế thứ hai.
+- **Quy trình co giãn theo rủi ro.** Thay đổi nhỏ, rủi ro thấp đi đường ngắn;
+  việc chạm xác thực, tiền, dữ liệu cá nhân hay hợp đồng công khai giữ đủ gate
+  và review độc lập.
+- **Khớp cách bạn đang làm.** Markdown cùng vài script `python3`, chạy trong
+  agent bạn đã dùng. Không cần dịch vụ hay tài khoản.
+
+specflow không viết code ứng dụng của bạn và không thay người duyệt; nó bảo đảm
+cả hai cùng làm từ một bộ tài liệu đã duyệt.
+
+Còn gọi là: spec-driven development, công cụ sinh PRD và SRS, quy trình từ yêu
+cầu tới kiến trúc và kế hoạch cho agent lập trình AI.
+
 ## Skill tạo ra những gì
 
 Phương pháp gồm 3 bước. Mỗi giai đoạn kết thúc ở một gate, do người có tên trong
@@ -39,10 +70,12 @@ Intake duyệt.
 
 Quy trình co giãn theo thay đổi. Mỗi SPEC mang `risk: high` hoặc `risk: normal` (xác thực và phân quyền, cô lập giữa người thuê, tiền, dữ liệu cá nhân, schema đang có dữ liệu và hợp đồng công khai là `high`). SPEC `high` giữ review độc lập và dừng ở từng gate; một tính năng `normal` trên dự án đã có baseline đi đường thay đổi nhỏ: yêu cầu, SPEC và pha plan được soạn trong một lượt và trình gộp các gate một lần, rồi code và verify trước Gate 5. Bộ kit kèm vài script nhỏ cho việc này (bộ kiểm tài liệu, chỉ mục, và `gate.py` ghi lời duyệt gate), cần `python3`.
 
-Tài liệu theo quy ước ngôn ngữ của bộ kit: diễn giải tiếng Việt có dấu, thuật
-ngữ kỹ thuật và định danh giữ tiếng Anh, trừ khi Intake của dự án ghi ngôn ngữ
-tài liệu khác (ví dụ tiếng Anh cho đối tác nước ngoài). specflow trò chuyện với
-bạn bằng ngôn ngữ bạn dùng.
+**Ngôn ngữ.** Quy tắc, template và tài liệu do bộ kit sinh ra viết bằng tiếng
+Việt, thuật ngữ kỹ thuật và định danh giữ tiếng Anh; specflow trò chuyện với bạn
+bằng ngôn ngữ bạn dùng. Bộ tài liệu viết hoàn toàn bằng ngôn ngữ khác chưa được
+hỗ trợ: tiêu đề, các giá trị cố định như trạng thái gate và roadmap, và câu duyệt
+đều bằng tiếng Việt, còn ngoại lệ ngôn ngữ ở Intake chỉ đổi phần diễn giải.
+Đầu ra đa ngôn ngữ nằm trong kế hoạch.
 
 ## Cài đặt
 

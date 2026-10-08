@@ -22,6 +22,37 @@ staff see free slots, book and cancel; admins manage rooms; sign-in with the com
 It runs in **Claude Code**, **Codex** (CLI, IDE extension and ChatGPT Codex),
 **OpenCode** and **Google Antigravity**.
 
+## Why specflow
+
+AI coding agents write code fast, and they write the wrong thing just as fast
+when the requirement is vague. A longer prompt does not fix that, and neither
+does a PRD nobody keeps current: the intent stays in a chat, not in documents
+that the next session, the reviewer and the tests can all point at.
+
+specflow moves the decisions into documents before any code, and keeps them
+connected:
+
+- **One chain, no gaps.** Requirement → screen → SPEC → test case → roadmap
+  row. Every FR traces both ways, and the checker reports a requirement with no
+  screen, a SPEC with no test, or a roadmap row with no evidence.
+- **A person approves each step.** Each gate names its approver; `gate.py`
+  records the approval with a version and a history row, so the agent cannot
+  mark its own work approved.
+- **Designed once.** The wireframe stage produces a full HTML screen from a
+  design system, and the coding stage rebuilds that screen instead of making up
+  a second design.
+- **Process sized to risk.** A small, low-risk change takes a short path; work
+  on identity, money, personal data or public contracts keeps every gate and an
+  independent review.
+- **Fits your setup.** Markdown plus a few `python3` scripts, in the agent you
+  already use. No service, no account.
+
+It does not write your application code and it does not replace your reviewer;
+it makes sure both work from the same approved documents.
+
+Also known as: spec-driven development, PRD and SRS generator, requirements to
+architecture to plan workflow for AI coding agents.
+
 ## What it produces
 
 The method is a three-step pipeline; each stage ends at a gate that a named
@@ -40,10 +71,13 @@ person approves.
 
 The process scales with the change. Every SPEC carries `risk: high` or `risk: normal` (identity and permissions, tenant isolation, money, personal data, data-holding schemas and public contracts are `high`). A `high` SPEC keeps the independent review and a stop at each gate; a `normal` feature on a project that already has a baseline takes a small-change path: the requirement, SPEC and plan phase are drafted in one turn and presented to their gates together, then coded and verified before Gate 5. The kit ships small scripts for this (the document checker, the index, and `gate.py`, which records a gate approval); they need `python3`.
 
-Documents follow the kit's language policy: prose in Vietnamese with full
-diacritics, technical terms and identifiers in English, unless the project's
-Intake records another document language (for example English for a foreign
-partner). specflow talks to you in the language you write in.
+**Language.** The kit's rules, templates and the documents it produces are
+written in Vietnamese, with English technical terms and identifiers; specflow
+talks to you in the language you write in. A document set written entirely in
+another language is not supported yet: headings, fixed values such as the gate
+and roadmap states, and the approval phrase are in Vietnamese, and the
+Intake's language exception only changes the prose. Multi-language output is
+planned.
 
 ## Install
 
