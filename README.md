@@ -32,11 +32,13 @@ person approves.
 | 1. Requirements | 0 Intake | `docs/intake/PROJECT_INTAKE.md`: goals, scope, routing (surfaces, stack profile), releases, approvers | Gate 0 |
 | | 0R Brownfield baseline | Codebase Summary, As-Is Architecture, Regression Baseline (existing code only) | Gate 0R |
 | | 1 SRS | `docs/srs/SRS.md`: ISO/IEC/IEEE 29148 structure, FR in EARS form, NFR mapped to ISO/IEC 25010, use cases, acceptance criteria; once approved, `docs/ROADMAP.md` lists every FR and Must NFR to build, in order | Gate 1 |
-| | 1W Wireframe | `docs/wireframes/`: one page per screen, FR ↔ screen traceability, design system (visual direction, tokens, component catalog), priority information, primary action and edge content per page, numbered layout zones, WCAG 2.2 and Nielsen heuristic checks, deceptive-pattern check | Gate 1W |
+| | 1W Wireframe | `docs/wireframes/`: one page per screen, FR ↔ screen traceability, a design system (visual direction, tokens, component catalog), priority information, primary action and edge content per page, numbered layout zones, WCAG 2.2 and Nielsen heuristic checks, deceptive-pattern check. By default each page also gets a **full HTML screen** built from the design system (tokens only, every UI state reachable with `:target`, responsive on the web), so the reviewer approves what the product will look like, not a sketch. `Markdown only` is an option for projects that prefer it | Gate 1W |
 | 2. Design | 2 Architecture | `docs/ARCHITECTURE.md` and ADRs in `docs/adr/` | Gate 2 |
 | | 3 SPEC | `docs/specs/SPEC_*.md`: one executable contract per part of a release | Gate 3 (per release) |
 | 3. Plan | 4a Plan | `plans/<date>-<slug>/`: phases per SPEC, test tables, Definition of Ready | Gate 4 |
-| Execution | 4b, 5 | TDD coding in plan order, roadmap updated after each phase and reconciled at each stop, verification, docs sync; at Gate 5 the SPEC's roadmap rows are confirmed and tagged | Gate 5 (per SPEC) |
+| Execution | 4b, 5 | TDD coding in plan order; a phase that builds a screen **rebuilds the approved HTML** instead of designing it again; roadmap updated after each phase and reconciled at each stop, verification, docs sync; at Gate 5 the SPEC's roadmap rows are confirmed and tagged | Gate 5 (per SPEC) |
+
+The process scales with the change. Every SPEC carries `risk: high` or `risk: normal` (identity and permissions, tenant isolation, money, personal data, data-holding schemas and public contracts are `high`). A `high` SPEC keeps the independent review and a stop at each gate; a `normal` feature on a project that already has a baseline takes a small-change path: the requirement, SPEC and plan phase are drafted in one turn and presented to their gates together, then coded and verified before Gate 5. The kit ships small scripts for this (the document checker, the index, and `gate.py`, which records a gate approval); they need `python3`.
 
 Documents follow the kit's language policy: prose in Vietnamese with full
 diacritics, technical terms and identifiers in English, unless the project's
@@ -181,7 +183,7 @@ More requests it understands:
 
 | Path | Written by | Notes |
 | --- | --- | --- |
-| `specflow/` | specflow, on first run | The rules and templates; not edited afterwards |
+| `specflow/` | specflow, on first run | The rules, templates and scripts; not edited afterwards |
 | `docs/…`, `plans/…` | each stage | The documents above |
 | `CLAUDE.md` | stage 0 | Project context for later sessions, in every agent |
 | `.claude/rules/` | stage 2 | Coding rules for the chosen stack |
@@ -201,7 +203,7 @@ release can affect documents under review. See `CHANGELOG.md`.
 skills/specflow/
   SKILL.md                 how the skill works
   references/              routing, interview protocol, project setup
-  assets/kit/              rules and templates (VERSION names the rules version)
+  assets/kit/              rules, templates and scripts (VERSION names the rules version)
 adapters/opencode/commands/specflow.md   /specflow command for OpenCode
 .claude-plugin/            Claude Code plugin and marketplace manifests
 install.sh                 installer for macOS and Linux

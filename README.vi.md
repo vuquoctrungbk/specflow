@@ -31,11 +31,13 @@ Intake duyệt.
 | 1. Yêu cầu | 0 Intake | `docs/intake/PROJECT_INTAKE.md`: mục tiêu, phạm vi, định tuyến (bề mặt, stack profile), các đợt phát hành, người duyệt | Gate 0 |
 | | 0R Mốc brownfield | Codebase Summary, As-Is Architecture, Regression Baseline (chỉ dự án đã có code) | Gate 0R |
 | | 1 SRS | `docs/srs/SRS.md`: cấu trúc ISO/IEC/IEEE 29148, FR viết theo EARS, NFR ánh xạ ISO/IEC 25010, use case, tiêu chí nghiệm thu; khi được duyệt, `docs/ROADMAP.md` liệt kê mọi FR và NFR mức Must phải làm, theo thứ tự | Gate 1 |
-| | 1W Wireframe | `docs/wireframes/`: mỗi màn hình một trang, đối chiếu FR ↔ màn hình, hệ thống thiết kế (hướng thị giác, token, danh mục component), thông tin ưu tiên, hành động chính và nội dung biên của từng trang, đánh số vùng bố cục, kiểm WCAG 2.2 và heuristic Nielsen, kiểm mẫu thiết kế lừa người dùng | Gate 1W |
+| | 1W Wireframe | `docs/wireframes/`: mỗi màn hình một trang, đối chiếu FR ↔ màn hình, hệ thống thiết kế (hướng thị giác, token, danh mục component), thông tin ưu tiên, hành động chính và nội dung biên của từng trang, đánh số vùng bố cục, kiểm WCAG 2.2 và heuristic Nielsen, kiểm mẫu thiết kế lừa người dùng. Mặc định mỗi trang còn có một **màn hình HTML đầy đủ** dựng từ hệ thống thiết kế (chỉ dùng token, mọi trạng thái UI xem được bằng `:target`, đáp ứng nhiều độ rộng trên web), để người duyệt thấy sản phẩm sẽ trông thế nào thay vì một bản phác. Dự án muốn có thể chọn `Chỉ Markdown` | Gate 1W |
 | 2. Thiết kế | 2 Architecture | `docs/ARCHITECTURE.md` và ADR trong `docs/adr/` | Gate 2 |
 | | 3 SPEC | `docs/specs/SPEC_*.md`: mỗi phần việc của một đợt một hợp đồng thực thi | Gate 3 (theo đợt) |
 | 3. Kế hoạch | 4a Plan | `plans/<ngày>-<slug>/`: các pha theo SPEC, bảng test, Definition of Ready | Gate 4 |
-| Thực thi | 4b, 5 | Code theo TDD theo thứ tự của plan, cập nhật roadmap sau mỗi pha và đối soát ở mỗi lần dừng, kiểm chứng, đồng bộ tài liệu; ở Gate 5 các dòng roadmap của SPEC được xác nhận và gắn tag | Gate 5 (theo SPEC) |
+| Thực thi | 4b, 5 | Code theo TDD theo thứ tự của plan; pha dựng một màn hình **dựng lại đúng HTML đã duyệt** thay vì thiết kế lần nữa; cập nhật roadmap sau mỗi pha và đối soát ở mỗi lần dừng, kiểm chứng, đồng bộ tài liệu; ở Gate 5 các dòng roadmap của SPEC được xác nhận và gắn tag | Gate 5 (theo SPEC) |
+
+Quy trình co giãn theo thay đổi. Mỗi SPEC mang `risk: high` hoặc `risk: normal` (xác thực và phân quyền, cô lập giữa người thuê, tiền, dữ liệu cá nhân, schema đang có dữ liệu và hợp đồng công khai là `high`). SPEC `high` giữ review độc lập và dừng ở từng gate; một tính năng `normal` trên dự án đã có baseline đi đường thay đổi nhỏ: yêu cầu, SPEC và pha plan được soạn trong một lượt và trình gộp các gate một lần, rồi code và verify trước Gate 5. Bộ kit kèm vài script nhỏ cho việc này (bộ kiểm tài liệu, chỉ mục, và `gate.py` ghi lời duyệt gate), cần `python3`.
 
 Tài liệu theo quy ước ngôn ngữ của bộ kit: diễn giải tiếng Việt có dấu, thuật
 ngữ kỹ thuật và định danh giữ tiếng Anh, trừ khi Intake của dự án ghi ngôn ngữ
@@ -176,7 +178,7 @@ Các yêu cầu khác skill hiểu:
 
 | Đường dẫn | Ai tạo | Ghi chú |
 | --- | --- | --- |
-| `specflow/` | specflow, ở lần chạy đầu | Quy tắc và template; không sửa về sau |
+| `specflow/` | specflow, ở lần chạy đầu | Quy tắc, template và script; không sửa về sau |
 | `docs/…`, `plans/…` | từng giai đoạn | Các tài liệu ở bảng trên |
 | `CLAUDE.md` | Giai đoạn 0 | Ngữ cảnh dự án cho các phiên sau, ở mọi agent |
 | `.claude/rules/` | Giai đoạn 2 | Quy tắc code cho stack đã chọn |
@@ -196,7 +198,7 @@ quy tắc giữa một đợt có thể ảnh hưởng tài liệu đang chờ d
 skills/specflow/
   SKILL.md                 cách skill làm việc
   references/              định tuyến, cách hỏi, cài đặt vào dự án
-  assets/kit/              quy tắc và template (VERSION ghi phiên bản quy tắc)
+  assets/kit/              quy tắc, template và script (VERSION ghi phiên bản quy tắc)
 adapters/opencode/commands/specflow.md   lệnh /specflow cho OpenCode
 .claude-plugin/            manifest plugin và marketplace của Claude Code
 install.sh                 script cài cho macOS và Linux
