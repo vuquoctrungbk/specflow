@@ -4,6 +4,25 @@ All notable changes to specflow. Versions follow Semantic Versioning. The
 version of the rules and templates that a release carries is in
 `skills/specflow/assets/kit/VERSION`.
 
+## [2.1.0] - 2026-10-08
+
+The kit carries rules 3.1.0. A wireframe stage now produces a full screen in
+HTML by default, not an optional low-fidelity sketch.
+
+### Changed
+
+- The Intake records stage 1W as one of `Có, kèm HTML đầy đủ` (the default for a
+  project with a UI), `Có, chỉ Markdown: <reason>` or `Không`. With the default,
+  every screen page gets `docs/wireframes/html/SCR-<MOD>-NN.html`: a full screen
+  built from the design system, with every visual value taken from a token, one
+  `data-cmp="CMP-NN"` element per row of the component table, one element per UI
+  state that the reviewer reaches with `:target`, a viewport meta tag, and a
+  media query on a web page. A screen drawn inside a flow has no HTML file.
+- An Intake from an earlier template keeps the older choices (`Có`, `Có, kèm
+  HTML low-fi`), where the HTML stays optional.
+- The kit ships `scripts/check-full-html.py`, which the checker runs, and the
+  worked web and mobile examples now carry a full HTML file for every screen.
+
 ## [2.0.0] - 2026-10-07
 
 The kit carries rules 3.0.0. The process now scales with what a change touches

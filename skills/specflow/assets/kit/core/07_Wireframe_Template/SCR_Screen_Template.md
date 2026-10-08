@@ -2,7 +2,7 @@
 doc_type: wireframe-screen
 status: draft
 version: 0.1.0
-template_version: 1.5.0
+template_version: 1.6.0
 language: vi-en
 parent: [docs/wireframes/00_WIREFRAME_INDEX.md, docs/design-system/DESIGN_SYSTEM.md]
 overlays: []
@@ -48,7 +48,7 @@ assembled_from: []
 
 Nội dung biên: <!-- fill: ca biên của dữ liệu trên màn hình, lấy từ ràng buộc đã có ở SRS (từ điển dữ liệu §4.2, quy tắc nghiệp vụ, luồng của FR), không đặt giới hạn mới (giá trị dài nhất, trường trống, số 0, danh sách nhiều trang) và cách màn hình hiển thị từng ca (xuống dòng, cắt kèm cách xem đủ, phân trang); ghi Không kèm lý do khi màn hình không hiển thị dữ liệu hay SRS không có ràng buộc nào cho dữ liệu đó -->
 
-HTML low-fi: <!-- fill: chọn một: `docs/wireframes/html/{{SCR_ID}}.html` | Không. HTML là tùy chọn, chỉ tạo khi Intake mục 14 ghi Giai đoạn 1W: Có, kèm HTML low-fi. Khi có: một file tĩnh docs/wireframes/html/SCR-<MOD>-NN.html cho màn hình này, tiêu đề vùng (hoặc chú thích HTML trước khối của vùng khi không có tiêu đề) mang cùng số vùng như khối bố cục, theo quy tắc an toàn ở CONVENTIONS mục 7: không có thẻ script hay thuộc tính sự kiện, không tải tài nguyên ngoài, có thẻ meta Content-Security-Policy như CONVENTIONS mục 7, chỉ CSS viết trong thẻ style của file, khối :root khai báo biến CSS lấy từ token của docs/design-system/tokens.json (tên biến và quy tắc chỉ dùng token theo CONVENTIONS mục 10.7) thay cho thang xám, dữ liệu mẫu tự đặt (không dùng dữ liệu người thật, secret hay URL nội bộ), link chỉ tới file SCR-*.html cùng thư mục. Đường dẫn ghi giống ô File HTML của danh mục màn hình. Khi HTML và trang này lệch nhau, trang này thắng. -->
+HTML: <!-- fill: chọn một: `docs/wireframes/html/{{SCR_ID}}.html` | Không. Có file khi Intake mục 14 ghi Giai đoạn 1W: Có, kèm HTML đầy đủ (mặc định); Không khi Intake ghi Có, chỉ Markdown. Một file tĩnh cho màn hình này, là màn hình đầy đủ dựng từ hệ thống thiết kế, theo CONVENTIONS mục 7 và 10.7: mọi giá trị trực quan lấy từ token của docs/design-system/tokens.json qua biến CSS ở khối :root; mỗi thành phần của mục 3 là một phần tử có data-cmp="CMP-NN" (đúng tập Component ID của mục 3); mỗi trạng thái ở mục 4 không N/A là một phần tử id="state-initial" (hoặc loading, empty, success, error), trạng thái mà khối bố cục ở mục 2 vẽ hiện mặc định và các trạng thái khác hiện bằng :target qua link #state-... ngay trên trang; có thẻ meta viewport, và trang web có @media; tiêu đề vùng (hoặc chú thích HTML trước khối vùng) mang cùng số vùng như khối bố cục; nội dung và dữ liệu mẫu tự đặt (không dùng dữ liệu người thật, secret hay URL nội bộ); không script, không tải tài nguyên ngoài, có thẻ meta Content-Security-Policy như CONVENTIONS mục 7; link chỉ tới file SCR-*.html cùng thư mục. Đường dẫn ghi giống ô File HTML của danh mục màn hình. -->
 
 ## 3. Bảng thành phần (Components)
 

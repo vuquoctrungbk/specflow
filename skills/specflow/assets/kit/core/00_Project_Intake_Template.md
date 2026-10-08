@@ -2,7 +2,7 @@
 doc_type: intake
 status: draft
 version: 0.1.0
-template_version: 1.5.0
+template_version: 1.6.0
 language: vi-en
 overlays: []
 assembled_from: []
@@ -151,7 +151,7 @@ Loại dữ liệu hệ thống xử lý: <!-- fill: liệt kê dữ liệu cá 
 | `starter` | <!-- fill: tên thư mục trong starters/ khớp đúng tổ hợp overlays (PLAYBOOK mục 3), hoặc none --> |
 | `mode` | <!-- fill: chọn một: greenfield \| brownfield, khớp mục 4 --> |
 | `docs_mode` | `{{DOCS_MODE}}` |
-| Giai đoạn 1W (Wireframe) | <!-- fill: chọn một: Có \| Có, kèm HTML low-fi \| Không. Có khi overlays có frontend-web hoặc mobile-app, hoặc bề mặt khác có màn hình; Không thì Gate 1W ở mục 9 ghi N/A (PLAYBOOK mục 2) --> |
+| Giai đoạn 1W (Wireframe) | <!-- fill: chọn một: Có, kèm HTML đầy đủ \| Có, chỉ Markdown: <lý do> \| Không. Mặc định Có, kèm HTML đầy đủ khi overlays có frontend-web hoặc mobile-app, hoặc bề mặt khác có màn hình; Không thì Gate 1W ở mục 9 ghi N/A (PLAYBOOK mục 2) --> |
 | Định dạng tag | `{release}-{feature-key}` <!-- fill: mẫu tên tag mà agent đánh khi một SPEC qua Gate 5 (CONVENTIONS mục 11); giữ mặc định hoặc ghi mẫu khác của dự án trong backtick, ví dụ `v{release}-{feature-key}` --> |
 | Quy mô | <!-- fill: chọn một: standard \| small. small khi dự án có tối đa 15 FR, một người duyệt mọi gate và không có ràng buộc tuân thủ ở mục 7; khi đó các gate được trình gộp theo PLAYBOOK mục 5 --> |
 | Vùng rủi ro cao | <!-- fill: thư mục hoặc từ trong đường dẫn mà SPEC nào chạm tới cũng phải là risk: high, mỗi mục trong backtick, ví dụ `apps/billing/`, `ledger`; ghi Không khi dự án không có vùng riêng ngoài danh sách chung ở CONVENTIONS mục 3 --> |

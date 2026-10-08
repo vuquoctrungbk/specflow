@@ -1,7 +1,7 @@
 ---
 doc_type: playbook
 status: stable
-version: 3.0.0
+version: 3.1.0
 language: vi-en
 ---
 
@@ -63,7 +63,7 @@ Nhiệm vụ:
 2. Sau khi bạn chọn: tạo docs/design-system/DESIGN_SYSTEM.md, docs/design-system/tokens.json và file mode (khi cần) từ specflow/core/07_Wireframe_Template/, ghi lý do chọn hướng, foundations, ba tầng token, primitive và danh mục component, pattern, template; tự tính bảng tương phản theo specflow/CONVENTIONS.md mục 10.7.
 3. Tạo docs/wireframes/00_WIREFRAME_INDEX.md: danh mục màn hình gồm đúng tập SCR ID ở bảng Giao diện người dùng của SRS §3, sơ đồ điều hướng, bảng đối chiếu có đúng một hàng cho mỗi FR ở SRS §6.1 có ưu tiên khác Won't (FR Won't không có hàng), ghi SCR-* hoặc "Không có giao diện" kèm lý do; dự án brownfield ghi "Giữ nguyên" cho màn hình không đổi.
 4. Màn có thao tác ghi, hiển thị phụ thuộc quyền hoặc dữ liệu cá nhân: một trang riêng. Màn còn lại: vẽ trong mockup của luồng ở chỉ mục và ghi Theo luồng ở danh mục màn hình (specflow/PLAYBOOK.md mục 2.2.1). Trang riêng nằm trong docs/wireframes/, tên file là SCR ID cộng đuôi .md: mục đích, thông tin ưu tiên, hành động chính, FR và AC, bố cục low-fi trong khối text có số vùng theo specflow/CONVENTIONS.md mục 7 kèm dòng nội dung biên, chọn đúng một Template và dẫn Pattern, Component đã có trong danh mục hệ thống thiết kế, bảng thành phần kèm Component ID, năm trạng thái UI kèm AC, điều hướng vào và ra, dòng Màn hình xác thực, ghi chú trợ năng theo specflow/CONVENTIONS.md mục 10.2 và con số của OVERLAY.md. Không thêm màn hình ngoài SRS §3.
-5. HTML low-fi trong docs/wireframes/html/ chỉ tạo khi Intake mục 14 ghi Giai đoạn 1W "Có, kèm HTML low-fi", khai báo biến CSS từ token theo specflow/CONVENTIONS.md mục 10.7, theo quy tắc an toàn ở specflow/CONVENTIONS.md mục 7. Intake ghi "Có" mà tôi muốn HTML thì đề xuất sửa Intake mục 14 theo PLAYBOOK mục 8 trước.
+5. HTML: khi Intake mục 14 ghi Giai đoạn 1W "Có, kèm HTML đầy đủ" (mặc định), mỗi trang có một file docs/wireframes/html/SCR-*.html theo specflow/CONVENTIONS.md mục 7 và 10.7; "Có, chỉ Markdown" thì không tạo HTML.
 6. Lệch với SRS (màn hình thêm, bớt hay đổi; FR thiếu; AC không khớp trạng thái) theo PLAYBOOK mục 2.2.1: wireframe vẽ sai hoặc sót so với SRS thì sửa wireframe. SRS thiếu hoặc sai thì không sửa wireframe để che chỗ lệch; ghi câu hỏi BLOCKING ở chỉ mục kèm đề xuất sửa SRS; khi tôi đồng ý, sửa SRS theo PLAYBOOK mục 8 để người duyệt Gate 1 duyệt lại.
 7. Ở chỉ mục, điền bảng đánh giá heuristic theo specflow/CONVENTIONS.md mục 10.3 và bảng kiểm mẫu thiết kế lừa người dùng theo mục 10.4 cho toàn bộ chỉ mục và các trang; sửa vấn đề Nghiêm trọng và bỏ mẫu lừa người dùng trước khi dừng. Cần đổi SRS để sửa thì làm như nhiệm vụ 6.
 8. Chạy lệnh kiểm tra sót ở PLAYBOOK mục 4.

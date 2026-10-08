@@ -476,6 +476,13 @@ check_design_system() {
     return 0
   fi
   emit_helper_lines "$ds" "$out"
+  out="$(python3 scripts/check-full-html.py "$dir" 2>&1)"
+  status=$?
+  if ((status != 0)); then
+    err "$ds" "full HTML helper failed (exit $status) (CONVENTIONS §7)"
+    return 0
+  fi
+  emit_helper_lines "$ds" "$out" "full HTML helper" "CONVENTIONS §7"
 }
 
 # build_legacy_layout <label>: write $TMP/layout-legacy-<label>, the old docs-layout block that the labelled diff of
