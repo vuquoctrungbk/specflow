@@ -2,39 +2,39 @@
 doc_type: overlay-section
 status: stable
 version: 1.2.0
-language: vi-en
+language: en
 surface: frontend-web
 ---
 
-# Overlay frontend-web: khối cho SPEC
+# Overlay frontend-web: blocks for the SPEC
 
 <!-- SLOT-CONTENT: spec.contract -->
-### Màn hình (Screen)
+### Screen
 
-<!-- fill: Một bảng cho mỗi màn hình của tính năng. Có Giai đoạn 1W: hàng SCR ID dẫn đúng ID ở chỉ mục wireframe và hàng Trang wireframe dẫn trang của màn hình; SPEC chỉ dẫn SCR-*, không định nghĩa lại màn hình, bố cục hay thành phần đã có ở trang wireframe, bảng năm trạng thái dưới khớp bảng trạng thái của trang và thêm hành vi thực thi. Dự án có Intake cũ hơn 1.3.0 hoặc không có Giai đoạn 1W: bỏ hai hàng này. -->
+<!-- fill: One table for each screen of the feature. With Stage 1W: the SCR ID row cites exactly the ID in the wireframe index and the Wireframe page row cites the screen's page; the SPEC only cites SCR-*, and does not redefine the screen, the layout or the components already on the wireframe page; the five-state table below matches the state table of the page and adds the execution behavior. Without Stage 1W: remove these two rows. -->
 
-| Hạng mục | Giá trị |
+| Item | Value |
 | --- | --- |
 | SCR ID | {{SCR_ID}} |
-| Trang wireframe | `docs/wireframes/{{SCR_ID}}.md` |
+| Wireframe page | `docs/wireframes/{{SCR_ID}}.md` |
 | Route | `/{{ROUTE_PATH}}` |
-| Tác nhân và điều kiện truy cập | <!-- fill: vai trò được vào; hành vi khi chưa đăng nhập hoặc không đủ quyền --> |
-| Tiêu đề trang | Khóa chuỗi <!-- fill --> |
-| Điều hướng vào | <!-- fill: từ màn hình nào, kèm tham số gì --> |
-| Điều hướng ra | <!-- fill: sau khi thành công, khi hủy --> |
-| Lập chỉ mục tìm kiếm | <!-- fill: chọn một: cho phép \| không cho phép (noindex) --> |
+| Actor and access condition | <!-- fill: roles allowed in; behavior when not logged in or without permission --> |
+| Page title | String key <!-- fill --> |
+| Navigation in | <!-- fill: from which screen, with which parameters --> |
+| Navigation out | <!-- fill: after success, on cancel --> |
+| Search indexing | <!-- fill: choose one: allowed \| not allowed (noindex) --> |
 
-### Thành phần và props (Components & Props)
+### Components & Props
 
-| Thành phần | Chạy ở | Props (tên: kiểu) | Trách nhiệm |
+| Component | Runs on | Props (name: type) | Responsibility |
 | --- | --- | --- | --- |
-| {{COMPONENT_NAME}} | <!-- fill: chọn một: server \| client --> | <!-- fill --> | <!-- fill --> |
+| {{COMPONENT_NAME}} | <!-- fill: choose one: server \| client --> | <!-- fill --> | <!-- fill --> |
 
-### Năm trạng thái giao diện (UI States)
+### UI States
 
-<!-- fill: Đủ năm hàng cho mỗi màn hình hoặc vùng dữ liệu độc lập; trạng thái không áp dụng ghi N/A kèm lý do ở cột Hiển thị. Cột AC trỏ tiêu chí nghiệm thu ở SRS §8. -->
+<!-- fill: All five rows for each screen or independent data region; a state that does not apply is written N/A with a reason in the Display column. The AC column points to the acceptance criteria in SRS §8. -->
 
-| Trạng thái | Điều kiện vào | Hiển thị | Hành động người dùng | AC |
+| State | Entry condition | Display | User action | AC |
 | --- | --- | --- | --- | --- |
 | `Initial` | <!-- fill --> | <!-- fill --> | <!-- fill --> | AC-{{MODULE_CODE}}-01 |
 | `Loading` | <!-- fill --> | <!-- fill --> | <!-- fill --> | AC-{{MODULE_CODE}}-01 |
@@ -42,67 +42,67 @@ surface: frontend-web
 | `Success` | <!-- fill --> | <!-- fill --> | <!-- fill --> | AC-{{MODULE_CODE}}-01 |
 | `Error` | <!-- fill --> | <!-- fill --> | <!-- fill --> | AC-{{MODULE_CODE}}-01 |
 
-### Trạng thái tương tác (Interaction States)
+### Interaction States
 
-| Phần tử | Trạng thái | Quy tắc |
+| Element | State | Rule |
 | --- | --- | --- |
-| Nút gửi | Đang gửi | Khóa và đổi nhãn; lần bấm thứ hai không tạo request mới |
-| Form | Kết quả chưa rõ (lỗi mạng, hết thời gian chờ, `5xx`) | Các trường chỉ đọc; chỉ có hành động gửi lại cùng nội dung và cùng khóa tới khi có phản hồi xác định |
-| Trường nhập | Có lỗi | Viền lỗi, thông báo gắn với trường bằng thuộc tính trợ năng, focus về trường lỗi đầu tiên khi gửi (tiêu chí ở `specflow/CONVENTIONS.md` mục 10.2) |
+| Submit button | Submitting | Locked and the label changes; a second click does not create a new request |
+| Form | Result unknown (network error, timeout, `5xx`) | Fields are read-only; the only action is to resend the same content with the same key until a definitive response arrives |
+| Input field | Has an error | Error border, message tied to the field through an accessibility attribute, focus moves to the first error field on submit (criteria in `specflow/CONVENTIONS.md` §10.2) |
 | <!-- fill --> | <!-- fill --> | <!-- fill --> |
 
-### Form và validation (Form & Validation)
+### Form & Validation
 
-<!-- fill: Mỗi trường một hàng; ràng buộc chép từ DTO request trong SPEC của API và ghi SPEC nguồn ở cột cuối. -->
+<!-- fill: One row for each field; copy the constraints from the request DTO in the API's SPEC and record the source SPEC in the last column. -->
 
-| Trường | Kiểu | Ràng buộc | Khóa chuỗi thông báo lỗi | Nguồn ràng buộc |
+| Field | Type | Constraints | String key of the error message | Constraint source |
 | --- | --- | --- | --- | --- |
-| <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: SPEC ID của API, mục §3 --> |
+| <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: SPEC ID of the API, section §3 --> |
 
 <!-- PROFILE-SLOT: spec.contract -->
 
-### Lời gọi API (API Calls)
+### API Calls
 
-| Thời điểm gọi | Method và path | Contract nguồn | Header đặc biệt | Xử lý thành công | Xử lý lỗi |
+| When called | Method and path | Source contract | Special headers | Success handling | Error handling |
 | --- | --- | --- | --- | --- | --- |
-| <!-- fill --> | <!-- fill: chọn một: GET \| POST \| PATCH \| PUT \| DELETE; đường dẫn đúng như contract nguồn --> `/api/v1/{{RESOURCE_PATH}}` | <!-- fill: SPEC ID và operationId trong OpenAPI --> | <!-- fill: ví dụ Idempotency-Key sinh một lần cho mỗi lần gửi --> | <!-- fill --> | Theo bảng ánh xạ lỗi dưới đây |
+| <!-- fill --> | <!-- fill: choose one: GET \| POST \| PATCH \| PUT \| DELETE; the path exactly as in the source contract --> `/api/v1/{{RESOURCE_PATH}}` | <!-- fill: SPEC ID and operationId in OpenAPI --> | <!-- fill: for example Idempotency-Key generated once for each submission --> | <!-- fill --> | Per the error mapping table below |
 
-### Ánh xạ lỗi sang giao diện (Error to UI Mapping)
+### Error to UI Mapping
 
-<!-- fill: Mọi mã lỗi mà lời gọi ở trên có thể trả (theo ma trận lỗi của SPEC nguồn) và mã phía client; mã có trong ARCHITECTURE §7.1. -->
+<!-- fill: Every error code that the calls above can return (per the error matrix of the source SPEC) and the client-side codes; the codes are in ARCHITECTURE §7.1. -->
 
-| `error.code` | Trạng thái giao diện | Khóa chuỗi thông báo | Hành vi |
+| `error.code` | UI state | String key of the message | Behavior |
 | --- | --- | --- | --- |
-| `VALIDATION_ERROR` | `Error` | <!-- fill --> | Lỗi dưới từng trường theo `error.details` |
-| `UNAUTHENTICATED` | `Error` | <!-- fill --> | Chuyển tới đăng nhập rồi quay lại |
-| `NETWORK_ERROR` | `Error` | <!-- fill --> | Cho thử lại với cùng `Idempotency-Key` |
-| <!-- fill: mã nghiệp vụ của API --> | `Error` | <!-- fill --> | <!-- fill --> |
+| `VALIDATION_ERROR` | `Error` | <!-- fill --> | Errors under each field per `error.details` |
+| `UNAUTHENTICATED` | `Error` | <!-- fill --> | Go to login, then return |
+| `NETWORK_ERROR` | `Error` | <!-- fill --> | Allow retry with the same `Idempotency-Key` |
+| <!-- fill: business code of the API --> | `Error` | <!-- fill --> | <!-- fill --> |
 
-### Chuỗi hiển thị (i18n Keys)
+### i18n Keys
 
-| Khóa | Nội dung theo locale mặc định |
+| Key | Content in the default locale |
 | --- | --- |
-| <!-- fill: dạng tính năng.phần tử --> | <!-- fill --> |
+| <!-- fill: in the form feature.element --> | <!-- fill --> |
 <!-- /SLOT-CONTENT -->
 
 <!-- SLOT-CONTENT: spec.test-types -->
-### Loại test của bề mặt (Surface Test Types)
+### Surface Test Types
 
-| Loại | TYPE trong TC ID | Phạm vi | Dữ liệu | Bắt buộc |
+| Type | TYPE in the TC ID | Scope | Data | Required |
 | --- | --- | --- | --- | :---: |
-| Unit | `UNIT` | Schema form, hàm định dạng, hook, thành phần render độc lập | Trong bộ nhớ | Có |
-| Integration | `INT` | Thành phần của tính năng cùng client API thật, API giả lập ở tầng mạng theo contract | Response giả lập khớp OpenAPI | Có khi tính năng gọi API |
-| E2E | `E2E` | Luồng người dùng trên ứng dụng đã build, trong trình duyệt thật | API giả lập ở tầng mạng hoặc API môi trường staging | Có |
-| Trợ năng | `A11Y` | Quét tự động theo mức WCAG của NFR-USAB trên mỗi màn hình và trạng thái chính | Như E2E | Có, mỗi màn hình |
-| Visual regression | `VIS` | Ảnh chụp màn hình so với ảnh gốc đã duyệt | Như E2E, dữ liệu cố định | Có, mỗi màn hình ở trạng thái `Success` |
-| Concurrency | `CONC` | Bất biến ở §1.2 khi thao tác ghi bị kích hoạt lặp | Như E2E | Có, mỗi bất biến ở §1.2 một test |
+| Unit | `UNIT` | Form schema, formatting functions, hooks, components rendered in isolation | In memory | Yes |
+| Integration | `INT` | The feature's components together with the real API client, with the API mocked at the network layer per the contract | Mock response that matches OpenAPI | Yes when the feature calls the API |
+| E2E | `E2E` | User flows on the built app, in a real browser | API mocked at the network layer, or the staging environment API | Yes |
+| Accessibility | `A11Y` | Automated scan at the WCAG level of NFR-USAB on every screen and main state | Same as E2E | Yes, for each screen |
+| Visual regression | `VIS` | Screenshot compared with the approved baseline | Same as E2E, fixed data | Yes, for each screen in the `Success` state |
+| Concurrency | `CONC` | The invariants in §1.2 when a write action is triggered repeatedly | Same as E2E | Yes, one test for each invariant in §1.2 |
 
-### Dạng test CONC của bề mặt (Concurrency Test Pattern)
+### Concurrency Test Pattern
 
-1. Mở màn hình trên ứng dụng đã build; chặn lời gọi ghi bằng route giả lập có độ trễ đủ để lần kích hoạt thứ hai xảy ra khi request đầu chưa xong.
-2. Kích hoạt thao tác ghi lặp trong cùng một lần gửi: bấm đúp, nhấn Enter rồi bấm, hoặc gửi lại sau lỗi mạng (form phải đang khóa sửa). Route giả lập trả lỗi mạng cũng phải có độ trễ, để lần bấm thứ hai rơi vào lúc request đầu chưa kết thúc.
-3. Đếm request ghi đã gửi và khóa `Idempotency-Key` của chúng; khẳng định bất biến (một request cho một lần gửi, cùng khóa khi thử lại) và giao diện chỉ hiển thị một kết quả.
-4. Không dùng sleep để sắp thứ tự; chờ theo trạng thái hiển thị.
+1. Open the screen on the built app; intercept the write call with a mock route that has enough delay for the second trigger to happen while the first request has not finished.
+2. Trigger the write action repeatedly within one submission: double click, press Enter then click, or resend after a network error (the form must be locked for editing). The mock route that returns a network error must also have a delay, so that the second click lands while the first request has not ended.
+3. Count the write requests sent and their `Idempotency-Key`; assert the invariant (one request for one submission, the same key on retry) and that the UI shows only one result.
+4. Do not use sleep to order events; wait on the displayed state.
 
 <!-- PROFILE-SLOT: spec.test-types -->
 <!-- /SLOT-CONTENT -->

@@ -3,131 +3,131 @@ doc_type: design-system
 status: draft
 version: 0.1.0
 template_version: 1.0.0
-language: vi-en
+language: en
 parent: [docs/intake/PROJECT_INTAKE.md, docs/srs/SRS.md]
 overlays: []
 assembled_from: []
 ---
 
-# Hệ thống thiết kế (Design System): {{PROJECT_NAME}}
+# Design System: {{PROJECT_NAME}}
 
-<!-- fill: Chép thành docs/design-system/DESIGN_SYSTEM.md ở đầu Giai đoạn 1W (PLAYBOOK mục 2.2.1), trước các trang màn hình, chỉ khi Intake mục 14 ghi Giai đoạn 1W: Có, kèm HTML đầy đủ, hoặc Có, chỉ Markdown. Cùng lúc chép Design_Tokens_Template.json thành docs/design-system/tokens.json và thay từng token theo hướng thị giác đã chọn; mỗi mode khác là một file docs/design-system/tokens.<mode>.json. File JSON không có frontmatter: version của nó là version của tài liệu này, nên đổi file JSON thì tăng version và ghi Version History ở mục 9. parent ghi Intake và SRS chứa FR của màn hình (docs/srs/SRS.md, hoặc master và module khi modular). overlays ghi các bề mặt có giao diện của dự án. assembled_from ghi "core/07_Wireframe_Template/Design_System_Template.md@<template_version>". Quy tắc của hệ thống thiết kế có một nguồn là CONVENTIONS mục 10.7; chú thích fill chỉ dẫn về đó, không viết lại quy tắc. Đầu vào của mục 1: Intake (thương hiệu, người dùng, lĩnh vực), SRS §2 (người dùng), §3 (màn hình), §7 (NFR-USAB) và câu trả lời của chủ dự án. Trạng thái, version và thay đổi sau khi duyệt theo SRS (CONVENTIONS mục 3, PLAYBOOK mục 8). Tài liệu chỉ ghi mục được ít nhất một trang dùng (CONVENTIONS mục 10.7, danh mục). -->
+<!-- fill: Copy to docs/design-system/DESIGN_SYSTEM.md at the start of Stage 1W (PLAYBOOK §2.2.1), before the screen pages, only when Intake §14 records Stage 1W: Yes, with full HTML, or Yes, Markdown only. At the same time copy Design_Tokens_Template.json to docs/design-system/tokens.json and replace each token to follow the chosen visual direction; each other mode is a file docs/design-system/tokens.<mode>.json. The JSON file has no frontmatter: its version is the version of this document, so when the JSON file changes, raise the version and record it in Version History in §9. parent names the Intake and the SRS that holds the FRs of the screens (docs/srs/SRS.md, or the master and modules when modular). overlays lists the surfaces of the project that have a UI. assembled_from records "core/07_Wireframe_Template/Design_System_Template.md@<template_version>". The rules of the design system have one source, CONVENTIONS §10.7; the fill comments point there and do not restate the rules. Inputs of §1: the Intake (brand, users, domain), SRS §2 (users), §3 (screens), §7 (NFR-USAB) and the answers of the project owner. Status, version and changes after approval follow the SRS (CONVENTIONS §3, PLAYBOOK §8). The document lists only entries that at least one page uses (CONVENTIONS §10.7, catalog). -->
 
-## 1. Hướng thị giác (Visual Direction)
+## 1. Visual Direction
 
-<!-- fill: Đề xuất 2 đến 3 hướng, mỗi hướng một hàng; cột đầu MUST là Hướng. Căn cứ dẫn thương hiệu, người dùng, lĩnh vực, giọng điệu của dự án theo CONVENTIONS mục 10.7. Chủ dự án chọn đúng một hướng: cột Chọn ghi Có ở đúng một hàng, các hàng còn lại ghi Không. -->
+<!-- fill: Propose 2 to 3 directions, one row each; the first column MUST be Direction. The basis cites the brand, users, domain and tone of the project per CONVENTIONS §10.7. The project owner chooses exactly one direction: the Chosen column holds Yes in exactly one row and No in the other rows. -->
 
-| Hướng | Mô tả | Căn cứ | Chọn |
+| Direction | Description | Basis | Chosen |
 | --- | --- | --- | --- |
-| <!-- fill: tên hướng --> | <!-- fill: tính chất thị giác: màu, hình dáng, mật độ, chuyển động --> | <!-- fill: thương hiệu, người dùng, lĩnh vực, giọng điệu --> | <!-- fill: chọn một: Có \| Không --> |
-| <!-- fill: tên hướng --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Có \| Không --> |
-| <!-- fill: tên hướng; bỏ hàng này khi chỉ đề xuất 2 hướng --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Có \| Không --> |
+| <!-- fill: direction name --> | <!-- fill: visual character: color, shape, density, motion --> | <!-- fill: brand, users, domain, tone --> | <!-- fill: choose one: Yes \| No --> |
+| <!-- fill: direction name --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Yes \| No --> |
+| <!-- fill: direction name; remove this row when only 2 directions are proposed --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Yes \| No --> |
 
-Lý do chọn: <!-- fill: vì sao hướng có Chọn là Có phù hợp hơn các hướng còn lại, dẫn căn cứ ở bảng trên -->
+Reason for choice: <!-- fill: why the direction with Chosen = Yes fits better than the others, citing the basis in the table above -->
 
-Theme mặc định của thư viện: <!-- fill: chọn một: Không dùng \| Dùng có chủ đích, kèm lý do. Thư viện giao diện là thư viện của stack profile ghi ở Intake mục 14 (OVERLAY.md của bề mặt, mục Giai đoạn 1W); profile none thì ghi chưa chọn thư viện, xét lại ở Giai đoạn 2 -->
+Library default theme: <!-- fill: choose one: Not used \| Used on purpose, with a reason. The UI library is the library of the stack profile recorded in Intake §14 (OVERLAY.md of the surface, Stage 1W section); with profile none, write that no library has been chosen and revisit at Stage 2 -->
 
 ## 2. Foundations
 
-<!-- fill: Mỗi mục con ghi quyết định của hướng đã chọn, giá trị cụ thể nằm ở tokens.json (mục 3); mục này ghi vai trò và lý do. Con số của nền tảng (breakpoint, vùng chạm tối thiểu, cỡ chữ hệ thống) lấy ở mục Giai đoạn 1W của OVERLAY.md của bề mặt, không tự đặt lại. -->
+<!-- fill: Each subsection records the decisions of the chosen direction; the concrete values are in tokens.json (§3), and this section records the role and the reason. Platform figures (breakpoints, minimum touch target, system font size) come from the Stage 1W section of the OVERLAY.md of the surface, and are not set again here. -->
 
-### 2.1. Màu theo vai trò (Color Roles)
+### 2.1. Color Roles
 
-<!-- fill: Màu đặt theo vai trò (nền, chữ, hành động, viền, focus, trạng thái), không đặt theo tên màu; mỗi vai trò ứng với một token semantic ở mục 3 -->
+<!-- fill: Colors are set by role (background, text, action, border, focus, status), not by color name; each role corresponds to a semantic token in §3 -->
 
 ### 2.2. Typography
 
-<!-- fill: thang cỡ chữ, độ đậm, chiều cao dòng, họ chữ của từng vai trò chữ (nội dung, tiêu đề, nhãn); mỗi vai trò ứng với một token typography -->
+<!-- fill: the type scale, weight, line height and font family of each text role (body, heading, label); each role corresponds to a typography token -->
 
-### 2.3. Spacing, grid và breakpoint
+### 2.3. Spacing, grid & breakpoint
 
-<!-- fill: thang spacing, cột và lề của grid, breakpoint; breakpoint nhỏ nhất khớp SRS §2.5 và con số nền tảng ở OVERLAY.md của bề mặt -->
+<!-- fill: the spacing scale, the columns and margins of the grid, the breakpoints; the smallest breakpoint matches SRS §2.5 and the platform figure in the OVERLAY.md of the surface -->
 
 ### 2.4. Iconography
 
-<!-- fill: bộ biểu tượng, kích thước, quy tắc đi kèm nhãn chữ -->
+<!-- fill: the icon set, sizes, and the rule for pairing with a text label -->
 
-### 2.5. Elevation và radius
+### 2.5. Elevation & radius
 
-<!-- fill: các bậc nổi (bóng, lớp) và các bậc bo góc, mỗi bậc dùng cho loại phần tử nào -->
+<!-- fill: the elevation levels (shadow, layer) and the radius levels, and which kind of element each level is used for -->
 
 ### 2.6. Motion
 
-<!-- fill: thời lượng và đường cong theo loại chuyển động; chế độ giảm chuyển động (reduced motion) thay hoặc bỏ chuyển động nào -->
+<!-- fill: durations and easing curves by kind of transition; which motion the reduced motion mode replaces or removes -->
 
-### 2.7. Giọng nội dung (Content Voice)
+### 2.7. Content Voice
 
-<!-- fill: giọng điệu, cách xưng hô, độ dài nhãn và thông báo, khớp giọng điệu ở mục 1 -->
+<!-- fill: tone, form of address, length of labels and messages, matching the tone in §1 -->
 
 ## 3. Token
 
-<!-- fill: Token theo DTCG ở CONVENTIONS mục 10.7, ba nhóm tầng primitive, semantic, component. Bảng mode: một hàng cho mỗi file; hàng đầu là tokens.json (mode mặc định). Cột Áp khi ghi điều kiện áp mode, và bề mặt của trang khi mode phân biệt theo nền tảng. Bảng token semantic tóm tắt token của tokens.json và mọi mode; đường dẫn token đúng như trong file. -->
+<!-- fill: Tokens follow DTCG in CONVENTIONS §10.7, in three tier groups: primitive, semantic, component. The mode table: one row for each file; the first row is tokens.json (the default mode). The Applies when column holds the condition for applying the mode, and the surface of the page when the mode differs by platform. The semantic token table summarizes the tokens of tokens.json and of every mode; the token paths are exactly as in the file. -->
 
-| Mode | File | Áp khi |
+| Mode | File | Applies when |
 | --- | --- | --- |
-| <!-- fill: tên mode mặc định --> | `docs/design-system/tokens.json` | <!-- fill: điều kiện áp; mode mặc định ghi Mặc định --> |
-| <!-- fill: tên mode khác, hoặc bỏ hàng khi dự án chỉ có mode mặc định --> | <!-- fill: docs/design-system/tokens.<tên mode>.json; ghi Không có file khi là mode mặc định --> | <!-- fill: ví dụ điều kiện của hệ điều hành hoặc bề mặt --> |
+| <!-- fill: name of the default mode --> | `docs/design-system/tokens.json` | <!-- fill: the condition for applying; the default mode holds Default --> |
+| <!-- fill: name of another mode, or remove this row when the project has only the default mode --> | <!-- fill: docs/design-system/tokens.<mode name>.json; write No file for the default mode --> | <!-- fill: for example a condition of the operating system or the surface --> |
 
-| Token | Kiểu | Giá trị hoặc alias | Vai trò |
+| Token | Type | Value or alias | Role |
 | --- | --- | --- | --- |
-| <!-- fill: đường dẫn token semantic, ví dụ semantic.color.text.default --> | <!-- fill: kiểu DTCG --> | <!-- fill: giá trị đã phân giải ở mode mặc định --> | <!-- fill: dùng cho phần tử nào --> |
+| <!-- fill: path of a semantic token, for example semantic.color.text.default --> | <!-- fill: DTCG type --> | <!-- fill: the resolved value in the default mode --> | <!-- fill: which element it is used for --> |
 
-<!-- fill: Bảng tương phản theo cặp (CONVENTIONS mục 10.7): mỗi cặp màu dùng cùng nhau một hàng, ở từng mode; cột đầu MUST là Token trước. Token nền là token màu của nền phía sau. Token chữ là token typography của hàng chữ, ghi Không ở hàng phi văn bản. Chữ lớn do checker suy ra từ token typography ở cột Token chữ (fontSize, fontWeight), người viết không khai. Loại chọn một: chữ | phi văn bản. Ngưỡng là 4.5 (chữ thường), 3 (chữ lớn hoặc phi văn bản). Tỷ lệ tính từ hex của hai token ở mode của hàng, làm tròn xuống 2 chữ số. -->
+<!-- fill: Contrast table by pair (CONVENTIONS §10.7): one row for each pair of colors used together, in each mode; the first column MUST be Foreground token. The background token is the color token of the background behind it. The text token is the typography token of the text row, and holds None in a non-text row. Large text is derived by the checker from the typography token in the Text token column (fontSize, fontWeight), and the author does not declare it. Kind is one of: text | non-text. The threshold is 4.5 (normal text), 3 (large text or non-text). The ratio is computed from the hex values of the two tokens in the mode of the row, rounded down to 2 digits. -->
 
-| Token trước | Token nền | Token chữ | Mode | Loại | Tỷ lệ | Ngưỡng |
+| Foreground token | Background token | Text token | Mode | Kind | Ratio | Threshold |
 | --- | --- | --- | --- | --- | --- | --- |
-| <!-- fill: token màu chữ hoặc màu hình --> | <!-- fill: token màu nền --> | <!-- fill: token typography của chữ, hoặc Không --> | <!-- fill: mode ở bảng trên --> | <!-- fill: chọn một: chữ \| phi văn bản --> | <!-- fill: ví dụ 7.25 --> | <!-- fill: 4.5 hoặc 3 --> |
+| <!-- fill: the token of a text color or shape color --> | <!-- fill: the token of the background color --> | <!-- fill: the typography token of the text, or None --> | <!-- fill: a mode from the table above --> | <!-- fill: choose one: text \| non-text --> | <!-- fill: for example 7.25 --> | <!-- fill: 4.5 or 3 --> |
 
 ## 4. Primitive
 
-<!-- fill: Phần tử thị giác nhỏ nhất dùng token trực tiếp. Mỗi primitive một hàng; Token dùng là token semantic hoặc component, không phải token primitive (CONVENTIONS mục 10.7). -->
+<!-- fill: The smallest visual elements that use tokens directly. One row for each primitive; the Token used is a semantic or component token, not a primitive token (CONVENTIONS §10.7). -->
 
-| Primitive | Mục đích | Token dùng |
+| Primitive | Purpose | Token used |
 | --- | --- | --- |
-| <!-- fill: tên primitive --> | <!-- fill: vai trò thị giác --> | <!-- fill: token semantic hoặc component --> |
+| <!-- fill: primitive name --> | <!-- fill: visual role --> | <!-- fill: semantic or component token --> |
 
 ## 5. Component
 
-<!-- fill: Danh mục component, chỉ liệt kê component được ít nhất một trang dùng, trực tiếp hoặc qua cột Component dùng của mục khác đang được dùng (CONVENTIONS mục 10.7). ID CMP-NN đánh số trong dự án; cột đầu MUST là Component ID. Mẫu APG là tên mẫu WAI-ARIA Authoring Practices của component, hoặc Không khi component không tương tác. Variant và State ngăn cách bằng dấu phẩy. Token dùng là token semantic hoặc component. Component dùng ghi CMP-NN của component lồng bên trong, hoặc Không. Bề mặt ghi tên overlay áp dụng. -->
+<!-- fill: The Component catalog, listing only components that at least one page uses, directly or through the Components used column of another entry that is itself used (CONVENTIONS §10.7). The ID CMP-NN is numbered within the project; the first column MUST be Component ID. The APG pattern is the name of the WAI-ARIA Authoring Practices pattern of the component, or None when the component is not interactive. Variant and State are separated by commas. Tokens used are semantic or component tokens. Components used holds the CMP-NN of the components nested inside, or None. Surface holds the names of the overlays it applies to. -->
 
-| Component ID | Tên | Mẫu APG | Variant | State | Token dùng | Component dùng | Bề mặt |
+| Component ID | Name | APG pattern | Variant | State | Tokens used | Components used | Surface |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| {{COMPONENT_ID}} | {{COMPONENT_NAME}} | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: CMP-NN, phân cách dấu phẩy, hoặc Không --> | <!-- fill: ví dụ frontend-web hoặc mobile-app --> |
+| {{COMPONENT_ID}} | {{COMPONENT_NAME}} | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: CMP-NN, separated by commas, or None --> | <!-- fill: for example frontend-web or mobile-app --> |
 
-<!-- fill: Mỗi component ở bảng trên có một mục con dưới đây, theo thứ tự của bảng: anatomy (các phần) và bản đồ bàn phím theo mẫu APG. Component không nhận bàn phím ghi Không có tương tác ở bảng phím. -->
+<!-- fill: Each component in the table above has a subsection below, in the order of the table: the anatomy (the parts) and the keyboard map per the APG pattern. A component that receives no keyboard input holds No interaction in the keys table. -->
 
 ### 5.1. {{COMPONENT_ID}}: {{COMPONENT_NAME}}
 
-Anatomy: <!-- fill: các phần của component theo thứ tự từ ngoài vào trong, mỗi phần dùng token nào -->
+Anatomy: <!-- fill: the parts of the component from the outside in, and which token each part uses -->
 
-| Phím hoặc thao tác | Hành vi |
+| Key or action | Behavior |
 | --- | --- |
-| <!-- fill: phím theo mẫu APG, hoặc Không có tương tác --> | <!-- fill --> |
+| <!-- fill: the key per the APG pattern, or No interaction --> | <!-- fill --> |
 
 ## 6. Pattern
 
-<!-- fill: Danh mục pattern, chỉ liệt kê pattern được ít nhất một trang dùng. ID PAT-NN; cột đầu MUST là Pattern ID. Component dùng ghi CMP-NN có trong mục 5. Luồng ghi các bước của người dùng ở pattern; Trạng thái ghi các trạng thái giao diện của pattern (CONVENTIONS mục 10.1). -->
+<!-- fill: The Pattern catalog, listing only patterns that at least one page uses. The ID is PAT-NN; the first column MUST be Pattern ID. Components used holds the CMP-NN that are in §5. Flow holds the user's steps in the pattern; States holds the UI states of the pattern (CONVENTIONS §10.1). -->
 
-| Pattern ID | Tên | Vấn đề | Khi dùng | Khi không dùng | Component dùng | Luồng | Trạng thái |
+| Pattern ID | Name | Problem | When to use | When not to use | Components used | Flow | States |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| {{PATTERN_ID}} | <!-- fill --> | <!-- fill: vấn đề tương tác mà pattern giải quyết --> | <!-- fill --> | <!-- fill --> | <!-- fill: CMP-NN, phân cách dấu phẩy --> | <!-- fill --> | <!-- fill --> |
+| {{PATTERN_ID}} | <!-- fill --> | <!-- fill: the interaction problem the pattern solves --> | <!-- fill --> | <!-- fill --> | <!-- fill: CMP-NN, separated by commas --> | <!-- fill --> | <!-- fill --> |
 
 ## 7. Template
 
-<!-- fill: Danh mục template của trang, chỉ liệt kê template được ít nhất một trang dùng. ID TPL-NN; cột đầu MUST là Template ID. Vùng ghi tên các vùng của bố cục từ trên xuống, đúng tên vùng mà trang dùng ở khối bố cục low-fi (dòng == Tên vùng ==). Pattern dùng ghi PAT-NN hoặc Không; Component dùng ghi CMP-NN. Theo breakpoint ghi bố cục đổi thế nào ở breakpoint lớn hơn breakpoint nhỏ nhất (mobile: theo hướng màn hình). -->
+<!-- fill: The page Template catalog, listing only templates that at least one page uses. The ID is TPL-NN; the first column MUST be Template ID. Zones holds the names of the layout zones from top to bottom, exactly the zone names the page uses in the low-fi layout block (the lines == Zone name ==). Patterns used holds PAT-NN or None; Components used holds CMP-NN. By breakpoint records how the layout changes at breakpoints larger than the smallest breakpoint (mobile: by screen orientation). -->
 
-| Template ID | Tên | Vùng | Pattern dùng | Component dùng | Bề mặt | Theo breakpoint |
+| Template ID | Name | Zones | Patterns used | Components used | Surface | By breakpoint |
 | --- | --- | --- | --- | --- | --- | --- |
-| {{TEMPLATE_ID}} | <!-- fill --> | <!-- fill: tên vùng, phân cách dấu phẩy --> | <!-- fill: PAT-NN, phân cách dấu phẩy, hoặc Không --> | <!-- fill: CMP-NN, phân cách dấu phẩy --> | <!-- fill: tên overlay --> | <!-- fill --> |
+| {{TEMPLATE_ID}} | <!-- fill --> | <!-- fill: zone names, separated by commas --> | <!-- fill: PAT-NN, separated by commas, or None --> | <!-- fill: CMP-NN, separated by commas --> | <!-- fill: overlay name --> | <!-- fill --> |
 
-## 8. Giả định và câu hỏi mở (Assumptions & Open Questions)
+## 8. Assumptions & Open Questions
 
-| ID | Loại | Nội dung | Lý do hoặc ảnh hưởng | BLOCKING | Người trả lời |
+| ID | Type | Content | Reason or impact | BLOCKING | Respondent |
 | --- | --- | --- | --- | :---: | --- |
-| AQ-01 | <!-- fill: chọn một: Giả định \| Câu hỏi --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Có \| Không --> | <!-- fill --> |
+| AQ-01 | <!-- fill: choose one: Assumption \| Question --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Yes \| No --> | <!-- fill --> |
 
-## 9. Lịch sử phiên bản (Version History)
+## 9. Version History
 
-| Phiên bản | Ngày | Người sửa | Nội dung thay đổi | Lý do và người yêu cầu | Người duyệt |
+| Version | Date | Author | Change | Reason and requester | Approver |
 | --- | --- | --- | --- | --- | --- |
-| 0.1.0 | {{DATE}} | {{AUTHOR}} | Bản khởi tạo | Khởi tạo theo pipeline | Chưa duyệt |
+| 0.1.0 | {{DATE}} | {{AUTHOR}} | Initial version | Created by the pipeline | Not approved |

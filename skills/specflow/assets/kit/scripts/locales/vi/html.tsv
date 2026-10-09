@@ -1,0 +1,5 @@
+# Labels of the Intake that check-full-html.py reads, in Vietnamese.
+html_full	Có, kèm HTML đầy đủ
+html_stage_1w	Giai đoạn 1W
+html_markdown_only	Có, chỉ Markdown
+html_no	Không

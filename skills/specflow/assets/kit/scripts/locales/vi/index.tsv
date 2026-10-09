@@ -1,0 +1,32 @@
+# Text that project-index.py writes into docs/INDEX.md, and the labels it reads from the documents, in Vietnamese.
+index_companion	Tệp đi kèm
+index_tests_heading	Kiểm thử
+index_none	Không có
+index_title	# Chỉ mục dự án (Project Index)
+index_intro	Đọc file này trước khi mở tài liệu khác. Tra một ID hoặc một mã lỗi: `python3 specflow/scripts/project-index.py . --where <ID>` in `tệp:dòng` nơi định nghĩa. Xem các mục của một tài liệu kèm khoảng dòng: `python3 specflow/scripts/project-index.py . --outline <tệp>`. Sau đó chỉ đọc khoảng dòng cần.
+index_h_docs	## 1. Tài liệu (Documents)
+index_h_specs	## 2. SPEC và test case (SPECs & Test Cases)
+index_h_next_tc	## 3. Số TC kế tiếp (Next Free Test Case Number)
+index_h_blocking	## 4. Câu hỏi chặn còn mở (Open Blocking Questions)
+index_h_trace	## 5. Truy xuất AC và NFR tới TC (Acceptance to Test Traceability)
+index_col_file	Tệp
+index_col_type	Loại
+index_col_id	ID
+index_col_status	Trạng thái
+index_col_version	Version
+index_col_wave	Đợt
+index_col_lines	Số dòng
+index_col_spec	SPEC
+index_col_reqs	Yêu cầu nhận (§1.5)
+index_col_tc_used	TC đã dùng (§9)
+index_col_module	Phân hệ
+index_col_next	Số kế tiếp
+index_col_questions	Câu hỏi
+index_col_ac_nfr	AC hoặc NFR
+index_col_tc	TC
+index_no_spec	Chưa có SPEC.
+index_no_tc	Chưa có TC.
+index_no_blocking	Không có.
+index_no_tc_in_spec	Chưa có TC ở SPEC nào.
+index_next_note	Số lớn nhất tính trên mọi bảng của tài liệu dự án (SRS §8, Regression Baseline §6.1, SPEC §9).
+index_trace_note	Sinh từ bảng test ở §9 của từng SPEC; đây là nơi tra TC của một AC hay một NFR.

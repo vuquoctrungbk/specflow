@@ -3,95 +3,95 @@ doc_type: wireframe-index
 status: draft
 version: 0.1.0
 template_version: 1.4.0
-language: vi-en
+language: en
 parent: [docs/design-system/DESIGN_SYSTEM.md]
 overlays: []
 assembled_from: []
 ---
 
-# Chỉ mục wireframe (Wireframe Index): {{PROJECT_NAME}}
+# Wireframe Index: {{PROJECT_NAME}}
 
-<!-- fill: Chép thành docs/wireframes/00_WIREFRAME_INDEX.md ở Giai đoạn 1W (PLAYBOOK mục 2.2.1), chỉ khi Intake mục 14 ghi Giai đoạn 1W: Có, kèm HTML đầy đủ, hoặc Có, chỉ Markdown. parent ghi SRS chứa bảng Giao diện người dùng và FR của màn hình: docs/srs/SRS.md khi docs_mode là monolithic; docs/srs/00_SRS_MASTER.md cùng các file SRS_MODULE_<NAME>.md có FR giao diện khi modular. parent thêm docs/design-system/DESIGN_SYSTEM.md, tài liệu hệ thống thiết kế viết cùng Giai đoạn 1W (CONVENTIONS mục 10.7). overlays ghi các bề mặt có giao diện của dự án theo thứ tự ở Intake. assembled_from ghi "core/07_Wireframe_Template/00_Wireframe_Index_Template.md@<template_version>". Template dùng chung cho mọi bề mặt có giao diện, không có slot: khác biệt giữa web và mobile ghi ở các chú thích fill dưới và ở mục Giai đoạn 1W trong OVERLAY.md của overlay. Trạng thái, version và thay đổi sau khi duyệt theo SRS (CONVENTIONS mục 3, PLAYBOOK mục 8). Chỉ mục không định nghĩa màn hình, FR hay AC: danh sách màn hình có một nguồn là SRS §3, FR ở SRS §6.1, AC ở SRS §8. Tiêu chuẩn UI/UX (lối vào trợ giúp ở mục 3, mục 5, mục 6) theo CONVENTIONS mục 10; chú thích fill chỉ dẫn về đó, không viết lại quy tắc. -->
+<!-- fill: Copy to docs/wireframes/00_WIREFRAME_INDEX.md at Stage 1W (PLAYBOOK §2.2.1), only when Intake §14 records Stage 1W: Yes, with full HTML, or Yes, Markdown only. parent names the SRS that holds the User Interfaces table and the FRs of the screens: docs/srs/SRS.md when docs_mode is monolithic; docs/srs/00_SRS_MASTER.md and the SRS_MODULE_<NAME>.md files that have UI FRs when modular. parent also adds docs/design-system/DESIGN_SYSTEM.md, the design system document written together with Stage 1W (CONVENTIONS §10.7). overlays lists the surfaces of the project that have a UI, in the order of the Intake. assembled_from records "core/07_Wireframe_Template/00_Wireframe_Index_Template.md@<template_version>". This template is shared by every surface that has a UI and has no slots: the differences between web and mobile are written in the fill comments below and in the Stage 1W section of the overlay's OVERLAY.md. Status, version and changes after approval follow the SRS (CONVENTIONS §3, PLAYBOOK §8). The index does not define screens, FRs or ACs: the list of screens has one source, SRS §3, the FRs are in SRS §6.1, the ACs in SRS §8. UI/UX standards (the help entry in §3, §5, §6) follow CONVENTIONS §10; the fill comments point there and do not restate the rules. -->
 
-## 1. Phạm vi và bề mặt (Scope & Surfaces)
+## 1. Scope & Surfaces
 
-- Nguồn danh sách màn hình: bảng Giao diện người dùng ở SRS §3, cột `SCR ID`. Chỉ mục lặp đúng tập `SCR ID` đó; không thêm, bớt hay đổi màn hình ở đây.
-- Bản phát hành có màn hình: <!-- fill: các nhãn đợt ở cột Bản phát hành của SRS §6.1 mà FR của màn hình thuộc về, ví dụ R1, R2 -->
-- Hệ thống thiết kế: `docs/design-system/DESIGN_SYSTEM.md` <!-- fill: đường dẫn tài liệu hệ thống thiết kế của dự án; token nguồn ở docs/design-system/tokens.json (CONVENTIONS mục 10.7) -->
-- Loại dự án: <!-- fill: chọn một: greenfield \| brownfield. Brownfield: wireframe vẽ giao diện to-be sau Gap Analysis; màn hình không đổi ghi Giữ nguyên ở ô SCR ID của SRS §3, không có trang và không có hàng ở danh mục; ảnh chụp giao diện hiện tại ở Regression Baseline §5 -->
+- Source of the screen list: the User Interfaces table in SRS §3, column `SCR ID`. The index repeats exactly that set of `SCR ID`s; do not add, remove or change screens here.
+- Releases with screens: <!-- fill: the release labels in the Release column of SRS §6.1 that the FRs of the screens belong to, for example R1, R2 -->
+- Design system: `docs/design-system/DESIGN_SYSTEM.md` <!-- fill: path of the project's design system document; the source tokens are in docs/design-system/tokens.json (CONVENTIONS §10.7) -->
+- Project type: <!-- fill: choose one: greenfield \| brownfield. Brownfield: the wireframes draw the to-be UI after the Gap Analysis; a screen that does not change is marked Unchanged in the SCR ID cell of SRS §3, has no page and no row in the catalog; screenshots of the current UI are in Regression Baseline §5 -->
 
-| Bề mặt | Kiểu điểm vào | Số màn hình | Ghi chú |
+| Surface | Entry point type | Number of screens | Notes |
 | --- | --- | --- | --- |
-| <!-- fill: tên overlay có giao diện, ví dụ frontend-web hoặc mobile-app, hoặc bề mặt khác có màn hình --> | <!-- fill: web: route của trang; mobile: deep link hoặc tên màn hình trong navigator (stack, tab, modal) --> | <!-- fill --> | <!-- fill: ví dụ breakpoint nhỏ nhất (web), hướng màn hình và làm việc khi mất mạng (mobile) --> |
+| <!-- fill: name of an overlay that has a UI, for example frontend-web or mobile-app, or another surface that has screens --> | <!-- fill: web: the route of the page; mobile: deep link or the screen name in the navigator (stack, tab, modal) --> | <!-- fill --> | <!-- fill: for example the smallest breakpoint (web), screen orientation and offline work (mobile) --> |
 
-## 2. Danh mục màn hình (Screen Catalog)
+## 2. Screen Catalog
 
-<!-- fill: Một hàng cho mỗi SCR ID ở SRS §3, đúng tập ID và tên màn hình như SRS; cột đầu MUST là SCR ID. Điểm vào: web ghi route /đường-dẫn như cột Route của SRS §3; mobile ghi deep link, hoặc tên màn hình trong navigator khi màn hình không mở được bằng deep link. FR chép từ cột FR của SRS §3. Bản phát hành là nhãn đợt sớm nhất trong các FR của màn hình. File HTML ghi đường dẫn docs/wireframes/html/SCR-<MOD>-NN.html khi màn hình có HTML low-fi (tùy chọn, CONVENTIONS mục 7), ghi Không khi không có. Dự án nhiều bề mặt giao diện: màn hình web và màn hình mobile là hai SCR ID khác nhau. -->
+<!-- fill: One row for each SCR ID in SRS §3, with exactly the same set of IDs and screen names as the SRS; the first column MUST be SCR ID. Entry point: web writes the route /path as in the Route column of SRS §3; mobile writes the deep link, or the screen name in the navigator when the screen cannot be opened by deep link. FR is copied from the FR column of SRS §3. Release is the earliest release label among the FRs of the screen. HTML file holds the path docs/wireframes/html/SCR-<MOD>-NN.html when the screen has a low-fi HTML (optional, CONVENTIONS §7), and None when it has none. A project with several UI surfaces: the web screen and the mobile screen are two different SCR IDs. -->
 
-| SCR ID | Tên | Điểm vào | Tác nhân | FR | Bản phát hành | File HTML |
+| SCR ID | Name | Entry point | Actor | FR | Release | HTML file |
 | --- | --- | --- | --- | --- | --- | --- |
-| {{SCR_ID}} | {{SCREEN_NAME}} | `{{ENTRY_POINT}}` | `ACT_{{ROLE_CODE}}` | FR-{{MODULE_CODE}}-001 | {{RELEASE}} | <!-- fill: chọn một: `docs/wireframes/html/{{SCR_ID}}.html` \| Không \| Theo luồng (màn không có trang riêng, vẽ trong mockup của luồng ở mục 3) --> |
+| {{SCR_ID}} | {{SCREEN_NAME}} | `{{ENTRY_POINT}}` | `ACT_{{ROLE_CODE}}` | FR-{{MODULE_CODE}}-001 | {{RELEASE}} | <!-- fill: choose one: `docs/wireframes/html/{{SCR_ID}}.html` \| None \| In flow (a screen with no page of its own, drawn in the mockup of the flow in §3) --> |
 
-## 3. Sơ đồ điều hướng (Navigation Map)
+## 3. Navigation Map
 
-<!-- fill: Mỗi màn hình của danh mục là một nút, nhãn gồm SCR ID và tên; cạnh là điều hướng chính, nhãn cạnh là thao tác hoặc điều kiện (ví dụ chưa đăng nhập, lưu thành công). Web: ghi route cần đăng nhập và điều hướng bằng nút quay lại của trình duyệt khi khác luồng thường. Mobile: ghi màn hình mở được bằng deep link hoặc thông báo đẩy, nhóm tab hoặc stack của navigator, và nơi cử chỉ quay lại của hệ thống đưa người dùng tới. Sơ đồ khớp mục điều hướng vào và ra của từng trang. -->
+<!-- fill: Each screen of the catalog is a node, labelled with the SCR ID and the name; an edge is a main navigation, labelled with the action or the condition (for example not signed in, saved successfully). Web: record the routes that need sign-in and the navigation by the browser's back button when it differs from the normal flow. Mobile: record the screens that can be opened by deep link or push notification, the tab group or stack of the navigator, and where the system back gesture takes the user. The map matches the entry and exit navigation of each page. -->
 
-<!-- fill: Mockup theo luồng. Với mỗi luồng có màn ghi Theo luồng ở danh mục: một tiêu đề `### Luồng: <tên>` và một khối `text` low-fi vẽ lần lượt các màn đó, mỗi màn mở đầu bằng SCR ID, kèm trạng thái rỗng và lỗi khi màn có. Không có màn nào ghi Theo luồng thì xóa chú thích này. -->
+<!-- fill: Flow mockup. For each flow that has a screen marked In flow in the catalog: a heading "### Flow: <name>" and a low-fi `text` block that draws those screens one after another, each screen starting with its SCR ID, with the empty and error states when the screen has them. When no screen is marked In flow, delete this comment. -->
 
 ```mermaid
 flowchart LR
     S1["{{SCR_ID}}: {{SCREEN_NAME}}"] -->|"{{MESSAGE}}"| S2["{{SCR_ID}}: {{SCREEN_NAME}}"]
 ```
 
-Lối vào trợ giúp: <!-- fill: tiêu chí 3.2.6 ở CONVENTIONS mục 10.2: lối vào trợ giúp lặp ở nhiều màn hình (liên hệ, câu hỏi thường gặp, trợ giúp theo ngữ cảnh) và vị trí tương đối chung của nó trên các màn hình đó; N/A kèm lý do khi sản phẩm không có lối vào trợ giúp -->
+Help entry: <!-- fill: criterion 3.2.6 in CONVENTIONS §10.2: the help entry repeated on several screens (contact, FAQ, contextual help) and its shared relative position on those screens; N/A with a reason when the product has no help entry -->
 
-## 4. Đối chiếu FR và màn hình (FR ↔ SCR Traceability)
+## 4. FR ↔ SCR Traceability
 
-<!-- fill: Đúng một hàng cho mỗi FR ở SRS §6.1 có ưu tiên khác Won't; FR Won't không có hàng. Chế độ modular: gộp FR của master và mọi module. Cột đầu MUST là FR ID, có cột SCR ID. Ô SCR ID ghi một trong: các SCR-* hiện thực FR, phân cách dấu phẩy; "Không có giao diện: <lý do>" cho FR không có màn hình (ví dụ job nền, API cho hệ thống khác); hoặc, chỉ ở dự án brownfield, "Giữ nguyên" kèm dẫn ảnh chụp ở Regression Baseline §5. Mỗi SCR ID của danh mục xuất hiện ở ít nhất một hàng. FR có ở SRS mà không màn hình nào hiện thực, hay màn hình cần một FR mà SRS chưa có, là lệch với SRS: ghi câu hỏi BLOCKING ở mục 7 kèm đề xuất sửa SRS theo PLAYBOOK mục 8, không sửa bảng này cho khớp. -->
+<!-- fill: Exactly one row for each FR in SRS §6.1 whose priority is not Won't; a Won't FR has no row. Modular mode: merge the FRs of the master and of every module. The first column MUST be FR ID, with an SCR ID column. The SCR ID cell holds one of: the SCR-* that implement the FR, separated by commas; "No UI: <reason>" for an FR with no screen (for example a background job, an API for other systems); or, in a brownfield project only, "Unchanged" with a reference to the screenshot in Regression Baseline §5. Every SCR ID of the catalog appears in at least one row. An FR that is in the SRS but implemented by no screen, or a screen that needs an FR the SRS does not have, is a mismatch with the SRS: record a BLOCKING question in §7 with a proposed SRS fix per PLAYBOOK §8, and do not edit this table to match. -->
 
-| FR ID | SCR ID | Ghi chú |
+| FR ID | SCR ID | Notes |
 | --- | --- | --- |
-| FR-{{MODULE_CODE}}-001 | {{SCR_ID}} | <!-- fill: phần của FR mà từng màn hình hiện thực khi FR trải trên nhiều màn hình --> |
+| FR-{{MODULE_CODE}}-001 | {{SCR_ID}} | <!-- fill: the part of the FR that each screen implements when the FR spans several screens --> |
 
-## 5. Đánh giá heuristic (Heuristic Evaluation)
+## 5. Heuristic Evaluation
 
-<!-- fill: Theo CONVENTIONS mục 10.3: đánh giá toàn bộ chỉ mục và các trang theo từng heuristic; đúng một hàng cho mỗi khóa, khóa và tên giữ như template (chép từ bảng heuristic của CONVENTIONS mục 10.3). Mức vấn đề và cách xử lý theo mục 10.3. Gate 1W không đạt khi còn hàng Nghiêm trọng (PLAYBOOK mục 2.2.1). -->
+<!-- fill: Per CONVENTIONS §10.3: evaluate the whole index and the pages against each heuristic; exactly one row for each key, with the key and the name kept as in the template (copied from the heuristic table of CONVENTIONS §10.3). The problem level and how to handle it follow §10.3. Gate 1W fails while a Critical row remains (PLAYBOOK §2.2.1). -->
 
-| Khóa heuristic | Heuristic | Đánh giá | Mức vấn đề | Xử lý |
+| Heuristic key | Heuristic | Evaluation | Problem level | Handling |
 | --- | --- | --- | --- | --- |
-| `H1` | Visibility of System Status | <!-- fill: trang, trạng thái hoặc cạnh của sơ đồ điều hướng đã xem và điều thấy được --> | <!-- fill: chọn một: Nghiêm trọng \| Nhỏ \| Không có --> | <!-- fill: việc đã sửa; với vấn đề còn Nhỏ: AQ-NN ở mục 7 hoặc lý do chấp nhận; tên bề mặt khi vấn đề chỉ thuộc một bề mặt; Không khi không tìm thấy vấn đề nào --> |
-| `H2` | Match Between the System and the Real World | <!-- fill --> | <!-- fill: chọn một: Nghiêm trọng \| Nhỏ \| Không có --> | <!-- fill --> |
-| `H3` | User Control and Freedom | <!-- fill --> | <!-- fill: chọn một: Nghiêm trọng \| Nhỏ \| Không có --> | <!-- fill --> |
-| `H4` | Consistency and Standards | <!-- fill: đối chiếu các trang với danh mục Component, Pattern, Template của DESIGN_SYSTEM.md: cùng một việc dùng cùng một Component ID --> | <!-- fill: chọn một: Nghiêm trọng \| Nhỏ \| Không có --> | <!-- fill --> |
-| `H5` | Error Prevention | <!-- fill --> | <!-- fill: chọn một: Nghiêm trọng \| Nhỏ \| Không có --> | <!-- fill --> |
-| `H6` | Recognition Rather than Recall | <!-- fill --> | <!-- fill: chọn một: Nghiêm trọng \| Nhỏ \| Không có --> | <!-- fill --> |
-| `H7` | Flexibility and Efficiency of Use | <!-- fill --> | <!-- fill: chọn một: Nghiêm trọng \| Nhỏ \| Không có --> | <!-- fill --> |
-| `H8` | Aesthetic and Minimalist Design | <!-- fill --> | <!-- fill: chọn một: Nghiêm trọng \| Nhỏ \| Không có --> | <!-- fill --> |
-| `H9` | Help Users Recognize, Diagnose, and Recover from Errors | <!-- fill --> | <!-- fill: chọn một: Nghiêm trọng \| Nhỏ \| Không có --> | <!-- fill --> |
-| `H10` | Help and Documentation | <!-- fill --> | <!-- fill: chọn một: Nghiêm trọng \| Nhỏ \| Không có --> | <!-- fill --> |
+| `H1` | Visibility of System Status | <!-- fill: the pages, states or edges of the navigation map that were examined, and what is visible --> | <!-- fill: choose one: Critical \| Minor \| None --> | <!-- fill: what was fixed; for a problem that stays Minor: the AQ-NN in §7 or the reason it is accepted; the surface name when the problem belongs to one surface only; None when no problem was found --> |
+| `H2` | Match Between the System and the Real World | <!-- fill --> | <!-- fill: choose one: Critical \| Minor \| None --> | <!-- fill --> |
+| `H3` | User Control and Freedom | <!-- fill --> | <!-- fill: choose one: Critical \| Minor \| None --> | <!-- fill --> |
+| `H4` | Consistency and Standards | <!-- fill: compare the pages with the Component, Pattern, Template catalogs of DESIGN_SYSTEM.md: the same task uses the same Component ID --> | <!-- fill: choose one: Critical \| Minor \| None --> | <!-- fill --> |
+| `H5` | Error Prevention | <!-- fill --> | <!-- fill: choose one: Critical \| Minor \| None --> | <!-- fill --> |
+| `H6` | Recognition Rather than Recall | <!-- fill --> | <!-- fill: choose one: Critical \| Minor \| None --> | <!-- fill --> |
+| `H7` | Flexibility and Efficiency of Use | <!-- fill --> | <!-- fill: choose one: Critical \| Minor \| None --> | <!-- fill --> |
+| `H8` | Aesthetic and Minimalist Design | <!-- fill --> | <!-- fill: choose one: Critical \| Minor \| None --> | <!-- fill --> |
+| `H9` | Help Users Recognize, Diagnose, and Recover from Errors | <!-- fill --> | <!-- fill: choose one: Critical \| Minor \| None --> | <!-- fill --> |
+| `H10` | Help and Documentation | <!-- fill --> | <!-- fill: choose one: Critical \| Minor \| None --> | <!-- fill --> |
 
-## 6. Kiểm mẫu thiết kế lừa người dùng (Deceptive Pattern Check)
+## 6. Deceptive Pattern Check
 
-<!-- fill: Theo CONVENTIONS mục 10.4: kiểm toàn bộ chỉ mục, các trang và sơ đồ điều hướng theo dấu hiệu của từng mẫu; đúng một hàng cho mỗi khóa, khóa và tên giữ như template (chép từ bảng mẫu lừa của CONVENTIONS mục 10.4). Gate 1W không đạt khi còn hàng Có (PLAYBOOK mục 2.2.1); bỏ mẫu cần đổi quy tắc nghiệp vụ thì sửa SRS theo PLAYBOOK mục 8 trước. -->
+<!-- fill: Per CONVENTIONS §10.4: check the whole index, the pages and the navigation map against the signs of each pattern; exactly one row for each key, with the key and the name kept as in the template (copied from the deceptive pattern table of CONVENTIONS §10.4). Gate 1W fails while a Found row remains (PLAYBOOK §2.2.1); if dropping a pattern needs a business rule to change, fix the SRS per PLAYBOOK §8 first. -->
 
-| Khóa mẫu lừa | Mẫu | Kết quả | Căn cứ |
+| Deceptive pattern key | Pattern | Result | Evidence |
 | --- | --- | --- | --- |
-| `DP1` | Preselection | <!-- fill: chọn một: Không có \| Có --> | <!-- fill: Không có: trang, thành phần hoặc cạnh của sơ đồ điều hướng đã xem; Có: vị trí của mẫu --> |
-| `DP2` | Obstruction | <!-- fill: chọn một: Không có \| Có --> | <!-- fill --> |
-| `DP3` | Hidden costs | <!-- fill: chọn một: Không có \| Có --> | <!-- fill --> |
-| `DP4` | Hard to cancel | <!-- fill: chọn một: Không có \| Có --> | <!-- fill --> |
-| `DP5` | Confirmshaming | <!-- fill: chọn một: Không có \| Có --> | <!-- fill --> |
+| `DP1` | Preselection | <!-- fill: choose one: None \| Found --> | <!-- fill: None: the pages, components or edges of the navigation map that were examined; Found: the location of the pattern --> |
+| `DP2` | Obstruction | <!-- fill: choose one: None \| Found --> | <!-- fill --> |
+| `DP3` | Hidden costs | <!-- fill: choose one: None \| Found --> | <!-- fill --> |
+| `DP4` | Hard to cancel | <!-- fill: choose one: None \| Found --> | <!-- fill --> |
+| `DP5` | Confirmshaming | <!-- fill: choose one: None \| Found --> | <!-- fill --> |
 
-## 7. Giả định và câu hỏi mở (Assumptions & Open Questions)
+## 7. Assumptions & Open Questions
 
-<!-- fill: Lệch giữa wireframe và SRS có hai loại (PLAYBOOK mục 2.2.1). Wireframe vẽ sai hoặc sót so với SRS thì sửa wireframe. Lập wireframe làm lộ chỗ SRS thiếu hoặc sai (màn hình thêm, bớt hay đổi; FR thiếu; AC không khớp với trạng thái của màn hình) thì ghi câu hỏi BLOCKING kèm đề xuất sửa SRS (brownfield: cả Gap Analysis). Gate 1W không đạt khi còn câu hỏi BLOCKING ở chỉ mục hoặc ở trang nào. -->
+<!-- fill: A mismatch between the wireframes and the SRS is of two kinds (PLAYBOOK §2.2.1). If a wireframe is drawn wrongly or misses something compared with the SRS, fix the wireframe. If drawing the wireframes exposes something missing or wrong in the SRS (a screen to add, remove or change; a missing FR; an AC that does not match the states of the screen), record a BLOCKING question with a proposed SRS fix (brownfield: and the Gap Analysis). Gate 1W fails while a BLOCKING question remains in the index or in any page. -->
 
-| ID | Loại | Nội dung | Lý do hoặc ảnh hưởng | BLOCKING | Người trả lời |
+| ID | Type | Content | Reason or impact | BLOCKING | Respondent |
 | --- | --- | --- | --- | :---: | --- |
-| AQ-01 | <!-- fill: chọn một: Giả định \| Câu hỏi --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Có \| Không --> | <!-- fill --> |
+| AQ-01 | <!-- fill: choose one: Assumption \| Question --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Yes \| No --> | <!-- fill --> |
 
-## 8. Lịch sử phiên bản (Version History)
+## 8. Version History
 
-| Phiên bản | Ngày | Người sửa | Nội dung thay đổi | Lý do và người yêu cầu | Người duyệt |
+| Version | Date | Author | Change | Reason and requester | Approver |
 | --- | --- | --- | --- | --- | --- |
-| 0.1.0 | {{DATE}} | {{AUTHOR}} | Bản khởi tạo | Khởi tạo theo pipeline | Chưa duyệt |
+| 0.1.0 | {{DATE}} | {{AUTHOR}} | Initial version | Created by the pipeline | Not approved |

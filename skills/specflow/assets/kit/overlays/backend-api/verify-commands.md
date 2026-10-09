@@ -2,24 +2,24 @@
 doc_type: overlay-section
 status: stable
 version: 1.0.0
-language: vi-en
+language: en
 surface: backend-api
 ---
 
-# Overlay backend-api: lệnh verify
+# Overlay backend-api: verify commands
 
 <!-- SLOT-CONTENT: playbook.verify-commands -->
-| Hạng mục | Lệnh | Điều kiện pass |
+| Item | Command | Pass condition |
 | --- | --- | --- |
-| Sinh mã | `{{CODEGEN_CMD}}` | Exit code 0; chạy trước mọi lệnh khác |
-| Lint | `{{LINT_CMD}}` | 0 lỗi, 0 cảnh báo |
-| Typecheck | `{{TYPECHECK_CMD}}` | 0 lỗi |
+| Code generation | `{{CODEGEN_CMD}}` | Exit code 0; run before every other command |
+| Lint | `{{LINT_CMD}}` | 0 errors, 0 warnings |
+| Typecheck | `{{TYPECHECK_CMD}}` | 0 errors |
 | Unit test | `{{UNIT_TEST_CMD}}` | 100% pass |
-| Integration test | `{{INTEGRATION_TEST_CMD}}` | 100% pass trên cơ sở dữ liệu thật chạy cô lập |
+| Integration test | `{{INTEGRATION_TEST_CMD}}` | 100% pass on a real database running in isolation |
 | E2E test | `{{E2E_TEST_CMD}}` | 100% pass |
-| Coverage | `{{COVERAGE_CMD}}` | ≥ ngưỡng của NFR-MAINT |
+| Coverage | `{{COVERAGE_CMD}}` | ≥ the NFR-MAINT threshold |
 | Build | `{{BUILD_CMD}}` | Exit code 0 |
-| Dependency audit | `{{AUDIT_CMD}}` | Không còn lỗ hổng high hoặc critical chưa có ADR chấp nhận rủi ro |
-| Migration | `{{MIGRATION_CHECK_CMD}}` | Schema hợp lệ và thư mục migration khớp schema |
-| Tài liệu OpenAPI | `{{OPENAPI_LINT_CMD}}` | 0 lỗi |
+| Dependency audit | `{{AUDIT_CMD}}` | No high or critical vulnerability left without an ADR accepting the risk |
+| Migration | `{{MIGRATION_CHECK_CMD}}` | Schema is valid and the migration directory matches the schema |
+| OpenAPI document | `{{OPENAPI_LINT_CMD}}` | 0 errors |
 <!-- /SLOT-CONTENT -->

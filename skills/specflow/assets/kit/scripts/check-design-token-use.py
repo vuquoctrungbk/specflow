@@ -9,7 +9,7 @@ separated files; this script does the parts that need the token values.
   TIERS     the tier groups, lowest first (one per line); the tiers after the first are the ones HTML may use.
   MODES     "<mode name>\t<token file>\t<applies when>" per row of the Mode table (files relative to DIR).
   ROWS      "<n>\t<fg token>\t<bg token>\t<text token>\t<mode>\t<kind>\t<ratio>\t<threshold>" per row of the contrast table.
-  PAGES     "<html file>\t<surfaces of the page, comma separated>" per HTML wireframe of a page from screen template 1.4.0.
+  PAGES     "<html file>\t<surfaces of the page, comma separated>" per HTML wireframe of a page.
 
 Contrast: WCAG 2.2 relative luminance from the hex of each token in the row's mode; the ratio is rounded down to two
 digits and compared as a number. Large text comes from the typography token of the row (fontSize from 24px, or from
@@ -27,6 +27,8 @@ import sys
 from decimal import Decimal, InvalidOperation
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+from i18n import T  # noqa: E402
 _spec = importlib.util.spec_from_file_location("check_design_tokens", os.path.join(HERE, "check-design-tokens.py"))
 tokens_lib = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(tokens_lib)
@@ -35,7 +37,7 @@ HEX_RE = tokens_lib.HEX_RE
 ALIAS_DEPTH = 20
 DEFAULT_TOKEN_FILE = "tokens.json"
 DARK_TOKEN_FILE = "tokens.dark.json"
-KIND_TEXT, KIND_NON_TEXT, NO_TEXT_TOKEN = "chữ", "phi văn bản", "Không"
+KIND_TEXT, KIND_NON_TEXT, NO_TEXT_TOKEN = T.design_kind_text, T.design_kind_non_text, T.design_no_text_token
 SMALL_TEXT_MIN, LARGE_TEXT_MIN = Decimal("4.5"), Decimal("3")
 LARGE_PX, LARGE_BOLD_PX, BOLD_WEIGHT, REM_PX = 24, 18.66, 700, 16
 KEYWORDS = ("0", "auto", "100%", "inherit", "initial", "unset")
@@ -190,14 +192,14 @@ def check_contrast(findings, sets, rows):
             typography = resolve(tokens, tuple(text.split("."))) if text != NO_TEXT_TOKEN else None
             size = text_size(typography)
             if size is None:
-                findings.error(f"{where}: a '{KIND_TEXT}' row needs a typography token with a fontSize in the Token chữ column, to tell large text from small text")
+                findings.error(f"{where}: a '{KIND_TEXT}' row needs a typography token with a fontSize in the {T.design_col_text_token} column, to tell large text from small text")
                 continue
             large = size[0] >= LARGE_PX or (size[0] >= LARGE_BOLD_PX and size[1] >= BOLD_WEIGHT)
             needed = LARGE_TEXT_MIN if large else SMALL_TEXT_MIN
         elif kind == KIND_NON_TEXT:
             needed = LARGE_TEXT_MIN
             if text != NO_TEXT_TOKEN:
-                findings.error(f"{where}: a '{KIND_NON_TEXT}' row writes {NO_TEXT_TOKEN} in the Token chữ column")
+                findings.error(f"{where}: a '{KIND_NON_TEXT}' row writes {NO_TEXT_TOKEN} in the {T.design_col_text_token} column")
         else:
             findings.error(f"{where}: the kind '{kind}' is neither '{KIND_TEXT}' nor '{KIND_NON_TEXT}'")
             continue

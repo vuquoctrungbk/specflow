@@ -1,6 +1,6 @@
 ---
-title: "{{PROJECT_NAME}} đợt {{RELEASE}}: Implementation Plan"
-description: "Triển khai mọi SPEC của đợt {{RELEASE}} theo TDD"
+title: "{{PROJECT_NAME}} release {{RELEASE}}: Implementation Plan"
+description: "Implement every SPEC of release {{RELEASE}} with TDD"
 status: pending
 priority: "{{PRIORITY}}"
 effort: "{{EFFORT}}"
@@ -9,7 +9,7 @@ created: "{{DATE}}"
 doc_type: implementation-plan
 version: 0.1.0
 template_version: 1.3.0
-language: vi-en
+language: en
 release: "{{RELEASE}}"
 spec_ids: ["{{SPEC_ID}}"]
 parent: ["docs/specs/SPEC_{{FEATURE_KEY}}.md"]
@@ -17,69 +17,69 @@ overlays: []
 assembled_from: []
 ---
 
-# {{PROJECT_NAME}} đợt {{RELEASE}}: Implementation Plan
+# {{PROJECT_NAME}} release {{RELEASE}}: Implementation Plan
 
-<!-- fill: Một plan cho mọi SPEC của một đợt phát hành (PLAYBOOK mục 2.5). Chép cả thư mục thành plans/{YYMMDD-HHmm}-release-<release-slug>/ theo định dạng ở CONVENTIONS mục 9 (không cần công cụ riêng), <release-slug> là nhãn đợt viết kebab-case, ví dụ {{RELEASE_SLUG}}. release là nhãn đợt ở cột Bản phát hành của SRS §6.1; spec_ids liệt kê mọi SPEC approved của đợt, mỗi SPEC có file trong docs/specs/ và mọi FR ở SPEC §1.5 có Bản phát hành bằng release; SPEC có khóa release thì khóa đó bằng release của plan (CONVENTIONS mục 9); plan.md không có khóa spec_id. parent liệt kê file SPEC của mọi phần tử spec_ids. Mỗi pha một file phase-NN-<slug>.md chép từ phase-01-example-phase.md, NN liên tục từ 01; spec_id của pha là một phần tử của spec_ids, một pha chỉ thuộc một SPEC, pha của cùng một SPEC đứng liền nhau, SPEC cung cấp contract đứng trước SPEC tiêu thụ contract đó, và ở mỗi bề mặt pha của SPEC mang nền tảng dùng chung của bề mặt đó (khung dự án, cấu hình, thư viện dùng chung, hạ tầng test; PLAYBOOK mục 2.4) đứng trước pha của SPEC khác cùng bề mặt. Bảng Phases có đúng một dòng cho mỗi file pha, cột Status khớp status của pha. Các pha phủ mọi SPEC của đợt và File Diff của từng SPEC: mỗi SPEC trong spec_ids có ít nhất một pha, và các pha có spec_id của một SPEC cộng lại MUST phủ hết File Diff và mọi TC ở §9 của SPEC đó. Frontmatter assembled_from của plan và của từng pha ghi "core/05_Implementation_Plan_Template/<file>@<template_version>". Status: plan pending, in-progress hoặc completed (completed khi mọi SPEC trong spec_ids đã implemented); pha todo, in-progress hoặc done. Dự án có Intake cũ hơn 1.3.0 lập plan cho một SPEC theo COMPATIBILITY.md mục 3. -->
+<!-- fill: One plan for every SPEC of a release (PLAYBOOK §2.5). Copy the whole directory to plans/{YYMMDD-HHmm}-release-<release-slug>/ in the format of CONVENTIONS §9 (no separate tool needed), where <release-slug> is the release label in kebab-case, for example {{RELEASE_SLUG}}. release is the release label in the Release column of SRS §6.1; spec_ids lists every approved SPEC of the release, each SPEC has a file in docs/specs/ and every FR in SPEC §1.5 has a Release equal to release; a SPEC that has a release key has that key equal to the release of the plan (CONVENTIONS §9); plan.md has no spec_id key. parent lists the SPEC files of every element of spec_ids. Each phase is one file phase-NN-<slug>.md copied from phase-01-example-phase.md, NN continuous from 01; the spec_id of a phase is one element of spec_ids, a phase belongs to one SPEC only, the phases of the same SPEC are adjacent, a SPEC that provides a contract comes before the SPEC that consumes that contract, and on each surface the phases of the SPEC that carries the shared foundation of that surface (project skeleton, configuration, shared library, test infrastructure; PLAYBOOK §2.4) come before the phases of other SPECs of the same surface. The Phases table has exactly one line for each phase file, and the Status column matches the status of the phase. The phases cover every SPEC of the release and the File Diff of each SPEC: each SPEC in spec_ids has at least one phase, and the phases that carry the spec_id of one SPEC together MUST cover the whole File Diff and every TC in §9 of that SPEC. The frontmatter assembled_from of the plan and of each phase records "core/05_Implementation_Plan_Template/<file>@<template_version>". The document language: set the language key of the plan and of each phase to the language of the project (the language key of the Intake). Status: plan is pending, in-progress or completed (completed when every SPEC in spec_ids is implemented); phase is todo, in-progress or done. -->
 
-## Tổng quan (Overview)
+## Overview
 
-- Đợt phát hành: `{{RELEASE}}`; SPEC của đợt ở bảng dưới, cùng tập với `spec_ids`.
-- Cách tiếp cận: <!-- fill: 2 đến 3 câu tóm tắt thứ tự thực hiện các SPEC và lý do, ví dụ SPEC của API trước SPEC của giao diện dùng API đó -->
-- Lệnh verify: theo mục lệnh verify trong `CLAUDE.md`.
+- Release: `{{RELEASE}}`; the SPECs of the release are in the table below, the same set as `spec_ids`.
+- Approach: <!-- fill: 2 to 3 sentences summarizing the order in which the SPECs are implemented and why, for example the API SPEC before the UI SPEC that uses that API -->
+- Verify commands: per the verify commands section in `CLAUDE.md`.
 
-## SPEC của đợt (Release SPECs)
+## Release SPECs
 
-<!-- fill: Một hàng cho mỗi phần tử của spec_ids, theo thứ tự thực hiện. Cột Pha ghi số các pha có spec_id của SPEC đó, liền nhau, ví dụ 1 đến 3. Các pha phủ mọi SPEC của đợt và File Diff của từng SPEC. -->
+<!-- fill: One row for each element of spec_ids, in implementation order. The Phase column gives the numbers of the phases that carry the spec_id of that SPEC, adjacent, for example 1 to 3. The phases cover every SPEC of the release and the File Diff of each SPEC. -->
 
-| SPEC ID | File | Tính năng | Bề mặt | Pha |
-|---------|------|-----------|--------|-----|
-| {{SPEC_ID}} | `docs/specs/SPEC_{{FEATURE_KEY}}.md` | {{FEATURE_NAME}} | <!-- fill: overlay của SPEC --> | <!-- fill --> |
+| SPEC ID | File | Feature | Surface | Phase |
+|---------|------|---------|---------|-------|
+| {{SPEC_ID}} | `docs/specs/SPEC_{{FEATURE_KEY}}.md` | {{FEATURE_NAME}} | <!-- fill: overlay of the SPEC --> | <!-- fill --> |
 
-## Mục tiêu (Goals)
+## Goals
 
-| # | Mục tiêu | Ưu tiên |
-|---|----------|---------|
-| 1 | <!-- fill: mục tiêu đo được, gắn AC hoặc INV của một SPEC của đợt --> | {{PRIORITY}} |
+| # | Goal | Priority |
+|---|------|----------|
+| 1 | <!-- fill: measurable goal, tied to an AC or INV of a SPEC of the release --> | {{PRIORITY}} |
 
-## Các pha (Phases)
+## Phases
 
 | # | Phase | Status |
 |---|-------|--------|
 | 1 | [{{PHASE_TITLE}}](./phase-01-example-phase.md) | todo |
 
-Pha nhóm theo SPEC: pha của một SPEC đứng liền nhau, SPEC cung cấp contract đứng trước SPEC tiêu thụ contract đó. Thứ tự pha mặc định trong một SPEC (overlay có thể thay, ghi lý do nếu đổi); có Giai đoạn 1W thì pha của lớp giao tiếp (mục 3 dưới) theo thứ tự của sơ đồ điều hướng ở chỉ mục wireframe. Trong mọi pha, test của pha được viết và chạy thấy đỏ trước, rồi mới viết code tới khi xanh; pha kết thúc khi lệnh verify đạt và đã commit.
+Phases are grouped by SPEC: the phases of one SPEC are adjacent, and a SPEC that provides a contract comes before the SPEC that consumes that contract. The default order of phases within a SPEC (an overlay may replace it, give the reason if changed); with Stage 1W, the phases of the interface layer (§3 below) follow the order of the navigation diagram in the wireframe index. In every phase, the tests of the phase are written and run red first, then code is written until green; the phase ends when the verify commands pass and it is committed.
 
-1. Migration, kiểu dữ liệu dùng chung, contract, DTO và schema validate, kèm test của chúng.
-2. Logic nghiệp vụ và truy cập dữ liệu: test đơn vị và test `CONC` của SPEC §9 đỏ rồi xanh, sau đó refactor.
-3. Lớp giao tiếp (controller, màn hình, command) và test tích hợp, e2e.
+1. Migration, shared data types, contract, DTO and validation schema, with their tests.
+2. Business logic and data access: the unit tests and the `CONC` tests of SPEC §9 red then green, then refactor.
+3. Interface layer (controller, screen, command) and integration and e2e tests.
 
-## Tiêu chí thành công (Success Criteria)
+## Success Criteria
 
-Bằng Definition of Done ở §12 của từng SPEC trong `spec_ids`; Giai đoạn 5 xét theo từng SPEC khi mọi pha của SPEC đó xong:
+Equal to the Definition of Done in §12 of each SPEC in `spec_ids`; Stage 5 is judged per SPEC when all phases of that SPEC are done:
 
-- [ ] Mọi lệnh verify trong `CLAUDE.md` đạt điều kiện pass của bảng lệnh verify (PLAYBOOK mục 11).
-- [ ] 100% test ở §9 của mỗi SPEC pass, đúng file và tên ghi trong bảng.
-- [ ] Mã nguồn của mỗi pha chỉ thay đổi trong File Diff của SPEC theo `spec_id` của pha; ngoài ra chỉ có tài liệu và plan được cập nhật.
-- [ ] Mọi lỗi trả về theo envelope ARCHITECTURE §6.2 với mã trong §7.1 (bề mặt có request/response).
-- [ ] Không có dependency mới ngoài ARCHITECTURE §2 hoặc ADR `accepted`.
-- [ ] Mọi SPEC trong `spec_ids` ở status `implemented`, mọi pha ở status `done`.
+- [ ] Every verify command in `CLAUDE.md` meets the pass condition of the verify command table (PLAYBOOK §11).
+- [ ] 100% of the tests in §9 of each SPEC pass, in the file and with the name given in the table.
+- [ ] The source code of each phase changes only within the File Diff of the SPEC given by the `spec_id` of the phase; otherwise only documents and the plan are updated.
+- [ ] Every returned error uses the envelope of ARCHITECTURE §6.2 with a code from §7.1 (surfaces with request/response).
+- [ ] No new dependency outside ARCHITECTURE §2 or an `accepted` ADR.
+- [ ] Every SPEC in `spec_ids` is in status `implemented`, every phase is in status `done`.
 
-## Rủi ro (Risks)
+## Risks
 
-| Rủi ro | Ảnh hưởng | Giảm thiểu |
-|--------|-----------|------------|
+| Risk | Impact | Mitigation |
+|------|--------|------------|
 | <!-- fill --> | <!-- fill --> | <!-- fill --> |
 
-## Lịch sử phiên bản (Version History)
+## Version History
 
-<!-- fill: Duyệt Gate 4 đặt version: 1.0.0 và thêm một hàng ghi tên người duyệt ở cột Người duyệt. Duyệt lại theo PLAYBOOK mục 8 quy tắc 7 (thêm pha vào một đợt còn dở) tăng MINOR và thêm một hàng mới, người duyệt Gate 4 duyệt lại. -->
+<!-- fill: Approval at Gate 4 sets version: 1.0.0 and adds a row with the approver's name in the Approver column. A re-approval per PLAYBOOK §8 rule 7 (adding a phase to a release still in progress) raises MINOR and adds a new row, and the Gate 4 approver approves again. -->
 
-| Phiên bản | Ngày | Người sửa | Nội dung thay đổi | Lý do và người yêu cầu | Người duyệt |
+| Version | Date | Edited by | Change | Reason and requester | Approver |
 | --- | --- | --- | --- | --- | --- |
-| 0.1.0 | {{DATE}} | {{AUTHOR}} | Bản khởi tạo | Khởi tạo theo pipeline | Chưa duyệt |
+| 0.1.0 | {{DATE}} | {{AUTHOR}} | Initial version | Created by the pipeline | Not approved |
 
-## Giả định và câu hỏi mở (Assumptions & Open Questions)
+## Assumptions & Open Questions
 
-| ID | Loại | Nội dung | Lý do hoặc ảnh hưởng | BLOCKING | Người trả lời |
-|----|------|----------|----------------------|:--------:|---------------|
-| AQ-01 | <!-- fill: chọn một: Giả định \| Câu hỏi --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Có \| Không --> | <!-- fill --> |
+| ID | Type | Content | Reason or impact | BLOCKING | Respondent |
+|----|------|---------|----------------------|:--------:|---------------|
+| AQ-01 | <!-- fill: choose one: Assumption \| Question --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Yes \| No --> | <!-- fill --> |

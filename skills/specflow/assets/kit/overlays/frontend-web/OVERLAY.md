@@ -2,91 +2,91 @@
 doc_type: overlay
 status: stable
 version: 1.3.0
-language: vi-en
+language: en
 surface: frontend-web
 ---
 
 # Overlay frontend-web
 
-## 1. Bề mặt (Surface)
+## 1. Surface
 
-Giao diện web chạy trên trình duyệt: trang render ở server, ở client hoặc kết hợp, gọi API của backend qua HTTPS. Bề mặt này không sở hữu dữ liệu lưu trữ nghiệp vụ; nguồn chân lý của dữ liệu và mã lỗi là API mà nó gọi.
+A web interface that runs in a browser: pages rendered on the server, on the client or a mix of both, calling the backend API over HTTPS. This surface does not own persistent business data; the source of truth for data and error codes is the API it calls.
 
-| Chọn overlay này khi | Không chọn khi |
+| Choose this overlay when | Do not choose it when |
 | --- | --- |
-| Dự án có giao diện cho người dùng trên trình duyệt, gọi API của hệ thống mình hoặc của bên khác | Dự án chỉ cung cấp API (xem `backend-api`); ứng dụng cài trên điện thoại (xem `mobile-app`) |
+| The project has a user interface in the browser that calls the API of its own system or of another party | The project only provides an API (see `backend-api`); an app installed on a phone (see `mobile-app`) |
 
-Dạng test `CONC` của bề mặt này: kích hoạt một thao tác ghi nhiều lần liên tiếp (bấm đúp, Enter rồi bấm, gửi lại sau lỗi mạng) trên ứng dụng đã build, chặn lời gọi API bằng route giả lập của công cụ e2e, rồi đếm số request ghi thật sự gửi đi và khóa idempotency của chúng. Mỗi tab giữ khóa của riêng nó, nên hai tab cùng gửi là hai lần gửi độc lập; dạng test này không kiểm giữa các tab. Không dùng sleep để sắp thứ tự.
+The `CONC` test pattern of this surface: trigger a write action several times in a row (double click, Enter then click, resend after a network error) on the built app, intercept the API calls with the mock route of the e2e tool, then count the write requests actually sent and their idempotency keys. Each tab holds its own key, so two tabs submitting at the same time are two independent submissions; this pattern does not test across tabs. Do not use sleep to order events.
 
-## 2. Slot được cung cấp (Provided Slots)
+## 2. Provided Slots
 
-| Slot | File | Nội dung | Có `PROFILE-SLOT` |
+| Slot | File | Contents | Has `PROFILE-SLOT` |
 | --- | --- | --- | :---: |
-| `srs.constraints.technical` | [srs-sections.md](srs-sections.md) | Trình duyệt, thiết bị và breakpoint, trợ năng, hiệu năng cảm nhận, lưu trữ phía trình duyệt | Không |
-| `srs.external-interfaces` | [srs-sections.md](srs-sections.md) | Màn hình, năm trạng thái giao diện, responsive, trợ năng, quốc tế hóa; API gọi tới; kênh truyền thông | Không |
-| `srs.data-model` | [srs-sections.md](srs-sections.md) | View model và trạng thái phía client; không có ERD | Không |
-| `arch.views` | [architecture-sections.md](architecture-sections.md) | C4 Level 2, bản đồ route và bảng route có cột `SCR ID`, cây thành phần của màn hình, góc nhìn triển khai | Không |
-| `arch.layout` | [architecture-sections.md](architecture-sections.md) | Quy tắc tầng: route, tính năng, thành phần giao diện dùng chung, client API | Có |
-| `arch.schema` | [architecture-sections.md](architecture-sections.md) | Kiểu dữ liệu phía client: kiểu API sinh từ OpenAPI, schema form, trạng thái và lưu trữ trình duyệt | Có |
-| `arch.conventions` | [architecture-sections.md](architecture-sections.md) | Quy ước giao diện, năm trạng thái, ánh xạ mã lỗi sang giao diện, quy ước gọi API | Có |
-| `arch.deployment` | [architecture-sections.md](architecture-sections.md) | Đóng gói, biến môi trường công khai và bí mật, CDN, phát hành, rollback | Không |
-| `spec.contract` | [spec-contract-sections.md](spec-contract-sections.md) | Màn hình, props, bảng năm trạng thái, trạng thái tương tác, form, lời gọi API, ánh xạ lỗi, khóa i18n | Có |
-| `spec.test-types` | [spec-contract-sections.md](spec-contract-sections.md) | Unit, integration với API giả lập, e2e, trợ năng, visual regression, `CONC` | Có |
-| `playbook.verify-commands` | [verify-commands.md](verify-commands.md) | Bảng lệnh verify | Không |
+| `srs.constraints.technical` | [srs-sections.md](srs-sections.md) | Browsers, devices and breakpoints, accessibility, perceived performance, browser-side storage | No |
+| `srs.external-interfaces` | [srs-sections.md](srs-sections.md) | Screens, the five UI states, responsive, accessibility, internationalization; APIs called; communications channels | No |
+| `srs.data-model` | [srs-sections.md](srs-sections.md) | View model and client-side state; no ERD | No |
+| `arch.views` | [architecture-sections.md](architecture-sections.md) | C4 Level 2, route map and route table with an `SCR ID` column, component tree of a screen, deployment view | No |
+| `arch.layout` | [architecture-sections.md](architecture-sections.md) | Layering rules: route, feature, shared UI components, API client | Yes |
+| `arch.schema` | [architecture-sections.md](architecture-sections.md) | Client-side data types: API types generated from OpenAPI, form schema, state and browser storage | Yes |
+| `arch.conventions` | [architecture-sections.md](architecture-sections.md) | UI conventions, the five states, mapping of error codes to the UI, API call conventions | Yes |
+| `arch.deployment` | [architecture-sections.md](architecture-sections.md) | Packaging, public and secret environment variables, CDN, release, rollback | No |
+| `spec.contract` | [spec-contract-sections.md](spec-contract-sections.md) | Screen, props, five-state table, interaction states, form, API calls, error mapping, i18n keys | Yes |
+| `spec.test-types` | [spec-contract-sections.md](spec-contract-sections.md) | Unit, integration with a mock API, e2e, accessibility, visual regression, `CONC` | Yes |
+| `playbook.verify-commands` | [verify-commands.md](verify-commands.md) | Verify command table | No |
 
-## 3. Thứ tự đọc khi ghép (Assembly Order)
+## 3. Assembly Order
 
-1. File core của giai đoạn (`core/01`, `core/02`, `core/04`, `core/06`).
-2. File này.
-3. File section chứa khối SLOT-CONTENT tương ứng ở bảng mục 2.
-4. Stack profile đã chọn trong Intake: bảng "Giá trị placeholder", mục `(Tech Stack)` và các khối PROFILE-CONTENT.
-5. Rule của bề mặt ở `agent-rules/` khi tạo `.claude/rules/` (Giai đoạn 2).
+1. The core file of the stage (`core/01`, `core/02`, `core/04`, `core/06`).
+2. This file.
+3. The section file that holds the matching SLOT-CONTENT block in the table of §2.
+4. The stack profile chosen in the Intake: the "Placeholder values" table, the `(Tech Stack)` section and the PROFILE-CONTENT blocks.
+5. The rule of the surface in `agent-rules/` when creating `.claude/rules/` (Stage 2).
 
-Quy tắc ghép chi tiết ở CONVENTIONS mục 2 và PLAYBOOK mục 4.
+Detailed assembly rules are in CONVENTIONS §2 and PLAYBOOK §4.
 
-## 4. Stack profile (Stack Profiles)
+## 4. Stack Profiles
 
 | Profile | Stack | File |
 | --- | --- | --- |
 | `nextjs-app-router` | Next.js App Router, React, TypeScript, Tailwind CSS, shadcn/ui, TanStack Query | [stack-profiles/nextjs-app-router.md](stack-profiles/nextjs-app-router.md) |
 
-Stack khác chưa có profile: đề xuất giá trị placeholder và nội dung profile trong ARCHITECTURE §2 kèm ADR (PLAYBOOK mục 3, quy tắc 5).
+Another stack has no profile yet: propose the placeholder values and the profile contents in ARCHITECTURE §2 together with an ADR (PLAYBOOK §3, rule 5).
 
-## 5. Rule cho agent (Agent Rules)
+## 5. Agent Rules
 
-| File | Chép thành | Áp dụng cho |
+| File | Copy to | Applies to |
 | --- | --- | --- |
-| [agent-rules/frontend-golden-rules.md](agent-rules/frontend-golden-rules.md) | `.claude/rules/frontend-golden-rules.md` | Mã nguồn giao diện web (`paths` theo cây thư mục ở ARCHITECTURE §4) |
+| [agent-rules/frontend-golden-rules.md](agent-rules/frontend-golden-rules.md) | `.claude/rules/frontend-golden-rules.md` | Web UI source code (`paths` follow the directory tree in ARCHITECTURE §4) |
 
-## 6. Checklist riêng của bề mặt (Surface Checklist)
+## 6. Surface Checklist
 
-Tự kiểm cùng checklist "Overlay đã áp" ở PLAYBOOK mục 4.
+Self-check together with the "Overlay applied" checklist in PLAYBOOK §4.
 
-| Kiểm tra | Tài liệu | Đạt |
+| Check | Document | Pass |
 | --- | --- | :---: |
-| Mọi màn hình ở SRS §3 có `SCR ID` (Intake tạo từ template Intake `1.3.0` trở lên), route, tác nhân và FR; mọi FR giao diện truy xuất tới FR hoặc endpoint của API mà nó dùng | SRS §3, §8 | [ ] |
-| View model ở SRS §4 chỉ gồm trường có trong response của API; không định nghĩa lại thực thể của backend | SRS §4 | [ ] |
-| Mọi mã lỗi mà giao diện xử lý có trong ARCHITECTURE §7.1 kèm khóa i18n và hành vi hiển thị | ARCHITECTURE §7 | [ ] |
-| Kiểu dữ liệu API sinh từ tài liệu OpenAPI của backend; không có kiểu response viết tay | ARCHITECTURE §5 | [ ] |
-| Mỗi màn hình trong SPEC có đủ năm trạng thái giao diện (trạng thái không áp dụng ghi N/A kèm lý do) và schema form khớp ràng buộc của DTO backend | SPEC §3 | [ ] |
-| Mỗi thao tác ghi có khóa chống gửi lặp; `Idempotency-Key` dùng lại khi thử lại và form khóa sửa khi kết quả chưa rõ | SPEC §3, §5 | [ ] |
-| Mỗi màn hình có test trợ năng `A11Y` và test visual `VIS` cho trạng thái chính | SPEC §9 | [ ] |
+| Every screen in SRS §3 has an `SCR ID`, a route, an actor and an FR; every UI FR traces to the FR or endpoint of the API it uses | SRS §3, §8 | [ ] |
+| The view models in SRS §4 contain only fields present in the API response; they do not redefine backend entities | SRS §4 | [ ] |
+| Every error code the UI handles is in ARCHITECTURE §7.1 with an i18n key and the display behavior | ARCHITECTURE §7 | [ ] |
+| API data types are generated from the backend's OpenAPI document; there are no hand-written response types | ARCHITECTURE §5 | [ ] |
+| Each screen in the SPEC has all five UI states (a state that does not apply is written N/A with a reason) and the form schema matches the constraints of the backend DTO | SPEC §3 | [ ] |
+| Each write action has a duplicate-submit lock; the `Idempotency-Key` is reused on retry and the form locks editing while the result is unknown | SPEC §3, §5 | [ ] |
+| Each screen has an `A11Y` accessibility test and a `VIS` visual test for the main state | SPEC §9 | [ ] |
 
-## 7. Giai đoạn 1W: Wireframe (Stage 1W)
+## 7. Stage 1W: Wireframe
 
-Bề mặt này có giao diện nên dự án có Giai đoạn 1W (PLAYBOOK mục 2 và 2.2.1): Intake mục 14 ghi Giai đoạn 1W: Có, Intake mục 9 ghi người duyệt Gate 1W. Áp cho dự án có Intake tạo từ template Intake `1.3.0` trở lên.
+This surface has a UI, so the project has Stage 1W (PLAYBOOK §2, and 2.2.1): Intake §14 records Stage 1W: Yes, Intake §9 records the approver of Gate 1W.
 
-- ID màn hình `SCR-{MOD}-NN` đặt ở Giai đoạn 1, cột `SCR ID` của bảng Giao diện người dùng ở SRS §3 (khối `srs.external-interfaces` của overlay này). Giai đoạn 1W chi tiết hóa mỗi ID thành một trang `docs/wireframes/SCR-<MOD>-NN.md`, không thêm hay bớt màn hình.
-- Hệ thống thiết kế: Giai đoạn 1W viết thêm `docs/design-system/DESIGN_SYSTEM.md` và `docs/design-system/tokens.json` theo CONVENTIONS mục 10.7, trước các trang màn hình; mỗi trang chọn một Template, dẫn Pattern và Component ID của tài liệu đó. Theme mặc định của thư viện giao diện của stack profile (Intake mục 14) chỉ là một hướng thị giác, dùng khi được chọn có chủ đích; profile `none` ghi chưa chọn thư viện và xét lại ở Giai đoạn 2.
-- Template `core/07_Wireframe_Template/` dùng chung cho mọi bề mặt có giao diện và không có slot; overlay không cung cấp khối cho wireframe. Cách điền riêng cho web:
+- The screen ID `SCR-{MOD}-NN` is assigned at Stage 1, in the `SCR ID` column of the User Interfaces table in SRS §3 (the `srs.external-interfaces` block of this overlay). Stage 1W elaborates each ID into one page `docs/wireframes/SCR-<MOD>-NN.md`, without adding or removing screens.
+- Design system: Stage 1W also writes `docs/design-system/DESIGN_SYSTEM.md` and `docs/design-system/tokens.json` per CONVENTIONS §10.7, before the screen pages; each page chooses one Template and cites the Pattern and Component IDs of that document. The default theme of the stack profile's UI library (Intake §14) is only a visual direction, used when it is chosen on purpose; the `none` profile records that no library is chosen and revisits it at Stage 2.
+- The template `core/07_Wireframe_Template/` is shared by every surface that has a UI and has no slot; the overlay provides no block for the wireframe. How to fill it for web:
 
-| Mục của template | Cách điền cho `frontend-web` |
+| Template section | How to fill it for `frontend-web` |
 | --- | --- |
-| Điểm vào (danh mục màn hình và trang) | Route dạng `/đường-dẫn`, giống cột Route ở SRS §3 |
-| Bố cục low-fi | Vẽ ở breakpoint nhỏ nhất của SRS §2.5; thay đổi bố cục ở breakpoint lớn hơn ghi dưới khối |
-| Năm trạng thái UI | Theo yêu cầu chung cho mọi màn hình ở SRS §3; `Loading` gồm cả lúc đang gửi, nút gửi bị khóa |
-| Điều hướng vào và ra | Tham số route hoặc query; route cần đăng nhập; hành vi của nút quay lại của trình duyệt khi khác luồng thường |
-| Ghi chú trợ năng | Theo CONVENTIONS mục 10.2 ở mức WCAG của NFR-USAB. Con số của web: vùng bấm tối thiểu 24 × 24 CSS px, hoặc vùng nhỏ hơn đặt đủ xa để vòng tròn đường kính 24 CSS px đặt ở tâm của nó không chạm vùng bấm khác hay vòng tròn của vùng nhỏ khác (WCAG 2.5.8, mức AA); reflow xét ở breakpoint nhỏ nhất của SRS §2.5 (WCAG 1.4.10) |
-| HTML đầy đủ (theo Intake mục 14) | Một file tĩnh mỗi trang theo CONVENTIONS mục 7: bố cục đúng ở breakpoint nhỏ nhất và lớn nhất của SRS §2.5 (`@media`), mở trực tiếp bằng trình duyệt; giai đoạn code dựng lại đúng màn này (PLAYBOOK mục 2.5) |
+| Entry point (screen and page catalog) | The route as `/path`, the same as the Route column in SRS §3 |
+| Low-fi Layout | Draw at the smallest breakpoint in SRS §2.5; layout changes at larger breakpoints go under the block |
+| UI States | Per the general requirement for every screen in SRS §3; `Loading` includes the time of submitting, with the submit button locked |
+| Navigation | Route or query parameters; routes that need login; behavior of the browser back button when it differs from the normal flow |
+| Accessibility Notes | Per CONVENTIONS §10.2 at the WCAG level of NFR-USAB. Web figures: minimum target size 24 × 24 CSS px, or a smaller target spaced so that a circle of 24 CSS px diameter centered on it touches neither another target nor the circle of another small target (WCAG 2.5.8, level AA); reflow is checked at the smallest breakpoint in SRS §2.5 (WCAG 1.4.10) |
+| Full HTML (per Intake §14) | One static file per page per CONVENTIONS §7: the layout is correct at the smallest and the largest breakpoint in SRS §2.5 (`@media`), opens directly in a browser; the code stage rebuilds exactly this screen (PLAYBOOK §2.5) |
 
-- Sau Gate 1W: bảng route ở ARCHITECTURE §3 (khối `arch.views`) có cột `SCR ID`, mỗi `SCR-*` của chỉ mục wireframe ít nhất một hàng (Gate 2); bảng Màn hình ở SPEC §3 (khối `spec.contract`) dẫn `SCR ID` và trang wireframe, không định nghĩa lại màn hình. Ở Giai đoạn 2, ARCHITECTURE §7 ghi cách ánh xạ token thành mã nguồn (khối `arch.conventions`) và stack profile ghi công cụ ánh xạ; code chỉ đọc token đã ánh xạ.
+- After Gate 1W: the route table in ARCHITECTURE §3 (the `arch.views` block) has an `SCR ID` column, and each `SCR-*` of the wireframe index has at least one row (Gate 2); the Screen table in SPEC §3 (the `spec.contract` block) cites the `SCR ID` and the wireframe page and does not redefine the screen. At Stage 2, ARCHITECTURE §7 records how tokens map to source code (the `arch.conventions` block) and the stack profile records the mapping tool; code reads only the mapped tokens.

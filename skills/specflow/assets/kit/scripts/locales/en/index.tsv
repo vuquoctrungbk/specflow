@@ -1,0 +1,32 @@
+# English labels for index.tsv (language: en). Same keys as locales/vi/index.tsv.
+index_companion	Companion file
+index_tests_heading	Tests
+index_none	None
+index_title	# Project Index
+index_intro	Read this file before opening any other document. To look up an ID or an error code: `python3 specflow/scripts/project-index.py . --where <ID>` prints `file:line` where it is defined. To see the sections of a document with their line ranges: `python3 specflow/scripts/project-index.py . --outline <file>`. Then read only the range you need.
+index_h_docs	## 1. Documents
+index_h_specs	## 2. SPECs & Test Cases
+index_h_next_tc	## 3. Next Free Test Case Number
+index_h_blocking	## 4. Open Blocking Questions
+index_h_trace	## 5. Acceptance to Test Traceability
+index_col_file	File
+index_col_type	Type
+index_col_id	ID
+index_col_status	Status
+index_col_version	Version
+index_col_wave	Release
+index_col_lines	Lines
+index_col_spec	SPEC
+index_col_reqs	Requirements covered (§1.5)
+index_col_tc_used	TCs used (§9)
+index_col_module	Module
+index_col_next	Next number
+index_col_questions	Questions
+index_col_ac_nfr	AC or NFR
+index_col_tc	TC
+index_no_spec	No SPEC yet.
+index_no_tc	No TC yet.
+index_no_blocking	None.
+index_no_tc_in_spec	No SPEC has a TC yet.
+index_next_note	The highest number across every table of the project documents (SRS §8, Regression Baseline §6.1, SPEC §9).
+index_trace_note	Generated from the test table in §9 of each SPEC; look up the TC of an AC or an NFR here.

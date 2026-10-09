@@ -71,13 +71,12 @@ person approves.
 
 The process scales with the change. Every SPEC carries `risk: high` or `risk: normal` (identity and permissions, tenant isolation, money, personal data, data-holding schemas and public contracts are `high`). A `high` SPEC keeps the independent review and a stop at each gate; a `normal` feature on a project that already has a baseline takes a small-change path: the requirement, SPEC and plan phase are drafted in one turn and presented to their gates together, then coded and verified before Gate 5. The kit ships small scripts for this (the document checker, the index, and `gate.py`, which records a gate approval); they need `python3`.
 
-**Language.** The kit's rules, templates and the documents it produces are
-written in Vietnamese, with English technical terms and identifiers; specflow
-talks to you in the language you write in. A document set written entirely in
-another language is not supported yet: headings, fixed values such as the gate
-and roadmap states, and the approval phrase are in Vietnamese, and the
-Intake's language exception only changes the prose. Multi-language output is
-planned.
+**Language.** The kit's rules and templates are written in English. A project
+chooses the language of its documents, Vietnamese (`vi`) or English (`en`), in
+the Intake, and every document specflow writes for it, including headings,
+fixed values such as the gate and roadmap states, and the approval phrase, is
+in that language, with English technical terms and identifiers. specflow talks
+to you in the language you write in. Only these two languages exist so far.
 
 ## Install
 

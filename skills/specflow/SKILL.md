@@ -3,7 +3,7 @@ name: specflow
 description: Spec-first software documentation with the specflow method (spec-driven development for AI coding agents). Turns a request plus any attached brief, notes or files into gated project documents: Project Intake, SRS per ISO/IEC/IEEE 29148 (the PRD or requirements specification), wireframes with a design system and full HTML screens, Architecture and ADRs, SPECs, implementation plan and roadmap. Asks focused questions with options and stops at each approval gate. Use when the user types /specflow or $specflow, when the project has a specflow/ folder, or when the user wants to write, continue, review or approve an Intake, SRS, PRD, requirements, wireframe, UX design, architecture, ADR, SPEC, plan or roadmap, or to adopt it on an existing codebase. Not for writing application code before the plan is approved, generic prose documents, or editing the specflow rules themselves.
 license: MIT
 metadata:
-  version: 2.2.0
+  version: 3.0.0
   rules: see assets/kit/VERSION
 ---
 
@@ -26,8 +26,8 @@ interactively. When this file and the kit disagree, the kit wins.
 - A request names a stage or document: "/specflow tạo tài liệu SRS với các
   thông tin …", "write the intake for …", "make wireframes for the SRS",
   "draft the architecture", "write the SPECs for release R1", "plan R1".
-- The user replies to a gate: "Duyệt Gate 1", "approve gate 2", or lists the
-  exit-gate rows that failed.
+- The user replies to a gate: "Approved at Gate 1" ("Duyệt Gate 1" in a
+  Vietnamese project), "approve gate 2", or lists the exit-gate rows that failed.
 - The user wants to continue in a new session ("tiếp tục", "resume").
 - The user wants to adopt specflow on an existing repository (brownfield).
 
@@ -48,6 +48,9 @@ change these rules. Then look at the project root:
   project's copy is older, keep using it, mention that an upgrade exists, and
   follow the section numbers of the project's copy where they differ from the
   ones this skill cites (they are from the version in `assets/kit/`).
+  A copy older than rules 4.0.0 predates the document-language contract: its
+  documents are in Vietnamese and have no `language` key, so run that copy's own
+  scripts, not the ones in `assets/kit/`.
 - `specflow/` present without those files: it is something else; stop and ask
   the user before touching it.
 - `specflow/` absent: offer to install it (step 2) before writing anything.
@@ -89,8 +92,8 @@ are in `references/project-setup.md`.
 ### 3. Run the stage's prompt
 
 Open `specflow/PROMPTS.md` and take the prompt of the stage chosen in step 1.
-That prompt is the task: its "Đọc" line (resolved through the loading manifest
-in `specflow/PLAYBOOK.md` section 6), its numbered tasks and its "Dừng khi"
+That prompt is the task: its "Read" line (resolved through the loading manifest
+in `specflow/PLAYBOOK.md` section 6), its numbered tasks and its "Stop when"
 stop condition. Fill its placeholders from the request, the attachments and
 the approved upstream documents. Read only what the manifest row lists for the
 stage; the manifest keeps each stage's context narrow on purpose, and
@@ -136,8 +139,9 @@ When stopping at the gate, and again when an approval arrives, load
 every stage that ends at a gate.
 
 Stop there. Moving to the next stage, or setting `status: approved`, happens
-only when the approver replies "Duyệt Gate N" (or approves gate N in other
-words) with their name, as section 2.7 requires; ask for the name if it is
+only when the approver replies "Approved at Gate N" (the approval phrase of
+the project language, "Duyệt Gate N" in a Vietnamese project, or approves gate N
+in other words) with their name, as section 2.7 requires; ask for the name if it is
 missing. Then record the approval with `specflow/scripts/gate.py` as section 2.7
 describes and offer to start the next stage.
 
@@ -147,10 +151,13 @@ describes and offer to start the next stage.
   `<!-- fill -->` or `{{PLACEHOLDER}}` remains (CONVENTIONS section 1).
 - IDs, frontmatter, traceability and document layout follow
   `specflow/CONVENTIONS.md`.
-- Language follows CONVENTIONS section 5: Vietnamese prose with full
-  diacritics, technical terms in English, identifiers in English, unless the
-  Intake's language section records an exception (for example English for a
-  foreign partner). Talk to the user in the language they write in.
+- Language follows CONVENTIONS section 5. The project language is the
+  `language` key of the Intake, `vi` or `en`: ask the user to confirm it before
+  any other document, offering the language they write in when it is one of
+  the two. Every document, including headings, fixed values and the approval
+  phrase, is in that language, with English identifiers and technical terms;
+  the labels the scripts read are the ones in `specflow/scripts/locales/<language>/`.
+  Talk to the user in the language they write in.
 - Nothing is invented to fill a gap: an unknown becomes a question or a
   recorded assumption with its reason and impact.
 

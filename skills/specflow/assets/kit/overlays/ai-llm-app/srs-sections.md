@@ -2,83 +2,83 @@
 doc_type: overlay-section
 status: stable
 version: 1.0.0
-language: vi-en
+language: en
 surface: ai-llm-app
 ---
 
-# Overlay ai-llm-app: khối cho SRS
+# Overlay ai-llm-app: blocks for the SRS
 
 <!-- SLOT-CONTENT: srs.constraints.technical -->
-| Ràng buộc | Nội dung |
+| Constraint | Content |
 | --- | --- |
-| Stack | Theo stack profile `{{STACK_PROFILE}}` đã chốt ở Intake mục 14; phiên bản cụ thể và ID mô hình ở ARCHITECTURE §2 |
-| Kiểu dữ liệu nghiêm ngặt | Ngôn ngữ có kiểm tra kiểu tĩnh, bật chế độ nghiêm ngặt; quy tắc cụ thể ở ARCHITECTURE và `.claude/rules/` |
-| Nhà cung cấp và họ mô hình | <!-- fill: nhà cung cấp và mức mô hình (nhanh và rẻ, cân bằng, mạnh nhất) phù hợp nhiệm vụ; ID mô hình chính xác chốt ở ARCHITECTURE §2.1 kèm ADR --> |
-| Đầu ra có cấu trúc | Mọi đầu ra dùng cho xử lý tiếp theo khớp một schema; đầu ra không khớp được coi là lỗi, không sửa đoán |
-| Tính không tất định | Cùng đầu vào có thể cho kết quả khác nhau; chất lượng đo bằng chỉ số trên bộ dữ liệu có nhãn qua nhiều lần chạy, không bằng một lần chạy |
-| Độ trễ | <!-- fill: p95 của một lời gọi, gồm cả thử lại; tác vụ nền hay tác vụ người dùng đang chờ --> |
-| Ngân sách | <!-- fill: token tối đa mỗi lời gọi, chi phí tối đa mỗi tháng, hành vi khi chạm ngưỡng --> |
-| Dữ liệu gửi tới nhà cung cấp | <!-- fill: trường nào được gửi; dữ liệu cá nhân được che hay có căn cứ pháp lý; chính sách lưu và huấn luyện trên dữ liệu của nhà cung cấp --> |
-| Khi mô hình sai hoặc không sẵn sàng | <!-- fill: phương án dự phòng: chuyển người xem lại, giá trị mặc định an toàn, thử lại sau; không chặn luồng nghiệp vụ chính --> |
-| Con người kiểm soát | <!-- fill: kết quả nào cần người duyệt (độ tin cậy thấp, tác động lớn); ai sửa được kết quả của AI --> |
+| Stack | Per the stack profile `{{STACK_PROFILE}}` fixed at Intake §14; the specific version and the model ID are in ARCHITECTURE §2 |
+| Strict typing | A statically typed language with strict mode on; the specific rules are in ARCHITECTURE and `.claude/rules/` |
+| Provider and model family | <!-- fill: provider and model tier (fast and cheap, balanced, strongest) that fits the task; the exact model ID is fixed in ARCHITECTURE §2.1 with an ADR --> |
+| Structured output | Every output used by later processing matches a schema; output that does not match is treated as an error, not repaired by guessing |
+| Non-determinism | The same input can give different results; quality is measured by a metric on a labeled dataset over several runs, not by a single run |
+| Latency | <!-- fill: p95 of one call, including retries; background task or task the user is waiting on --> |
+| Budget | <!-- fill: maximum tokens per call, maximum cost per month, behavior when the limit is reached --> |
+| Data sent to the provider | <!-- fill: which fields are sent; whether personal data is masked or has a legal basis; the provider's policy on retention and training on data --> |
+| When the model is wrong or unavailable | <!-- fill: fallback: send to a reviewer, safe default value, retry later; do not block the main business flow --> |
+| Human control | <!-- fill: which results need a human approver (low confidence, high impact); who can correct AI results --> |
 <!-- /SLOT-CONTENT -->
 
 <!-- SLOT-CONTENT: srs.external-interfaces -->
-### Giao diện phần mềm (Software Interfaces)
+### Software Interfaces
 
-<!-- fill: Giữ hàng áp dụng, ghi "Không" ở cột Áp dụng cho hàng còn lại thay vì xóa. -->
+<!-- fill: Keep the applicable rows; write "No" in the Applies column for the other rows instead of deleting them. -->
 
-| Hệ thống | Mục đích | Giao thức và định dạng | Xác thực và an toàn | Áp dụng |
+| System | Purpose | Protocol and format | Authentication and safety | Applies |
 | --- | --- | --- | --- | :---: |
-| API của nhà cung cấp mô hình | <!-- fill: tác vụ gọi mô hình --> | HTTPS, JSON, đầu ra có cấu trúc | Khóa API trong kho secret; dữ liệu gửi đi theo §2.5 | Có |
-| Kho vector hoặc chỉ mục tìm kiếm | <!-- fill: tài liệu dùng làm ngữ cảnh --> | <!-- fill --> | <!-- fill: quyền đọc theo người dùng yêu cầu --> | <!-- fill: chọn một: Có \| Không --> |
-| Công cụ mà mô hình được gọi | <!-- fill: mỗi công cụ, có tác dụng phụ hay chỉ đọc --> | <!-- fill --> | Công cụ có tác dụng phụ cần xác nhận của người dùng hoặc kiểm tra quyền ở server | <!-- fill: chọn một: Có \| Không --> |
-| Hệ thống nguồn và đích của dữ liệu | <!-- fill: nơi lấy đầu vào và ghi kết quả --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Có \| Không --> |
+| Model provider API | <!-- fill: the task that calls the model --> | HTTPS, JSON, structured output | API key in the secret store; data sent per §2.5 | Yes |
+| Vector store or search index | <!-- fill: documents used as context --> | <!-- fill --> | <!-- fill: read permission per requesting user --> | <!-- fill: choose one: Yes \| No --> |
+| Tools the model may call | <!-- fill: each tool, with side effects or read-only --> | <!-- fill --> | A tool with side effects needs user confirmation or a permission check on the server | <!-- fill: choose one: Yes \| No --> |
+| Source and target systems of the data | <!-- fill: where the input comes from and where the result is written --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Yes \| No --> |
 
-### Giao diện người dùng (User Interfaces)
+### User Interfaces
 
-<!-- fill: Màn hình hay API hiển thị kết quả AI thuộc overlay của bề mặt đó; ở đây chỉ ghi yêu cầu riêng của nội dung do AI tạo. -->
+<!-- fill: The screen or API that shows AI results belongs to the overlay of that surface; here write only the requirements specific to AI-generated content. -->
 
-| Yêu cầu | Nội dung |
+| Requirement | Content |
 | --- | --- |
-| Đánh dấu nội dung AI | <!-- fill: người dùng biết kết quả nào do AI tạo --> |
-| Sửa và phản hồi | <!-- fill: người dùng sửa được kết quả; sửa được ghi lại để làm dữ liệu đánh giá sau khi ẩn danh --> |
-| Giải thích | <!-- fill: lý do ngắn hoặc nguồn trích dẫn đi kèm kết quả nếu có --> |
+| Marking AI content | <!-- fill: the user knows which results were generated by AI --> |
+| Correction and feedback | <!-- fill: the user can correct a result; corrections are recorded to serve as eval data after anonymization --> |
+| Explanation | <!-- fill: a short reason or cited sources accompany the result, if any --> |
 
-### Giao diện truyền thông (Communications Interfaces)
+### Communications Interfaces
 
-| Kênh | Quy ước | Áp dụng |
+| Channel | Convention | Applies |
 | --- | --- | :---: |
-| HTTPS tới nhà cung cấp mô hình | Thời gian chờ và số lần thử lại theo ARCHITECTURE §7; không gửi lại lời gọi đã có phản hồi hợp lệ | Có |
-| Truyền dần (streaming) | <!-- fill: chỉ khi người dùng chờ đọc kết quả dài; đầu ra có cấu trúc thì chờ đủ rồi mới kiểm tra schema --> | <!-- fill: chọn một: Có \| Không --> |
+| HTTPS to the model provider | Timeout and retry count per ARCHITECTURE §7; do not resend a call that already has a valid response | Yes |
+| Streaming | <!-- fill: only when the user waits to read a long result; for structured output, wait for the full output and then check the schema --> | <!-- fill: choose one: Yes \| No --> |
 
-Giao diện phần cứng (Hardware Interfaces): N/A cho bề mặt `ai-llm-app`.
+Hardware Interfaces: N/A for the `ai-llm-app` surface.
 <!-- /SLOT-CONTENT -->
 
 <!-- SLOT-CONTENT: srs.data-model -->
-#### Dữ liệu vào và ra của mô hình (Model Input & Output)
+#### Model Input & Output
 
-<!-- fill: Mỗi tác vụ gọi mô hình một hàng. Đầu ra ghi tên trường và miền giá trị; schema chính xác ở ARCHITECTURE §5 và Prompt Spec. §4.2 liệt kê đầu vào, đầu ra, nhật ký và bộ dữ liệu như thực thể. -->
+<!-- fill: One row per task that calls the model. For output, write field names and value domains; the exact schema is in ARCHITECTURE §5 and the Prompt Spec. §4.2 lists the input, output, log and dataset as entities. -->
 
-| Tác vụ | Đầu vào (nguồn, độ tin cậy) | Đầu ra (trường và miền giá trị) | Dùng đầu ra để làm gì |
+| Task | Input (source, trust) | Output (fields and value domains) | What the output is used for |
 | --- | --- | --- | --- |
-| {{FEATURE_NAME}} | <!-- fill: ví dụ nội dung khách gửi, không tin cậy --> | <!-- fill --> | <!-- fill --> |
+| {{FEATURE_NAME}} | <!-- fill: for example content sent by a customer, untrusted --> | <!-- fill --> | <!-- fill --> |
 
-#### Nhật ký lời gọi mô hình (Model Call Log)
+#### Model Call Log
 
-| Trường | Ý nghĩa | Chứa dữ liệu cá nhân | Thời gian giữ |
+| Field | Meaning | Contains personal data | Retention |
 | --- | --- | :---: | --- |
-| Prompt và phiên bản | Prompt Spec và version đã dùng | Không | <!-- fill --> |
-| Mô hình | ID mô hình chính xác | Không | <!-- fill --> |
-| Đầu vào | <!-- fill: bản đã che, hoặc chỉ mã băm --> | <!-- fill: chọn một: Có \| Không --> | <!-- fill --> |
-| Đầu ra và quyết định | Kết quả đã kiểm tra schema và quyết định cuối (dùng, chuyển người xem lại) | <!-- fill: chọn một: Có \| Không --> | <!-- fill --> |
-| Token và độ trễ | Token vào, token ra, thời gian của lời gọi | Không | <!-- fill --> |
+| Prompt and version | The Prompt Spec and version used | No | <!-- fill --> |
+| Model | The exact model ID | No | <!-- fill --> |
+| Input | <!-- fill: the masked version, or only a hash --> | <!-- fill: choose one: Yes \| No --> | <!-- fill --> |
+| Output and decision | The schema-checked result and the final decision (use, send to reviewer) | <!-- fill: choose one: Yes \| No --> | <!-- fill --> |
+| Tokens and latency | Input tokens, output tokens, duration of the call | No | <!-- fill --> |
 
-#### Bộ dữ liệu đánh giá (Eval Datasets)
+#### Eval Datasets
 
-<!-- fill: Mỗi bộ dữ liệu một hàng. Cột Prompt đặt ID `PROMPT-{MOD}-NNN` lần đầu cho mỗi prompt (CONVENTIONS mục 4); ARCHITECTURE và Prompt Spec dùng lại ID này. Tối thiểu 20 mẫu cho mỗi prompt; mẫu tổng hợp hoặc đã ẩn danh không đảo ngược, không chứa dữ liệu cá nhân thật; phân bố nhãn gần phân bố thật. -->
+<!-- fill: One row per dataset. The Prompt column sets the `PROMPT-{MOD}-NNN` ID for the first time for each prompt (CONVENTIONS §4); ARCHITECTURE and the Prompt Spec reuse this ID. At least 20 samples per prompt; samples are synthetic or irreversibly anonymized, with no real personal data; the label distribution is close to the real distribution. -->
 
-| Bộ dữ liệu | Prompt | Số mẫu | Nguồn | Người gán nhãn | Nơi lưu |
+| Dataset | Prompt | Sample count | Source | Labeler | Location |
 | --- | --- | --- | --- | --- | --- |
-| <!-- fill --> | <!-- fill --> | <!-- fill: ≥ 20 --> | <!-- fill: chọn một: tổng hợp \| ẩn danh không đảo ngược --> | <!-- fill --> | <!-- fill: đường dẫn trong repo --> |
+| <!-- fill --> | <!-- fill --> | <!-- fill: ≥ 20 --> | <!-- fill: choose one: synthetic \| irreversibly anonymized --> | <!-- fill --> | <!-- fill: path in the repo --> |
 <!-- /SLOT-CONTENT -->

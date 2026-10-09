@@ -11,24 +11,23 @@ docs/ or plans/ whose frontmatter has a doc_type. Findings:
   ERROR  an FR is listed in the requirements catalog (SRS section 6.1) of more than one file
   ERROR  two documents carry the same spec_id, adr_id or prompt_id
   ERROR  an error code has more than one row in the Error Code Registry
-  ERROR  an endpoint is the "Method và path" of more than one SPEC that is not superseded
+  ERROR  an endpoint is the "Method and path" row (`tpl_row_method_path`) of more than one SPEC that is not superseded
   ERROR  two SPECs' File Diff list a migration file with the same number in the same folder
   ERROR  docs/INDEX.md exists and is out of date
   ERROR  a code fence is never closed
-  ERROR  a "Tệp đi kèm:" line names a file that does not exist or sits outside the place of its document
+  ERROR  a "Companion file:" line (`index_companion`) names a file that does not exist or sits outside the place of its document
          (docs/specs/<SPEC file name>.<name>.<ext> for a SPEC, docs/architecture/ for the architecture document)
   ERROR  a companion file (a file of docs/specs/ that is not markdown, any file of docs/architecture/) is named by no
          document or by more than one
-  ERROR  a phase file from phase template 1.3.0 or later has no "Đọc trước (Read First)" section, an entry of it names a
-         document that does not exist or has no `§section` after it, or names a section the document does not have
-  ERROR  a SPEC from SPEC template RISK_SINCE or later has no `risk: high` or `risk: normal`; a SPEC with `risk: normal`
-         gives no reason for it, or its File Diff touches an area that must be high (CONVENTIONS section 3)
-  ERROR  a SPEC belongs to a release while a SPEC of an earlier release is not implemented yet, in a project whose Intake
-         comes from Intake template SLICES_SINCE or later; WARN when a release holds more than RELEASE_SPECS SPECs
-         (PLAYBOOK section 2: a release is a vertical slice, coded before the next one is specified)
+  ERROR  a phase file has no "Read First" section (`docs_read_first`), an entry of it names a document that does not exist or
+         has no `§section` after it, or names a section the document does not have
+  ERROR  a SPEC has no `risk: high` or `risk: normal`; a SPEC with `risk: normal` gives no reason for it, or its File
+         Diff touches an area that must be high (CONVENTIONS section 3)
+  ERROR  a SPEC belongs to a release while a SPEC of an earlier release is not implemented yet; WARN when a release holds
+         more than RELEASE_SPECS SPECs (PLAYBOOK section 2: a release is a vertical slice, coded before the next one is
+         specified)
   ERROR  a SPEC is longer than SPEC_LINES, the architecture document longer than ARCHITECTURE_LINES, or one of them has a
-         line longer than LINE_CHARS, fenced blocks and frontmatter included (CONVENTIONS section 7); a WARN instead
-         when the document comes from a template older than the one that introduced the limits
+         line longer than LINE_CHARS, fenced blocks and frontmatter included (CONVENTIONS section 7)
 
 Error contract: one line per finding, "ERROR <file>: <message>" or "WARN <file>: <message>". The exit status is 0
 whether or not there are findings; a non-zero exit status means the script could not run.
@@ -41,16 +40,15 @@ import sys
 import unicodedata
 
 sys.dont_write_bytecode = True  # loading project-index.py must not leave a cache folder in the kit
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from i18n import T  # noqa: E402
 SPEC_LINES = 500
 ARCHITECTURE_LINES = 800
 LINE_CHARS = 1000
-# The limits bind a document made from this template version or a later one.
-LIMITS = {"spec": (SPEC_LINES, (1, 3, 0)), "architecture": (ARCHITECTURE_LINES, (1, 2, 0))}
+LIMITS = {"spec": SPEC_LINES, "architecture": ARCHITECTURE_LINES}
 
-SLICES_SINCE = (1, 5, 0)  # Intake template version from which a release must be coded before the next is specified
 RELEASE_SPECS = 5         # a release with more SPECs than this is too large to be one slice
-RISK_SINCE = (1, 4, 0)  # SPEC template version from which the risk key is required
-RISK_REASON_RE = re.compile(r"^\s*-\s*Mức rủi ro:\s*\S")
+RISK_REASON_RE = re.compile(rf"^\s*-\s*{re.escape(T.docs_risk_reason_label)}\s*\S")
 # Work that must be reviewed in full: who the user is and what they may do, isolation between tenants, money, personal
 # data. A word of a File Diff path that starts with a short stem, or a path segment that contains a long one, is such
 # work. The list is a floor, not a proof: the reviewer of Gate 3 still confirms the level.
@@ -59,18 +57,27 @@ HIGH_INFIXES = ("signin", "signup", "session", "password", "passwd", "credential
                 "invoice", "wallet", "pricing", "refund", "ledger", "checkout", "personal", "privacy", "consent")
 SCHEMA_PATH_RE = re.compile(r"(^|/)(migrations?|migrate|alembic|schema)(/|\.|$)|\.(prisma|sql)$", re.IGNORECASE)
 CONTRACT_PATH_RE = re.compile(r"openapi|swagger|\.proto$|\.graphql$|(^|/)contracts?(/|\.)", re.IGNORECASE)
+
+
+def words_alternation(value):
+    """A label that lists words separated by | (see locales/<lang>/docs.tsv), as the alternatives of a regular expression."""
+    return "|".join(re.escape(word) for word in value.split("|"))
+
+
 # A soft delete and a new DELETE endpoint add behaviour; they do not destroy data or break a caller.
 DESTRUCTIVE_RE = re.compile(r"\b(alter|drop|rename|remove|backfill|truncate)\b|(?<!soft )(?<!soft-)\bdelete\b(?!\s*`?\s*/)|\bnot null\b"
-                            r"|(xóa|xoá|bỏ|gỡ) (cột|bảng|ràng buộc|index|model|trường|field|enum|khóa|khoá|endpoint|path)"
-                            r"|đổi (kiểu|tên)|chuyển dữ liệu", re.IGNORECASE)
-# Vietnamese names of the same high-risk work, matched on a screen name or route with marks and separators removed.
-HIGH_VI = ("dangnhap", "dangky", "dangxuat", "matkhau", "xacthuc", "phanquyen", "vaitro", "thanhtoan", "hoadon", "hoantien",
-           "hoso", "canhan")
+                            rf"|({words_alternation(T.docs_destroy_verbs)}) ({words_alternation(T.docs_destroy_objects)})"
+                            rf"|{words_alternation(T.docs_destroy_phrases)}", re.IGNORECASE)
+# Names of the same high-risk work in the language of the project (locales/<lang>/docs.tsv, docs_high_names), matched on a
+# screen name or route. How depends on how the language is written (docs_high_names_match): `squeezed` removes marks and
+# separators first, because a Vietnamese name is several words that may be written together ("dangnhap"); `word` matches
+# whole words only, because squeezing English words together makes "Catalog info" contain "login".
+HIGH_NAMES = tuple(T.docs_high_names.split("|"))
+HIGH_NAMES_MATCH = T.docs_high_names_match
+if HIGH_NAMES_MATCH not in ("word", "squeezed"):
+    raise SystemExit(f"check-project-docs: docs_high_names_match is '{HIGH_NAMES_MATCH}' in locales/{T.lang}/docs.tsv; write word or squeezed")
 BARE_PATH_RE = re.compile(r"^(?:\|\s*|\s*[-*]\s+)([\w.@\[\]-]+(?:/[\w.@\[\]-]+)+)")
-INTAKE_CORE = "core/00_Project_Intake_Template.md"
-PHASE_CORE = "core/05_Implementation_Plan_Template/phase-01-example-phase.md"
 PATH_IN_TICKS_RE = re.compile(r"`([^`\s]*[/.][^`\s]*)`")
-READ_FIRST_SINCE = (1, 3, 0)  # phase template version that introduced the Read First section
 READ_FIRST_ITEM_RE = re.compile(r"^\s*[-*]\s+`([^`]+)`(.*)$")
 SECTION_REF_RE = re.compile(r"§(\d+(?:\.\d+)*)")
 
@@ -123,41 +130,6 @@ def check_table_shape(doc):
             header = 0  # report a table once
 
 
-CORE_TEMPLATE = {"spec": "core/04_Spec_Core_Template.md", "architecture": "core/02_Architecture_Core_Template.md"}
-
-
-def as_version(text):
-    parts = [int(p) for p in re.findall(r"\d+", text)[:3]]
-    return tuple(parts + [0] * (3 - len(parts))) if parts else None
-
-
-def template_version(doc):
-    """The template a SPEC or architecture document was made from, as a three-part tuple.
-
-    The newest of `template_version` and the core template entry of `assembled_from` counts, so lowering one of the
-    two does not turn the limits off; a document that states neither is held to the current template.
-    """
-    stated = [as_version(doc.meta.get("template_version", ""))]
-    core = re.escape(CORE_TEMPLATE[doc.doc_type])
-    stated += [as_version(m.group(1)) for line in doc.raw[:40] if (m := re.search(rf"{core}@([\d.]+)", line))]
-    stated = [v for v in stated if v]
-    return max(stated) if stated else (9999, 0, 0)
-
-
-def states_template(doc):
-    """False for a document that names no template version at all; such a document predates any new requirement."""
-    core = re.escape(CORE_TEMPLATE[doc.doc_type])
-    return bool(as_version(doc.meta.get("template_version", ""))) or any(re.search(rf"{core}@[\d.]+", line) for line in doc.raw[:40])
-
-
-def stated_version(doc, core):
-    """Newest of `template_version` and the entry of `core` in `assembled_from`; None when the document states neither."""
-    found = [as_version(doc.meta.get("template_version", ""))]
-    found += [as_version(m.group(1)) for line in doc.raw[:40] if (m := re.search(rf"{re.escape(core)}@([\d.]+)", line))]
-    found = [v for v in found if v]
-    return max(found) if found else None
-
-
 def high_words(path):
     """The words of a path that mark work as high risk (HIGH_PREFIXES, HIGH_INFIXES)."""
     hits = set()
@@ -171,11 +143,15 @@ def high_words(path):
     return sorted(hits)
 
 
-def high_words_vi(text):
-    """The Vietnamese high-risk names (HIGH_VI) in a screen name or route, whatever marks or separators it is written with."""
-    folded = unicodedata.normalize("NFD", text.lower().replace("đ", "d"))
-    squeezed = re.sub(r"[^a-z]", "", "".join(c for c in folded if not unicodedata.combining(c)))
-    return sorted(stem for stem in HIGH_VI if stem in squeezed)
+def high_names(text):
+    """The high-risk names of the project language (HIGH_NAMES) in a screen name or route, whatever marks or separators it is written with."""
+    folded = unicodedata.normalize("NFD", re.sub(r"(?<=[a-z0-9])(?=[A-Z])", " ", text).lower().replace("đ", "d"))
+    plain = "".join(c for c in folded if not unicodedata.combining(c))
+    if HIGH_NAMES_MATCH == "squeezed":
+        squeezed = re.sub(r"[^a-z]", "", plain)
+        return sorted(name for name in HIGH_NAMES if name in squeezed)
+    padded = " " + re.sub(r"[^a-z]+", " ", plain) + " "
+    return sorted(name for name in HIGH_NAMES if re.search(rf" {re.escape(name)}(?:s|es)? ", padded))
 
 
 def file_diff(doc):
@@ -186,8 +162,8 @@ def file_diff(doc):
     entries, companions, skip, modified = [], [], False, True
     for _n, line in doc.section_lines(r"^2\.\s") or []:
         if re.match(r"^#+ ", line):  # a part of the File Diff: only the list of new files is not a change of existing ones
-            skip = bool(re.search(r"MUST NOT|Không được chạm", line))
-            modified = not re.search(r"\b2\.2\b|New Files|File tạo mới", line)
+            skip = bool(re.search(rf"MUST NOT|{re.escape(T.docs_must_not_touch)}", line))
+            modified = not re.search(rf"\b2\.2\b|New Files|{re.escape(T.docs_new_files)}", line)
             continue
         if skip:
             continue
@@ -207,28 +183,33 @@ def file_diff(doc):
 
 def check_risk(docs):
     """`risk: normal` lets a SPEC take the lighter paths, so the checker refuses it where the work must be high."""
-    declared = []  # extra high-risk areas of this project: the value of the row "Vùng rủi ro cao" of the Intake
+    declared = []  # extra high-risk areas of this project: the value of the high-risk-area row of the Intake
     for doc in docs:
         if doc.doc_type == "intake":
+            found = False
             for _n, row in doc.table_rows():
-                if len(row) > 1 and row[0] == "Vùng rủi ro cao" and row[1] not in ("Không", ""):
-                    # the cell parser drops the outer backticks, so the areas are split at commas and backticks alike
-                    declared += [t.strip().lower() for t in re.split(r"[`,]", row[1]) if t.strip()]
+                if len(row) > 1 and row[0] == T.docs_high_risk_area:
+                    found = True
+                    if row[1] not in (T.docs_none_word, ""):
+                        # the cell parser drops the outer backticks, so the areas are split at commas and backticks alike
+                        declared += [t.strip().lower() for t in re.split(r"[`,]", row[1]) if t.strip()]
+            if not found:  # without the row the areas of the project are unknown, and a SPEC could be called normal in one of them
+                report("ERROR", doc.path, f"no '{T.docs_high_risk_area}' row in section 14, so the high-risk areas of the project are unknown; "
+                       f"add the row and write {T.docs_none_word} when there is none (CONVENTIONS §3)")
     for doc in docs:
         if doc.doc_type != "spec" or doc.meta.get("status") == "superseded":
             continue
         risk = doc.meta.get("risk", "").strip("\"'")
         if not risk:
-            if states_template(doc) and template_version(doc) >= RISK_SINCE:
-                report("ERROR", doc.path, "no `risk` in the frontmatter; write `risk: high` or `risk: normal` (CONVENTIONS §3)")
-            continue  # a SPEC from an older template without the key is treated as high
+            report("ERROR", doc.path, "no `risk` in the frontmatter; write `risk: high` or `risk: normal` (CONVENTIONS §3)")
+            continue
         if risk not in ("high", "normal"):
             report("ERROR", doc.path, f"risk '{risk}' is not `high` or `normal` (CONVENTIONS §3)")
             continue
         if risk == "high":
             continue
         if not any(RISK_REASON_RE.match(line) for line in doc.lines):
-            report("ERROR", doc.path, "risk is `normal` but the SPEC has no line `- Mức rủi ro:` giving the reason (CONVENTIONS §3)")
+            report("ERROR", doc.path, f"risk is `normal` but the SPEC has no line `- {T.docs_risk_reason_label}` giving the reason (CONVENTIONS §3)")
         entries, companions = file_diff(doc)
         if companions:
             report("ERROR", doc.path, "risk is `normal` but the File Diff is kept in a companion file, where it cannot be checked; "
@@ -259,10 +240,6 @@ def release_label(text):
 
 def check_release_order(docs):
     """A release is a vertical slice: its SPECs are coded before a SPEC of a later release is written."""
-    intake = next((d for d in docs if d.doc_type == "intake"), None)
-    stated = stated_version(intake, INTAKE_CORE) if intake else None
-    if not stated or stated < SLICES_SINCE:
-        return
     order, source = [], None
     roadmap = next((d for d in docs if d.doc_type == "roadmap"), None)
     if roadmap is not None:
@@ -273,12 +250,12 @@ def check_release_order(docs):
             if doc.doc_type in ("srs", "srs-module"):
                 numbered = doc.section_lines(r"^6\.1\.") or []
                 header = next((project_index.cells(line) for _n, line in numbered if line.startswith("|")), [])
-                column = next((i for i, cell in enumerate(header) if cell.startswith("Bản phát hành")), None)
+                column = next((i for i, cell in enumerate(header) if cell.startswith(T.docs_col_release)), None)
                 for _n, row in doc.table_rows(numbered):
                     if column is not None and len(row) > column and FR_RE.match(row[0]):
                         source = source or doc
                         order.append(release_label(row[column]))
-    order = [label for n, label in enumerate(order) if label and label not in ("Đợt", "Không") and label not in order[:n]]
+    order = [label for n, label in enumerate(order) if label and label not in (T.docs_wave, T.docs_none_word) and label not in order[:n]]
     if not order:
         return
     phases = collections.defaultdict(list)  # spec_id -> status of each of its phases
@@ -290,8 +267,6 @@ def check_release_order(docs):
         if doc.doc_type != "spec" or doc.meta.get("status") == "superseded":
             continue
         release = release_label(doc.meta.get("release", "").strip("\"'"))
-        if not release and not (states_template(doc) and template_version(doc) >= (1, 2, 0)):
-            continue  # a SPEC from before the release key belongs to no release
         if release not in order:
             report("ERROR", doc.path, f"release '{release}' is not a release of the project ({', '.join(order)}); every SPEC states "
                    "its release so that releases are done in order (PLAYBOOK §2)")
@@ -314,7 +289,7 @@ def check_release_order(docs):
 
 
 def check_flow_screens(docs):
-    """A screen the catalog marks "Theo luồng" has no page of its own, so it must be low risk and drawn in a flow mockup."""
+    """A screen the catalog marks "In flow" (`docs_by_flow`) has no page of its own, so it must be low risk and drawn in a flow mockup."""
     high_specs = [d for d in docs if d.doc_type == "spec" and d.meta.get("risk", "").strip("\"'") == "high"]
     for doc in docs:
         if doc.doc_type != "wireframe-index":
@@ -328,20 +303,20 @@ def check_flow_screens(docs):
                 fenced.append(raw)
         mockups = "\n".join(fenced)
         for line_no, row in doc.table_rows():
-            if len(row) < 3 or row[-1] != "Theo luồng" or not re.match(r"^SCR-", row[0]):
+            if len(row) < 3 or row[-1] != T.docs_by_flow or not re.match(r"^SCR-", row[0]):
                 continue
             where, screen = f"{doc.path}:{line_no}", row[0]
             named = " ".join(row[1:3]).replace("`", "")
-            words = sorted(set(high_words(named) + high_words_vi(named)))
+            words = sorted(set(high_words(named) + high_names(named)))
             if words:
-                report("ERROR", where, f"{screen} is marked 'Theo luồng' but its name or entry point says {', '.join(words)}; "
+                report("ERROR", where, f"{screen} is marked '{T.docs_by_flow}' but its name or entry point says {', '.join(words)}; "
                        "give it a page of its own (PLAYBOOK §2.2.1)")
             cited = sorted(d.doc_id or d.path for d in high_specs if re.search(rf"\b{re.escape(screen)}\b", "\n".join(d.raw)))
             if cited:
-                report("ERROR", where, f"{screen} is marked 'Theo luồng' but {', '.join(cited[:3])}, a SPEC of risk high, uses it; "
+                report("ERROR", where, f"{screen} is marked '{T.docs_by_flow}' but {', '.join(cited[:3])}, a SPEC of risk high, uses it; "
                        "give it a page of its own (PLAYBOOK §2.2.1)")
             if not re.search(rf"\b{re.escape(screen)}\b", mockups):
-                report("ERROR", where, f"{screen} is marked 'Theo luồng' but no flow mockup of the index draws it; add it to a "
+                report("ERROR", where, f"{screen} is marked '{T.docs_by_flow}' but no flow mockup of the index draws it; add it to a "
                        "`text` block under its flow (PLAYBOOK §2.2.1)")
 
 
@@ -356,13 +331,10 @@ def check_read_first(everything, root):
     for doc in everything:
         if doc.doc_type != "implementation-phase":
             continue
-        stated = stated_version(doc, PHASE_CORE)
-        if not stated or stated < READ_FIRST_SINCE:
-            continue
-        numbered = doc.section_lines(r"Read First|Đọc trước")
+        numbered = doc.section_lines(rf"Read First|{re.escape(T.docs_read_first)}")
         entries = [(n, m) for n, line in numbered or [] if (m := READ_FIRST_ITEM_RE.match(line))]
         if numbered is None or not entries:
-            report("ERROR", doc.path, "no entry in the section Đọc trước (Read First): list each document to read as "
+            report("ERROR", doc.path, f"no entry in the section {T.docs_read_first} (Read First): list each document to read as "
                    "`path` §section (CONVENTIONS §9)")
             continue
         screens, drawings = {}, set()
@@ -398,14 +370,13 @@ def check_sizes(doc):
     """The limits bind a SPEC and the architecture document only (CONVENTIONS section 7)."""
     if doc.doc_type not in LIMITS:
         return
-    limit, since = LIMITS[doc.doc_type]
-    level = "ERROR" if template_version(doc) >= since else "WARN"
+    limit = LIMITS[doc.doc_type]
     if doc.line_count > limit:
-        report(level, doc.path, f"{doc.line_count} lines, more than {limit}; move a machine-readable block to a companion file "
+        report("ERROR", doc.path, f"{doc.line_count} lines, more than {limit}; move a machine-readable block to a companion file "
                "(CONVENTIONS §7)")
     long_lines = [n for n, line in enumerate(doc.raw, 1) if len(line) > LINE_CHARS]
     if long_lines:
-        report(level, f"{doc.path}:{long_lines[0]}", f"{len(long_lines)} line(s) longer than {LINE_CHARS} characters; "
+        report("ERROR", f"{doc.path}:{long_lines[0]}", f"{len(long_lines)} line(s) longer than {LINE_CHARS} characters; "
                "break the text into shorter rows or a list (CONVENTIONS §7)")
 
 
@@ -434,7 +405,7 @@ def check_companions(root, docs):
     for path in sorted(p for p in found if not p.name.startswith(".")):
         name = path.relative_to(root).as_posix()
         if not owners.get(name):
-            report("ERROR", name, "companion file is named by no document; name it in a \"Tệp đi kèm:\" line or remove it (CONVENTIONS §7)")
+            report("ERROR", name, f"companion file is named by no document; name it in a \"{T.index_companion}:\" line or remove it (CONVENTIONS §7)")
         elif len(owners[name]) > 1:
             report("ERROR", name, f"companion file is named by more than one document: {', '.join(owners[name])} (CONVENTIONS §7)")
 
@@ -462,7 +433,7 @@ def check_duplicates(docs):
                     codes[row[0]].append(f"{doc.path}:{line_no}")
         if doc.doc_type == "spec" and doc.meta.get("status") != "superseded":
             for _n, row in doc.table_rows():
-                if row[0] == "Method và path" and len(row) > 1 and (m := ENDPOINT_RE.match(row[1].replace("`", ""))):
+                if row[0] == T.docs_col_method_path and len(row) > 1 and (m := ENDPOINT_RE.match(row[1].replace("`", ""))):
                     endpoints[f"{m.group(1)} {re.sub(r'{[^}]*}', '{}', m.group(2)).rstrip('/')}"].append(doc.path)
             for _n, row in doc.table_rows(doc.section_lines(r"^2\.2\.")):
                 if len(row) > 1 and row[1] == "migration":
@@ -478,7 +449,7 @@ def check_duplicates(docs):
     report_duplicates(catalog, "{key} is in the requirements catalog (§6.1) of more than one file: also {others}")
     report_duplicates(ids, "{key} is the ID of more than one document: also {others}")
     report_duplicates(codes, "error code {key} has more than one row in the Error Code Registry: also {others}")
-    report_duplicates(endpoints, "endpoint {key} is the Method và path of more than one SPEC: also {others}")
+    report_duplicates(endpoints, "endpoint {key} is the " + T.docs_col_method_path + " of more than one SPEC: also {others}")
     report_duplicates(migrations, "migration number {key} is in the File Diff of more than one SPEC: also {others}")
 
 

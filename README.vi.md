@@ -70,12 +70,12 @@ Intake duyệt.
 
 Quy trình co giãn theo thay đổi. Mỗi SPEC mang `risk: high` hoặc `risk: normal` (xác thực và phân quyền, cô lập giữa người thuê, tiền, dữ liệu cá nhân, schema đang có dữ liệu và hợp đồng công khai là `high`). SPEC `high` giữ review độc lập và dừng ở từng gate; một tính năng `normal` trên dự án đã có baseline đi đường thay đổi nhỏ: yêu cầu, SPEC và pha plan được soạn trong một lượt và trình gộp các gate một lần, rồi code và verify trước Gate 5. Bộ kit kèm vài script nhỏ cho việc này (bộ kiểm tài liệu, chỉ mục, và `gate.py` ghi lời duyệt gate), cần `python3`.
 
-**Ngôn ngữ.** Quy tắc, template và tài liệu do bộ kit sinh ra viết bằng tiếng
-Việt, thuật ngữ kỹ thuật và định danh giữ tiếng Anh; specflow trò chuyện với bạn
-bằng ngôn ngữ bạn dùng. Bộ tài liệu viết hoàn toàn bằng ngôn ngữ khác chưa được
-hỗ trợ: tiêu đề, các giá trị cố định như trạng thái gate và roadmap, và câu duyệt
-đều bằng tiếng Việt, còn ngoại lệ ngôn ngữ ở Intake chỉ đổi phần diễn giải.
-Đầu ra đa ngôn ngữ nằm trong kế hoạch.
+**Ngôn ngữ.** Quy tắc và template của bộ kit viết bằng tiếng Anh. Một dự án chọn
+ngôn ngữ tài liệu, tiếng Việt (`vi`) hoặc tiếng Anh (`en`), ở Intake, và mọi tài
+liệu specflow viết cho dự án đó, kể cả tiêu đề, các giá trị cố định như trạng
+thái gate và roadmap, và câu duyệt, đều bằng ngôn ngữ đó, thuật ngữ kỹ thuật và
+định danh giữ tiếng Anh. specflow trò chuyện với bạn bằng ngôn ngữ bạn dùng.
+Hiện mới có hai ngôn ngữ này.
 
 ## Cài đặt
 

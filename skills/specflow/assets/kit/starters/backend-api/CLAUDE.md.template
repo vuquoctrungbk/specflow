@@ -3,7 +3,7 @@ doc_type: agent-context
 status: draft
 version: 0.1.0
 template_version: 2.8.0
-language: vi-en
+language: en
 parent: [docs/intake/PROJECT_INTAKE.md]
 overlays: [backend-api]
 assembled_from:
@@ -12,157 +12,153 @@ assembled_from:
   - overlays/backend-api/agent-rules/backend-golden-rules.md@1.0.0
 ---
 
-# {{PROJECT_NAME}}: hướng dẫn cho Claude Code
+# {{PROJECT_NAME}}: guide for Claude Code
 
 ## Documentation Layout
 
 <!-- BEGIN: docs-layout-override -->
-Dự án này dùng bố cục tài liệu specflow. Bỏ qua bộ tên tài liệu `project-overview-pdr.md`, `system-architecture.md`, `code-standards.md`, `deployment-guide.md`, `codebase-summary.md`, `project-roadmap.md` của rule toàn cục và không tạo các file đó. Vai trò của chúng được thay như sau:
+This project uses the specflow document layout. Ignore the global rule's set of document names `project-overview-pdr.md`, `system-architecture.md`, `code-standards.md`, `deployment-guide.md`, `codebase-summary.md`, `project-roadmap.md` and do not create those files. Their roles are replaced as follows:
 
-| Tên theo rule toàn cục | Thay bằng trong bố cục specflow |
+| Name in the global rule | Replaced by in the specflow layout |
 | --- | --- |
-| `project-overview-pdr.md` | `docs/intake/PROJECT_INTAKE.md` và SRS trong `docs/srs/` |
+| `project-overview-pdr.md` | `docs/intake/PROJECT_INTAKE.md` and the SRS in `docs/srs/` |
 | `system-architecture.md` | `docs/ARCHITECTURE.md` |
-| `code-standards.md` | ARCHITECTURE §1 (Golden Rules), §7 (conventions) và `.claude/rules/` |
-| `deployment-guide.md` | ARCHITECTURE §8 (Deployment) và §11 (CI/CD) |
-| `codebase-summary.md` | ARCHITECTURE §4 (layout); dự án brownfield dùng `docs/brownfield/CODEBASE_SUMMARY.md` |
-| `project-roadmap.md` | `docs/ROADMAP.md` (dự án có Intake tạo từ template Intake `1.4.0` trở lên), Implementation Plan trong `plans/` và phạm vi trong SRS §1.2 |
+| `code-standards.md` | ARCHITECTURE §1 (Golden Rules), §7 (conventions) and `.claude/rules/` |
+| `deployment-guide.md` | ARCHITECTURE §8 (Deployment) and §11 (CI/CD) |
+| `codebase-summary.md` | ARCHITECTURE §4 (layout); a brownfield project uses `docs/brownfield/CODEBASE_SUMMARY.md` |
+| `project-roadmap.md` | `docs/ROADMAP.md`, the Implementation Plan in `plans/` and the scope in SRS §1.2 |
 
 ```text
-specflow/                                 # bộ mẫu specflow, chỉ đọc
+specflow/                                 # the specflow template set, read-only
 docs/
 ├── intake/PROJECT_INTAKE.md
-├── ROADMAP.md                        # Intake 1.4.0 trở lên: việc phải làm, tiến độ, mốc (CONVENTIONS mục 11)
-├── INDEX.md                          # chỉ mục sinh bởi specflow/scripts/project-index.py, không sửa tay
-├── gates/GATE-N.md                   # sổ duyệt của từng gate, do specflow/scripts/gate.py ghi, không sửa tay
+├── ROADMAP.md                        # work to do, progress, milestones (CONVENTIONS §11)
+├── INDEX.md                          # index built by specflow/scripts/project-index.py, never edited by hand
+├── gates/GATE-N.md                   # approval ledger of each gate, written by specflow/scripts/gate.py, never edited by hand
 ├── srs/SRS.md                        # monolithic
-├── srs/00_SRS_MASTER.md              # modular: tổng quan, NFR, mô hình dữ liệu chung
-├── srs/SRS_MODULE_<NAME>.md          # modular: use case của từng phân hệ
-├── wireframes/00_WIREFRAME_INDEX.md  # khi có giao diện (Giai đoạn 1W): chỉ mục, đối chiếu FR
-├── wireframes/SCR-<MOD>-NN.md        # một trang cho mỗi màn hình
-├── wireframes/html/SCR-<MOD>-NN.html # tùy chọn: HTML tĩnh low-fi
+├── srs/00_SRS_MASTER.md              # modular: overview, NFRs, shared data model
+├── srs/SRS_MODULE_<NAME>.md          # modular: the use cases of one module
+├── wireframes/00_WIREFRAME_INDEX.md  # when there is a UI (Stage 1W): index, FR traceability
+├── wireframes/SCR-<MOD>-NN.md        # one page per screen
+├── wireframes/html/SCR-<MOD>-NN.html # a static HTML screen per page, when the Intake asks for HTML
 ├── ARCHITECTURE.md
-├── architecture/                     # tệp đi kèm của ARCHITECTURE (CONVENTIONS mục 7)
+├── architecture/                     # companion files of ARCHITECTURE (CONVENTIONS §7)
 ├── adr/NNNN-<slug>.md
 ├── specs/SPEC_<FEATURE_KEY>.md
-├── specs/SPEC_<FEATURE_KEY>.*        # tệp đi kèm của SPEC, không phải .md (CONVENTIONS mục 7)
-├── prompts/PROMPT_<NAME>.md          # chỉ khi dùng overlay ai-llm-app
-├── design-system/DESIGN_SYSTEM.md    # khi có giao diện (Giai đoạn 1W): hệ thống thiết kế
-├── design-system/tokens.json         # token nguồn, định dạng DTCG
-└── brownfield/                       # chỉ dự án brownfield
+├── specs/SPEC_<FEATURE_KEY>.*        # companion files of a SPEC, not .md (CONVENTIONS §7)
+├── prompts/PROMPT_<NAME>.md          # only with the ai-llm-app overlay
+├── design-system/DESIGN_SYSTEM.md    # when there is a UI (Stage 1W): the design system
+├── design-system/tokens.json         # source tokens, DTCG format
+└── brownfield/                       # brownfield projects only
     ├── CODEBASE_SUMMARY.md
     ├── AS_IS_ARCHITECTURE.md
     ├── REGRESSION_BASELINE.md
     ├── GAP_ANALYSIS.md
     └── MIGRATION_PLAN.md
-plans/{YYMMDD-HHmm}-{slug}/plan.md    # Implementation Plan, định dạng ở CONVENTIONS mục 9
+plans/{YYMMDD-HHmm}-{slug}/plan.md    # Implementation Plan, format in CONVENTIONS §9
 plans/{YYMMDD-HHmm}-{slug}/phase-NN-<slug>.md
-plans/reports/                        # report của agent
+plans/reports/                        # agent reports
 CLAUDE.md
 .claude/rules/*.md
 ```
 
-Implementation Plan và report nằm trong `plans/` theo định dạng ở CONVENTIONS mục 9 (không cần công cụ riêng); không tạo `IMPLEMENTATION_PLAN.md` ở gốc. Khi rule toàn cục và tài liệu specflow mâu thuẫn về bố cục hoặc quy trình tài liệu, tài liệu specflow thắng trong phạm vi dự án này. Các rule toàn cục khác (development rules, git, process management) vẫn có hiệu lực.
+The Implementation Plan and reports live in `plans/` in the format of CONVENTIONS §9 (no separate tool needed); do not create `IMPLEMENTATION_PLAN.md` at the root. When the global rule and the specflow documents disagree about the layout or the documentation process, the specflow documents win within this project. The other global rules (development rules, git, process management) stay in force.
 <!-- END: docs-layout-override -->
 
-Chế độ lưu trữ SRS của dự án: `{{DOCS_MODE}}` (PLAYBOOK mục 5).
+SRS storage mode of the project: `{{DOCS_MODE}}` (PLAYBOOK §5).
 
-<!-- fill: Chép file này thành CLAUDE.md ở gốc dự án; giữ mục Documentation Layout là mục đầu tiên và giữ nguyên văn khối giữa hai dòng dấu mốc (kể cả hai dòng dấu mốc). Giai đoạn 0 tạo bản khởi tạo: mục chưa đủ dữ liệu thay bằng dòng "Hoàn thiện ở Giai đoạn 2."; Giai đoạn 2 hoàn thiện toàn bộ và tạo các file ở Phụ lục A. Có starter thì dùng CLAUDE.md.template của starter thay cho file này. Không chép Phụ lục A vào CLAUDE.md: Giai đoạn 2 đọc Phụ lục A từ template trong specflow/ để tạo các file rule. Frontmatter assembled_from ghi nguồn theo CONVENTIONS mục 3. -->
+<!-- fill: Copy this file to CLAUDE.md at the project root; keep the Documentation Layout section as the first section and keep the block between the two marker lines verbatim (including the two marker lines). Stage 0 creates the initial version: a section that lacks data is replaced by the line "Complete at Stage 2."; Stage 2 completes everything and creates the files in Appendix A. If there is a starter, use the starter's CLAUDE.md.template in place of this file. Do not copy Appendix A into CLAUDE.md: Stage 2 reads Appendix A from the template in specflow/ to create the rule files. The frontmatter assembled_from records the sources per CONVENTIONS §3. -->
 
-## 1. Dự án (Project)
+## 1. Project
 
-| Trường | Giá trị |
+| Field | Value |
 | --- | --- |
-| Tên | {{PROJECT_NAME}} |
-| Mục tiêu | <!-- fill: 1 đến 2 câu từ Intake mục 2 --> |
-| Bề mặt (overlays) | `{{OVERLAYS}}` |
-| Stack profile theo bề mặt | <!-- fill: overlay và profile, theo Intake mục 14 --> |
-| Mode | <!-- fill: chọn một: greenfield \| brownfield --> |
+| Name | {{PROJECT_NAME}} |
+| Goal | <!-- fill: 1 to 2 sentences from Intake §2 --> |
+| Surfaces (overlays) | `{{OVERLAYS}}` |
+| Stack profile per surface | <!-- fill: overlay and profile, per Intake §14 --> |
+| Mode | <!-- fill: choose one: greenfield \| brownfield --> |
 | Intake | `docs/intake/PROJECT_INTAKE.md` |
 
-## 2. Quy trình tài liệu (Documentation Workflow)
+## 2. Documentation Workflow
 
-- Quy trình và gate theo `specflow/PLAYBOOK.md`; prompt theo `specflow/PROMPTS.md`; hợp đồng định dạng theo `specflow/CONVENTIONS.md`. Các file này và mọi file trong `specflow/` chỉ đọc.
-- Quy trình gồm 3 bước và giai đoạn thực thi (PLAYBOOK mục 2): 1. Yêu cầu (Giai đoạn 0 Intake, 1 SRS, 1W Wireframe khi có giao diện); 2. Thiết kế (Giai đoạn 2 Architecture và ADR, 3 mọi SPEC của đợt); 3. Kế hoạch (Giai đoạn 4a plan của đợt); thực thi (4b Coding TDD, 5 Verify và Sync Docs theo từng SPEC). Giai đoạn 1W của dự án này: <!-- fill: chọn một: Có | Không, theo Intake mục 14 -->.
-- Intake tạo từ template Intake cũ hơn `1.3.0`: dự án làm theo tính năng như bản `2.3.0` của bộ mẫu (PLAYBOOK mục 2): không có Giai đoạn 1W và đợt, mỗi tính năng một SPEC và một plan; `specflow/COMPATIBILITY.md` mục 2 và 3 nêu phần thay đổi cho nhánh này.
-<!-- fill: Intake tạo từ template Intake 1.3.0 trở lên thì xóa dòng trên; Intake cũ hơn thì giữ dòng trên và ghi Giai đoạn 1W của dự án này là Không. -->
-- Không viết code khi Definition of Ready (PLAYBOOK mục 10.1) chưa đạt. Dừng ở mỗi gate để người duyệt quyết định.
-- Roadmap `docs/ROADMAP.md` (CONVENTIONS mục 11) là danh sách việc phải làm: đọc đầu mỗi phiên; khi code làm theo thứ tự pha của plan và không nhảy qua dòng `Chưa làm` nào; cập nhật sau mỗi pha (PLAYBOOK mục 2.5); yêu cầu mới ghi vào mục 3 của roadmap, không làm ngay; chỉ đặt `Đã xác nhận` và đánh tag khi nhận "Duyệt Gate 5" (PLAYBOOK mục 2.7).
-<!-- fill: Intake tạo từ template Intake cũ hơn 1.4.0 thì xóa dòng trên (dự án không có roadmap, specflow/COMPATIBILITY.md mục 5). -->
-- Tra cứu tài liệu: đọc `docs/INDEX.md` trước khi mở tài liệu khác. Tìm nơi định nghĩa một ID hoặc một mã lỗi bằng `python3 specflow/scripts/project-index.py .` với `--where` và ID đó; xem các mục của một tài liệu kèm khoảng dòng bằng `--outline` và đường dẫn tệp; rồi chỉ đọc khoảng dòng cần. Không dò cả thư mục `docs/` bằng lệnh tìm kiếm để tìm một ID.
-- Sau khi sửa tài liệu: chạy `python3 specflow/scripts/project-index.py .` để dựng lại chỉ mục và `bash specflow/scripts/check-templates.sh --project .` để kiểm; sửa mọi lỗi nó báo ở tài liệu vừa sửa. Không tự viết script để kiểm những điều checker đã kiểm.
-- SPEC và ARCHITECTURE giữ trong trần kích thước của CONVENTIONS mục 7; khối máy đọc dài (hợp đồng API, lược đồ dữ liệu, mã mẫu) đặt ở tệp đi kèm và chỉ mở khi việc đang làm cần nội dung của nó.
-- Dự án mới và đợt mới: mỗi lượt làm một giai đoạn. Thay đổi trên dự án đã có baseline: một lượt sửa mọi tài liệu thay đổi cần và trình gộp các gate (specflow/PLAYBOOK.md mục 8). Kết thúc lượt bằng danh sách file đã đổi, checklist exit gate và Open Questions.
-- Chi tiết: `.claude/rules/docs-workflow.md`.
-<!-- fill: Dự án brownfield giữ ba dòng dưới; dự án greenfield xóa ba dòng này. -->
-- Brownfield: đi theo `specflow/brownfield/PLAYBOOK_BROWNFIELD.md`, gồm phần bổ sung cho từng prompt ở mục 6.1; mục 5 của file đó thắng rule khác của repo khi mâu thuẫn. Giai đoạn 0R không sửa mã sản phẩm; ngoại lệ duy nhất của quy tắc không viết code trước DoR và quy tắc chỉ commit file trong File Diff là test `REG` trong commit riêng theo mục 5.1 khi Intake §4 cho phép. Ở Giai đoạn 0R, lệnh của dự án chỉ chạy trong worktree sạch, khi mọi kho dữ liệu và dịch vụ ngoài trỏ tới đích cục bộ hoặc dùng một lần (`docs/brownfield/CODEBASE_SUMMARY.md` §2); từ Giai đoạn 1, lệnh chạy trong thư mục làm việc với các biến đó đặt tường minh theo mục 5.4 quy tắc 6. Không mở file env không phải file mẫu; không ghi secret hay dữ liệu cá nhân vào tài liệu.
-- Brownfield: không refactor ngoài File Diff của SPEC đang làm, kể cả khi thấy mã cần cải thiện; đề xuất ghi vào mục `Assumptions & Open Questions`.
-- Brownfield: giữ nguyên mọi hành vi trong `docs/brownfield/REGRESSION_BASELINE.md`, trừ hành vi đã được duyệt đổi ở `docs/brownfield/GAP_ANALYSIS.md` §5; chạy test `REG` trước và sau mỗi pha.
+- The process and gates follow `specflow/PLAYBOOK.md`; prompts follow `specflow/PROMPTS.md`; the format contract follows `specflow/CONVENTIONS.md`. These files and every file in `specflow/` are read-only.
+- The process has 3 steps and an execution stage (PLAYBOOK §2): 1. Requirements (Stage 0 Intake, 1 SRS, 1W Wireframe when there is a UI); 2. Design (Stage 2 Architecture and ADR, 3 every SPEC of the release); 3. Plan (Stage 4a plan of the release); execution (4b Coding TDD, 5 Verify and Sync Docs per SPEC). Stage 1W of this project: <!-- fill: choose one: Yes | No, per Intake §14 -->.
+- Do not write code until the Definition of Ready (PLAYBOOK §10.1) is met. Stop at every gate for the approver to decide.
+- The roadmap `docs/ROADMAP.md` (CONVENTIONS §11) is the list of work to do: read it at the start of each session; when coding, follow the phase order of the plan and do not skip over any `Not started` line; update it after each phase (PLAYBOOK §2.5); record a new requirement in section 3 of the roadmap and do not act on it immediately; set `Confirmed` and tag only on receiving "Approved at Gate 5" (PLAYBOOK §2.7).
+- Document lookup: read `docs/INDEX.md` before opening any other document. Find where an ID or an error code is defined with `python3 specflow/scripts/project-index.py .` plus `--where` and that ID; see the sections of a document with their line ranges with `--outline` and the file path; then read only the line range you need. Do not scan the whole `docs/` directory with a search command to find an ID.
+- After editing a document: run `python3 specflow/scripts/project-index.py .` to rebuild the index and `bash specflow/scripts/check-templates.sh --project .` to check; fix every error it reports in the document you just edited. Do not write your own script to check what the checker already checks.
+- SPEC and ARCHITECTURE stay within the size ceiling of CONVENTIONS §7; a long machine-readable block (API contract, data schema, sample code) goes in a companion file and is opened only when the work in hand needs its content.
+- New project and new release: one stage per turn. A change on a project that already has a baseline: one turn edits every document the change needs and presents the gates merged (specflow/PLAYBOOK.md §8). End the turn with the list of changed files, the exit gate checklist and Open Questions.
+- Details: `.claude/rules/docs-workflow.md`.
+<!-- fill: A brownfield project keeps the three lines below; a greenfield project deletes these three lines. -->
+- Brownfield: follow `specflow/brownfield/PLAYBOOK_BROWNFIELD.md`, which holds the additions for each prompt in §6.1; §5 of that file wins over other repo rules in a conflict. Stage 0R does not modify product code; the only exception to the rule of no code before DoR and the rule of committing only files in the File Diff is the `REG` test in its own commit per §5.1 when Intake §4 allows it. At Stage 0R, project commands run only in a clean worktree, when every data store and external service points to a local or disposable target (`docs/brownfield/CODEBASE_SUMMARY.md` §2); from Stage 1, commands run in the working directory with those variables set explicitly per §5.4 rule 6. Do not open env files that are not template files; do not write secrets or personal data into documents.
+- Brownfield: do not refactor outside the File Diff of the SPEC in progress, even when the code looks like it needs improvement; record the proposal in the `Assumptions & Open Questions` section.
+- Brownfield: keep every behavior in `docs/brownfield/REGRESSION_BASELINE.md` unchanged, except behavior approved for change in `docs/brownfield/GAP_ANALYSIS.md` §5; run the `REG` tests before and after each phase.
 
-## 3. Đọc trước khi làm (Context Loading)
+## 3. Context Loading
 
-| Việc đang làm | Đọc | Không đọc |
+| Current work | Read | Do not read |
 | --- | --- | --- |
-| Viết hoặc sửa SRS | Intake, template SRS của giai đoạn, overlay và profile đã chọn | Template Architecture và Spec, mã nguồn |
-| Viết hoặc sửa wireframe (Giai đoạn 1W) | Theo `specflow/PLAYBOOK.md` mục 6, hàng 1W | Stack profile, template Architecture và Spec, mã nguồn |
-| Viết hoặc sửa ARCHITECTURE, ADR | Intake, SRS, chỉ mục wireframe khi có Giai đoạn 1W, template Architecture của giai đoạn, profile, `specflow/core/03_ADR_Template.md` | Template Spec, mã nguồn |
-| Viết SPEC của đợt | `docs/ARCHITECTURE.md`, phần SRS chứa FR, cột FR ID và Bản phát hành ở SRS §6.1, frontmatter của mọi SPEC và §1.5 của SPEC thuộc đợt (khóa `release`; SPEC không có khóa thì đọc §1.5 của nó, đợt theo Bản phát hành của FR, PLAYBOOK mục 2.4), cột TC ID ở §9 của mọi SPEC cùng mã phân hệ (đánh số TC tiếp theo, CONVENTIONS mục 4), chỉ mục wireframe và trang wireframe của các `SCR-*` mà FR dẫn, ADR liên quan, mã nguồn của phân hệ | Phần còn lại của SRS module khác, nội dung SPEC khác ngoài frontmatter, §1.5 và cột TC ID ở §9, trang wireframe khác, mã nguồn của phân hệ khác |
-| Lập plan của đợt | Mọi SPEC trong `spec_ids` của đợt, hàng SRS §6.1 của FR thuộc đợt và hàng SRS §8 của AC mà SPEC của đợt dẫn, chỉ mục wireframe và trang của các `SCR-*` mà SPEC của đợt dẫn (khi có Giai đoạn 1W), ARCHITECTURE §1, §4, §5, §7, `specflow/core/05_Implementation_Plan_Template/` | SRS toàn văn (chỉ đọc các hàng đã nêu), trang wireframe không được SPEC của đợt dẫn, SPEC ngoài đợt |
-| Code | `docs/ROADMAP.md` khi có, plan và pha đang làm, SPEC theo `spec_id` của pha, ARCHITECTURE §1, §4 đến §7, file trong File Diff | File ngoài File Diff, SPEC khác |
-| Mọi việc | File này | `examples/` của bộ mẫu, bộ mẫu cũ |
+| Write or edit the SRS | Intake, the SRS template of the stage, the chosen overlay and profile | Architecture and Spec templates, source code |
+| Write or edit wireframes (Stage 1W) | Per `specflow/PLAYBOOK.md` §6, row 1W | Stack profile, Architecture and Spec templates, source code |
+| Write or edit ARCHITECTURE, ADR | Intake, SRS, the wireframe index when there is Stage 1W, the Architecture template of the stage, profile, `specflow/core/03_ADR_Template.md` | Spec template, source code |
+| Write the SPECs of the release | `docs/ARCHITECTURE.md`, the part of the SRS that holds the FRs, the FR ID and Release columns in SRS §6.1, the frontmatter of every SPEC and §1.5 of the SPECs in the release (key `release`; for a SPEC without the key, read its §1.5, the release follows the Release of the FR, PLAYBOOK §2.4), the TC ID column in §9 of every SPEC with the same module code (to number the next TC, CONVENTIONS §4), the wireframe index and the wireframe pages of the `SCR-*` that the FRs cite, related ADRs, the source code of the module | The rest of the SRS of other modules, the content of other SPECs beyond the frontmatter, §1.5 and the TC ID column in §9, other wireframe pages, the source code of other modules |
+| Plan the release | Every SPEC in the release's `spec_ids`, the SRS §6.1 rows of the FRs in the release and the SRS §8 rows of the ACs that the release's SPECs cite, the wireframe index and the pages of the `SCR-*` that the release's SPECs cite (when there is Stage 1W), ARCHITECTURE §1, §4, §5, §7, `specflow/core/05_Implementation_Plan_Template/` | The full SRS (read only the rows named), wireframe pages not cited by the release's SPECs, SPECs outside the release |
+| Code | `docs/ROADMAP.md` when present, the plan and the phase in progress, the SPEC per the phase's `spec_id`, ARCHITECTURE §1, §4 to §7, the files in the File Diff | Files outside the File Diff, other SPECs |
+| All work | This file | The `examples/` of the template set, the old template set |
 
-Bảng đầy đủ: `specflow/PLAYBOOK.md` mục 6.
+Full table: `specflow/PLAYBOOK.md` §6.
 
-## 4. Lệnh build, test và verify (Build, Test & Verify)
+## 4. Build, Test & Verify
 
-Chạy trước mỗi commit; điều kiện pass theo PLAYBOOK mục 11. Lệnh nào báo lỗi thì dừng, sửa, chạy lại cả bộ. Cùng một lệnh test hay verify vẫn hỏng cùng lỗi sau 3 lần sửa liên tiếp, kể cả trong vòng đỏ sang xanh, thì dừng, báo lỗi, các cách đã thử và phương án (PLAYBOOK mục 7 quy tắc 11).
+Run before every commit; the pass condition follows PLAYBOOK §11. When a command reports an error, stop, fix it, and rerun the whole set. If the same test or verify command still fails with the same error after 3 consecutive fixes, including inside the red-to-green loop, stop and report the error, the approaches tried and the options (PLAYBOOK §7 rule 11).
 
-| Hạng mục | Lệnh | Điều kiện pass |
+| Item | Command | Pass condition |
 | --- | --- | --- |
-| Sinh mã | `{{CODEGEN_CMD}}` | Exit code 0; chạy trước mọi lệnh khác |
-| Lint | `{{LINT_CMD}}` | 0 lỗi, 0 cảnh báo |
-| Typecheck | `{{TYPECHECK_CMD}}` | 0 lỗi |
+| Code generation | `{{CODEGEN_CMD}}` | Exit code 0; run before every other command |
+| Lint | `{{LINT_CMD}}` | 0 errors, 0 warnings |
+| Typecheck | `{{TYPECHECK_CMD}}` | 0 errors |
 | Unit test | `{{UNIT_TEST_CMD}}` | 100% pass |
-| Integration test | `{{INTEGRATION_TEST_CMD}}` | 100% pass trên cơ sở dữ liệu thật chạy cô lập |
+| Integration test | `{{INTEGRATION_TEST_CMD}}` | 100% pass on a real database running in isolation |
 | E2E test | `{{E2E_TEST_CMD}}` | 100% pass |
-| Coverage | `{{COVERAGE_CMD}}` | ≥ ngưỡng của NFR-MAINT |
+| Coverage | `{{COVERAGE_CMD}}` | ≥ the NFR-MAINT threshold |
 | Build | `{{BUILD_CMD}}` | Exit code 0 |
-| Dependency audit | `{{AUDIT_CMD}}` | Không còn lỗ hổng high hoặc critical chưa có ADR chấp nhận rủi ro |
-| Migration | `{{MIGRATION_CHECK_CMD}}` | Schema hợp lệ và thư mục migration khớp schema |
-| Tài liệu OpenAPI | `{{OPENAPI_LINT_CMD}}` | 0 lỗi |
+| Dependency audit | `{{AUDIT_CMD}}` | No high or critical vulnerability left without an ADR accepting the risk |
+| Migration | `{{MIGRATION_CHECK_CMD}}` | Schema is valid and the migration directory matches the schema |
+| OpenAPI document | `{{OPENAPI_LINT_CMD}}` | 0 errors |
 
-## 5. Nguyên tắc lập trình (Golden Rules)
+## 5. Golden Rules
 
-<!-- fill: tóm tắt 5 đến 8 quy tắc quan trọng nhất từ docs/ARCHITECTURE.md §1.2, mỗi dòng một quy tắc. Bản đầy đủ: docs/ARCHITECTURE.md §1.2 và .claude/rules/coding-golden-rules.md. -->
+<!-- fill: summarize the 5 to 8 most important rules from docs/ARCHITECTURE.md §1.2, one rule per line. Full version: docs/ARCHITECTURE.md §1.2 and .claude/rules/coding-golden-rules.md. -->
 
-## 6. Khi gặp mơ hồ (Ambiguity)
+## 6. Ambiguity
 
-- Ghi mọi giả định vào mục `Assumptions & Open Questions` của tài liệu đang làm; không giải quyết mơ hồ ngầm.
-- Mơ hồ chạm phạm vi, API, schema, bảo mật hoặc dữ liệu cá nhân: dừng và hỏi. Mơ hồ nhỏ: chọn giả định an toàn nhất, ghi lại, làm tiếp.
-- SPEC mâu thuẫn với mã hiện có hoặc với ARCHITECTURE: dừng, báo `file:line` và mục tài liệu, đưa phương án; không tự chọn.
-- Câu hỏi gộp một lượt, tối đa 5 câu, mỗi câu kèm phương án đề xuất.
+- Record every assumption in the `Assumptions & Open Questions` section of the document in progress; do not resolve ambiguity silently.
+- Ambiguity that touches scope, API, schema, security or personal data: stop and ask. Minor ambiguity: pick the safest assumption, record it, continue.
+- When a SPEC conflicts with existing code or with ARCHITECTURE: stop, report `file:line` and the document section, give options; do not choose on your own.
+- Batch questions into one turn, at most 5 questions, each with a proposed option.
 
-## 7. Ngôn ngữ (Language)
+## 7. Language
 
-Tài liệu viết tiếng Việt có dấu, thuật ngữ kỹ thuật giữ tiếng Anh; định danh code, tên file, tên bảng và cột, mã lỗi, ID yêu cầu, commit message, tên test luôn tiếng Anh (CONVENTIONS mục 5). Không đổi ngôn ngữ giữa chừng một tài liệu.
+Documents are written in the language of the project (the language key of the Intake frontmatter). Technical terms stay in English; code identifiers, file names, table and column names, error codes, requirement IDs, commit messages and test names are always English (CONVENTIONS §5). Do not change language midway through a document.
 
 ## 8. Git
 
-- Conventional Commits bằng tiếng Anh; một commit cho mỗi pha của Implementation Plan; message mô tả hành vi, không chứa ID quy trình.
-- Không commit secret, file biến môi trường thật, dữ liệu cá nhân.
-- Chỉ commit file trong File Diff của SPEC đang làm, cộng tài liệu và plan được cập nhật.
-- SPEC qua Gate 5: annotated tag trên commit pha cuối của SPEC theo dòng Định dạng tag ở Intake mục 14; push tag khi người duyệt cho phép.
-<!-- fill: Intake tạo từ template Intake cũ hơn 1.4.0 thì xóa dòng trên (không có dòng Định dạng tag). -->
+- Conventional Commits in English; one commit per phase of the Implementation Plan; the message describes behavior and contains no process ID.
+- Do not commit secrets, real environment variable files or personal data.
+- Commit only files in the File Diff of the SPEC in progress, plus the updated documents and plan.
+- A SPEC that passes Gate 5: an annotated tag on the last phase commit of the SPEC per the Tag format line in Intake §14; push the tag when the approver allows it.
 
-## 9. Giả định và câu hỏi mở (Assumptions & Open Questions)
+## 9. Assumptions & Open Questions
 
-| ID | Loại | Nội dung | Lý do hoặc ảnh hưởng | BLOCKING | Người trả lời |
+| ID | Type | Content | Reason or impact | BLOCKING | Respondent |
 | --- | --- | --- | --- | :---: | --- |
-| AQ-01 | <!-- fill: chọn một: Giả định \| Câu hỏi --> | <!-- fill: giả định về môi trường, lệnh, quy ước chưa chốt --> | <!-- fill --> | <!-- fill: chọn một: Có \| Không --> | <!-- fill --> |
+| AQ-01 | <!-- fill: choose one: Assumption \| Question --> | <!-- fill: assumption about the environment, commands, conventions not yet settled --> | <!-- fill --> | <!-- fill: choose one: Yes \| No --> | <!-- fill --> |
 
-## Phụ lục A: file trong `.claude/rules/` (Appendix)
+## Appendix A: files in `.claude/rules/`
 
-<!-- fill: Phụ lục này không thuộc CLAUDE.md. Ở Giai đoạn 2, tạo mỗi file dưới đây từ khối tương ứng (bỏ dòng mở và đóng khối code), điền placeholder (paths liệt kê mỗi thư mục mã nguồn một glob), ghi assembled_from là "core/06_Agent_Context_Template.md@<template_version>" và template_version của rule bằng template_version của template này, rồi thêm rule của từng overlay: starter đã kèm sẵn ở các mục A.3 trở đi; không có starter thì chép từ specflow/overlays/<surface>/agent-rules/. -->
+<!-- fill: This appendix does not belong in CLAUDE.md. At Stage 2, create each file below from the corresponding block (drop the opening and closing code fence lines), fill the placeholders (paths lists one glob per source directory), set assembled_from to "core/06_Agent_Context_Template.md@<template_version>" and the rule's template_version equal to the template_version of this template, then add the rules of each overlay: a starter already includes them in sections A.3 onward; without a starter, copy from specflow/overlays/<surface>/agent-rules/. -->
 
 ### A.1. `.claude/rules/docs-workflow.md`
 
@@ -172,20 +168,20 @@ doc_type: agent-rule
 status: draft
 version: 0.1.0
 template_version: 2.2.0
-language: vi-en
+language: en
 parent: [CLAUDE.md]
 overlays: []
 assembled_from: []
 ---
 
-# Quy trình tài liệu (Documentation Workflow)
+# Documentation Workflow
 
-- Pipeline 3 bước và giai đoạn thực thi (specflow/PLAYBOOK.md mục 2): bước 1 Yêu cầu gồm Giai đoạn 0 Intake, 1 SRS, 1W Wireframe khi có giao diện; bước 2 Thiết kế gồm Giai đoạn 2 Architecture và ADR, 3 mọi SPEC của đợt; bước 3 Kế hoạch gồm Giai đoạn 4a plan của đợt; thực thi gồm 4b coding TDD và 5 Verify và Sync Docs theo từng SPEC, gộp được cho SPEC risk: normal (specflow/PLAYBOOK.md mục 2.6). Mỗi giai đoạn dừng ở gate, trừ các lần trình gộp ở specflow/PLAYBOOK.md mục 5 và 8; không tự chuyển giai đoạn khi chưa có lời duyệt. Dự án có Intake tạo từ template Intake cũ hơn 1.3.0 làm theo tính năng như bản 2.3.0: không có Giai đoạn 1W và đợt, mỗi tính năng một SPEC và một plan; specflow/COMPATIBILITY.md mục 2 và 3 nêu phần thay đổi cho nhánh này.
-- Mỗi giai đoạn dùng đúng prompt ở specflow/PROMPTS.md và đúng danh mục nạp ngữ cảnh ở mục 6.
-- Sau khi ghép template, chạy lệnh kiểm tra sót ở specflow/PLAYBOOK.md mục 4; kết quả MUST rỗng.
-- Thay đổi tài liệu theo specflow/PLAYBOOK.md mục 8: sửa tự do khi tài liệu còn draft hoặc in-review; tăng version một lần lúc trình gate bằng specflow/scripts/gate.py; chỉ dừng chờ duyệt khi thay đổi chạm hợp đồng công khai, schema, bảo mật, phạm vi hoặc SPEC risk: high; chỉ sửa tài liệu hạ nguồn có nội dung thật sự đổi. TC chỉ ghi ở SPEC §9 và file pha.
-- Khác biệt phát hiện khi code: SPEC risk: normal thì sửa SPEC cùng nhánh với code; đổi kiến trúc hoặc SPEC risk: high thì ghi ADR trước khi merge. ADR đã accepted không sửa nội dung quyết định; tạo ADR mới và đặt ADR cũ superseded.
-- Không tạo tài liệu ngoài bố cục ở mục Documentation Layout của CLAUDE.md.
+- The pipeline has 3 steps and an execution stage (specflow/PLAYBOOK.md §2): step 1 Requirements covers Stage 0 Intake, 1 SRS, 1W Wireframe when there is a UI; step 2 Design covers Stage 2 Architecture and ADR, 3 every SPEC of the release; step 3 Plan covers Stage 4a plan of the release; execution covers 4b coding TDD and 5 Verify and Sync Docs per SPEC, which may be merged for a SPEC with risk: normal (specflow/PLAYBOOK.md §2.6). Each stage stops at a gate, except for the merged presentations in specflow/PLAYBOOK.md §5 and §8; do not move to the next stage without an approval.
+- Each stage uses the exact prompt in specflow/PROMPTS.md and the exact context loading list in §6.
+- After assembling a template, run the leftover check in specflow/PLAYBOOK.md §4; the result MUST be empty.
+- Document changes follow specflow/PLAYBOOK.md §8: edit freely while the document is draft or in-review; raise the version once when presenting a gate with specflow/scripts/gate.py; stop for approval only when the change touches a public contract, schema, security, scope or a SPEC with risk: high; edit only downstream documents whose content really changes. TCs are recorded only in SPEC §9 and the phase file.
+- A discrepancy found while coding: for a SPEC with risk: normal, fix the SPEC on the same branch as the code; for an architecture change or a SPEC with risk: high, record an ADR before merging. An accepted ADR does not change its decision content; create a new ADR and set the old ADR to superseded.
+- Do not create documents outside the layout in the Documentation Layout section of CLAUDE.md.
 ```
 
 ### A.2. `.claude/rules/coding-golden-rules.md`
@@ -196,21 +192,21 @@ doc_type: agent-rule
 status: draft
 version: 0.1.0
 template_version: 2.2.0
-language: vi-en
+language: en
 paths: ["{{SOURCE_GLOB}}"]
 parent: [docs/ARCHITECTURE.md]
 overlays: []
 assembled_from: []
 ---
 
-# Nguyên tắc lập trình (Coding Golden Rules)
+# Coding Golden Rules
 
-- Tuân thủ Golden Rules ở docs/ARCHITECTURE.md §1.2, cây thư mục ở §4 và schema ở §5.
-- Chỉ sửa hoặc tạo file trong File Diff của SPEC đang thực thi; cần file khác thì dừng và đề xuất sửa SPEC.
-- TDD: viết test theo SPEC §9 trước, chạy thấy đỏ, rồi mới viết logic. Đặt đúng file và tên test như bảng SPEC §9; tên test mô tả hành vi, không chứa TC ID hay ID quy trình.
-- Mọi lỗi ra khỏi hệ thống theo envelope ở docs/ARCHITECTURE.md §6.2 với mã trong §7.1; không tự đặt mã lỗi mới.
-- Chỉ dùng thư viện trong docs/ARCHITECTURE.md §2.1; cần thư viện mới thì đề xuất ADR và dừng.
-- Không hardcode secret; không ghi log secret, token hay dữ liệu cá nhân chưa che.
+- Follow the Golden Rules in docs/ARCHITECTURE.md §1.2, the directory tree in §4 and the schema in §5.
+- Modify or create only files in the File Diff of the SPEC being executed; if another file is needed, stop and propose a SPEC change.
+- TDD: write the tests per SPEC §9 first, run them red, then write the logic. Use the exact file and test name from the SPEC §9 table; a test name describes behavior and contains no TC ID or process ID.
+- Every error leaving the system follows the envelope in docs/ARCHITECTURE.md §6.2 with a code from §7.1; do not invent a new error code.
+- Use only libraries in docs/ARCHITECTURE.md §2.1; if a new library is needed, propose an ADR and stop.
+- Do not hardcode secrets; do not log secrets, tokens or unmasked personal data.
 ```
 
 ### A.3. `.claude/rules/backend-golden-rules.md`
@@ -221,23 +217,23 @@ doc_type: agent-rule
 status: draft
 version: 0.1.0
 template_version: 1.0.0
-language: vi-en
+language: en
 paths: ["{{SOURCE_GLOB}}"]
 parent: [docs/ARCHITECTURE.md]
 overlays: [backend-api]
 assembled_from: []
 ---
 
-# Quy tắc backend (Backend Golden Rules)
+# Backend Golden Rules
 
-<!-- fill: Chép thành .claude/rules/backend-golden-rules.md ở Giai đoạn 2. paths liệt kê thư mục mã nguồn backend theo ARCHITECTURE §4, mỗi glob một phần tử. assembled_from ghi "overlays/backend-api/agent-rules/backend-golden-rules.md@<template_version>" và stack profile đã dùng. -->
+<!-- fill: Copy to .claude/rules/backend-golden-rules.md at Stage 2. paths lists the backend source directories per ARCHITECTURE §4, one glob per element. assembled_from records "overlays/backend-api/agent-rules/backend-golden-rules.md@<template_version>" and the stack profile used. -->
 
-- Tách tầng: controller chỉ nhận request, validate bằng schema runtime, gọi service và map response; MUST NOT import ORM client hay repository vào controller.
-- Transaction mở ở service; repository nhận transaction client từ service, không tự mở transaction.
-- Bất biến chịu thao tác đồng thời giữ ở cơ sở dữ liệu bằng cập nhật nguyên tử có điều kiện, ràng buộc duy nhất, hoặc khóa lấy trong transaction trước bước kiểm tra; MUST NOT kiểm tra rồi ghi ở tầng ứng dụng khi chưa giữ khóa đó.
-- Mọi phản hồi theo envelope ARCHITECTURE §6.2; mọi lỗi mang mã có trong ARCHITECTURE §7.1 và HTTP status theo bảng ánh xạ ở ARCHITECTURE §7.
+- Separate the layers: the controller only receives the request, validates with a runtime schema, calls the service and maps the response; MUST NOT import the ORM client or a repository into a controller.
+- Open the transaction in the service; the repository receives the transaction client from the service and does not open a transaction itself.
+- Keep invariants under concurrent operations in the database with a conditional atomic update, a unique constraint, or a lock taken inside the transaction before the check step; MUST NOT check-then-write at the application layer without holding that lock.
+- Every response follows the ARCHITECTURE §6.2 envelope; every error carries a code present in ARCHITECTURE §7.1 and an HTTP status per the mapping table in ARCHITECTURE §7.
 - {{LANGUAGE_STRICT_MODE_RULE}}
-- Không tin giá trị tính toán từ client (giá, số tiền, quyền, trạng thái); service tính lại từ cơ sở dữ liệu.
-- Migration chỉ sinh bằng công cụ của stack; không sửa migration đã chạy; mọi thay đổi schema đi kèm migration trong File Diff.
-- Log qua logger có cấu trúc với correlation ID; không log secret, token, mật khẩu, dữ liệu cá nhân chưa che.
+- Do not trust computed values from the client (price, amount, permissions, status); the service recomputes them from the database.
+- Generate migrations only with the stack's tool; do not edit a migration that has already run; every schema change comes with a migration in the File Diff.
+- Log through a structured logger with a correlation ID; do not log secrets, tokens, passwords, unmasked personal data.
 ```

@@ -1,0 +1,10 @@
+# Text that gate.py writes into project documents, and the approver cell it reads, in Vietnamese.
+gate_not_approved	Chưa duyệt
+gate_approved_content	Duyệt Gate {gate}
+gate_approved_by	duyệt
+gate_sync_reason	Sync Docs sau khi hiện thực (PLAYBOOK mục 2.6)
+gate_col_date	Ngày
+gate_col_approver	Người duyệt
+gate_col_doc	Tài liệu
+gate_col_version	Version
+gate_col_status	Trạng thái

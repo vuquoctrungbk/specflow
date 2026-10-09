@@ -3,7 +3,7 @@ doc_type: srs
 status: draft
 version: 0.1.0
 template_version: 1.3.0
-language: vi-en
+language: en
 parent: [docs/intake/PROJECT_INTAKE.md]
 overlays: [backend-api, frontend-web]
 assembled_from:
@@ -12,347 +12,347 @@ assembled_from:
   - overlays/frontend-web/srs-sections.md@1.2.1
 ---
 
-# Đặc tả yêu cầu phần mềm (Software Requirements Specification): {{PROJECT_NAME}}
+# Software Requirements Specification: {{PROJECT_NAME}}
 
-<!-- fill: Chép thành docs/srs/SRS.md (docs_mode monolithic) hoặc docs/srs/00_SRS_MASTER.md (modular). Chế độ modular: master giữ §1 đến §5, §7, §9, §10 và mô hình dữ liệu chung; mỗi phân hệ một file docs/srs/SRS_MODULE_<NAME>.md giữ §6 và §8 của phân hệ đó, cùng §9 và §10.2 riêng, frontmatter doc_type srs-module, parent trỏ về master. Frontmatter assembled_from ghi nguồn theo CONVENTIONS mục 3. Chuẩn tham chiếu: ISO/IEC/IEEE 29148:2018 cho bố cục và cách viết yêu cầu (đối chiếu ở §10.3), ISO/IEC 25010:2023 cho nhóm NFR; quy tắc viết yêu cầu ở CONVENTIONS mục 8. SRS trả lời WHAT, không chọn công nghệ; lựa chọn công nghệ thuộc ARCHITECTURE. -->
+<!-- fill: Copy to docs/srs/SRS.md (docs_mode monolithic) or docs/srs/00_SRS_MASTER.md (modular). Modular mode: the master keeps §1 to §5, §7, §9, §10 and the shared data model; each module gets one file docs/srs/SRS_MODULE_<NAME>.md that keeps §6 and §8 of that module, plus its own §9 and §10.2, frontmatter doc_type srs-module, parent pointing to the master. The frontmatter assembled_from records the sources per CONVENTIONS §3. Reference standards: ISO/IEC/IEEE 29148:2018 for the layout and the way requirements are written (mapped in §10.3), ISO/IEC 25010:2023 for the NFR groups; the rules for writing requirements are in CONVENTIONS §8. The SRS answers WHAT and does not choose technology; technology choices belong to ARCHITECTURE. -->
 
-## 1. Giới thiệu (Introduction)
+## 1. Introduction
 
-### 1.1. Mục đích tài liệu (Purpose)
+### 1.1. Purpose
 
-Tài liệu xác định toàn bộ yêu cầu chức năng (FR), yêu cầu phi chức năng (NFR), mô hình dữ liệu logic, giao diện ngoài và ràng buộc của {{PROJECT_NAME}}. Đây là nguồn chân lý (Single Source of Truth) cho ARCHITECTURE, SPEC, Implementation Plan, mã nguồn và bộ test.
+This document defines all functional requirements (FR), non-functional requirements (NFR), the logical data model, external interfaces and constraints of {{PROJECT_NAME}}. It is the Single Source of Truth for ARCHITECTURE, SPEC, the Implementation Plan, the source code and the test suite.
 
-### 1.2. Phạm vi sản phẩm (Scope)
+### 1.2. Scope
 
-- Mục tiêu cốt lõi: <!-- fill: 2 đến 3 câu về bài toán và giá trị, nhất quán với Intake mục 2 -->
-- Phân hệ trong phạm vi (In-scope):
+- Core goal: <!-- fill: 2 to 3 sentences on the problem and the value, consistent with Intake §2 -->
+- In-scope modules:
 
-| Module ID | Mã phân hệ | Tên phân hệ | Năng lực chính | Bề mặt |
+| Module ID | Module code | Module name | Main capability | Surface |
 | --- | --- | --- | --- | --- |
-| {{MODULE_ID}} | `{{MODULE_CODE}}` | {{MODULE_NAME}} | <!-- fill --> | <!-- fill: overlay phục vụ phân hệ --> |
+| {{MODULE_ID}} | `{{MODULE_CODE}}` | {{MODULE_NAME}} | <!-- fill --> | <!-- fill: overlay that serves the module --> |
 
-- Ngoài phạm vi (Out-of-scope) của phiên bản này: <!-- fill: mỗi dòng một năng lực hoặc tích hợp không làm, kèm lý do ngắn -->
+- Out-of-scope for this version: <!-- fill: one line per capability or integration not built, with a short reason -->
 
-### 1.3. Thuật ngữ và từ viết tắt (Definitions & Abbreviations)
+### 1.3. Definitions & Abbreviations
 
-| Thuật ngữ | Tên đầy đủ | Giải thích trong ngữ cảnh dự án |
+| Term | Full name | Explanation in the project context |
 | --- | --- | --- |
-| `PII` | Personally Identifiable Information | Dữ liệu cá nhân theo luật áp dụng ở Intake mục 7 |
-| `SLA` | Service Level Agreement | Cam kết chất lượng dịch vụ vận hành (uptime, thời gian xử lý) |
-| `RPO`, `RTO` | Recovery Point Objective, Recovery Time Objective | Lượng dữ liệu tối đa được mất và thời gian tối đa để khôi phục sau sự cố |
-| <!-- fill: thuật ngữ nghiệp vụ hoặc kỹ thuật dễ hiểu sai; xóa hàng chung ở trên nếu không dùng --> | <!-- fill --> | <!-- fill --> |
+| `PII` | Personally Identifiable Information | Personal data under the law that applies per Intake §7 |
+| `SLA` | Service Level Agreement | Commitment on the quality of the operated service (uptime, processing time) |
+| `RPO`, `RTO` | Recovery Point Objective, Recovery Time Objective | The maximum amount of data that may be lost and the maximum time to recover after an incident |
+| <!-- fill: business or technical terms that are easy to misunderstand; delete the generic rows above if unused --> | <!-- fill --> | <!-- fill --> |
 
-### 1.4. Tài liệu tham khảo (References)
+### 1.4. References
 
 1. ISO/IEC/IEEE 29148:2018, Systems and software engineering, Life cycle processes, Requirements engineering.
 2. ISO/IEC 25010:2023, Systems and software engineering, Systems and software Quality Requirements and Evaluation (SQuaRE), Product quality model.
 3. `docs/intake/PROJECT_INTAKE.md`.
-4. <!-- fill: chuẩn ở §2.7, tài liệu nghiệp vụ, quy định pháp lý, hợp đồng liên quan; ghi đường dẫn hoặc URL -->
+4. <!-- fill: the standards in §2.7, business documents, legal regulations, related contracts; give the path or URL -->
 
-### 1.5. Các bên liên quan (Stakeholders)
+### 1.5. Stakeholders
 
-| Vai trò | Mối quan tâm chính | Quyền phê duyệt |
+| Role | Main concern | Approval authority |
 | --- | --- | --- |
-| <!-- fill --> | <!-- fill --> | <!-- fill: gate nào, lấy từ Intake mục 9; "Không" nếu không duyệt --> |
+| <!-- fill --> | <!-- fill --> | <!-- fill: which gate, taken from Intake §9; "No" if the role does not approve --> |
 
-## 2. Mô tả tổng thể (Overall Description)
+## 2. Overall Description
 
-### 2.1. Vị trí của hệ thống (System Perspective)
+### 2.1. System Perspective
 
-<!-- fill: hệ thống độc lập hay thành phần của hệ thống lớn hơn; ranh giới hệ thống. Sơ đồ thể hiện mọi tác nhân ở §2.2 và mọi hệ thống ngoài ở Intake mục 8, không vẽ thành phần bên trong hệ thống. -->
+<!-- fill: standalone system or part of a larger system; the system boundary. The diagram shows every actor in §2.2 and every external system in Intake §8, and does not draw the components inside the system. -->
 
 ```mermaid
 flowchart TD
-    subgraph Actors[Tác nhân]
+    subgraph Actors[Actors]
         A1["{{ACTOR_NAME}}"]
     end
     SYS["{{PROJECT_NAME}}"]
-    subgraph External[Hệ thống ngoài]
+    subgraph External[External systems]
         E1["{{EXTERNAL_SYSTEM}}"]
     end
     A1 -->|"{{MESSAGE}}"| SYS
     SYS -->|"{{MESSAGE}}"| E1
 ```
 
-### 2.2. Tác nhân và phân quyền (User Classes & Characteristics)
+### 2.2. User Classes & Characteristics
 
-| Actor ID | Tên vai trò | Trình độ | Tần suất dùng | Quyền hạn nghiệp vụ |
+| Actor ID | Role name | Skill level | Frequency of use | Business permissions |
 | --- | --- | --- | --- | --- |
-| `ACT_{{ROLE_CODE}}` | {{ACTOR_NAME}} | <!-- fill --> | <!-- fill --> | <!-- fill: được làm gì, không được làm gì --> |
+| `ACT_{{ROLE_CODE}}` | {{ACTOR_NAME}} | <!-- fill --> | <!-- fill --> | <!-- fill: what the actor may do and may not do --> |
 
-### 2.3. Môi trường vận hành (Operating Environment)
+### 2.3. Operating Environment
 
-<!-- fill: người dùng truy cập từ đâu và bằng gì, hệ thống chạy ở đâu, điều kiện mạng, múi giờ và ngôn ngữ người dùng. Chi tiết kỹ thuật của từng bề mặt nằm ở §2.5. -->
+<!-- fill: where and with what users access the system, where the system runs, network conditions, time zone and user language. The technical details of each surface are in §2.5. -->
 
-### 2.4. Ràng buộc nghiệp vụ, pháp lý và vận hành (Business, Legal & Operational Constraints)
+### 2.4. Business, Legal & Operational Constraints
 
-| Loại | Ràng buộc | Nguồn |
+| Type | Constraint | Source |
 | --- | --- | --- |
-| Nghiệp vụ | <!-- fill: quy trình, chính sách giá, giờ hoạt động --> | <!-- fill --> |
-| Pháp lý | <!-- fill: từ Intake mục 7 --> | <!-- fill --> |
-| Vận hành (Operations) | <!-- fill: chế độ vận hành thường, bảo trì, suy giảm khi phụ thuộc lỗi; sao lưu và khôi phục do ai làm, khi nào; cửa sổ bảo trì, đội vận hành --> | <!-- fill --> |
-| Bộ nhớ và lưu trữ (Memory Constraints) | <!-- fill: giới hạn bộ nhớ và dung lượng lưu trữ trên thiết bị người dùng hoặc máy chủ; N/A kèm lý do nếu không có giới hạn đáng kể --> | <!-- fill --> |
-| Thích ứng nơi triển khai (Site Adaptation) | <!-- fill: cấu hình khác nhau theo môi trường, khách hàng, vùng dữ liệu hoặc ngôn ngữ; N/A kèm lý do nếu chỉ có một nơi triển khai --> | <!-- fill --> |
+| Business | <!-- fill: process, pricing policy, operating hours --> | <!-- fill --> |
+| Legal | <!-- fill: from Intake §7 --> | <!-- fill --> |
+| Operations | <!-- fill: normal operating mode, maintenance, degradation when a dependency fails; who does backup and recovery and when; maintenance window, operations team --> | <!-- fill --> |
+| Memory Constraints | <!-- fill: limits on memory and storage capacity on the user device or the server; N/A with a reason if there is no significant limit --> | <!-- fill --> |
+| Site Adaptation | <!-- fill: configuration that differs by environment, customer, data region or language; N/A with a reason if there is only one deployment site --> | <!-- fill --> |
 
-### 2.5. Ràng buộc kỹ thuật (Technical Constraints)
+### 2.5. Technical Constraints
 
-Ràng buộc kỹ thuật theo bề mặt. Công nghệ và phiên bản cụ thể không thuộc SRS; chúng được chốt ở ARCHITECTURE.
+Technical constraints per surface. Specific technologies and versions do not belong in the SRS; they are fixed in ARCHITECTURE.
 
 #### Backend API
 
-| Ràng buộc | Nội dung |
+| Constraint | Content |
 | --- | --- |
-| Stack | Theo stack profile `{{STACK_PROFILE}}` đã chốt ở Intake mục 14; phiên bản cụ thể ở ARCHITECTURE §2 |
-| Kiểu dữ liệu nghiêm ngặt | Ngôn ngữ có kiểm tra kiểu tĩnh, bật chế độ nghiêm ngặt; quy tắc cụ thể ở ARCHITECTURE và `.claude/rules/` |
-| Toàn vẹn giao dịch | Mọi thao tác nghiệp vụ thay đổi trạng thái từ hai bản ghi liên quan trở lên chạy trong một database transaction; mức isolation mặc định chốt ở ARCHITECTURE §7; SPEC nêu rõ khi cần mức cao hơn hoặc khóa dòng |
-| Giao thức | API chỉ phục vụ qua HTTPS; <!-- fill: phiên bản TLS tối thiểu, ví dụ TLS 1.2 --> |
-| Thời gian | Lưu và truyền theo UTC, định dạng ISO 8601 |
-| Tiền tệ | <!-- fill: đơn vị tiền tệ và biểu diễn chính xác; ghi N/A nếu hệ thống không xử lý tiền --> |
+| Stack | Per the stack profile `{{STACK_PROFILE}}` chosen at Intake §14; specific versions in ARCHITECTURE §2 |
+| Strict typing | A language with static type checking, strict mode on; specific rules in ARCHITECTURE and `.claude/rules/` |
+| Transaction integrity | Every business operation that changes the state of two or more related records runs in one database transaction; the default isolation level is fixed in ARCHITECTURE §7; the SPEC states it explicitly when a higher level or a row lock is needed |
+| Protocol | The API is served over HTTPS only; <!-- fill: minimum TLS version, for example TLS 1.2 --> |
+| Time | Stored and transmitted in UTC, ISO 8601 format |
+| Currency | <!-- fill: currency unit and exact representation; write N/A if the system does not handle money --> |
 
 #### Frontend Web
 
-| Ràng buộc | Nội dung |
+| Constraint | Content |
 | --- | --- |
-| Stack | Theo stack profile `{{STACK_PROFILE}}` đã chốt ở Intake mục 14; phiên bản cụ thể ở ARCHITECTURE §2 |
-| Kiểu dữ liệu nghiêm ngặt | Ngôn ngữ có kiểm tra kiểu tĩnh, bật chế độ nghiêm ngặt; quy tắc cụ thể ở ARCHITECTURE và `.claude/rules/` |
-| Trình duyệt hỗ trợ | <!-- fill: danh sách trình duyệt và phiên bản tối thiểu, ví dụ hai phiên bản mới nhất của Chrome, Edge, Firefox, Safari; Safari trên iOS từ phiên bản cụ thể --> |
-| Thiết bị và breakpoint | <!-- fill: độ rộng màn hình nhỏ nhất phải dùng được (ví dụ 360 px) và các breakpoint chuyển bố cục --> |
-| Trợ năng | Tuân thủ WCAG 2.2 mức {{WCAG_LEVEL}} theo NFR-USAB |
-| Hiệu năng cảm nhận | <!-- fill: ngưỡng Core Web Vitals ở phân vị 75, ví dụ LCP ≤ 2,5 s, INP ≤ 200 ms, CLS ≤ 0,1; thiết bị và mạng dùng để đo --> |
-| Giao thức | Trang và lời gọi API chỉ qua HTTPS |
-| Nguồn chân lý | Giá, số tiền, quyền và trạng thái nghiệp vụ hiển thị theo dữ liệu API trả về; giao diện không tự tính rồi gửi các giá trị này lên |
-| Lưu trữ phía trình duyệt | Không lưu token, secret hay dữ liệu cá nhân trong `localStorage` hoặc `sessionStorage` |
-| Thời gian và tiền tệ | Nhận từ API theo UTC và ISO 8601; định dạng hiển thị theo locale của người dùng |
+| Stack | Per the stack profile `{{STACK_PROFILE}}` chosen at Intake §14; exact versions in ARCHITECTURE §2 |
+| Strict typing | A language with static type checking, strict mode enabled; specific rules in ARCHITECTURE and `.claude/rules/` |
+| Supported browsers | <!-- fill: list of browsers and minimum versions, for example the two latest versions of Chrome, Edge, Firefox, Safari; Safari on iOS from a specific version --> |
+| Devices and breakpoints | <!-- fill: the smallest screen width that must be usable (for example 360 px) and the breakpoints where the layout changes --> |
+| Accessibility | Comply with WCAG 2.2 level {{WCAG_LEVEL}} per NFR-USAB |
+| Perceived performance | <!-- fill: Core Web Vitals thresholds at the 75th percentile, for example LCP ≤ 2.5 s, INP ≤ 200 ms, CLS ≤ 0.1; the device and network used to measure --> |
+| Protocol | Pages and API calls over HTTPS only |
+| Source of truth | Prices, amounts, permissions and business status are displayed from the data the API returns; the UI does not compute these values and then send them up |
+| Browser-side storage | Do not store tokens, secrets or personal data in `localStorage` or `sessionStorage` |
+| Time and currency | Received from the API in UTC and ISO 8601; display format follows the user's locale |
 
-### 2.6. Phụ thuộc (Dependencies)
+### 2.6. Dependencies
 
-| Phụ thuộc | Loại | Cam kết cần có (SLA) | Ảnh hưởng khi không sẵn sàng |
+| Dependency | Type | Required commitment (SLA) | Impact when unavailable |
 | --- | --- | --- | --- |
-| {{EXTERNAL_SYSTEM}} | <!-- fill: chọn một: dịch vụ ngoài \| hệ thống nội bộ \| dữ liệu \| con người --> | <!-- fill --> | <!-- fill --> |
+| {{EXTERNAL_SYSTEM}} | <!-- fill: choose one: external service \| internal system \| data \| people --> | <!-- fill --> | <!-- fill --> |
 
-### 2.7. Chuẩn phải tuân thủ (Standards Compliance)
+### 2.7. Standards Compliance
 
-<!-- fill: Chuẩn kỹ thuật, chuẩn ngành hoặc chuẩn hợp đồng mà sản phẩm MUST đạt, ví dụ OWASP ASVS 5.0 (mức L1, L2 hoặc L3) cho bảo mật, WCAG 2.2 (mức A, AA hoặc AAA) cho trợ năng, PCI DSS khi xử lý thẻ thanh toán. Luật và quy định pháp lý ghi ở §2.4 và NFR-LEGAL. NFR tương ứng ở §7 dẫn về hàng ở đây. Ghi một hàng N/A kèm lý do nếu không có chuẩn nào. -->
+<!-- fill: Technical standards, industry standards or contract standards that the product MUST meet, for example OWASP ASVS 5.0 (level L1, L2 or L3) for security, WCAG 2.2 (level A, AA or AAA) for accessibility, PCI DSS when processing payment cards. Laws and legal regulations go in §2.4 and NFR-LEGAL. The matching NFR in §7 points back to the row here. Write one N/A row with a reason if there is no standard. -->
 
-| Chuẩn | Phạm vi áp dụng | Mức hoặc phiên bản | Cách kiểm chứng | NFR liên quan |
+| Standard | Scope of application | Level or version | Verification method | Related NFR |
 | --- | --- | --- | --- | --- |
-| <!-- fill --> | <!-- fill: phân hệ hoặc bề mặt --> | <!-- fill --> | <!-- fill: chọn một: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: NFR ID --> |
+| <!-- fill --> | <!-- fill: module or surface --> | <!-- fill --> | <!-- fill: choose one: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: NFR ID --> |
 
-## 3. Giao diện bên ngoài (External Interface Requirements)
+## 3. External Interface Requirements
 
-Các loại giao diện ngoài theo ISO/IEC/IEEE 29148 §9.6.4. Loại không áp dụng ghi N/A kèm lý do; loại áp dụng có mục chi tiết ngay dưới bảng.
+The external interface types follow ISO/IEC/IEEE 29148 §9.6.4. A type that does not apply is written as N/A with a reason; a type that applies has a detail section right below the table.
 
-| Loại giao diện | Áp dụng | Tóm tắt |
+| Interface type | Applies | Summary |
 | --- | --- | --- |
-| Giao diện hệ thống (System Interfaces) | <!-- fill: chọn một: Có \| N/A: lý do. Có khi sản phẩm là một phần của hệ thống lớn hơn; nêu hệ thống đó và phần việc mỗi bên đảm nhận --> | <!-- fill --> |
-| Giao diện người dùng (User Interfaces) | <!-- fill: chọn một: Có \| N/A: lý do --> | <!-- fill --> |
-| Giao diện phần cứng (Hardware Interfaces) | <!-- fill: chọn một: Có \| N/A: lý do --> | <!-- fill --> |
-| Giao diện phần mềm (Software Interfaces) | <!-- fill: chọn một: Có \| N/A: lý do --> | <!-- fill --> |
-| Giao diện truyền thông (Communications Interfaces) | <!-- fill: chọn một: Có \| N/A: lý do --> | <!-- fill --> |
-| Giao diện với dịch vụ (Interfaces with Services) | <!-- fill: chọn một: Có \| N/A: lý do. Dịch vụ dùng chung mà sản phẩm dựa vào, ví dụ định danh, thông báo, thanh toán, lưu trữ tệp --> | <!-- fill --> |
+| System Interfaces | <!-- fill: choose one: Yes \| N/A: reason. Yes when the product is part of a larger system; name that system and the share of work of each side --> | <!-- fill --> |
+| User Interfaces | <!-- fill: choose one: Yes \| N/A: reason --> | <!-- fill --> |
+| Hardware Interfaces | <!-- fill: choose one: Yes \| N/A: reason --> | <!-- fill --> |
+| Software Interfaces | <!-- fill: choose one: Yes \| N/A: reason --> | <!-- fill --> |
+| Communications Interfaces | <!-- fill: choose one: Yes \| N/A: reason --> | <!-- fill --> |
+| Interfaces with Services | <!-- fill: choose one: Yes \| N/A: reason. Shared services that the product relies on, for example identity, notification, payment, file storage --> | <!-- fill --> |
 
 ### Backend API
 
-#### Giao diện phần mềm (Software Interfaces)
+#### Software Interfaces
 
-<!-- fill: Giữ hàng áp dụng, ghi "Không" ở cột Áp dụng cho hàng còn lại thay vì xóa. -->
+<!-- fill: Keep the rows that apply, write "No" in the Applies column of the remaining rows instead of deleting them. -->
 
-| Hệ thống | Mục đích | Giao thức và định dạng | Xác thực và an toàn | Áp dụng |
+| System | Purpose | Protocol and format | Authentication and safety | Applies |
 | --- | --- | --- | --- | :---: |
-| Client của API (ứng dụng web, mobile, hệ thống khác) | Gọi nghiệp vụ của hệ thống | REST, JSON, HTTPS | Bearer token theo ARCHITECTURE §6.1 | <!-- fill: chọn một: Có \| Không --> |
-| API của bên thứ ba (ngoài email, SMS và định danh ở các hàng dưới) | <!-- fill: dịch vụ nào, làm gì --> | <!-- fill --> | <!-- fill: API key, OAuth client credentials --> | <!-- fill: chọn một: Có \| Không --> |
-| Webhook nhận vào | <!-- fill: bên gửi, sự kiện --> | HTTPS POST, JSON | Xác thực chữ ký (ví dụ HMAC-SHA256 trên raw body), chống phát lại bằng timestamp, xử lý idempotent theo ID sự kiện của bên gửi | <!-- fill: chọn một: Có \| Không --> |
-| Object storage | <!-- fill: file nào được lưu --> | API tương thích S3, pre-signed URL có thời hạn | Bucket riêng tư, URL ký có thời hạn ngắn | <!-- fill: chọn một: Có \| Không --> |
-| Email hoặc SMS | <!-- fill: thông báo nào --> | API của nhà cung cấp | API key trong secret manager | <!-- fill: chọn một: Có \| Không --> |
-| Nhà cung cấp định danh (identity provider) | Đăng nhập liên kết | OpenID Connect trên OAuth 2.0, Authorization Code kèm PKCE | Kiểm tra `state`, `nonce`, audience | <!-- fill: chọn một: Có \| Không --> |
+| API client (web app, mobile app, other system) | Calls the business functions of the system | REST, JSON, HTTPS | Bearer token per ARCHITECTURE §6.1 | <!-- fill: choose one: Yes \| No --> |
+| Third-party API (other than the email, SMS and identity in the rows below) | <!-- fill: which service, doing what --> | <!-- fill --> | <!-- fill: API key, OAuth client credentials --> | <!-- fill: choose one: Yes \| No --> |
+| Incoming webhook | <!-- fill: sender, event --> | HTTPS POST, JSON | Signature verification (for example HMAC-SHA256 over the raw body), replay protection by timestamp, idempotent handling by the sender's event ID | <!-- fill: choose one: Yes \| No --> |
+| Object storage | <!-- fill: which files are stored --> | S3-compatible API, pre-signed URL with an expiry | Private bucket, signed URL with a short expiry | <!-- fill: choose one: Yes \| No --> |
+| Email or SMS | <!-- fill: which notifications --> | Provider API | API key in a secret manager | <!-- fill: choose one: Yes \| No --> |
+| Identity provider | Federated sign-in | OpenID Connect over OAuth 2.0, Authorization Code with PKCE | Check `state`, `nonce`, audience | <!-- fill: choose one: Yes \| No --> |
 
-#### Giao diện truyền thông (Communications Interfaces)
+#### Communications Interfaces
 
-| Kênh | Quy ước | Áp dụng |
+| Channel | Convention | Applies |
 | --- | --- | :---: |
-| REST API | JSON UTF-8, URI chữ thường `kebab-case`, phiên bản major trong path; chi tiết ở ARCHITECTURE §7 | Có |
-| Thời gian thực | WebSocket trên TLS (WSS) có heartbeat ping/pong và client tự kết nối lại với backoff lũy thừa | <!-- fill: chọn một: Có \| Không --> |
-| Hàng đợi hoặc event bus | <!-- fill: dùng cho sự kiện nội bộ hay tích hợp; ghi Không nếu không dùng --> | <!-- fill: chọn một: Có \| Không --> |
+| REST API | JSON UTF-8, lowercase `kebab-case` URIs, major version in the path; details in ARCHITECTURE §7 | Yes |
+| Real time | WebSocket over TLS (WSS) with heartbeat ping/pong and client auto-reconnect with exponential backoff | <!-- fill: choose one: Yes \| No --> |
+| Queue or event bus | <!-- fill: used for internal events or for integration; write No if not used --> | <!-- fill: choose one: Yes \| No --> |
 
-Giao diện người dùng (User Interfaces) và giao diện phần cứng (Hardware Interfaces): N/A cho bề mặt `backend-api`; giao diện người dùng thuộc overlay của bề mặt client nếu dự án có.
+User Interfaces and Hardware Interfaces: N/A for the `backend-api` surface; user interfaces belong to the overlay of the client surface if the project has one.
 
 ### Frontend Web
 
-#### Giao diện người dùng (User Interfaces)
+#### User Interfaces
 
-<!-- fill: Một hàng cho mỗi màn hình; bảng này là nguồn duy nhất của danh sách màn hình. SCR ID dạng SCR-<MOD>-NN đặt ở đây (CONVENTIONS mục 4), MOD là mã phân hệ có FR chính của màn hình, NN duy nhất theo MOD trong toàn dự án; Giai đoạn 1W chi tiết hóa mỗi SCR ID thành một trang wireframe, không đặt thêm ID. Dự án brownfield: màn hình không đổi theo Gap Analysis ghi Giữ nguyên ở ô SCR ID. Dự án có Intake cũ hơn 1.3.0 bỏ cột SCR ID. Route viết đường dẫn trang; FR là yêu cầu mà màn hình hiện thực. -->
+<!-- fill: One row for each screen; this table is the only source of the screen list. The SCR ID as SCR-<MOD>-NN is assigned here (CONVENTIONS §4), MOD is the code of the module that owns the main FR of the screen, NN is unique per MOD across the whole project; Stage 1W elaborates each SCR ID into one wireframe page, without assigning more IDs. Brownfield project: a screen that does not change per the Gap Analysis records Unchanged in the SCR ID cell. Route is the page path; FR is the requirement that the screen implements. -->
 
-| Màn hình | SCR ID | Route | Tác nhân | Mục đích | FR |
+| Screen | SCR ID | Route | Actor | Purpose | FR |
 | --- | --- | --- | --- | --- | --- |
 | <!-- fill --> | {{SCR_ID}} | `/{{ROUTE_PATH}}` | `ACT_{{ROLE_CODE}}` | <!-- fill --> | FR-{{MODULE_CODE}}-001 |
 
-Yêu cầu chung cho mọi màn hình:
+General requirements for every screen:
 
-- Năm trạng thái giao diện (UI states): mỗi màn hình và mỗi vùng dữ liệu độc lập trên màn hình có đủ `Initial` (trước khi người dùng thao tác hoặc trước khi tải), `Loading` (đang chờ dữ liệu hoặc đang gửi), `Empty` (tải xong nhưng không có dữ liệu), `Success` (có dữ liệu hoặc thao tác thành công), `Error` (lỗi, kèm cách khắc phục). Trạng thái không áp dụng ghi N/A kèm lý do; có Giai đoạn 1W thì ghi ở trang wireframe của màn hình (mục 4), SPEC nhận lại; không có Giai đoạn 1W thì ghi thẳng trong SPEC.
-- Responsive theo breakpoint ở §2.5; không có cuộn ngang ở độ rộng nhỏ nhất.
-- Trợ năng theo §2.5: mỗi màn hình đạt các tiêu chí WCAG 2.2 ở mức của NFR-USAB; tiêu chí xét ở từng màn hình khi lập wireframe theo `specflow/CONVENTIONS.md` mục 10.2.
-- Mọi chuỗi hiển thị lấy từ bộ chuỗi theo locale; locale mặc định <!-- fill: ví dụ vi-VN -->.
+- The five UI states: each screen and each independent data region on a screen has all of `Initial` (before the user acts or before loading), `Loading` (waiting for data or submitting), `Empty` (loaded but no data), `Success` (has data or the action succeeded), `Error` (an error, with a way to recover). A state that does not apply is written N/A with a reason; with Stage 1W, write it on the screen's wireframe page (§4) and the SPEC takes it over; without Stage 1W, write it directly in the SPEC.
+- Responsive per the breakpoints in §2.5; no horizontal scroll at the smallest width.
+- Accessibility per §2.5: each screen meets the WCAG 2.2 criteria at the level of NFR-USAB; the criteria are examined per screen when drawing the wireframe per `specflow/CONVENTIONS.md` §10.2.
+- Every display string comes from the string bundle by locale; default locale <!-- fill: for example en-US -->.
 
-#### Giao diện phần mềm (Software Interfaces)
+#### Software Interfaces
 
-<!-- fill: Giữ hàng áp dụng, ghi "Không" ở cột Áp dụng cho hàng còn lại thay vì xóa. -->
+<!-- fill: Keep the rows that apply, write "No" in the Applies column of the other rows instead of deleting them. -->
 
-| Hệ thống | Mục đích | Giao thức và định dạng | Xác thực và an toàn | Áp dụng |
+| System | Purpose | Protocol and format | Authentication and safety | Applies |
 | --- | --- | --- | --- | :---: |
-| API backend | <!-- fill: tên API và tài liệu contract (SPEC, OpenAPI) mà giao diện gọi --> | REST, JSON, HTTPS | <!-- fill: cơ chế phiên đăng nhập, chốt ở ARCHITECTURE §6.1 --> | <!-- fill: chọn một: Có \| Không --> |
-| Nhà cung cấp định danh (identity provider) | Đăng nhập liên kết | OpenID Connect trên OAuth 2.0, Authorization Code kèm PKCE | Kiểm tra `state`, `nonce`, audience | <!-- fill: chọn một: Có \| Không --> |
-| Phân tích hành vi (analytics) | <!-- fill: sự kiện nào được gửi --> | <!-- fill --> | Chỉ gửi sau khi người dùng đồng ý; không gửi dữ liệu cá nhân | <!-- fill: chọn một: Có \| Không --> |
-| Theo dõi lỗi phía trình duyệt | <!-- fill: dịch vụ nhận lỗi JavaScript --> | <!-- fill --> | Che dữ liệu cá nhân trước khi gửi | <!-- fill: chọn một: Có \| Không --> |
+| Backend API | <!-- fill: name of the API and the contract document (SPEC, OpenAPI) that the UI calls --> | REST, JSON, HTTPS | <!-- fill: login session mechanism, decided in ARCHITECTURE §6.1 --> | <!-- fill: choose one: Yes \| No --> |
+| Identity provider | Federated login | OpenID Connect on OAuth 2.0, Authorization Code with PKCE | Check `state`, `nonce`, audience | <!-- fill: choose one: Yes \| No --> |
+| Analytics | <!-- fill: which events are sent --> | <!-- fill --> | Send only after the user consents; do not send personal data | <!-- fill: choose one: Yes \| No --> |
+| Browser-side error tracking | <!-- fill: the service that receives JavaScript errors --> | <!-- fill --> | Mask personal data before sending | <!-- fill: choose one: Yes \| No --> |
 
-#### Giao diện truyền thông (Communications Interfaces)
+#### Communications Interfaces
 
-| Kênh | Quy ước | Áp dụng |
+| Channel | Convention | Applies |
 | --- | --- | :---: |
-| HTTPS tới API | JSON UTF-8; lỗi theo envelope của API; timeout và thử lại theo ARCHITECTURE §7 | Có |
-| Thời gian thực | <!-- fill: chọn một: WebSocket trên TLS (WSS) \| Server-Sent Events; không dùng thì thay cả ô bằng Không cần --> kèm tự kết nối lại với backoff lũy thừa | <!-- fill: chọn một: Có \| Không --> |
+| HTTPS to the API | JSON UTF-8; errors per the API's envelope; timeout and retry per ARCHITECTURE §7 | Yes |
+| Real time | <!-- fill: choose one: WebSocket over TLS (WSS) \| Server-Sent Events; if not used, replace the whole cell with Not needed --> with automatic reconnect using exponential backoff | <!-- fill: choose one: Yes \| No --> |
 
-Giao diện phần cứng (Hardware Interfaces): N/A cho bề mặt `frontend-web`; trình duyệt là lớp trung gian với thiết bị.
+Hardware Interfaces: N/A for the `frontend-web` surface; the browser is the intermediary layer to the device.
 
-## 4. Yêu cầu dữ liệu (Data Requirements)
+## 4. Data Requirements
 
-### 4.1. Mô hình dữ liệu logic (Logical Data Model)
+### 4.1. Logical Data Model
 
 #### Backend API
 
-##### Sơ đồ thực thể liên kết logic (Logical ERD)
+##### Logical ERD
 
-<!-- fill: Mọi thực thể nghiệp vụ và quan hệ, ký hiệu Crow's foot; tên thực thể UPPER_SNAKE số ít, thuộc tính snake_case. Chỉ ghi thuộc tính cốt lõi, kiểu logic (uuid, string, decimal, int, timestamp, enum) và vai trò khóa (PK, FK, UK). Tên và tập giá trị enum MUST khớp §4.2 và §10.1. -->
+<!-- fill: Every business entity and relationship, Crow's foot notation; entity names UPPER_SNAKE singular, attributes snake_case. Record only the core attributes, the logical type (uuid, string, decimal, int, timestamp, enum) and the key role (PK, FK, UK). Enum names and value sets MUST match §4.2 and §10.1. -->
 
 ```mermaid
 erDiagram
     {{ENTITY_NAME}} ||--o{ {{ENTITY_NAME}} : "{{MESSAGE}}"
     {{ENTITY_NAME}} {
-        uuid id PK "Khóa chính"
-        timestamp created_at "Thời điểm tạo, UTC"
-        timestamp updated_at "Thời điểm cập nhật cuối, UTC"
+        uuid id PK "Primary key"
+        timestamp created_at "Creation time, UTC"
+        timestamp updated_at "Last update time, UTC"
     }
 ```
 
-<!-- fill: Khi điền §4.2 và §4.3, xét đủ và ghi quyết định vào đúng mục: bảng lịch sử, tài chính, nhật ký kiểm toán là append-only; thực thể có dữ liệu con mang ràng buộc tài chính hoặc pháp lý xóa mềm bằng cột deleted_at, cấm xóa cứng, nêu hành vi truy vấn mặc định với bản ghi đã xóa mềm; giá trị phụ thuộc thời điểm (giá, tỉ lệ, cấu hình) được chụp lại vào bản ghi giao dịch; quy tắc số học viết trong inline code, khớp tên cột; khóa tự nhiên duy nhất và khóa duy nhất ghép; miền giá trị hữu hạn liệt kê đủ, thực thể có vòng đời có state machine ở §10.1. -->
+<!-- fill: When filling §4.2 and §4.3, consider each point fully and record the decision in the right section: history, financial and audit-log tables are append-only; an entity whose child data carries financial or legal constraints is soft-deleted with a deleted_at column, hard delete is forbidden, and the default query behavior for soft-deleted records is stated; time-dependent values (price, rate, configuration) are captured into the transaction record; arithmetic rules are written in inline code, matching the column names; natural unique keys and composite unique keys; finite value domains are listed in full, an entity with a lifecycle has a state machine in §10.1. -->
 
 #### Frontend Web
 
-##### Mô hình dữ liệu hiển thị (View Model)
+##### View Model
 
-<!-- fill: Bề mặt này không sở hữu dữ liệu lưu trữ; thực thể nghiệp vụ, ERD và quy tắc toàn vẹn thuộc SRS của API mà nó gọi. Mỗi view model lấy trường từ response của một endpoint, giữ đúng tên trường như response (kể cả ở §4.2, không đổi sang snake_case); không thêm trường mà API không trả. Dữ liệu hiển thị cần giữ lại sau khi nguồn của nó bị xóa (ví dụ tên sản phẩm của đơn vừa đặt khi giỏ đã xóa) ghi rõ nguồn chụp lại. §4.2 liệt kê view model và trạng thái phía client như thực thể; §4.3 ghi quy tắc hiển thị và lưu trữ phía client. -->
+<!-- fill: This surface owns no persistent data; business entities, the ERD and integrity rules belong to the SRS of the API it calls. Each view model takes its fields from the response of one endpoint, keeping the field names exactly as in the response (including in §4.2, without converting to snake_case); do not add fields that the API does not return. Display data that must be kept after its source is deleted (for example the product name of an order just placed when the cart has been cleared) records the snapshot source explicitly. §4.2 lists view models and client-side state as entities; §4.3 records the display and client-side storage rules. -->
 
-| View model | Nguồn (endpoint và FR của API) | Trường hiển thị | Định dạng hiển thị |
+| View model | Source (endpoint and FR of the API) | Displayed fields | Display format |
 | --- | --- | --- | --- |
-| {{ENTITY_NAME}} | <!-- fill --> | <!-- fill --> | <!-- fill: ví dụ tiền theo locale, thời gian theo múi giờ người dùng --> |
+| {{ENTITY_NAME}} | <!-- fill --> | <!-- fill --> | <!-- fill: for example currency per locale, time in the user's time zone --> |
 
-##### Trạng thái phía client (Client State)
+##### Client State
 
-| Trạng thái | Loại | Vòng đời | Nơi giữ | Chứa dữ liệu cá nhân |
+| State | Type | Lifecycle | Where it is held | Contains personal data |
 | --- | --- | --- | --- | :---: |
-| <!-- fill --> | <!-- fill: chọn một: dữ liệu từ server \| trạng thái form \| trạng thái URL \| trạng thái giao diện --> | <!-- fill: khi nào tạo, khi nào xóa --> | <!-- fill: bộ nhớ, URL, cookie; không dùng localStorage cho dữ liệu nhạy cảm --> | <!-- fill: chọn một: Có \| Không --> |
+| <!-- fill --> | <!-- fill: choose one: server data \| form state \| URL state \| UI state --> | <!-- fill: when created, when cleared --> | <!-- fill: memory, URL, cookie; do not use localStorage for sensitive data --> | <!-- fill: choose one: Yes \| No --> |
 
-### 4.2. Từ điển dữ liệu (Data Dictionary)
+### 4.2. Data Dictionary
 
-| Thực thể | Diễn giải nghiệp vụ | Thuộc tính cốt lõi | Ràng buộc và toàn vẹn | Phân loại dữ liệu |
+| Entity | Business description | Core attributes | Constraints and integrity | Data classification |
 | --- | --- | --- | --- | --- |
-| <!-- fill: tên thực thể, khớp mô hình ở §4.1 --> | <!-- fill --> | <!-- fill: tên thuộc tính tiếng Anh snake_case --> | <!-- fill: khóa, duy nhất, miền giá trị, quy tắc xóa --> | <!-- fill: chọn một: công khai \| nội bộ \| dữ liệu cá nhân \| dữ liệu cá nhân nhạy cảm \| tài chính --> |
+| <!-- fill: entity name, matching the model in §4.1 --> | <!-- fill --> | <!-- fill: attribute names in English snake_case --> | <!-- fill: keys, uniqueness, value domain, deletion rule --> | <!-- fill: choose one: public \| internal \| personal data \| sensitive personal data \| financial --> |
 
-### 4.3. Quy tắc toàn vẹn dữ liệu (Data Integrity Rules)
+### 4.3. Data Integrity Rules
 
-<!-- fill: mỗi quy tắc một dòng đánh số, có tên và nội dung kiểm chứng được. Xem xét tối thiểu: dữ liệu bất biến sau khi ghi (lịch sử, tài chính, nhật ký kiểm toán); chính sách xóa (xóa mềm hay xóa cứng, dữ liệu con khi xóa dữ liệu cha); quy tắc số học viết trong inline code, ví dụ `total = Σ line_amount`; tính duy nhất nghiệp vụ; múi giờ và định dạng thời gian. -->
+<!-- fill: one numbered line per rule, with a name and verifiable content. Consider at least: data that is immutable once written (history, financial, audit log); the deletion policy (soft delete or hard delete, child data when parent data is deleted); arithmetic rules written in inline code, for example `total = Σ line_amount`; business uniqueness; time zone and time format. -->
 
-## 5. Quy tắc nghiệp vụ (Business Rules)
+## 5. Business Rules
 
-| BR ID | Quy tắc | Nguồn | FR liên quan | Cách kiểm chứng |
+| BR ID | Rule | Source | Related FR | Verification method |
 | --- | --- | --- | --- | --- |
-| BR-001 | <!-- fill: phát biểu một quy tắc, đo được, không mơ hồ --> | <!-- fill: người, văn bản hoặc luật đặt ra quy tắc --> | FR-{{MODULE_CODE}}-001 | <!-- fill: chọn một: Test \| Inspection \| Demo \| Analysis --> |
+| BR-001 | <!-- fill: state one rule, measurable, unambiguous --> | <!-- fill: the person, document or law that sets the rule --> | FR-{{MODULE_CODE}}-001 | <!-- fill: choose one: Test \| Inspection \| Demo \| Analysis --> |
 
-## 6. Yêu cầu chức năng (Functional Requirements)
+## 6. Functional Requirements
 
-### 6.1. Danh mục yêu cầu chức năng (Functional Requirements Catalog)
+### 6.1. Functional Requirements Catalog
 
-<!-- fill: Bảng danh mục giữ phát biểu yêu cầu; bảng thuộc tính ngay dưới giữ thuộc tính theo ISO/IEC/IEEE 29148 §5.2.8, cùng thứ tự FR ID. Mỗi phát biểu theo một mẫu EARS ở CONVENTIONS mục 8: chủ ngữ là hệ thống hoặc phân hệ, đúng một MUST hoặc MUST NOT, một hành vi kiểm chứng được, không dùng từ mơ hồ ở CONVENTIONS mục 8. Hành vi phụ đưa vào use case §6.2 hoặc Business Rule §5. Bản phát hành phân bổ yêu cầu theo 29148 §9.6.9. -->
+<!-- fill: The catalog table holds the requirement statement; the attribute table right below holds the attributes per ISO/IEC/IEEE 29148 §5.2.8, in the same FR ID order. Each statement follows one EARS pattern in CONVENTIONS §8: the subject is the system or the module, exactly one MUST or MUST NOT, one verifiable behavior, no vague term from CONVENTIONS §8. Secondary behavior goes into the use case §6.2 or a Business Rule §5. The release apportions requirements per 29148 §9.6.9. -->
 
-| FR ID | Phân hệ | Tên chức năng | Phát biểu yêu cầu (Requirement Statement) | Tác nhân chính | Ưu tiên (MoSCoW) | Bản phát hành | Cách kiểm chứng (Verification) |
+| FR ID | Module | Function name | Requirement statement | Primary actor | Priority (MoSCoW) | Release | Verification method |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| FR-{{MODULE_CODE}}-001 | {{MODULE_ID}} | <!-- fill: tên ngắn --> | <!-- fill: một câu theo mẫu EARS --> | `ACT_{{ROLE_CODE}}` | <!-- fill: chọn một: Must \| Should \| Could \| Won't --> | <!-- fill: nhãn bản phát hành, ví dụ R1 --> | <!-- fill: chọn một: Test \| Inspection \| Demo \| Analysis --> |
+| FR-{{MODULE_CODE}}-001 | {{MODULE_ID}} | <!-- fill: short name --> | <!-- fill: one sentence following an EARS pattern --> | `ACT_{{ROLE_CODE}}` | <!-- fill: choose one: Must \| Should \| Could \| Won't --> | <!-- fill: release label, for example R1 --> | <!-- fill: choose one: Test \| Inspection \| Demo \| Analysis --> |
 
-| FR ID | Tiên quyết | Lý do (Rationale) | Nguồn (Source) | Rủi ro |
+| FR ID | Prerequisite | Rationale | Source | Risk |
 | --- | --- | --- | --- | --- |
-| FR-{{MODULE_CODE}}-001 | <!-- fill: FR ID khác hoặc Không --> | <!-- fill: vì sao cần --> | <!-- fill: GOAL-NN của Intake mà FR phục vụ; stakeholder hoặc tài liệu khi FR không phục vụ trực tiếp mục tiêu nào --> | <!-- fill: chọn một: Cao \| Trung bình \| Thấp --> |
+| FR-{{MODULE_CODE}}-001 | <!-- fill: another FR ID or None --> | <!-- fill: why it is needed --> | <!-- fill: the GOAL-NN of the Intake that the FR serves; the stakeholder or document when the FR does not directly serve any goal --> | <!-- fill: choose one: High \| Medium \| Low --> |
 
-### 6.2. Đặc tả use case (Use Case Specification)
+### 6.2. Use Case Specification
 
-<!-- fill: Mỗi FR mức Must có một use case theo khung dưới; FR khác có thể chỉ có dòng ở §6.1. Chép khung cho từng use case, giữ đủ 7 mục. -->
+<!-- fill: Each FR with priority Must has one use case following the template below; other FRs may have only the line in §6.1. Copy the template for each use case and keep all 7 items. -->
 
 #### Use case FR-{{MODULE_CODE}}-001: {{FEATURE_NAME}}
 
-- Tác nhân chính: `ACT_{{ROLE_CODE}}`
-- Mục tiêu nghiệp vụ: <!-- fill -->
-- Quy tắc nghiệp vụ áp dụng: <!-- fill: BR ID -->
+- Primary actor: `ACT_{{ROLE_CODE}}`
+- Business goal: <!-- fill -->
+- Business rules that apply: <!-- fill: BR ID -->
 
-1. Điều kiện tiên quyết (Pre-conditions): <!-- fill: trạng thái hệ thống và quyền của tác nhân trước khi bắt đầu -->
-2. Luồng chính (Main Flow): <!-- fill: các bước đánh số; mỗi bước một hành động của tác nhân hoặc một phản hồi của hệ thống; không mô tả công nghệ -->
-3. Luồng thay thế (Alternative Flows): <!-- fill: đánh số theo bước rẽ nhánh, ví dụ "3a"; ghi N/A nếu không có -->
-4. Luồng ngoại lệ (Exception Flows): <!-- fill: mỗi ngoại lệ gồm bước phát sinh, điều kiện, phản hồi của hệ thống, mã lỗi dạng {{HTTP_OR_DOMAIN_ERROR}}, trạng thái dữ liệu sau lỗi. Dùng mã chung VALIDATION_ERROR, UNAUTHENTICATED, FORBIDDEN, RATE_LIMITED, INTERNAL_ERROR khi đúng nghĩa; mã nghiệp vụ mới đặt tên UPPER_SNAKE và ghi vào §6.3. Giai đoạn 2 đưa mọi mã lỗi của SRS vào Error Code Registry ở ARCHITECTURE §7.1 -->
-5. Điều kiện sau (Post-conditions): <!-- fill: trạng thái dữ liệu và hệ thống khi thành công -->
-6. Yêu cầu phi chức năng liên quan: <!-- fill: NFR ID -->
-7. Tiêu chí nghiệm thu: xem §8.
+1. Pre-conditions: <!-- fill: the system state and the actor's permissions before the start -->
+2. Main Flow: <!-- fill: numbered steps; each step is one action of the actor or one response of the system; do not describe technology -->
+3. Alternative Flows: <!-- fill: numbered by the branching step, for example "3a"; write N/A if none -->
+4. Exception Flows: <!-- fill: each exception has the step where it arises, the condition, the system response, an error code in the form {{HTTP_OR_DOMAIN_ERROR}}, and the data state after the error. Use the shared codes VALIDATION_ERROR, UNAUTHENTICATED, FORBIDDEN, RATE_LIMITED, INTERNAL_ERROR when they fit; name a new business code in UPPER_SNAKE and record it in §6.3. Stage 2 moves every error code of the SRS into the Error Code Registry in ARCHITECTURE §7.1 -->
+5. Post-conditions: <!-- fill: the data and system state on success -->
+6. Related non-functional requirements: <!-- fill: NFR ID -->
+7. Acceptance criteria: see §8.
 
-### 6.3. Mã lỗi dùng trong SRS (Error Codes Used)
+### 6.3. Error Codes Used
 
-<!-- fill: Liệt kê mọi mã lỗi xuất hiện trong các use case ở §6.2. Giai đoạn 2 đưa toàn bộ bảng này vào Error Code Registry ở ARCHITECTURE §7.1. -->
+<!-- fill: List every error code that appears in the use cases in §6.2. Stage 2 moves this whole table into the Error Code Registry in ARCHITECTURE §7.1. -->
 
-| Mã lỗi | Ý nghĩa | Use case |
+| Error code | Meaning | Use case |
 | --- | --- | --- |
 | <!-- fill: UPPER_SNAKE --> | <!-- fill --> | FR-{{MODULE_CODE}}-001 |
 
-## 7. Yêu cầu phi chức năng (Non-Functional Requirements)
+## 7. Non-Functional Requirements
 
-<!-- fill: Mỗi nhóm có ít nhất một NFR hoặc một dòng N/A: ô Yêu cầu bắt đầu bằng "N/A:" kèm lý do, các ô đo ghi N/A. Ô Yêu cầu là nhãn ngắn; mỗi NFR áp dụng có chỉ số, cách đo và ngưỡng bằng con số, không dùng từ mơ hồ ở CONVENTIONS mục 8, và có một dòng ở bảng NFR của §8. Nhóm ánh xạ sang ISO/IEC 25010:2023 theo CONVENTIONS mục 8; thêm NFR trong nhóm dùng số kế tiếp. Cột Nguồn dẫn GOAL-NN khi NFR phục vụ một mục tiêu của Intake. -->
+<!-- fill: Each group has at least one NFR or one N/A row: the Requirement cell starts with "N/A:" followed by a reason, and the measurement cells are N/A. The Requirement cell is a short label; each applicable NFR has a metric, a way to measure and a numeric threshold, uses no vague term from CONVENTIONS §8, and has one row in the NFR table of §8. The groups map to ISO/IEC 25010:2023 per CONVENTIONS §8; add an NFR in a group with the next number. The Source column points to a GOAL-NN when the NFR serves a goal of the Intake. -->
 
-| NFR ID | Nhóm | Yêu cầu | Chỉ số | Cách đo | Ngưỡng | Cách kiểm chứng | Ưu tiên | Nguồn |
+| NFR ID | Group | Requirement | Metric | Measurement method | Threshold | Verification method | Priority | Source |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| NFR-PERF-01 | Hiệu năng | <!-- fill: độ trễ, thông lượng, mức dùng tài nguyên --> | <!-- fill --> | <!-- fill --> | <!-- fill: ví dụ p95 ≤ con số + đơn vị --> | <!-- fill: chọn một: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: chọn một: Must \| Should \| Could --> | <!-- fill --> |
-| NFR-PERF-02 | Hiệu năng | Dung lượng (capacity) <!-- fill: người dùng đồng thời, khối lượng dữ liệu, lấy từ Intake mục 5; cột Nguồn dẫn GOAL-NN nếu có mục tiêu về tải --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: chọn một: Must \| Should \| Could --> | Intake mục 5 |
-| NFR-SEC-01 | Bảo mật | <!-- fill: bảo vệ thông tin xác thực, phân quyền, giới hạn tần suất, chống injection; dẫn mức chuẩn ở §2.7 nếu có. Thuật toán và tham số cụ thể thuộc ARCHITECTURE --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: chọn một: Must \| Should \| Could --> | <!-- fill --> |
-| NFR-RELI-01 | Độ tin cậy | <!-- fill: uptime, RPO, RTO --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: chọn một: Must \| Should \| Could --> | <!-- fill --> |
-| NFR-MAINT-01 | Khả năng bảo trì | Độ phủ test của phần logic nghiệp vụ | Tỉ lệ dòng được test phủ | Báo cáo coverage trong CI | ≥ {{COVERAGE_THRESHOLD}}% | <!-- fill: chọn một: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: chọn một: Must \| Should \| Could --> | <!-- fill --> |
-| NFR-USAB-01 | Khả năng tương tác và trợ năng (Interaction Capability) | Tuân thủ WCAG 2.2 mức {{WCAG_LEVEL}} <!-- fill: ghi N/A kèm lý do nếu không có giao diện người dùng --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: chọn một: Must \| Should \| Could --> | <!-- fill --> |
-| NFR-FLEX-01 | Khả năng thích ứng (Flexibility) | <!-- fill: khả năng mở rộng theo tải, cài đặt và cấu hình lại ở môi trường khác, thay thế thành phần; N/A kèm lý do nếu không có yêu cầu --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: chọn một: Must \| Should \| Could --> | <!-- fill --> |
-| NFR-SAFE-01 | An toàn (Safety) | <!-- fill: hành vi an toàn khi lỗi (fail-safe), cảnh báo nguy cơ, giới hạn thao tác có thể gây hại cho người hoặc dữ liệu; N/A kèm lý do nếu không có nguy cơ --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: chọn một: Must \| Should \| Could --> | <!-- fill --> |
-| NFR-I18N-01 | Quốc tế hóa | <!-- fill: ngôn ngữ, định dạng số, tiền, ngày --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: chọn một: Must \| Should \| Could --> | <!-- fill --> |
-| NFR-LEGAL-01 | Pháp lý | <!-- fill: từ Intake mục 7 --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: chọn một: Must \| Should \| Could --> | <!-- fill --> |
-| NFR-OBS-01 | Quan sát và kiểm toán | <!-- fill: log, audit trail, thời gian lưu --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: chọn một: Must \| Should \| Could --> | <!-- fill --> |
-| NFR-DATA-01 | Dữ liệu | <!-- fill: thời gian lưu giữ, xóa theo yêu cầu, sao lưu --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: chọn một: Must \| Should \| Could --> | <!-- fill --> |
-| NFR-COMPAT-01 | Tương thích | <!-- fill: phiên bản client, API cũ, nền tảng --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: chọn một: Must \| Should \| Could --> | <!-- fill --> |
-| NFR-COST-01 | Chi phí vận hành | <!-- fill: ngân sách hạ tầng hoặc chi phí theo lượt dùng; N/A nếu không ràng buộc --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: chọn một: Must \| Should \| Could --> | <!-- fill --> |
+| NFR-PERF-01 | Performance | <!-- fill: latency, throughput, resource usage --> | <!-- fill --> | <!-- fill --> | <!-- fill: for example p95 ≤ a number + unit --> | <!-- fill: choose one: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: choose one: Must \| Should \| Could --> | <!-- fill --> |
+| NFR-PERF-02 | Performance | Capacity <!-- fill: concurrent users, data volume, taken from Intake §5; the Source column points to a GOAL-NN if there is a load goal --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: choose one: Must \| Should \| Could --> | Intake §5 |
+| NFR-SEC-01 | Security | <!-- fill: credential protection, authorization, rate limiting, injection prevention; point to the standard level in §2.7 if any. Specific algorithms and parameters belong to ARCHITECTURE --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: choose one: Must \| Should \| Could --> | <!-- fill --> |
+| NFR-RELI-01 | Reliability | <!-- fill: uptime, RPO, RTO --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: choose one: Must \| Should \| Could --> | <!-- fill --> |
+| NFR-MAINT-01 | Maintainability | Test coverage of the business logic | Percentage of lines covered by tests | Coverage report in CI | ≥ {{COVERAGE_THRESHOLD}}% | <!-- fill: choose one: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: choose one: Must \| Should \| Could --> | <!-- fill --> |
+| NFR-USAB-01 | Interaction Capability and accessibility | Conformance with WCAG 2.2 level {{WCAG_LEVEL}} <!-- fill: write N/A with a reason if there is no user interface --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: choose one: Must \| Should \| Could --> | <!-- fill --> |
+| NFR-FLEX-01 | Flexibility | <!-- fill: scaling with load, installation and reconfiguration in another environment, replacing components; N/A with a reason if there is no requirement --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: choose one: Must \| Should \| Could --> | <!-- fill --> |
+| NFR-SAFE-01 | Safety | <!-- fill: fail-safe behavior, hazard warnings, limits on operations that can harm people or data; N/A with a reason if there is no hazard --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: choose one: Must \| Should \| Could --> | <!-- fill --> |
+| NFR-I18N-01 | Internationalization | <!-- fill: languages, number, currency and date formats --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: choose one: Must \| Should \| Could --> | <!-- fill --> |
+| NFR-LEGAL-01 | Legal | <!-- fill: from Intake §7 --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: choose one: Must \| Should \| Could --> | <!-- fill --> |
+| NFR-OBS-01 | Observability and audit | <!-- fill: logs, audit trail, retention period --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: choose one: Must \| Should \| Could --> | <!-- fill --> |
+| NFR-DATA-01 | Data | <!-- fill: retention period, deletion on request, backup --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: choose one: Must \| Should \| Could --> | <!-- fill --> |
+| NFR-COMPAT-01 | Compatibility | <!-- fill: client versions, old API, platforms --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: choose one: Must \| Should \| Could --> | <!-- fill --> |
+| NFR-COST-01 | Operating cost | <!-- fill: infrastructure budget or cost per use; N/A if unconstrained --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Test \| Inspection \| Demo \| Analysis --> | <!-- fill: choose one: Must \| Should \| Could --> | <!-- fill --> |
 
-## 8. Truy xuất nguồn gốc và nghiệm thu (Traceability & Acceptance Matrix)
+## 8. Traceability & Acceptance Matrix
 
-<!-- fill: Bảng thứ nhất: mỗi FR có ít nhất một AC. TC không ghi ở đây: TC nằm ở SPEC §9, bảng tra AC tới TC ở docs/INDEX.md mục 5 (CONVENTIONS mục 4). Ngoại lệ quan trọng của use case cần AC riêng. Bảng thứ hai: mỗi NFR áp dụng ở §7 có một dòng; cột cuối ghi bằng chứng và nơi lưu khi kiểm bằng Inspection, Demo, Analysis, và ghi `Test ở SPEC §9` khi kiểm bằng Test. -->
+<!-- fill: First table: each FR has at least one AC. The TC is not written here: the TC is in SPEC §9, and the AC-to-TC lookup table is in docs/INDEX.md §5 (CONVENTIONS §4). An important exception of a use case needs its own AC. Second table: each NFR that applies in §7 has one row; the last column records the evidence and where it is kept when verified by Inspection, Demo, Analysis, and records `Test in SPEC §9` when verified by Test. -->
 
-| FR ID | AC ID | Kịch bản nghiệm thu (Given-When-Then) |
+| FR ID | AC ID | Acceptance scenario (Given-When-Then) |
 | --- | --- | --- |
-| FR-{{MODULE_CODE}}-001 | AC-{{MODULE_CODE}}-01 | **Given:** <!-- fill --><br>**When:** <!-- fill --><br>**Then:** <!-- fill: kết quả đo được, gồm trạng thái dữ liệu --> |
+| FR-{{MODULE_CODE}}-001 | AC-{{MODULE_CODE}}-01 | **Given:** <!-- fill --><br>**When:** <!-- fill --><br>**Then:** <!-- fill: measurable result, including the data state --> |
 
-| NFR ID | Cách kiểm chứng | Bằng chứng |
+| NFR ID | Verification method | Evidence |
 | --- | --- | --- |
-| NFR-PERF-01 | <!-- fill: khớp cột Cách kiểm chứng ở §7 --> | <!-- fill: bằng chứng và nơi lưu, hoặc `Test ở SPEC §9` --> |
+| NFR-PERF-01 | <!-- fill: matches the Verification method column in §7 --> | <!-- fill: evidence and where it is kept, or `Test in SPEC §9` --> |
 
-## 9. Giả định và câu hỏi mở (Assumptions & Open Questions)
+## 9. Assumptions & Open Questions
 
-<!-- fill: Khi duyệt Gate 1, tập yêu cầu đầy đủ theo ISO/IEC/IEEE 29148 §5.2.6: không còn câu hỏi BLOCKING, không còn chỗ TBD trong FR, NFR, BR; giả định còn lại ghi rõ ảnh hưởng nếu sai. -->
+<!-- fill: At the approval of Gate 1, the requirement set is complete per ISO/IEC/IEEE 29148 §5.2.6: no BLOCKING question remains, no TBD remains in an FR, NFR or BR; the remaining assumptions state the impact if they are wrong. -->
 
-| ID | Loại | Nội dung | Lý do hoặc ảnh hưởng | BLOCKING | Người trả lời |
+| ID | Type | Content | Reason or impact | BLOCKING | Respondent |
 | --- | --- | --- | --- | :---: | --- |
-| AQ-01 | <!-- fill: chọn một: Giả định \| Câu hỏi --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Có \| Không --> | <!-- fill --> |
+| AQ-01 | <!-- fill: choose one: Assumption \| Question --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Yes \| No --> | <!-- fill --> |
 
-## 10. Phụ lục (Appendices)
+## 10. Appendices
 
-### 10.1. Sơ đồ chuyển trạng thái (State Machine)
+### 10.1. State Machine
 
-<!-- fill: Một sơ đồ cho mỗi thực thể có vòng đời; tập trạng thái MUST khớp miền giá trị ở §4.2 và schema ở ARCHITECTURE §5. Ghi N/A nếu không thực thể nào có vòng đời. -->
+<!-- fill: One diagram for each entity that has a lifecycle; the set of states MUST match the value domain in §4.2 and the schema in ARCHITECTURE §5. Write N/A if no entity has a lifecycle. -->
 
 ```mermaid
 stateDiagram-v2
@@ -363,21 +363,21 @@ stateDiagram-v2
     S2 --> [*]
 ```
 
-### 10.2. Lịch sử phiên bản (Version History)
+### 10.2. Version History
 
-| Phiên bản | Ngày | Người sửa | Nội dung thay đổi | Lý do và người yêu cầu | Người duyệt |
+| Version | Date | Author | Change | Reason and requester | Approver |
 | --- | --- | --- | --- | --- | --- |
-| 0.1.0 | {{DATE}} | {{AUTHOR}} | Bản khởi tạo | Khởi tạo theo pipeline | Chưa duyệt |
+| 0.1.0 | {{DATE}} | {{AUTHOR}} | Initial version | Created by the pipeline | Not approved |
 
-### 10.3. Đối chiếu ISO/IEC/IEEE 29148 (Standards Mapping)
+### 10.3. Standards Mapping
 
-Bảng đối chiếu mục của ISO/IEC/IEEE 29148:2018 §9.6 với tài liệu này. Mục nào dự án không áp dụng ghi N/A kèm lý do ngay tại mục tương ứng của tài liệu, không xóa hàng ở đây.
+The table maps the sections of ISO/IEC/IEEE 29148:2018 §9.6 to this document. A section that the project does not apply is written as N/A with a reason at the matching section of the document; do not delete the row here.
 
-| 29148:2018 | Nội dung | Mục trong SRS |
+| 29148:2018 | Content | Section in the SRS |
 | --- | --- | --- |
 | 9.6.2, 9.6.3 | Purpose, Scope | §1.1, §1.2 |
 | 9.6.4 | Product perspective | §2.1 |
-| 9.6.4.1 đến 9.6.4.5, 9.6.4.9 | System, User, Hardware, Software, Communications Interfaces, Interfaces with Services | §3 |
+| 9.6.4.1 to 9.6.4.5, 9.6.4.9 | System, User, Hardware, Software, Communications Interfaces, Interfaces with Services | §3 |
 | 9.6.4.6 | Memory constraints | §2.4 |
 | 9.6.4.7 | Operations | §2.4 |
 | 9.6.4.8 | Site adaptation requirements | §2.4 |
@@ -385,8 +385,8 @@ Bảng đối chiếu mục của ISO/IEC/IEEE 29148:2018 §9.6 với tài liệ
 | 9.6.6 | User characteristics | §2.2 |
 | 9.6.7 | Limitations | §2.4, §2.5 |
 | 9.6.8 | Assumptions and dependencies | §2.6, §9 |
-| 9.6.9 | Apportioning of requirements | §6.1, cột Bản phát hành |
-| 9.6.10 | Specified requirements: yêu cầu có ID duy nhất, tham chiếu chéo được, đạt đặc tính của 29148 §5.2 | §4 đến §7; cách viết theo CONVENTIONS mục 8 |
+| 9.6.9 | Apportioning of requirements | §6.1, Release column |
+| 9.6.10 | Specified requirements: requirements have a unique ID, are cross-referenceable, and meet the characteristics of 29148 §5.2 | §4 to §7; writing per CONVENTIONS §8 |
 | 9.6.11 | External interfaces | §3 |
 | 9.6.12 | Functions | §5, §6 |
 | 9.6.13 | Usability requirements | §7, NFR-USAB |
@@ -394,6 +394,6 @@ Bảng đối chiếu mục của ISO/IEC/IEEE 29148:2018 §9.6 với tài liệ
 | 9.6.15 | Logical database requirements | §4 |
 | 9.6.16 | Design constraints | §2.5 |
 | 9.6.17 | Standards compliance | §2.7 |
-| 9.6.18 | Software system attributes | §7, nhóm RELI, SEC, MAINT, FLEX, SAFE, COMPAT |
-| 9.6.19 | Verification | Cột Cách kiểm chứng ở §5, §6.1, §7; §8 |
+| 9.6.18 | Software system attributes | §7, groups RELI, SEC, MAINT, FLEX, SAFE, COMPAT |
+| 9.6.19 | Verification | Verification method column in §5, §6.1, §7; §8 |
 | 9.6.20 | Supporting information | §10 |

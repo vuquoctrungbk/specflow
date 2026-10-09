@@ -2,92 +2,92 @@
 doc_type: overlay
 status: stable
 version: 1.3.0
-language: vi-en
+language: en
 surface: mobile-app
 ---
 
 # Overlay mobile-app
 
-## 1. Bề mặt (Surface)
+## 1. Surface
 
-Ứng dụng cài trên điện thoại hoặc máy tính bảng (iOS, Android), phân phối qua cửa hàng ứng dụng. Ứng dụng giữ một bản sao dữ liệu trên thiết bị, cho người dùng làm việc khi mất mạng và đồng bộ với API khi có mạng lại. Nguồn chân lý của dữ liệu nghiệp vụ và mã lỗi là API; bản trên thiết bị là bản sao cộng các thay đổi chưa gửi. Nhiều phiên bản ứng dụng cùng chạy ngoài thực tế, vì người dùng không cập nhật cùng lúc.
+An app installed on a phone or tablet (iOS, Android), distributed through an app store. The app keeps a copy of the data on the device, lets users work offline, and syncs with the API when the network returns. The source of truth for business data and error codes is the API; the on-device copy is a replica plus the changes not yet sent. Many app versions run in production at the same time, because users do not update all at once.
 
-| Chọn overlay này khi | Không chọn khi |
+| Choose this overlay when | Do not choose when |
 | --- | --- |
-| Dự án có ứng dụng cài trên thiết bị di động, dùng phần cứng của thiết bị (camera, vị trí, thông báo đẩy) hoặc phải làm việc khi mất mạng | Giao diện chạy trên trình duyệt, kể cả trình duyệt trên điện thoại (xem `frontend-web`); dự án chỉ cung cấp API mà ứng dụng gọi (xem `backend-api`) |
+| The project has an app installed on a mobile device, uses the device hardware (camera, location, push notifications) or must work offline | The UI runs in a browser, including a browser on a phone (see `frontend-web`); the project only provides the API that the app calls (see `backend-api`) |
 
-Dạng test `CONC` của bề mặt này chạy ở mức integration trên cùng engine SQL với thiết bị (SQLite của máy chạy test, qua cùng cổng truy vấn và cùng cách xếp hàng kết nối như ứng dụng), với API giả lập giữ phiên bản bản ghi và lưu phản hồi theo khóa idempotency. Ba dạng bắt buộc: hai thiết bị (hai cơ sở dữ liệu cục bộ độc lập) cùng sửa một bản ghi khi mất mạng rồi lần lượt đồng bộ; một thiết bị kích hoạt đồng bộ nhiều lần cùng lúc (có mạng lại, mở lại ứng dụng, kéo để làm mới); và người dùng sửa bản ghi trong lúc thay đổi trước của chính bản ghi đó đang được gửi, với phản hồi về được và với phản hồi bị mất. Không dùng sleep để sắp thứ tự; thứ tự do test điều khiển bằng lời gọi đồng bộ và độ trễ của API giả lập.
+The `CONC` test pattern of this surface runs at integration level on the same SQL engine as the device (the SQLite of the test machine, through the same query gateway and the same connection queueing as the app), with a fake API that keeps record versions and stores responses by idempotency key. Three patterns are mandatory: two devices (two independent local databases) edit the same record offline and then sync one after the other; one device triggers sync several times at once (network returns, app reopens, pull to refresh); and the user edits a record while an earlier change of that same record is being sent, with the response arriving and with the response lost. Do not use sleep to order events; the test controls the order with sync calls and the fake API's latency.
 
-## 2. Slot được cung cấp (Provided Slots)
+## 2. Provided Slots
 
-| Slot | File | Nội dung | Có `PROFILE-SLOT` |
+| Slot | File | Content | Has `PROFILE-SLOT` |
 | --- | --- | --- | :---: |
-| `srs.constraints.technical` | [srs-sections.md](srs-sections.md) | Nền tảng và phiên bản hệ điều hành, ma trận thiết bị, làm việc khi mất mạng, quyền hệ điều hành, lưu trữ an toàn, phiên bản ứng dụng tối thiểu | Không |
-| `srs.external-interfaces` | [srs-sections.md](srs-sections.md) | Màn hình, năm trạng thái giao diện và trạng thái đồng bộ của bản ghi, trợ năng; API, thông báo đẩy, deep link; phần cứng của thiết bị | Không |
-| `srs.data-model` | [srs-sections.md](srs-sections.md) | Dữ liệu trên thiết bị, chiến lược đồng bộ, bảng xung đột | Không |
-| `arch.views` | [architecture-sections.md](architecture-sections.md) | C4 Level 2, bản đồ điều hướng và bảng điều hướng có cột `SCR ID`, luồng đồng bộ, góc nhìn build và phân phối | Không |
-| `arch.layout` | [architecture-sections.md](architecture-sections.md) | Quy tắc tầng: màn hình, tính năng, cơ sở dữ liệu cục bộ, bộ máy đồng bộ, client API | Có |
-| `arch.schema` | [architecture-sections.md](architecture-sections.md) | Schema cục bộ, migration trên thiết bị, cột đồng bộ, hàng đợi thay đổi, ánh xạ sang DTO của API | Có |
-| `arch.conventions` | [architecture-sections.md](architecture-sections.md) | Quy tắc làm việc khi mất mạng, quy ước đồng bộ, trạng thái giao diện, ánh xạ mã lỗi sang giao diện, quyền hệ điều hành | Có |
-| `arch.deployment` | [architecture-sections.md](architecture-sections.md) | Phiên bản ứng dụng, ký và phân phối, phát hành theo tỉ lệ, cập nhật qua mạng, phiên bản tối thiểu, tương thích với API | Không |
-| `spec.contract` | [spec-contract-sections.md](spec-contract-sections.md) | Màn hình và tham số điều hướng, năm trạng thái, trạng thái đồng bộ, thao tác ghi cục bộ, hợp đồng đồng bộ, quyền, ánh xạ lỗi, khóa chuỗi | Có |
-| `spec.test-types` | [spec-contract-sections.md](spec-contract-sections.md) | Unit, integration với cơ sở dữ liệu cục bộ, e2e trên máy ảo, trợ năng, `CONC`, smoke trên ma trận thiết bị | Có |
-| `playbook.verify-commands` | [verify-commands.md](verify-commands.md) | Bảng lệnh verify | Không |
+| `srs.constraints.technical` | [srs-sections.md](srs-sections.md) | Platform and OS version, device matrix, offline work, OS permissions, secure storage, minimum app version | No |
+| `srs.external-interfaces` | [srs-sections.md](srs-sections.md) | Screens, the five UI states and the record sync state, accessibility; API, push notifications, deep links; device hardware | No |
+| `srs.data-model` | [srs-sections.md](srs-sections.md) | On-device data, sync strategy, conflict table | No |
+| `arch.views` | [architecture-sections.md](architecture-sections.md) | C4 Level 2, navigation map and navigation table with a `SCR ID` column, sync flow, build and distribution view | No |
+| `arch.layout` | [architecture-sections.md](architecture-sections.md) | Layer rules: screens, features, local database, sync engine, API client | Yes |
+| `arch.schema` | [architecture-sections.md](architecture-sections.md) | Local schema, on-device migrations, sync columns, change queue, mapping to the API DTOs | Yes |
+| `arch.conventions` | [architecture-sections.md](architecture-sections.md) | Offline work rules, sync conventions, UI states, mapping of error codes to the UI, OS permissions | Yes |
+| `arch.deployment` | [architecture-sections.md](architecture-sections.md) | App version, signing and distribution, staged rollout, over-the-air updates, minimum version, compatibility with the API | No |
+| `spec.contract` | [spec-contract-sections.md](spec-contract-sections.md) | Screens and navigation parameters, the five states, sync states, local mutations, sync contract, permissions, error mapping, string keys | Yes |
+| `spec.test-types` | [spec-contract-sections.md](spec-contract-sections.md) | Unit, integration with the local database, e2e on emulators, accessibility, `CONC`, smoke on the device matrix | Yes |
+| `playbook.verify-commands` | [verify-commands.md](verify-commands.md) | Verify command table | No |
 
-## 3. Thứ tự đọc khi ghép (Assembly Order)
+## 3. Assembly Order
 
-1. File core của giai đoạn (`core/01`, `core/02`, `core/04`, `core/06`).
-2. File này.
-3. File section chứa khối SLOT-CONTENT tương ứng ở bảng mục 2.
-4. Stack profile đã chọn trong Intake: bảng "Giá trị placeholder", mục `(Tech Stack)` và các khối PROFILE-CONTENT.
-5. Rule của bề mặt ở `agent-rules/` khi tạo `.claude/rules/` (Giai đoạn 2).
+1. The stage's core files (`core/01`, `core/02`, `core/04`, `core/06`).
+2. This file.
+3. The section file that holds the matching SLOT-CONTENT block in the §2 table.
+4. The stack profile chosen in the Intake: the "Placeholder values" table, the `(Tech Stack)` section and the PROFILE-CONTENT blocks.
+5. The surface rule in `agent-rules/` when creating `.claude/rules/` (Stage 2).
 
-Quy tắc ghép chi tiết ở CONVENTIONS mục 2 và PLAYBOOK mục 4.
+Detailed assembly rules are in CONVENTIONS §2 and PLAYBOOK §4.
 
-## 4. Stack profile (Stack Profiles)
+## 4. Stack Profiles
 
 | Profile | Stack | File |
 | --- | --- | --- |
-| `react-native-expo` | React Native với Expo SDK, Expo Router, TypeScript, SQLite trên thiết bị, Jest, Maestro | [stack-profiles/react-native-expo.md](stack-profiles/react-native-expo.md) |
+| `react-native-expo` | React Native with Expo SDK, Expo Router, TypeScript, on-device SQLite, Jest, Maestro | [stack-profiles/react-native-expo.md](stack-profiles/react-native-expo.md) |
 
-Stack khác chưa có profile (ví dụ Flutter, ứng dụng native Swift hoặc Kotlin): đề xuất giá trị placeholder và nội dung profile trong ARCHITECTURE §2 kèm ADR (PLAYBOOK mục 3, quy tắc 5).
+Other stacks have no profile yet (for example Flutter, native Swift or Kotlin apps): propose the placeholder values and the profile content in ARCHITECTURE §2 together with an ADR (PLAYBOOK §3, rule 5).
 
-## 5. Rule cho agent (Agent Rules)
+## 5. Agent Rules
 
-| File | Chép thành | Áp dụng cho |
+| File | Copy to | Applies to |
 | --- | --- | --- |
-| [agent-rules/mobile-golden-rules.md](agent-rules/mobile-golden-rules.md) | `.claude/rules/mobile-golden-rules.md` | Mã nguồn ứng dụng di động (`paths` theo cây thư mục ở ARCHITECTURE §4) |
+| [agent-rules/mobile-golden-rules.md](agent-rules/mobile-golden-rules.md) | `.claude/rules/mobile-golden-rules.md` | Mobile app source code (`paths` follow the directory tree in ARCHITECTURE §4) |
 
-## 6. Checklist riêng của bề mặt (Surface Checklist)
+## 6. Surface Checklist
 
-Tự kiểm cùng checklist "Overlay đã áp" ở PLAYBOOK mục 4.
+Self-check together with the "Overlay applied" checklist in PLAYBOOK §4.
 
-| Kiểm tra | Tài liệu | Đạt |
+| Check | Document | Pass |
 | --- | --- | :---: |
-| Mọi màn hình ở SRS §3 có `SCR ID` (Intake tạo từ template Intake `1.3.0` trở lên) và ghi rõ dùng được khi mất mạng hay không; mọi FR của ứng dụng truy xuất tới FR hoặc endpoint của API mà nó dùng | SRS §3, §8 | [ ] |
-| Mỗi thực thể trên thiết bị có nguồn ở API, phạm vi dữ liệu giữ trên máy, cách xóa; chiến lược xung đột được một ADR bao phủ | SRS §4; ARCHITECTURE §5, §12 | [ ] |
-| Thao tác ghi cục bộ và hàng đợi thay đổi cập nhật trong cùng một transaction; mỗi thay đổi có khóa idempotency riêng, gửi lại với cùng khóa | ARCHITECTURE §5, §7; SPEC §3, §5 | [ ] |
-| Mọi mã lỗi mà ứng dụng xử lý có trong ARCHITECTURE §7.1 kèm khóa chuỗi và hành vi, gồm cả trạng thái đồng bộ của bản ghi | ARCHITECTURE §7 | [ ] |
-| Kiểu dữ liệu API sinh từ tài liệu OpenAPI của API; không có kiểu response viết tay | ARCHITECTURE §5 | [ ] |
-| Mỗi màn hình trong SPEC có đủ năm trạng thái giao diện và bảng trạng thái đồng bộ cho bản ghi sửa được khi mất mạng | SPEC §3 | [ ] |
-| Có test `CONC` cho hai thiết bị cùng sửa khi mất mạng, cho nhiều lần kích hoạt đồng bộ cùng lúc và cho lần sửa trong lúc thay đổi của cùng bản ghi đang gửi; có smoke test trên ma trận thiết bị trước khi phát hành | SPEC §9 | [ ] |
-| API giữ contract cho mọi phiên bản ứng dụng còn trên phiên bản tối thiểu; cách buộc cập nhật đã chốt | ARCHITECTURE §8 | [ ] |
+| Every screen in SRS §3 has a `SCR ID` and states whether it works offline; every FR of the app traces to the FR or endpoint of the API that it uses | SRS §3, §8 | [ ] |
+| Every on-device entity has its source in the API, the scope of data kept on the device, and how it is deleted; the conflict strategy is covered by an ADR | SRS §4; ARCHITECTURE §5, §12 | [ ] |
+| A local write and the change queue are updated in the same transaction; each change has its own idempotency key, and a resend uses the same key | ARCHITECTURE §5, §7; SPEC §3, §5 | [ ] |
+| Every error code the app handles is in ARCHITECTURE §7.1 with a string key and a behavior, including the record sync state | ARCHITECTURE §7 | [ ] |
+| API data types are generated from the API's OpenAPI document; there are no hand-written response types | ARCHITECTURE §5 | [ ] |
+| Every screen in the SPEC has all five UI states and a sync state table for records that can be edited offline | SPEC §3 | [ ] |
+| There are `CONC` tests for two devices editing offline, for several sync triggers at once, and for an edit made while a change of the same record is being sent; there is a smoke test on the device matrix before release | SPEC §9 | [ ] |
+| The API keeps its contract for every app version still at or above the minimum version; the way to force an update is decided | ARCHITECTURE §8 | [ ] |
 
-## 7. Giai đoạn 1W: Wireframe (Stage 1W)
+## 7. Stage 1W: Wireframe
 
-Bề mặt này có giao diện nên dự án có Giai đoạn 1W (PLAYBOOK mục 2 và 2.2.1): Intake mục 14 ghi Giai đoạn 1W: Có, Intake mục 9 ghi người duyệt Gate 1W. Áp cho dự án có Intake tạo từ template Intake `1.3.0` trở lên.
+This surface has a UI, so the project has Stage 1W (PLAYBOOK §2 and 2.2.1): Intake §14 records Stage 1W: Yes, Intake §9 records the Gate 1W approver.
 
-- ID màn hình `SCR-{MOD}-NN` đặt ở Giai đoạn 1, cột `SCR ID` của bảng Giao diện người dùng ở SRS §3 (khối `srs.external-interfaces` của overlay này). Giai đoạn 1W chi tiết hóa mỗi ID thành một trang `docs/wireframes/SCR-<MOD>-NN.md`, không thêm hay bớt màn hình. Dự án có cả web và mobile dùng chung một mã phân hệ: NN vẫn duy nhất theo MOD, màn hình web và màn hình mobile là hai ID khác nhau.
-- Hệ thống thiết kế: Giai đoạn 1W viết thêm `docs/design-system/DESIGN_SYSTEM.md` và `docs/design-system/tokens.json` theo CONVENTIONS mục 10.7, trước các trang màn hình; mỗi trang chọn một Template, dẫn Pattern và Component ID của tài liệu đó. Theme mặc định của thư viện giao diện của stack profile (Intake mục 14) chỉ là một hướng thị giác, dùng khi được chọn có chủ đích; profile `none` ghi chưa chọn thư viện và xét lại ở Giai đoạn 2.
-- Template `core/07_Wireframe_Template/` dùng chung cho mọi bề mặt có giao diện và không có slot; overlay không cung cấp khối cho wireframe. Cách điền riêng cho mobile:
+- The screen ID `SCR-{MOD}-NN` is set in Stage 1, in the `SCR ID` column of the User Interfaces table in SRS §3 (the `srs.external-interfaces` block of this overlay). Stage 1W details each ID as one page `docs/wireframes/SCR-<MOD>-NN.md`, without adding or removing screens. A project with both web and mobile that share a module code: NN is still unique per MOD, and a web screen and a mobile screen are two different IDs.
+- Design system: Stage 1W also writes `docs/design-system/DESIGN_SYSTEM.md` and `docs/design-system/tokens.json` per CONVENTIONS §10.7, before the screen pages; each page chooses a Template and cites the Pattern and Component IDs of that document. The default theme of the stack profile's UI library (Intake §14) is only a visual direction, used when chosen on purpose; profile `none` records that no library is chosen yet and is revisited in Stage 2.
+- The template `core/07_Wireframe_Template/` is shared by every surface that has a UI and has no slot; the overlay provides no block for the wireframe. How to fill it for mobile:
 
-| Mục của template | Cách điền cho `mobile-app` |
+| Template section | How to fill for `mobile-app` |
 | --- | --- |
-| Điểm vào (danh mục màn hình và trang) | Deep link khi màn hình mở được bằng deep link; nếu không, tên màn hình trong navigator; route trong ứng dụng ở cột Route của SRS §3 |
-| Bố cục low-fi | Vẽ ở hướng dọc; thanh điều hướng, thanh tab và vùng an toàn là vùng riêng khi màn hình có |
-| Năm trạng thái UI | Dữ liệu đã có trên máy hiển thị ngay, `Loading` chỉ khi máy chưa có dữ liệu; màn hình sửa được khi mất mạng ghi trạng thái đồng bộ của bản ghi (`Synced`, `Queued`, `Conflict`, `Rejected`) ở cột Hiển thị; chỉ báo mạng khi mất mạng |
-| Điều hướng vào và ra | Vào từ deep link hay thông báo đẩy; tham số điều hướng; nơi cử chỉ quay lại của hệ thống đưa người dùng tới |
-| Ghi chú trợ năng | Theo CONVENTIONS mục 10.2 ở mức WCAG của NFR-USAB; tiêu chí viết theo ngữ web (trang, tiêu đề trang) áp theo WCAG2ICT. Con số của mobile: vùng chạm tối thiểu 44 × 44 pt trên iOS và 48 × 48 dp trên Android (cao hơn mức sàn của WCAG 2.5.8); chữ co giãn theo cỡ chữ hệ thống; trình đọc màn hình của hệ điều hành (VoiceOver, TalkBack) |
-| HTML đầy đủ (theo Intake mục 14) | Một file tĩnh mỗi trang theo CONVENTIONS mục 7, khung theo kích thước điện thoại, hướng dọc; giai đoạn code dựng lại đúng màn này (PLAYBOOK mục 2.5) |
+| Entry point (catalog of screens and pages) | The deep link when the screen can be opened by a deep link; otherwise the screen name in the navigator; the in-app route is in the Route column of SRS §3 |
+| Low-fi Layout | Draw in portrait; the navigation bar, tab bar and safe area are separate zones when the screen has them |
+| UI States | Data already on the device shows at once, and `Loading` only when the device has no data yet; a screen that can be edited offline records the record's sync state (`Synced`, `Queued`, `Conflict`, `Rejected`) in the Display column; a network indicator when offline |
+| Navigation | Entering from a deep link or a push notification; navigation parameters; where the system back gesture takes the user |
+| Accessibility Notes | Per CONVENTIONS §10.2 at the WCAG level of NFR-USAB; criteria written in web terms (page, page title) apply through WCAG2ICT. Mobile figures: minimum touch target 44 × 44 pt on iOS and 48 × 48 dp on Android (higher than the WCAG 2.5.8 floor); text scales with the system font size; the OS screen reader (VoiceOver, TalkBack) |
+| Full HTML (per Intake §14) | One static file per page per CONVENTIONS §7, with a phone-sized frame, portrait; the code stage rebuilds exactly this screen (PLAYBOOK §2.5) |
 
-- Sau Gate 1W: bảng điều hướng ở ARCHITECTURE §3 (khối `arch.views`) có cột `SCR ID`, mỗi `SCR-*` của chỉ mục wireframe ít nhất một hàng (Gate 2); bảng Màn hình ở SPEC §3 (khối `spec.contract`) dẫn `SCR ID` và trang wireframe, không định nghĩa lại màn hình. Ở Giai đoạn 2, ARCHITECTURE §7 ghi cách ánh xạ token thành mã nguồn (khối `arch.conventions`) và stack profile ghi công cụ ánh xạ; code chỉ đọc token đã ánh xạ.
+- After Gate 1W: the navigation table in ARCHITECTURE §3 (the `arch.views` block) has a `SCR ID` column, with at least one row for each `SCR-*` of the wireframe index (Gate 2); the Screen table in SPEC §3 (the `spec.contract` block) cites the `SCR ID` and the wireframe page, and does not redefine the screen. In Stage 2, ARCHITECTURE §7 records how tokens map to source code (the `arch.conventions` block) and the stack profile records the mapping tool; code reads only the mapped tokens.

@@ -2,21 +2,21 @@
 doc_type: overlay-section
 status: stable
 version: 1.2.1
-language: vi-en
+language: en
 surface: mobile-app
 ---
 
-# Overlay mobile-app: khối cho ARCHITECTURE
+# Overlay mobile-app: blocks for ARCHITECTURE
 
 <!-- SLOT-CONTENT: arch.views -->
-### C4 Level 2: vùng chứa (Container)
+### C4 Level 2: Container
 
-<!-- fill: Ứng dụng trên thiết bị gồm giao diện, cơ sở dữ liệu cục bộ, bộ máy đồng bộ, kho khóa của hệ điều hành; bên ngoài gồm API, dịch vụ thông báo đẩy, dịch vụ cập nhật qua mạng nếu dùng. Xóa container không dùng và ghi lý do ở §13. Cạnh ghi giao thức. -->
+<!-- fill: The on-device app has the UI, the local database, the sync engine and the OS keystore; outside it are the API, the push notification service and the over-the-air update service if used. Delete an unused container and record the reason at §13. Label each edge with its protocol. -->
 
 ```mermaid
 flowchart TD
     U["{{ACTOR_NAME}}"]
-    subgraph Device[Thiết bị]
+    subgraph Device[Device]
         UI["{{COMPONENT_NAME}}"]
         DB[("{{COMPONENT_NAME}}")]
         SYNC["{{COMPONENT_NAME}}"]
@@ -32,24 +32,24 @@ flowchart TD
     PUSH -->|"{{MESSAGE}}"| UI
 ```
 
-### Bản đồ điều hướng (Navigation Map)
+### Navigation Map
 
-<!-- fill: Mọi màn hình của ứng dụng, cạnh là điều hướng chính; màn hình cần đăng nhập và màn hình mở được bằng deep link ghi rõ. -->
+<!-- fill: Every screen of the app, with the main navigation as edges; mark the screens that need sign-in and the screens that can be opened by deep link. -->
 
 ```mermaid
 flowchart LR
     R1["/{{ROUTE_PATH}}"] -->|"{{MESSAGE}}"| R2["/{{ROUTE_PATH}}"]
 ```
 
-<!-- fill: Bảng điều hướng: một hàng cho mỗi màn hình trong navigator. Có Giai đoạn 1W: cột SCR ID ghi màn hình tương ứng ở chỉ mục wireframe; mỗi SCR-* của chỉ mục có ít nhất một hàng (Gate 2); màn hình kỹ thuật không có ở chỉ mục (ví dụ màn hình chờ khởi động) ghi N/A kèm lý do. Dự án có Intake cũ hơn 1.3.0 hoặc không có Giai đoạn 1W: bỏ cột SCR ID. -->
+<!-- fill: Navigation table: one row for each screen in the navigator. With Stage 1W: the SCR ID column records the matching screen in the wireframe index; every SCR-* of the index has at least one row (Gate 2); a technical screen that is not in the index (for example the splash screen) records N/A with the reason. Without Stage 1W: drop the SCR ID column. -->
 
-| Route | SCR ID | Nhóm trong navigator | Deep link | Cần đăng nhập |
+| Route | SCR ID | Navigator group | Deep link | Requires sign-in |
 | --- | --- | --- | --- | :---: |
-| `/{{ROUTE_PATH}}` | {{SCR_ID}} | <!-- fill: chọn một: stack \| tab \| modal --> | <!-- fill: đường dẫn deep link, hoặc Không --> | <!-- fill: chọn một: Có \| Không --> |
+| `/{{ROUTE_PATH}}` | {{SCR_ID}} | <!-- fill: choose one: stack \| tab \| modal --> | <!-- fill: deep link path, or None --> | <!-- fill: choose one: Yes \| No --> |
 
-### Luồng đồng bộ (Sync Flow)
+### Sync Flow
 
-<!-- fill: Luồng của một thay đổi từ lúc người dùng lưu trên máy tới khi API xác nhận, gồm nhánh xung đột; khớp quy ước đồng bộ ở §7. -->
+<!-- fill: The flow of a change from the moment the user saves on the device to the moment the API confirms it, including the conflict branch; consistent with the sync conventions at §7. -->
 
 ```mermaid
 sequenceDiagram
@@ -72,149 +72,149 @@ sequenceDiagram
     end
 ```
 
-### Góc nhìn build và phân phối (Build & Distribution View)
+### Build & Distribution View
 
-| Kênh | Bản build | API gọi tới | Dữ liệu | Ai được cài |
+| Channel | Build | API called | Data | Who can install |
 | --- | --- | --- | --- | --- |
-| Phát triển | <!-- fill: bản build phát triển trên máy ảo hoặc thiết bị của lập trình viên --> | <!-- fill: API dev hoặc API giả lập --> | Dữ liệu giả | Lập trình viên |
-| Thử nội bộ | <!-- fill: TestFlight, Google Play internal testing --> | <!-- fill: API staging --> | <!-- fill: dữ liệu giả hoặc đã ẩn danh; MUST NOT dùng dữ liệu cá nhân thật --> | <!-- fill --> |
-| Production | <!-- fill: App Store, Google Play --> | <!-- fill --> | Dữ liệu thật | Người dùng |
+| Development | <!-- fill: development build on the developer's emulator or device --> | <!-- fill: dev API or mock API --> | Fake data | Developers |
+| Internal testing | <!-- fill: TestFlight, Google Play internal testing --> | <!-- fill: staging API --> | <!-- fill: fake or anonymized data; MUST NOT use real personal data --> | <!-- fill --> |
+| Production | <!-- fill: App Store, Google Play --> | <!-- fill --> | Real data | Users |
 <!-- /SLOT-CONTENT -->
 
 <!-- SLOT-CONTENT: arch.layout -->
-### Quy tắc tầng trong cây thư mục (Layering Rules)
+### Layering Rules
 
-- Tầng màn hình (file route và layout điều hướng) chỉ ghép thành phần của tính năng và đọc tham số điều hướng; MUST NOT truy vấn cơ sở dữ liệu cục bộ hay gọi API trực tiếp.
-- Mỗi phân hệ ở §4.1 là một thư mục tính năng chứa: thành phần, hook đọc dữ liệu từ cơ sở dữ liệu cục bộ, thao tác ghi cục bộ, schema form, chuỗi hiển thị theo khóa, test của tính năng.
-- Cơ sở dữ liệu cục bộ chỉ được truy cập qua cổng truy vấn dùng chung (một interface nhỏ cho câu lệnh, truy vấn, transaction) để test chạy được trên engine SQL của máy chạy test; migration nằm cùng thư mục với cổng này.
-- Bộ máy đồng bộ là mã duy nhất gọi endpoint ghi của API cho dữ liệu đồng bộ; màn hình ghi vào cơ sở dữ liệu cục bộ và hàng đợi thay đổi, không chờ API.
-- Client API sinh từ tài liệu OpenAPI và tiện ích dùng chung nằm trong thư mục lib; mọi lời gọi API đi qua client này.
-- Tính năng chỉ import tính năng khác qua file xuất công khai; mã riêng theo nền tảng đặt trong file có hậu tố nền tảng, không rẽ nhánh theo nền tảng rải rác trong mã.
-- Chỉ module cấu hình đọc biến môi trường; mọi giá trị nhúng vào bản build là công khai và MUST NOT chứa secret.
+- The screen layer (route files and navigation layouts) only composes feature components and reads navigation parameters; it MUST NOT query the local database or call the API directly.
+- Each module at §4.1 is a feature folder that holds: components, hooks that read data from the local database, local write operations, form schemas, display strings by key, and the feature tests.
+- The local database is accessed only through a shared query gateway (a small interface for statements, queries and transactions) so that tests run on the SQL engine of the test machine; migrations live in the same folder as this gateway.
+- The sync engine is the only code that calls the write endpoints of the API for synced data; screens write to the local database and the change queue and do not wait for the API.
+- The API client generated from the OpenAPI document and the shared utilities live in the lib folder; every API call goes through this client.
+- A feature imports another feature only through its public export file; platform-specific code goes in a file with a platform suffix, with no scattered platform branching in the code.
+- Only the config module reads environment variables; every value embedded in the build is public and MUST NOT contain a secret.
 
 <!-- PROFILE-SLOT: arch.layout -->
 <!-- /SLOT-CONTENT -->
 
 <!-- SLOT-CONTENT: arch.schema -->
-### Schema cục bộ (On-device Schema)
+### On-device Schema
 
-Nguồn chân lý của dữ liệu nghiệp vụ là API; schema cục bộ giữ bản sao cộng dữ liệu chỉ có trên máy để làm việc khi mất mạng.
+The source of truth for business data is the API; the local schema holds a copy plus data that exists only on the device so that the app works offline.
 
-- Migration của cơ sở dữ liệu cục bộ chạy khi mở ứng dụng, trước truy vấn đầu tiên; migration đã phát hành không sửa, không gộp, không xóa, chỉ thêm migration mới. Ứng dụng mở được cơ sở dữ liệu tạo bởi mọi phiên bản đã phát hành, kể cả phiên bản dưới mức tối thiểu: người dùng bị chặn vẫn cập nhật khi còn thay đổi chờ trên máy.
-- Mỗi bảng đồng bộ có cột khóa chính trùng ID của API, cột phiên bản do API cấp mà giá trị trên máy dựa vào, cột trạng thái đồng bộ của bản ghi (`SYNCED`, `QUEUED`, `CONFLICT`, `REJECTED`).
-- Bảng hàng đợi thay đổi (outbox) giữ mỗi thay đổi chờ gửi: ID thay đổi (cũng là khóa idempotency), bản ghi đích, nội dung, phiên bản gốc, số lần gửi, thời điểm được gửi lại, mã lỗi cuối. Thay đổi chưa gửi lần nào được gộp với thay đổi mới của cùng bản ghi. Trước khi request rời máy, thay đổi được đọc và đánh dấu đã gửi (tăng số lần gửi) trong cùng một transaction; từ đó nó giữ nguyên nội dung và khóa, và lần sửa mới của cùng bản ghi, kể cả trong lúc request đang chạy, thành thay đổi mới xếp sau.
-- Bảng xung đột giữ bản của API khi API báo xung đột, để người dùng so sánh và chọn.
-- Cột giữ giá trị liệt kê do API sở hữu (trạng thái, kết quả) chỉ đặt ràng buộc `CHECK` miền giá trị khi contract của API cam kết thêm giá trị mới cùng lúc nâng phiên bản tối thiểu của ứng dụng; ngược lại cột không có `CHECK` và giao diện hiển thị giá trị lạ bằng nhãn dự phòng. Cột do ứng dụng sở hữu (trạng thái đồng bộ, trạng thái hàng đợi) luôn có `CHECK`.
-- Kiểu dữ liệu request và response sinh tự động từ tài liệu OpenAPI của API; bảng dưới ánh xạ bảng cục bộ sang DTO.
-- Dữ liệu cá nhân trên máy chỉ gồm trường ở SRS §4 có cột "Chứa dữ liệu cá nhân" là Có; xóa theo SRS §4.3.
+- The migrations of the local database run when the app opens, before the first query; a released migration is not edited, merged or deleted, only new migrations are added. The app opens the database created by every released version, including a version below the minimum: a blocked user can still update while changes are pending on the device.
+- Each synced table has a primary key column equal to the API ID, a version column issued by the API on which the on-device value depends, and a record sync status column (`SYNCED`, `QUEUED`, `CONFLICT`, `REJECTED`).
+- The change queue table (outbox) holds each change waiting to be sent: the change ID (also the idempotency key), the target record, the content, the base version, the send count, the time it is to be resent, and the last error code. A change that has never been sent is merged with a new change of the same record. Before the request leaves the device, the change is read and marked as sent (the send count increases) in the same transaction; from then on it keeps its content and key, and a new edit of the same record, including one made while the request is in flight, becomes a new change queued behind it.
+- The conflict table holds the API's version when the API reports a conflict, so the user can compare and choose.
+- A column that holds an enumerated value owned by the API (status, result) gets a `CHECK` constraint on the value domain only when the API contract commits to adding a new value at the same time as it raises the minimum app version; otherwise the column has no `CHECK` and the UI shows an unknown value with a fallback label. A column owned by the app (sync status, queue status) always has a `CHECK`.
+- The request and response data types are generated automatically from the API's OpenAPI document; the table below maps local tables to DTOs.
+- Personal data on the device consists only of the fields in SRS §4 whose "Data classification" is personal data or sensitive personal data; delete it per SRS §4.3.
 
-| Bảng cục bộ | DTO của API | Trường chỉ có trên máy | Ghi chú |
+| Local table | API DTO | Device-only fields | Notes |
 | --- | --- | --- | --- |
-| <!-- fill --> | <!-- fill: tên schema trong OpenAPI --> | <!-- fill: ví dụ server_version, sync_status --> | <!-- fill --> |
+| <!-- fill --> | <!-- fill: schema name in OpenAPI --> | <!-- fill: for example server_version, sync_status --> | <!-- fill --> |
 
-| Hạng mục | Quyết định |
+| Item | Decision |
 | --- | --- |
-| Tài liệu OpenAPI nguồn | <!-- fill: đường dẫn bản sao trong repo hoặc URL, kèm phiên bản API --> |
-| Cách cập nhật khi API đổi contract | <!-- fill: ai cập nhật bản sao, chạy lệnh sinh mã nào, SPEC nào ghi thay đổi, migration cục bộ nào đi kèm --> |
-| Mã hóa dữ liệu trên máy | <!-- fill: dựa vào mã hóa của hệ điều hành, hoặc mã hóa cơ sở dữ liệu với khóa trong kho khóa; nêu lý do --> |
+| Source OpenAPI document | <!-- fill: path of the copy in the repo or URL, with the API version --> |
+| How to update when the API changes its contract | <!-- fill: who updates the copy, which code generation command runs, which SPEC records the change, which local migration goes with it --> |
+| Encryption of on-device data | <!-- fill: rely on OS encryption, or database encryption with the key in the keystore; give the reason --> |
 
 <!-- PROFILE-SLOT: arch.schema -->
 <!-- /SLOT-CONTENT -->
 
 <!-- SLOT-CONTENT: arch.conventions -->
-### Quy tắc làm việc khi mất mạng (Offline-first Rules)
+### Offline-first Rules
 
-| Hạng mục | Quy tắc |
+| Item | Rule |
 | --- | --- |
-| Đọc | Màn hình đọc từ cơ sở dữ liệu cục bộ; kết quả đồng bộ cập nhật cơ sở dữ liệu cục bộ rồi màn hình tự hiển thị lại |
-| Ghi | Thao tác ghi cập nhật bản ghi cục bộ và thêm thay đổi vào hàng đợi trong cùng một transaction; giao diện báo "đã lưu trên máy" ngay, không chờ API |
-| Mất dữ liệu | Không thay đổi nào bị bỏ mà người dùng không biết: đăng xuất, xóa dữ liệu, gặp xung đột hay bị từ chối đều hiển thị cho người dùng trước |
-| Thời gian | Thời điểm trên thiết bị chỉ để hiển thị; thứ tự và phân xử dùng phiên bản do API cấp |
+| Read | Screens read from the local database; a sync result updates the local database and then the screen re-renders by itself |
+| Write | A write operation updates the local record and adds the change to the queue in the same transaction; the UI shows "saved on device" at once and does not wait for the API |
+| Data loss | No change is dropped without the user knowing: sign-out, data deletion, a conflict or a rejection is always shown to the user first |
+| Time | The time on the device is for display only; ordering and arbitration use the version issued by the API |
 
-### Quy ước đồng bộ (Sync Conventions)
+### Sync Conventions
 
-- Kích hoạt: khi mở ứng dụng, có mạng lại, ứng dụng trở lại tiền cảnh, kéo để làm mới, sau mỗi thao tác ghi, và khi ứng dụng đang mở, tới lúc có thể gửi tiếp: hết thời gian chờ `429` của thiết bị khi chưa có lượt nào chạy sau thời điểm đó (lượt đầu tiên chạy sau khi hết thời gian chờ xóa nó, kể cả khi `Retry-After` là 0), nếu không thì giờ hẹn gửi lại gần nhất.
-  - Bộ hẹn giờ đặt khi lượt vừa kết thúc, kể cả tới giờ hẹn đã qua trong lúc lượt đó chạy (khi đó dùng độ trễ tối thiểu một giây thay vì bỏ qua giờ hẹn), trừ khi lượt kết thúc bằng `auth-required` hoặc `failed`, vì khi đó thử lại ngay chỉ lặp lại cùng kết quả; thời gian chờ `429` đã có lượt chạy sau nó không còn là lý do để đặt bộ hẹn giờ. Khi mở ứng dụng, có mạng lại, trở lại tiền cảnh và kéo để làm mới, giờ hẹn của backoff bị bỏ để gửi ngay, kể cả giờ hẹn sau một `5xx` có `Retry-After`; chỉ thời gian chờ `429` của thiết bị được giữ.
-  - Chỉ một lượt đồng bộ chạy tại một thời điểm; kích hoạt đến trong lúc lượt đang chạy kết thúc `done` hoặc `offline` thì gộp thành đúng một lượt chạy tiếp theo, vì lượt đang chạy có thể đã lỗi ở một request gửi trước lúc thiết bị có mạng lại; kết thúc bằng kết quả khác thì không chạy thêm, vì chạy lại chỉ lặp lại cùng kết quả (sau `429`, bộ hẹn giờ thử lại khi hết thời gian chờ). Nếu kích hoạt đã bỏ giờ hẹn của backoff trong lúc một thay đổi vẫn đang gửi mà thay đổi đó vẫn lỗi, thay đổi được hẹn gửi lại ngắn hơn backoff mà số lần đã gửi của nó lẽ ra tính ra.
-- Một lượt: gửi thay đổi chờ trước, rồi nhận thay đổi mới từ API theo con trỏ (cursor) đã lưu.
-- Gửi: mỗi vòng, trong một transaction, đọc thay đổi cũ nhất có thể gửi (thay đổi chờ đầu tiên của bản ghi, đã tới giờ hẹn gửi lại) và đánh dấu nó đã gửi; sau khi commit mới gửi request với đúng nội dung đã đọc, kèm khóa idempotency là ID thay đổi và phiên bản gốc. MUST NOT gửi thay đổi sau của một bản ghi vượt thay đổi trước của bản ghi đó; thay đổi của bản ghi khác không phải chờ.
-- Phản hồi xác định: thành công thì xóa thay đổi khỏi hàng đợi, cập nhật phiên bản của bản ghi và đặt phiên bản gốc của các thay đổi sau cùng bản ghi bằng phiên bản mới; xung đột phiên bản thì lưu bản của API vào bảng xung đột, bỏ các thay đổi chờ của bản ghi (giá trị của người dùng vẫn nằm trên bản ghi cục bộ) và đặt trạng thái `CONFLICT`; mọi phản hồi `4xx` khác, trừ `401`, `408`, `429` và phản hồi báo khóa idempotency đang được xử lý (gửi lại cũng nhận cùng kết quả: dữ liệu sai, không có quyền, không tìm thấy, đã khóa, mã chưa biết), thì đặt `REJECTED` kèm mã lỗi.
-- Phản hồi chưa rõ (lỗi mạng, hết thời gian chờ, `408`, `5xx`, phản hồi báo khóa idempotency đang được xử lý): giữ thay đổi với đúng khóa và nội dung, hẹn gửi lại theo backoff lũy thừa có trần, ghi mã lỗi do máy chọn (không lấy mã trong body của phản hồi). Lỗi mạng, hết thời gian chờ, và các mã `5xx` cho biết cả dịch vụ đang sập (`502`, `503`, `504`) hoặc tự nêu thời gian chờ qua `Retry-After` dừng phần gửi (giờ hẹn vẫn theo backoff, không theo giá trị của header), vì gửi tiếp mục khác lúc đó chỉ tạo thêm request vào một dịch vụ khó có khả năng trả lời; `408` và các mã `5xx` còn lại (không có `Retry-After`) cho gửi tiếp thay đổi của bản ghi khác, để một thay đổi lỗi mãi không giữ cả hàng đợi. Contract của API ghi rõ cách nó báo khóa idempotency đang được xử lý.
-- `401` dừng lượt đồng bộ và làm mới phiên; `429` của bất kỳ request nào, ghi hay đọc, dừng mọi request tới API cho cả thiết bị (không riêng thay đổi vừa nhận mã này) tới hết thời gian chờ theo header `Retry-After`.
-- Nhận: chỉ bản ghi ở trạng thái `SYNCED` được bản của API mới hơn ghi đè; bản ghi đang `QUEUED` giữ giá trị trên máy (lần gửi sau phát hiện xung đột nếu có); bản ghi đang `CONFLICT` cập nhật bản của API trong bảng xung đột nếu bản mới hơn.
-- Lượt đồng bộ gặp lỗi không tự hết (một trang nhận về không lưu được, phản hồi `4xx` khi đọc trừ `401`, `408`, `429`): giữ con trỏ, kết thúc lượt với kết quả lỗi và hiển thị trên chỉ báo đồng bộ cho tới lượt thành công sau; MUST NOT bỏ qua trang lỗi rồi lưu con trỏ mới.
+- Triggers: when the app opens, when the network returns, when the app returns to the foreground, on pull to refresh, after every write operation, and, while the app is open, when sending can resume: the `429` wait of the device ends and no run has started after that moment (the first run that starts after the wait ends clears it, even when `Retry-After` is 0), otherwise the nearest retry time.
+  - The timer is set when a run has just ended, including when the retry time has already passed while that run was running (then use a minimum delay of one second instead of skipping the retry time), unless the run ended with `auth-required` or `failed`, because retrying at once would only repeat the same result; a `429` wait that a later run has already passed is no longer a reason to set the timer. When the app opens, when the network returns, on return to the foreground and on pull to refresh, the backoff retry time is dropped so that sending happens at once, including the retry time after a `5xx` with `Retry-After`; only the `429` wait of the device is kept.
+  - Only one sync run executes at a time; a trigger that arrives while a run is executing and that run ends with `done` or `offline` is merged into exactly one next run, because the running run may have failed on a request sent before the device got its network back; if it ends with any other result no extra run happens, because running again would only repeat the same result (after `429`, the timer retries when the wait ends). If a trigger dropped the backoff retry time while a change was still being sent and that change still fails, the change is scheduled to be resent sooner than the backoff that its send count would otherwise give.
+- A run: send the pending changes first, then receive new changes from the API by the stored cursor.
+- Send: in each loop, in one transaction, read the oldest change that can be sent (the first pending change of a record, whose retry time has arrived) and mark it as sent; only after the commit send the request with exactly the content that was read, with the idempotency key equal to the change ID and the base version. MUST NOT send a later change of a record ahead of an earlier change of that record; changes of other records do not have to wait.
+- Definitive responses: on success, remove the change from the queue, update the record's version and set the base version of the later changes of the same record to the new version; on a version conflict, save the API's version in the conflict table, drop the pending changes of the record (the user's value stays in the local record) and set the status `CONFLICT`; every other `4xx` response, except `401`, `408`, `429` and the response that says the idempotency key is being processed (sending again gets the same result: invalid data, no permission, not found, locked, unknown code), sets `REJECTED` with the error code.
+- Unclear responses (network error, timeout, `408`, `5xx`, the response that says the idempotency key is being processed): keep the change with exactly the same key and content, schedule a resend with capped exponential backoff, and record an error code chosen by the device (not a code from the response body). A network error, a timeout, and the `5xx` codes that show the whole service is down (`502`, `503`, `504`) or that state a wait through `Retry-After` stop the sending part (the retry time still follows the backoff, not the header value), because sending other items then would only add requests to a service that is unlikely to answer; `408` and the other `5xx` codes (without `Retry-After`) let the changes of other records continue, so that one change that keeps failing does not hold the whole queue. The API contract states how it reports that an idempotency key is being processed.
+- `401` stops the sync run and refreshes the session; `429` on any request, write or read, stops every request to the API for the whole device (not only the change that just got this code) until the wait given by the `Retry-After` header ends.
+- Receive: only a record in the `SYNCED` status is overwritten by a newer version from the API; a record in the `QUEUED` status keeps the on-device value (the next send detects a conflict if there is one); a record in the `CONFLICT` status updates the API's version in the conflict table if the new one is newer.
+- A sync run that hits an error that does not clear by itself (a received page that cannot be saved, a `4xx` response on a read other than `401`, `408`, `429`): keep the cursor, end the run with an error result and show it on the sync indicator until a later run succeeds; MUST NOT skip the failing page and save a new cursor.
 
-### Trạng thái giao diện (UI States)
+### UI States
 
-| Trạng thái | Khi nào | Yêu cầu hiển thị |
+| State | When | Display requirement |
 | --- | --- | --- |
-| `Initial` | Trước khi người dùng thao tác hoặc trước khi tải | Nội dung mặc định, không có thông báo lỗi |
-| `Loading` | Máy chưa có dữ liệu và đang tải lần đầu | Khung chờ hoặc chỉ báo tiến trình |
-| `Empty` | Máy đã có dữ liệu mới nhất nhưng danh sách rỗng | Giải thích và hành động tiếp theo |
-| `Success` | Có dữ liệu trên máy | Dữ liệu kèm thời điểm đồng bộ gần nhất và trạng thái đồng bộ của từng bản ghi |
-| `Error` | Không đọc được dữ liệu trên máy, hoặc tải lần đầu thất bại | Thông báo theo bảng ánh xạ bên dưới, cách khắc phục |
+| `Initial` | Before the user acts or before loading | Default content, no error message |
+| `Loading` | The device has no data yet and is loading for the first time | Skeleton or progress indicator |
+| `Empty` | The device has the latest data but the list is empty | An explanation and the next action |
+| `Success` | There is data on the device | The data with the last sync time and the sync status of each record |
+| `Error` | The data on the device cannot be read, or the first load failed | A message per the mapping table below, and how to recover |
 
-| Trạng thái đồng bộ | Hiển thị | Hành động của người dùng |
+| Sync status | Display | User action |
 | --- | --- | --- |
-| `Synced` | Không có chỉ báo, hoặc dấu đã đồng bộ | Sửa bình thường |
-| `Queued` | Chỉ báo "đã lưu trên máy, chờ đồng bộ" | Sửa tiếp; thay đổi được gộp theo quy ước đồng bộ |
-| `Conflict` | Chỉ báo cần chọn; màn hình so sánh bản trên máy và bản của API | Chọn một bản theo chiến lược ở ADR; chưa chọn thì không sửa tiếp |
-| `Rejected` | Chỉ báo bị từ chối kèm lý do theo mã lỗi | Xem lý do, bỏ thay đổi hoặc liên hệ người phụ trách |
+| `Synced` | No indicator, or a synced mark | Edit as usual |
+| `Queued` | Indicator "saved on device, waiting to sync" | Keep editing; changes are merged under the sync conventions |
+| `Conflict` | An indicator that a choice is needed; a screen that compares the on-device version and the API's version | Choose one version by the strategy in the ADR; no further edits until chosen |
+| `Rejected` | An indicator that it was rejected, with the reason by error code | See the reason, drop the change or contact the owner |
 
-Lượt đồng bộ kết thúc với lỗi không tự hết hiện trên chỉ báo đồng bộ chung, trước số thay đổi chờ, cho tới lượt thành công sau.
+A sync run that ends with an error that does not clear by itself shows on the shared sync indicator, ahead of the pending change count, until a later run succeeds.
 
-### Ánh xạ mã lỗi sang giao diện (Error Code to UI Mapping)
+### Error Code to UI Mapping
 
-Phần Mobile App của cột "Ánh xạ theo bề mặt" ở §7.1 ghi khóa chuỗi và hành vi theo bảng này, kể cả trạng thái đồng bộ mà mã lỗi dẫn tới; §7.1 có mọi mã mà ứng dụng xử lý.
+The Mobile App part of the "Mapping per surface" column at §7.1 records the string key and the behavior under this table, including the sync status that the error code leads to; §7.1 has every code that the app handles.
 
-<!-- fill: API thuộc dự án khác: mã của API chép nguyên tên từ registry của API, cột Phân hệ sở hữu bắt đầu bằng API rồi tên của API. Mã chỉ có ở ứng dụng (lỗi mạng) ghi Phân hệ sở hữu là phân hệ của ứng dụng hoặc Dùng chung. Tên mã và cấu trúc lỗi ở bảng dưới theo quy ước của overlay backend-api; API khác thì thay bằng tên và cấu trúc của API đó. -->
+<!-- fill: The API belongs to another project: copy the API's codes by name from the API's registry, and the Owning module column starts with API followed by the name of the API. A code that exists only in the app (network error) has as Owning module the app's module or Shared. The code names and the error structure in the table below follow the convention of the backend-api overlay; for another API, replace them with the names and structure of that API. -->
 
-| Nhóm lỗi | Hành vi khi gọi trực tiếp (đăng nhập, tải lần đầu) | Hành vi khi đồng bộ |
+| Error group | Behavior on a direct call (sign-in, first load) | Behavior during sync |
 | --- | --- | --- |
-| `VALIDATION_ERROR` | Lỗi dưới từng trường theo `error.details` | Thay đổi thành `Rejected`; lỗi này cho thấy validate trên máy lệch với API |
-| `UNAUTHENTICATED` | Chuyển tới đăng nhập | Dừng đồng bộ, làm mới phiên; thay đổi chờ giữ nguyên |
-| `FORBIDDEN` | Thông báo không có quyền | Thay đổi thành `Rejected` |
-| Mã xung đột phiên bản của API | Không áp dụng | Bản ghi thành `Conflict` |
-| Mã `4xx` khác của API, kể cả mã chưa biết, trừ mã báo khóa idempotency đang được xử lý | Thông báo riêng theo khóa chuỗi của mã; mã chưa biết dùng thông báo chung | Thay đổi thành `Rejected` kèm thông báo của mã; không gửi lại. Mã báo khóa idempotency đang được xử lý không rơi vào hàng này: xem như phản hồi chưa rõ, thay đổi giữ `Queued` và gửi lại với cùng khóa |
-| `RATE_LIMITED` | Thông báo chờ theo `Retry-After` | Dừng mọi request tới API cho cả thiết bị, không riêng thay đổi vừa nhận mã này, tới hết thời gian chờ theo `Retry-After` |
-| Lỗi mạng, hết thời gian chờ, `502`, `503`, `504`, mọi `5xx` khác có `Retry-After` | Mã phía client `NETWORK_ERROR`; dùng dữ liệu đã có trên máy | Thay đổi giữ `Queued`, dừng phần gửi, gửi lại với cùng khóa |
-| `408`, `5xx` khác không có `Retry-After` | Mã phía client `INTERNAL_ERROR`; thông báo chung kèm `correlationId` | Thay đổi giữ `Queued`, gửi lại với cùng khóa, gửi tiếp thay đổi của bản ghi khác |
+| `VALIDATION_ERROR` | An error under each field by `error.details` | The change becomes `Rejected`; this error shows that on-device validation has drifted from the API |
+| `UNAUTHENTICATED` | Go to sign-in | Stop syncing, refresh the session; pending changes stay as they are |
+| `FORBIDDEN` | A no-permission message | The change becomes `Rejected` |
+| The API's version conflict code | Not applicable | The record becomes `Conflict` |
+| Other `4xx` codes of the API, including unknown codes, except the code that says an idempotency key is being processed | A specific message by the string key of the code; an unknown code uses the generic message | The change becomes `Rejected` with the message of the code; not sent again. The code that says an idempotency key is being processed does not fall into this row: treat it as an unclear response, the change stays `Queued` and is sent again with the same key |
+| `RATE_LIMITED` | A message to wait per `Retry-After` | Stop every request to the API for the whole device, not only the change that just got this code, until the wait per `Retry-After` ends |
+| Network error, timeout, `502`, `503`, `504`, every other `5xx` with `Retry-After` | Client-side code `NETWORK_ERROR`; use the data already on the device | The change stays `Queued`, the sending part stops, sent again with the same key |
+| `408`, other `5xx` without `Retry-After` | Client-side code `INTERNAL_ERROR`; a generic message with the `correlationId` | The change stays `Queued`, sent again with the same key, the changes of other records continue to be sent |
 
-### Quyền hệ điều hành và hiệu năng (Permissions & Performance)
+### Permissions & Performance
 
-- Xin quyền ngay trước lần đầu dùng tính năng cần quyền, kèm màn hình giải thích lý do; bị từ chối thì dùng hành vi ở SRS §3 và cho mở cài đặt hệ thống, không hỏi lại liên tục.
-- Danh sách dài dùng danh sách ảo hóa; truy vấn cục bộ có chỉ mục theo cột lọc và sắp xếp.
-- Thời gian mở ứng dụng tới màn hình đầu tiên có dữ liệu và kích thước bản build theo NFR-PERF; tác vụ nặng (đồng bộ, nén ảnh) không chạy trên luồng giao diện.
-- Token và secret chỉ lưu trong kho khóa của hệ điều hành; log và báo cáo crash không chứa token hay dữ liệu cá nhân.
+- Ask for a permission right before the first use of the feature that needs it, with a screen that explains the reason; if it is denied, use the behavior at SRS §3 and let the user open the system settings, and do not keep asking again.
+- Long lists use a virtualized list; local queries have an index on the filter and sort columns.
+- The time from app launch to the first screen with data and the build size follow NFR-PERF; heavy tasks (sync, image compression) do not run on the UI thread.
+- Tokens and secrets are stored only in the OS keystore; logs and crash reports contain no token or personal data.
 
-### Quy ước giao diện (UI Conventions)
+### UI Conventions
 
-| Hạng mục | Quy ước |
+| Item | Convention |
 | --- | --- |
-| Design token | Màu, khoảng cách, cỡ chữ, bo góc lấy từ token; không dùng giá trị rời trong thành phần. Nguồn token: `docs/design-system/tokens.json`; file theme trong mã nguồn theo stack profile là ánh xạ từ `tokens.json`, viết tay theo bảng ánh xạ của profile hoặc sinh bằng công cụ dự án chọn, sửa cùng lúc với `tokens.json` và là nơi duy nhất được chứa giá trị màu, spacing, radius, cỡ chữ thô; chế độ sáng tối theo mode của token và cài đặt của hệ điều hành |
+| Design token | Color, spacing, font size and corner radius come from tokens; no loose values in components. The token source: `docs/design-system/tokens.json`; the theme file in the source code per the stack profile is a mapping from `tokens.json`, written by hand per the profile's mapping table or generated by a tool the project chooses, edited at the same time as `tokens.json`, and is the only place allowed to hold raw color, spacing, radius and font size values; light and dark modes follow the token mode and the OS setting |
 
 <!-- PROFILE-SLOT: arch.conventions -->
 <!-- /SLOT-CONTENT -->
 
 <!-- SLOT-CONTENT: arch.deployment -->
-### Phiên bản, ký và phân phối (Versioning, Signing & Distribution)
+### Versioning, Signing & Distribution
 
-| Hạng mục | Quyết định |
+| Item | Decision |
 | --- | --- |
-| Phiên bản ứng dụng | Phiên bản hiển thị theo SemVer; số build tăng đơn điệu cho mỗi bản gửi lên cửa hàng |
-| Khóa ký | Chứng chỉ iOS và keystore Android giữ trong dịch vụ build hoặc kho secret của CI; MUST NOT commit vào repo |
-| Build | <!-- fill: dịch vụ build trên cloud hoặc máy build của CI; profile build cho phát triển, thử nội bộ, production --> |
-| Kênh thử nội bộ | <!-- fill: TestFlight, Google Play internal testing; ai duyệt trước khi lên production --> |
-| Thông tin trên cửa hàng | Mô tả, ảnh chụp màn hình, khai báo quyền riêng tư và dữ liệu thu thập khớp SRS §4 và §2.4 |
+| App version | The displayed version follows SemVer; the build number increases monotonically for every build sent to the store |
+| Signing keys | The iOS certificate and the Android keystore are kept in the build service or the CI secret store; MUST NOT be committed to the repo |
+| Build | <!-- fill: cloud build service or CI build machine; build profiles for development, internal testing, production --> |
+| Internal testing channel | <!-- fill: TestFlight, Google Play internal testing; who approves before it goes to production --> |
+| Store information | The description, screenshots, and the privacy and data collection declaration match SRS §4 and §2.4 |
 
-### Phát hành, cập nhật và quay lui (Release, Updates & Rollback)
+### Release, Updates & Rollback
 
-| Hạng mục | Quyết định |
+| Item | Decision |
 | --- | --- |
-| Phát hành theo tỉ lệ | <!-- fill: phased release của App Store, staged rollout của Google Play; tỉ lệ từng bước và chỉ số dừng (tỉ lệ crash, lỗi đồng bộ) --> |
-| Cập nhật qua mạng (OTA) | <!-- fill: chọn một: không dùng \| chỉ cho thay đổi mã và tài nguyên không đổi phần native; kèm kênh, chính sách runtimeVersion, cách quay lui. Bản cập nhật qua mạng không chứa migration cục bộ: quay lui nó sẽ chạy mã cũ trên cơ sở dữ liệu đã nâng cấp --> |
-| Phiên bản tối thiểu | <!-- fill: nơi khai báo, cách ứng dụng cũ nhận biết và dẫn người dùng tới cửa hàng --> |
-| Tương thích với API | API giữ contract cho mọi phiên bản ứng dụng từ phiên bản tối thiểu trở lên; đổi contract phá vỡ thì nâng phiên bản tối thiểu sau khi tỉ lệ người dùng bản cũ dưới <!-- fill: ngưỡng phần trăm --> |
-| Migration cục bộ | Chạy khi mở ứng dụng; bản build mới đọc được cơ sở dữ liệu của mọi bản build đã phát hành, kể cả bản dưới phiên bản tối thiểu; chỉ đi trong bản build gửi lên cửa hàng |
-| Quay lui | Cửa hàng không cho gỡ bản đã cài: dừng phát hành theo tỉ lệ, sửa và phát hành bản mới với số build lớn hơn, hoặc quay lui bản cập nhật qua mạng (không chứa migration) |
+| Staged release | <!-- fill: App Store phased release, Google Play staged rollout; the percentage at each step and the stop metrics (crash rate, sync errors) --> |
+| Over-the-air (OTA) update | <!-- fill: choose one: not used \| only for changes to code and assets that leave the native part unchanged; with the channel, the runtimeVersion policy, and how to roll back. An over-the-air update carries no local migration: rolling it back would run old code on an upgraded database --> |
+| Minimum version | <!-- fill: where it is declared, how an old app recognizes it and leads the user to the store --> |
+| API compatibility | The API keeps the contract for every app version from the minimum version up; a breaking contract change raises the minimum version after the share of users on old versions falls below <!-- fill: percentage threshold --> |
+| Local migration | Runs when the app opens; the new build reads the database of every released build, including builds below the minimum version; it ships only in a build sent to the store |
+| Rollback | The store does not allow removing an installed version: stop the staged release, fix and release a new build with a higher build number, or roll back an over-the-air update (which carries no migration) |
 <!-- /SLOT-CONTENT -->

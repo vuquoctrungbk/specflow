@@ -2,39 +2,39 @@
 doc_type: overlay-section
 status: stable
 version: 1.1.0
-language: vi-en
+language: en
 surface: mobile-app
 ---
 
-# Overlay mobile-app: khối cho SPEC
+# Overlay mobile-app: blocks for the SPEC
 
 <!-- SLOT-CONTENT: spec.contract -->
-### Màn hình (Screen)
+### Screen
 
-<!-- fill: Một bảng cho mỗi màn hình của tính năng. Có Giai đoạn 1W: hàng SCR ID dẫn đúng ID ở chỉ mục wireframe và hàng Trang wireframe dẫn trang của màn hình; SPEC chỉ dẫn SCR-*, không định nghĩa lại màn hình, bố cục hay thành phần đã có ở trang wireframe, bảng năm trạng thái dưới khớp bảng trạng thái của trang và thêm hành vi thực thi. Dự án có Intake cũ hơn 1.3.0 hoặc không có Giai đoạn 1W: bỏ hai hàng này. -->
+<!-- fill: One table per screen of the feature. With Stage 1W: the SCR ID row cites exactly the ID in the wireframe index and the Wireframe page row cites the screen's page; the SPEC only cites SCR-*, and does not redefine the screen, layout or components already on the wireframe page; the five-state table below matches the page's state table and adds the execution behavior. Without Stage 1W: remove these two rows. -->
 
-| Hạng mục | Giá trị |
+| Item | Value |
 | --- | --- |
 | SCR ID | {{SCR_ID}} |
-| Trang wireframe | `docs/wireframes/{{SCR_ID}}.md` |
+| Wireframe page | `docs/wireframes/{{SCR_ID}}.md` |
 | Route | `/{{ROUTE_PATH}}` |
-| Tham số điều hướng | <!-- fill: tên, kiểu, bắt buộc hay không; tham số đến từ deep link được validate như input ngoài --> |
-| Tác nhân và điều kiện truy cập | <!-- fill: vai trò được vào; hành vi khi phiên hết hạn trong lúc mất mạng --> |
-| Dùng khi mất mạng | <!-- fill: chọn một: Có \| Chỉ xem \| Không; khớp SRS §3 --> |
-| Điều hướng vào | <!-- fill: từ màn hình nào, từ deep link hay thông báo đẩy --> |
-| Điều hướng ra | <!-- fill: sau khi lưu, khi hủy, khi quay lại bằng cử chỉ hệ thống --> |
+| Navigation parameters | <!-- fill: name, type, required or not; a parameter that comes from a deep link is validated as external input --> |
+| Actor and access condition | <!-- fill: roles allowed in; behavior when the session expires while offline --> |
+| Works offline | <!-- fill: choose one: Yes \| View only \| No; matches SRS §3 --> |
+| Navigation in | <!-- fill: from which screen, from a deep link or a push notification --> |
+| Navigation out | <!-- fill: after saving, on cancel, on the system back gesture --> |
 
-### Thành phần và props (Components & Props)
+### Components & Props
 
-| Thành phần | Props (tên: kiểu) | Nguồn dữ liệu | Trách nhiệm |
+| Component | Props (name: type) | Data source | Responsibility |
 | --- | --- | --- | --- |
-| {{COMPONENT_NAME}} | <!-- fill --> | <!-- fill: truy vấn cục bộ nào, hoặc props từ màn hình --> | <!-- fill --> |
+| {{COMPONENT_NAME}} | <!-- fill --> | <!-- fill: which local query, or props from the screen --> | <!-- fill --> |
 
-### Năm trạng thái giao diện (UI States)
+### UI States
 
-<!-- fill: Đủ năm hàng cho mỗi màn hình hoặc vùng dữ liệu độc lập; trạng thái không áp dụng ghi N/A kèm lý do ở cột Hiển thị. Cột Khi mất mạng ghi hiển thị khác đi thế nào khi thiết bị mất mạng. Cột AC trỏ tiêu chí nghiệm thu ở SRS §8. -->
+<!-- fill: All five rows for each screen or independent data zone; a state that does not apply records N/A with a reason in the Display column. The When offline column records how the display differs when the device is offline. The AC column points to the acceptance criteria in SRS §8. -->
 
-| Trạng thái | Điều kiện vào | Hiển thị | Khi mất mạng | Hành động người dùng | AC |
+| State | Entry condition | Display | When offline | User action | AC |
 | --- | --- | --- | --- | --- | --- |
 | `Initial` | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | AC-{{MODULE_CODE}}-01 |
 | `Loading` | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | AC-{{MODULE_CODE}}-01 |
@@ -42,84 +42,84 @@ surface: mobile-app
 | `Success` | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | AC-{{MODULE_CODE}}-01 |
 | `Error` | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | AC-{{MODULE_CODE}}-01 |
 
-### Trạng thái đồng bộ của bản ghi (Record Sync States)
+### Record Sync States
 
-<!-- fill: Bắt buộc với bản ghi sửa được khi mất mạng; ghi N/A kèm lý do nếu tính năng chỉ đọc. -->
+<!-- fill: Required for records that can be edited offline; record N/A with a reason if the feature is read-only. -->
 
-| Trạng thái | Điều kiện vào | Hiển thị | Hành động người dùng | AC |
+| State | Entry condition | Display | User action | AC |
 | --- | --- | --- | --- | --- |
 | `Synced` | <!-- fill --> | <!-- fill --> | <!-- fill --> | AC-{{MODULE_CODE}}-01 |
 | `Queued` | <!-- fill --> | <!-- fill --> | <!-- fill --> | AC-{{MODULE_CODE}}-01 |
 | `Conflict` | <!-- fill --> | <!-- fill --> | <!-- fill --> | AC-{{MODULE_CODE}}-01 |
 | `Rejected` | <!-- fill --> | <!-- fill --> | <!-- fill --> | AC-{{MODULE_CODE}}-01 |
 
-### Thao tác ghi cục bộ (Local Mutations)
+### Local Mutations
 
-<!-- fill: Mỗi thao tác ghi một hàng. Bảng cục bộ và hàng đợi thay đổi đổi trong cùng một transaction. -->
+<!-- fill: One row per write operation. The local table and the change queue change in the same transaction. -->
 
-| Thao tác | Bảng cục bộ thay đổi | Thay đổi vào hàng đợi | Gộp với thay đổi chưa gửi | Điều kiện chặn |
+| Operation | Local table changed | Change enqueued | Merge with an unsent change | Blocking condition |
 | --- | --- | --- | :---: | --- |
-| <!-- fill --> | <!-- fill --> | <!-- fill: endpoint đích, nội dung, phiên bản gốc --> | <!-- fill: chọn một: Có \| Không --> | <!-- fill: ví dụ bản ghi đang Conflict --> |
+| <!-- fill --> | <!-- fill --> | <!-- fill: target endpoint, content, base version --> | <!-- fill: choose one: Yes \| No --> | <!-- fill: for example the record is in Conflict --> |
 
-### Form và validation (Form & Validation)
+### Form & Validation
 
-<!-- fill: Mỗi trường một hàng; ràng buộc chép từ DTO request trong SPEC hoặc OpenAPI của API và ghi nguồn ở cột cuối. -->
+<!-- fill: One row per field; constraints are copied from the request DTO in the SPEC or the API's OpenAPI, and the source is recorded in the last column. -->
 
-| Trường | Kiểu | Ràng buộc | Khóa chuỗi thông báo lỗi | Nguồn ràng buộc |
+| Field | Type | Constraint | Error message string key | Constraint source |
 | --- | --- | --- | --- | --- |
 | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill --> |
 
 <!-- PROFILE-SLOT: spec.contract -->
 
-### Hợp đồng đồng bộ (Sync Contract)
+### Sync Contract
 
-<!-- fill: Mỗi lời gọi API mà bộ máy đồng bộ hoặc màn hình dùng một hàng; đường dẫn đúng như contract nguồn. Phản hồi xác định là phản hồi mà sau đó thay đổi không cần gửi lại. -->
+<!-- fill: One row per API call that the sync engine or a screen uses; the path exactly as in the source contract. A definitive response is one after which the change does not need to be sent again. -->
 
-| Lời gọi | Method và path | Contract nguồn | Header và tham số đặc biệt | Phản hồi xác định | Phản hồi chưa rõ |
+| Call | Method and path | Source contract | Special headers and parameters | Definitive response | Unclear response |
 | --- | --- | --- | --- | --- | --- |
-| <!-- fill --> | <!-- fill: chọn một: GET \| POST \| PATCH \| PUT \| DELETE; đường dẫn đúng như contract nguồn --> `/api/v1/{{RESOURCE_PATH}}` | <!-- fill: SPEC ID hoặc operationId trong OpenAPI --> | <!-- fill: ví dụ Idempotency-Key là ID thay đổi, phiên bản gốc trong body --> | <!-- fill: mã HTTP và mã lỗi, kèm trạng thái đồng bộ mà mỗi mã dẫn tới --> | Lỗi mạng, hết thời gian chờ, `5xx`: gửi lại với cùng khóa |
+| <!-- fill --> | <!-- fill: choose one: GET \| POST \| PATCH \| PUT \| DELETE; path exactly as in the source contract --> `/api/v1/{{RESOURCE_PATH}}` | <!-- fill: SPEC ID or operationId in OpenAPI --> | <!-- fill: for example Idempotency-Key is the change ID, base version in the body --> | <!-- fill: HTTP code and error code, with the sync state that each code leads to --> | Network error, timeout, `5xx`: resend with the same key |
 
-### Quyền hệ điều hành (Permissions)
+### Permissions
 
-| Quyền | Thời điểm xin | Nội dung giải thích | Khi bị từ chối |
+| Permission | When to ask | Explanation text | When denied |
 | --- | --- | --- | --- |
-| <!-- fill: hoặc Không dùng --> | <!-- fill --> | Khóa chuỗi <!-- fill --> | <!-- fill --> |
+| <!-- fill: or Not used --> | <!-- fill --> | String key <!-- fill --> | <!-- fill --> |
 
-### Ánh xạ lỗi sang giao diện (Error to UI Mapping)
+### Error to UI Mapping
 
-<!-- fill: Mọi mã lỗi mà lời gọi ở trên có thể trả và mã phía client; mã có trong ARCHITECTURE §7.1. -->
+<!-- fill: Every error code that the calls above can return, and the client-side codes; the codes are in ARCHITECTURE §7.1. -->
 
-| `error.code` | Trạng thái giao diện hoặc trạng thái đồng bộ | Khóa chuỗi thông báo | Hành vi |
+| `error.code` | UI state or sync state | Message string key | Behavior |
 | --- | --- | --- | --- |
-| `NETWORK_ERROR` | `Queued` | <!-- fill --> | Gửi lại với cùng khóa ở lượt đồng bộ sau |
-| <!-- fill: mã của API --> | <!-- fill --> | <!-- fill --> | <!-- fill --> |
+| `NETWORK_ERROR` | `Queued` | <!-- fill --> | Resend with the same key in the next sync round |
+| <!-- fill: API code --> | <!-- fill --> | <!-- fill --> | <!-- fill --> |
 
-### Chuỗi hiển thị (i18n Keys)
+### i18n Keys
 
-| Khóa | Nội dung theo locale mặc định |
+| Key | Content in the default locale |
 | --- | --- |
-| <!-- fill: dạng tính năng.phần tử --> | <!-- fill --> |
+| <!-- fill: in the form feature.element --> | <!-- fill --> |
 <!-- /SLOT-CONTENT -->
 
 <!-- SLOT-CONTENT: spec.test-types -->
-### Loại test của bề mặt (Surface Test Types)
+### Surface Test Types
 
-| Loại | TYPE trong TC ID | Phạm vi | Dữ liệu | Bắt buộc |
+| Type | TYPE in the TC ID | Scope | Data | Required |
 | --- | --- | --- | --- | :---: |
-| Unit | `UNIT` | Hàm thuần, schema form, thành phần render độc lập | Trong bộ nhớ | Có |
-| Integration | `INT` | Thao tác ghi cục bộ, migration, bộ máy đồng bộ với client API thật và API giả lập ở tầng `fetch` | Cơ sở dữ liệu cục bộ thật (cùng engine SQL) trong bộ nhớ | Có |
-| E2E | `E2E` | Luồng người dùng trên bản build chạy trong máy ảo hoặc thiết bị, gồm tắt và bật mạng | API giả lập hoặc API staging | Có |
-| Trợ năng | `A11Y` | Nhãn, vai trò, thông báo trạng thái cho trình đọc màn hình; kiểm tra thủ công bằng VoiceOver và TalkBack trên màn hình chính trước phát hành | Như unit hoặc e2e | Có, mỗi màn hình |
-| Concurrency | `CONC` | Bất biến ở §1.2 khi hai thiết bị cùng sửa khi mất mạng, khi đồng bộ bị kích hoạt nhiều lần cùng lúc, hoặc khi người dùng sửa bản ghi đang được gửi | Như integration, mỗi thiết bị một cơ sở dữ liệu | Có, mỗi bất biến ở §1.2 một test |
-| Smoke | `SMOKE` | Mở ứng dụng, đăng nhập, luồng chính, mất mạng rồi có mạng lại, trên từng cấu hình của ma trận thiết bị | Bản build thử nội bộ, API staging | Có, mỗi lần phát hành |
+| Unit | `UNIT` | Pure functions, form schemas, components rendered in isolation | In memory | Yes |
+| Integration | `INT` | Local mutations, migrations, the sync engine with the real API client and a fake API at the `fetch` layer | A real local database (same SQL engine) in memory | Yes |
+| E2E | `E2E` | User flows on a build running in an emulator or a device, including turning the network off and on | A fake API or the staging API | Yes |
+| Accessibility | `A11Y` | Labels, roles, status announcements for the screen reader; manual check with VoiceOver and TalkBack on the main screens before release | As unit or e2e | Yes, per screen |
+| Concurrency | `CONC` | The invariants in §1.2 when two devices edit offline, when sync is triggered several times at once, or when the user edits a record that is being sent | As integration, one database per device | Yes, one test per invariant in §1.2 |
+| Smoke | `SMOKE` | Open the app, log in, the main flow, lose the network and get it back, on each configuration of the device matrix | An internal test build, the staging API | Yes, every release |
 
-### Dạng test CONC của bề mặt (Concurrency Test Pattern)
+### Concurrency Test Pattern
 
-1. Tạo API giả lập ở tầng `fetch` giữ phiên bản của bản ghi, trả xung đột khi phiên bản gốc cũ, lưu phản hồi theo khóa idempotency và phát lại đúng phản hồi đó khi nhận lại khóa, ghi lại khóa và nội dung của mọi request; có tùy chọn mất phản hồi sau khi đã áp dụng, móc chạy một tác vụ sau khi áp dụng lần ghi kế tiếp và trước khi trả lời, và tùy chọn độ trễ.
-2. Hai thiết bị: tạo hai cơ sở dữ liệu cục bộ và hai bộ máy đồng bộ độc lập cùng gọi API giả lập; đồng bộ lần đầu, ghi cục bộ trên cả hai như khi mất mạng, rồi đồng bộ lần lượt theo thứ tự test chọn. Khẳng định: API chỉ nhận thay đổi dựa trên phiên bản mới nhất, thiết bị còn lại chuyển `Conflict` và giữ giá trị của người dùng, không thay đổi nào mất mà người dùng không biết.
-3. Nhiều lần kích hoạt: một thiết bị có thay đổi chờ, API giả lập có độ trễ, gọi đồng bộ nhiều lần cùng lúc. Khẳng định số request ghi mà API nhận bằng số thay đổi chờ.
-4. Sửa trong lúc gửi: móc của API giả lập ghi cục bộ lên cùng bản ghi sau khi API đã áp dụng thay đổi đang gửi; chạy một lần với phản hồi về được và một lần với phản hồi bị mất rồi đồng bộ lại; thêm một lần ghi cục bộ ngay sau khi bộ máy đồng bộ đọc thay đổi sắp gửi (bọc cổng truy vấn để chen lần ghi vào đúng lúc đó). Khẳng định API giữ giá trị mới nhất, mỗi khóa idempotency chỉ đi kèm một nội dung, và bản ghi trên máy khớp API.
-5. Không dùng sleep để sắp thứ tự; thứ tự do test điều khiển bằng lời gọi đồng bộ và độ trễ của API giả lập.
+1. Create a fake API at the `fetch` layer that keeps the record's version, returns a conflict when the base version is stale, stores responses by idempotency key and replays exactly that response when it receives the key again, and records the key and content of every request; with an option to lose the response after it has been applied, a hook that runs a task after the next write is applied and before the reply, and a latency option.
+2. Two devices: create two local databases and two independent sync engines that call the same fake API; sync for the first time, write locally on both as when offline, then sync one after the other in an order the test chooses. Assert: the API accepts only the change based on the latest version, the other device moves to `Conflict` and keeps the user's value, and no change is lost without the user knowing.
+3. Several triggers: one device has pending changes, the fake API has latency, call sync several times at once. Assert that the number of write requests the API receives equals the number of pending changes.
+4. Edit while sending: the fake API's hook writes locally to the same record after the API has applied the change being sent; run once with the response arriving and once with the response lost, then sync again; add a local write right after the sync engine reads the change about to be sent (wrap the query gateway to insert the write at exactly that moment). Assert that the API keeps the latest value, each idempotency key goes with only one content, and the record on the device matches the API.
+5. Do not use sleep to order events; the test controls the order with sync calls and the fake API's latency.
 
 <!-- PROFILE-SLOT: spec.test-types -->
 <!-- /SLOT-CONTENT -->

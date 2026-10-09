@@ -5,7 +5,7 @@ Usage:
   gate.py PROJECT_DIR approve --gate N --approver NAME [--bump patch|minor|major --note TEXT] [--author NAME] [--date YYYY-MM-DD] FILE...
   gate.py PROJECT_DIR implemented --note TEXT [--bump patch|minor] [--after-review] [--author NAME] [--date YYYY-MM-DD] SPEC_FILE
 
-The agent runs this when it receives "Duyệt Gate N" (PLAYBOOK section 2.7) and at Sync Docs (Prompt 6), instead of
+The agent runs this when it receives the approval of Gate N, "Approved at Gate N" (PLAYBOOK section 2.7) and at Sync Docs (Prompt 6), instead of
 editing frontmatter and history rows by hand. It changes nothing but those two places; the roadmap, the plan phases and
 the tag of Gate 5 stay with the agent.
 
@@ -16,21 +16,24 @@ approve, per FILE:
     `draft` or `in-review`; --bump raises its version once, here, when the change is presented at the gate, and
     --note says in the history row what changed. Without --bump a later approval keeps the version the change
     already set; it is refused when that version was approved before, since the change would leave no trace.
-  - Version History: the row of that version gets NAME as its approver when it still says "Chưa duyệt"; when there is
-    no row for the version, a row "Duyệt Gate N" is added, with as many cells as the table has: the six-column table
-    of older templates, or the four-column one (version, date, content, approver). An ADR has no Version History.
+  - Version History: the row of that version gets NAME as its approver when it still says the `gate_not_approved` label
+    ("Not approved" in English); when there is no row for the version, a row `gate_approved_content` ("Approved at Gate N") is added, with as many cells as the table has: the six-column table
+    of the templates, or a four-column one (version, date, content, approver). An ADR has no Version History.
   - docs/gates/GATE-N.md gets one row per approved document: the page a later session reads instead of the history
     of the conversation.
 implemented:
   - a SPEC that is `approved` becomes `implemented`, its version rises by a PATCH (or a MINOR with --bump minor), and a
-    row with TEXT is added whose approver is "Chưa duyệt" until Gate 5 is approved. --after-review also accepts a
+    row with TEXT is added whose approver is the `gate_not_approved` label until Gate 5 is approved. --after-review also accepts a
     SPEC that went back to `in-review` for a fix found by review (PLAYBOOK section 8).
 
 Nothing is written unless every FILE can be changed: each must be a kit document in a status the action accepts and,
-for approve, hold no question whose BLOCKING cell says "Có". Before anything is written, check-templates.sh --project
+for approve, hold no question whose BLOCKING cell is not the `tpl_val_no` label of the language of the project ("No" in English, "Không"
+in Vietnamese; a cell that is neither that nor the `tpl_val_yes` label is refused with the words to write). Before anything is written, check-templates.sh --project
 must report no error for the FILEs themselves or their companion files; errors in other documents of the project are
 counted in a note and do not refuse the action. After writing, docs/INDEX.md is rebuilt when it exists.
-The exit status is 0 on success and 1 when the action was refused; the reasons are printed, one per line.
+The exit status is 0 on success and 1 when the action was refused; the reasons are printed, one per line. The labels it writes
+are those of the language in the Intake of the project; when the Intake is missing or has no `language`, it stops with one
+line that says what to write (i18n.py).
 """
 import argparse
 import datetime
@@ -41,11 +44,13 @@ import subprocess
 import sys
 
 sys.dont_write_bytecode = True
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from i18n import T  # noqa: E402
 _spec = importlib.util.spec_from_file_location("project_index", pathlib.Path(__file__).with_name("project-index.py"))
 project_index = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(project_index)
 
-NOT_APPROVED = "Chưa duyệt"
+NOT_APPROVED = T.gate_not_approved
 ROW_RE = re.compile(r"^\| *(\d+\.\d+\.\d+) *\|.*\|\s*$")
 # doc_type -> (statuses the approval accepts, status after approval; None keeps the current one)
 APPROVE = {
@@ -134,6 +139,9 @@ def plan_change(root, name, args):
         accepted, target = APPROVE.get(doc.doc_type, DEFAULT_APPROVE)
         if status not in accepted:
             raise Refused(f"status '{status}' cannot be approved (expected {' or '.join(accepted)})")
+        for qid, cell in project_index.invalid_blocking(doc):
+            raise Refused(f"the BLOCKING cell of {qid} is '{cell}': write '{T.tpl_val_yes}' or '{T.tpl_val_no}' "
+                          "(the words of the language of the project)")
         blocking = project_index.open_blocking(doc)
         if blocking:
             raise Refused(f"still has BLOCKING question(s) {', '.join(blocking)}")
@@ -152,8 +160,8 @@ def plan_change(root, name, args):
             version = bump(version, args.bump)
             set_frontmatter(lines, "version", version)
         if doc.doc_type not in NO_HISTORY:
-            content = f"{args.note} (Gate {args.gate})" if args.note else f"Duyệt Gate {args.gate}"
-            write_history(lines, version, args.date, args.author, content, f"{args.approver} duyệt", args.approver)
+            content = f"{args.note} (Gate {args.gate})" if args.note else T.gate_approved_content.format(gate=args.gate)
+            write_history(lines, version, args.date, args.author, content, f"{args.approver} {T.gate_approved_by}", args.approver)
     else:
         if doc.doc_type != "spec":
             raise Refused("only a SPEC becomes implemented")
@@ -169,12 +177,13 @@ def plan_change(root, name, args):
         version = bump(version, args.bump)
         set_frontmatter(lines, "status", "implemented")
         set_frontmatter(lines, "version", version)
-        write_history(lines, version, args.date, args.author, args.note, "Sync Docs sau khi hiện thực (PLAYBOOK mục 2.6)", NOT_APPROVED)
+        write_history(lines, version, args.date, args.author, args.note, T.gate_sync_reason, NOT_APPROVED)
     return path, lines, version
 
 
 GATES_DIR = "docs/gates"
-GATE_HEADER = "| Ngày | Người duyệt | Tài liệu | Version | Trạng thái |\n| --- | --- | --- | --- | --- |\n"
+GATE_HEADER = (f"| {T.gate_col_date} | {T.gate_col_approver} | {T.gate_col_doc} | {T.gate_col_version} | {T.gate_col_status} |\n"
+               "| --- | --- | --- | --- | --- |\n")
 
 
 def write_gate_page(root, args, approved):

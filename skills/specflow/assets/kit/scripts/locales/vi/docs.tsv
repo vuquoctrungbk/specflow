@@ -1,0 +1,21 @@
+# Labels of the project documents that check-project-docs.py reads, in Vietnamese. The words of docs_high_names and the
+# docs_destroy_* keys are separated by | and become a regular expression: a word is matched as written.
+# docs_high_names are high-risk names of a screen, written without marks and spaces; docs_high_names_match is `squeezed`:
+# the screen name is squeezed the same way before it is searched (use `word` for a language whose words are separated by spaces).
+docs_risk_reason_label	Mức rủi ro:
+docs_high_risk_area	Vùng rủi ro cao
+docs_none_word	Không
+docs_col_release	Bản phát hành
+docs_wave	Đợt
+docs_by_flow	Theo luồng
+docs_read_first	Đọc trước
+docs_must_not_touch	Không được chạm
+docs_new_files	File tạo mới
+docs_col_method_path	Method và path
+# Words of a File Diff row that destroy data or break a caller: "<verb> <object>", then whole phrases.
+docs_destroy_verbs	xóa|xoá|bỏ|gỡ
+docs_destroy_objects	cột|bảng|ràng buộc|index|model|trường|field|enum|khóa|khoá|endpoint|path
+docs_destroy_phrases	đổi kiểu|đổi tên|chuyển dữ liệu
+# Names of high-risk work in a screen name or route, without marks or separators.
+docs_high_names	dangnhap|dangky|dangxuat|matkhau|xacthuc|phanquyen|vaitro|thanhtoan|hoadon|hoantien|hoso|canhan
+docs_high_names_match	squeezed

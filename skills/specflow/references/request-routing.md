@@ -22,7 +22,7 @@ to recognise them from what a user types.
 | "Roadmap", progress, "còn thiếu gì", "tiến độ", what is left to build | The stage in progress, after reconciling `docs/ROADMAP.md` (Intake 1.4.0 or later) | Prompt Resume (step 4 reconciles the roadmap by `specflow/PLAYBOOK.md` section 2.6) | Gate 1 (the roadmap is built when Gate 1 is approved) |
 | One more feature or a change on a project whose first release is done | By risk: `normal` takes the small-change path (PLAYBOOK section 8 step 8), presenting the SRS, SPEC and plan gates together; `high`, or a change of the architecture, goes through each stage as a new release | Prompts 1, 3, 4 and 6 in one turn for `normal`; one prompt per turn for `high` | Gate 5 of the earlier release |
 | "Continue", "tiếp tục", a new session on an existing project | The stage in progress | Prompt Resume | As for that stage |
-| "Duyệt Gate N", "approve gate N", or a list of failed rows | The stage of gate N | `specflow/PLAYBOOK.md` section 2.7 | Gate N's documents |
+| "Approved at Gate N" ("Duyệt Gate N" in a Vietnamese project), "approve gate N", or a list of failed rows | The stage of gate N | `specflow/PLAYBOOK.md` section 2.7 | Gate N's documents |
 
 When one request names several documents ("write the SRS and the
 architecture"), run the earliest stage whose gate has not passed, and say
@@ -49,14 +49,14 @@ releases; its section 9 names the approver of each gate.
 The request that motivates this skill is often "write the SRS" in a project
 with no Intake. The kit builds the SRS on an approved Intake because the
 Intake fixes the overlays, the SRS sections they add, the releases and the
-approvers; Prompt 1 starts from "Intake đã duyệt", and each turn produces one
+approvers; Prompt 1 starts from "Intake approved", and each turn produces one
 stage (PLAYBOOK section 1.2 principle 2, section 7 rule 9). Explain that in a
 sentence, then ask one question with these options:
 
 1. **Intake first (recommended).** Draft the Intake from the request and
    attachments now, run its question round and stop at Gate 0. Keep the SRS
    details the user already gave in the Intake (scope, goals, notes) so the SRS
-   starts from them right after "Duyệt Gate 0".
+   starts from them right after "Approved at Gate 0".
 2. **The user supplies the missing upstream document.** If they already have
    an Intake (or SRS, architecture) elsewhere, place it at the expected path
    and check it against the template. A document that is not yet `approved`

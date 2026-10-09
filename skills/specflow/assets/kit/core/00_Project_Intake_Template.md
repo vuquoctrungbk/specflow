@@ -3,160 +3,161 @@ doc_type: intake
 status: draft
 version: 0.1.0
 template_version: 1.6.0
-language: vi-en
+language: en
 overlays: []
 assembled_from: []
 ---
 
-# Hồ sơ khởi tạo dự án (Project Intake): {{PROJECT_NAME}}
+# Project Intake: {{PROJECT_NAME}}
 
-<!-- fill: Chép file này thành docs/intake/PROJECT_INTAKE.md. Điền từ brief của người dùng; thông tin brief không có thì ghi giả định hoặc câu hỏi ở mục 13, không tự bịa. Mục 14 (Routing Decision) là đầu vào của PLAYBOOK mục 3; điền cuối cùng, sau khi các mục khác đã rõ. Frontmatter: overlays ghi đúng danh sách ở mục 14, assembled_from ghi "core/00_Project_Intake_Template.md@<template_version>". -->
+<!-- fill: Copy this file to docs/intake/PROJECT_INTAKE.md. Fill it from the user's brief; information the brief does not give is recorded as an assumption or a question in §13, never invented. §14 (Routing Decision) is the input of PLAYBOOK §3; fill it last, after the other sections are clear. Frontmatter: overlays records exactly the list in §14, assembled_from records "core/00_Project_Intake_Template.md@<template_version>". The document language: set the language key of this Intake per the Language Confirmation section, and every document generated afterwards carries the same value. -->
 
-## 1. Định danh dự án (Project Identity)
+## 1. Project Identity
 
-| Trường | Giá trị |
+| Field | Value |
 | --- | --- |
-| Tên dự án | {{PROJECT_NAME}} |
-| Tên ngắn (slug) | `{{PROJECT_SLUG}}` |
-| Chủ dự án | <!-- fill: người hoặc vai trò có quyền quyết định cuối cùng --> |
-| Ngày lập | {{DATE}} |
-| Người soạn | {{AUTHOR}} |
-| Brief gốc | <!-- fill: tóm tắt brief trong 3 đến 5 câu, giữ nguyên các con số và ràng buộc người dùng nêu --> |
+| Project name | {{PROJECT_NAME}} |
+| Short name (slug) | `{{PROJECT_SLUG}}` |
+| Project owner | <!-- fill: the person or role with the final decision right --> |
+| Created | {{DATE}} |
+| Author | {{AUTHOR}} |
+| Original brief | <!-- fill: summary of the brief in 3 to 5 sentences, keeping the figures and constraints the user gave exactly --> |
 
-## 2. Bài toán và mục tiêu (Problem & Goals)
+## 2. Problem & Goals
 
-### 2.1. Bài toán (Problem Statement)
+### 2.1. Problem Statement
 
-<!-- fill: ai đang gặp vấn đề gì, hiện giải quyết thế nào, vì sao cách hiện tại chưa đủ. Không mô tả giải pháp kỹ thuật ở đây. -->
+<!-- fill: who has what problem, how it is solved today, why the current way is not enough. Do not describe a technical solution here. -->
 
-### 2.2. Mục tiêu đo được (Measurable Goals)
+### 2.2. Measurable Goals
 
-| GOAL ID | Mục tiêu | Chỉ số | Ngưỡng đạt | Thời hạn |
+| GOAL ID | Goal | Metric | Target threshold | Deadline |
 | --- | --- | --- | --- | --- |
-| GOAL-01 | <!-- fill: mục tiêu nghiệp vụ; ID đánh số liên tục, SRS dẫn ID này ở cột Nguồn của FR và NFR (CONVENTIONS mục 4) --> | <!-- fill: đại lượng đo được --> | <!-- fill: con số cụ thể, dùng ≤ ≥ --> | <!-- fill: ngày hoặc mốc --> |
+| GOAL-01 | <!-- fill: business goal; IDs numbered continuously, the SRS cites this ID in the Source column of FR and NFR (CONVENTIONS §4) --> | <!-- fill: measurable quantity --> | <!-- fill: a concrete number, using ≤ ≥ --> | <!-- fill: date or milestone --> |
 
-### 2.3. Ngoài phạm vi đã biết (Known Non-goals)
+### 2.3. Known Non-goals
 
-<!-- fill: những gì brief hoặc chủ dự án đã loại trừ rõ ràng; mỗi dòng một mục. Ghi "Chưa có" nếu brief không nêu. -->
+<!-- fill: what the brief or the project owner has clearly excluded; one item per line. Write "None yet" if the brief does not say. -->
 
-## 3. Loại dự án và bề mặt (Project Type & Surfaces)
+## 3. Project Type & Surfaces
 
-Đánh dấu mọi bề mặt dự án có; mỗi bề mặt được chọn ghi bằng chứng từ brief. Bảng overlay hiện có nằm ở PLAYBOOK mục 3.
+Mark every surface the project has; for each chosen surface, record the evidence from the brief. The table of existing overlays is in PLAYBOOK §3.
 
-| Chọn | Bề mặt | Dấu hiệu nhận biết | Bằng chứng từ brief |
+| Select | Surface | Indicators | Evidence from brief |
 | :---: | --- | --- | --- |
-| [ ] | `backend-api` | API HTTP hoặc RPC, lưu trữ dữ liệu, background job | <!-- fill: hoặc N/A --> |
-| [ ] | `frontend-web` | Giao diện chạy trên trình duyệt | <!-- fill: hoặc N/A --> |
-| [ ] | `mobile-app` | Ứng dụng cài trên điện thoại hoặc máy tính bảng | <!-- fill: hoặc N/A --> |
-| [ ] | `ai-llm-app` | Tính năng dựa trên mô hình ngôn ngữ lớn: prompt, đánh giá, guardrail | <!-- fill: hoặc N/A --> |
-| [ ] | Khác | Bề mặt chưa có overlay (công cụ dòng lệnh, thư viện, pipeline dữ liệu, hạ tầng) | <!-- fill: mô tả; xử lý theo PLAYBOOK mục 3 quy tắc 4, hoặc N/A --> |
+| [ ] | `backend-api` | HTTP or RPC API, data storage, background jobs | <!-- fill: or N/A --> |
+| [ ] | `frontend-web` | User interface that runs in a browser | <!-- fill: or N/A --> |
+| [ ] | `mobile-app` | Application installed on a phone or tablet | <!-- fill: or N/A --> |
+| [ ] | `ai-llm-app` | Feature based on a large language model: prompt, evaluation, guardrail | <!-- fill: or N/A --> |
+| [ ] | Other | A surface without an overlay (command-line tool, library, data pipeline, infrastructure) | <!-- fill: describe; handle per PLAYBOOK §3 rule 4, or N/A --> |
 
-## 4. Trạng thái xuất phát (Starting State)
+## 4. Starting State
 
-| Trường | Giá trị |
+| Field | Value |
 | --- | --- |
-| Mode | <!-- fill: chọn một: greenfield \| brownfield. brownfield khi dự án đã có mã nguồn đang chạy cần giữ hành vi; sau Gate 0 dự án brownfield đi qua specflow/brownfield/PLAYBOOK_BROWNFIELD.md trước Giai đoạn 1 --> |
-| Kho mã hiện có | <!-- fill: đường dẫn hoặc URL, kèm commit HEAD lúc bắt đầu (BASE của lệnh kiểm tra sót trước khi có Codebase Summary); greenfield ghi N/A --> |
-| Quy mô mã hiện có | <!-- fill: số dòng code ước lượng, ngôn ngữ chính, có test và công cụ test hay không; greenfield ghi N/A --> |
-| Hệ thống sẽ thay thế hoặc tích hợp | <!-- fill: hoặc N/A --> |
-| Test REG ở Giai đoạn 0R | <!-- fill: chọn một: cho phép \| cho phép, chạy trên môi trường dùng một lần (ghi môi trường) \| cho phép, kèm thêm công cụ test (ghi tên và phiên bản) \| không cho phép. Chỉ brownfield, mặc định cho phép; repo chưa có công cụ test thì chọn thêm công cụ hoặc không cho phép; không cho phép thì Regression Baseline dùng thủ tục thủ công có rủi ro được chấp nhận (specflow/brownfield/PLAYBOOK_BROWNFIELD.md mục 5.1). Trước khi chọn, đọc cấu hình test mặc định (file cấu hình và fixture của bộ chạy test, giá trị mặc định trong mã; không mở file env) và ghi nó có trỏ vào dịch vụ hay database đang chạy không; có thì chọn môi trường dùng một lần hoặc không cho phép, và ghi câu hỏi ở mục 13; lựa chọn này thắng chữ "cho phép" của brief vì là điều kiện an toàn, lý do ghi ở mục 13. Greenfield ghi N/A --> |
-| Công cụ đo độ phủ test | <!-- fill: chọn một: có sẵn (ghi tên và phiên bản) \| cài tạm trong worktree đo (ghi tên và phiên bản; không đổi manifest hay lockfile) \| thêm vào dev-dependency ở commit REG (ghi tên và phiên bản; duyệt ở Gate 0; số đo ở commit đo vẫn dùng cài tạm) \| đo bằng cách khác (ghi phương pháp và giới hạn, ví dụ chỉ đo dòng, không đo nhánh). Chỉ brownfield: Regression Baseline §2 cần số coverage ở commit đo và sau commit test REG; hàng này có từ template Intake 1.2.0. Greenfield ghi N/A --> |
-| Tài liệu và cấu hình agent có sẵn trong repo | <!-- fill: brownfield: CLAUDE.md, AGENTS.md, .claude/, .mcp.json, docs/ đã có, mỗi mục kèm cách xử lý đề xuất theo specflow/brownfield/PLAYBOOK_BROWNFIELD.md mục 5.5 và hook đã tắt trong Giai đoạn 0R. Liệt kê cả git hook đang bật (.pre-commit-config.yaml, .husky/, hook trong .git/hooks không có đuôi .sample, core.hooksPath) kèm lệnh mà hook chạy, vì hook chạy ngay ở commit của bước chuẩn bị repo (Prompt B0); cách xử lý đề xuất ghi ở mục 13 để duyệt ở Gate 0. Greenfield ghi N/A --> |
+| Mode | <!-- fill: choose one: greenfield \| brownfield. brownfield when the project already has running source code whose behavior must be kept; after Gate 0 a brownfield project goes through specflow/brownfield/PLAYBOOK_BROWNFIELD.md before Stage 1 --> |
+| Existing repository | <!-- fill: path or URL, with the HEAD commit at the start (the BASE of the leftover check before there is a Codebase Summary); greenfield: write N/A --> |
+| Size of existing code | <!-- fill: estimated lines of code, main language, whether there are tests and a test tool; greenfield: write N/A --> |
+| System to replace or integrate with | <!-- fill: or N/A --> |
+| REG tests at Stage 0R | <!-- fill: choose one: allowed \| allowed, run on a disposable environment (record the environment) \| allowed, with an added test tool (record name and version) \| not allowed. Brownfield only, default allowed; a repo without a test tool chooses to add a tool or not allowed; if not allowed, the Regression Baseline uses a manual procedure with an accepted risk (specflow/brownfield/PLAYBOOK_BROWNFIELD.md §5.1). Before choosing, read the default test configuration (the configuration files and fixtures of the test runner, defaults in the code; do not open env files) and record whether it points at a running service or database; if it does, choose a disposable environment or not allowed, and record a question in §13; this choice wins over the word "allowed" in the brief because it is a safety condition, and the reason is recorded in §13. Greenfield: write N/A --> |
+| Test coverage tool | <!-- fill: choose one: available (record name and version) \| installed temporarily in the measurement worktree (record name and version; no change to the manifest or lockfile) \| added as a dev-dependency in the REG commit (record name and version; approved at Gate 0; the figure at the measured commit still uses the temporary install) \| measured another way (record the method and its limits, for example lines only, no branches). Brownfield only: Regression Baseline §2 needs the coverage figure at the measured commit and after the REG test commit; this row exists since Intake template 1.2.0. Greenfield: write N/A --> |
+| Agent documents and configuration already in the repo | <!-- fill: brownfield: CLAUDE.md, AGENTS.md, .claude/, .mcp.json, docs/ already present, each with the proposed handling per specflow/brownfield/PLAYBOOK_BROWNFIELD.md §5.5 and the hooks disabled in Stage 0R. Also list the git hooks that are enabled (.pre-commit-config.yaml, .husky/, hooks in .git/hooks without the .sample suffix, core.hooksPath) with the command each hook runs, because hooks run at once on the commit of the repo preparation step (Prompt B0); the proposed handling is recorded in §13 for approval at Gate 0. Greenfield: write N/A --> |
 
-## 5. Ước lượng quy mô (Scale Estimate)
+## 5. Scale Estimate
 
-| Đại lượng | Ước lượng | Căn cứ |
+| Quantity | Estimate | Basis |
 | --- | --- | --- |
-| Số phân hệ (module) | <!-- fill: số --> | <!-- fill --> |
-| Số đơn vị giao tiếp (endpoint, màn hình, lệnh) | <!-- fill: số --> | <!-- fill --> |
-| Người dùng đồng thời lúc cao điểm | <!-- fill: số --> | <!-- fill --> |
-| Khối lượng dữ liệu sau 12 tháng | <!-- fill: số + đơn vị --> | <!-- fill --> |
-| Chế độ lưu trữ SRS | `{{DOCS_MODE}}` | <!-- fill: áp tiêu chí PLAYBOOK mục 5 lên các con số trên; cross-cutting và thư viện dùng chung không tính là phân hệ; brownfield xét lại ở Gate 0R theo PLAYBOOK mục 5 --> |
+| Number of modules | <!-- fill: number --> | <!-- fill --> |
+| Number of communication units (endpoints, screens, commands) | <!-- fill: number --> | <!-- fill --> |
+| Concurrent users at peak | <!-- fill: number --> | <!-- fill --> |
+| Data volume after 12 months | <!-- fill: number + unit --> | <!-- fill --> |
+| SRS storage mode | `{{DOCS_MODE}}` | <!-- fill: apply the criteria of PLAYBOOK §5 to the numbers above; cross-cutting and shared libraries do not count as modules; brownfield reconsiders at Gate 0R per PLAYBOOK §5 --> |
 
-## 6. Ràng buộc (Constraints)
+## 6. Constraints
 
-| Loại | Ràng buộc | Nguồn | Có thể thương lượng? |
+| Type | Constraint | Source | Negotiable? |
 | --- | --- | --- | --- |
-| Công nghệ bắt buộc | <!-- fill: ngôn ngữ, framework, dịch vụ bắt buộc dùng hoặc cấm dùng; "Không có" nếu tự do --> | <!-- fill --> | <!-- fill: chọn một: Có \| Không --> |
-| Hạ tầng và hosting | <!-- fill: nhà cung cấp, vùng dữ liệu, on-premise hay cloud --> | <!-- fill --> | <!-- fill: chọn một: Có \| Không --> |
-| Ngân sách | <!-- fill: ngân sách phát triển và vận hành hằng tháng --> | <!-- fill --> | <!-- fill: chọn một: Có \| Không --> |
-| Mốc thời gian | <!-- fill: ngày ra mắt, các mốc trung gian, và tên các đợt phát hành dự kiến theo thứ tự (ví dụ R1, R2), mỗi đợt kèm mốc và mục tiêu một câu. SRS §6.1 dùng đúng các nhãn này ở cột Bản phát hành; SPEC và plan được lập theo từng đợt (PLAYBOOK mục 2). Chưa chia đợt thì ghi một đợt R1 --> | <!-- fill --> | <!-- fill: chọn một: Có \| Không --> |
-| Tổ chức | <!-- fill: quy trình nội bộ, quy định bảo mật công ty; "Không có" nếu không có --> | <!-- fill --> | <!-- fill: chọn một: Có \| Không --> |
+| Required technology | <!-- fill: languages, frameworks, services that must be used or are banned; "None" if free --> | <!-- fill --> | <!-- fill: choose one: Yes \| No --> |
+| Infrastructure and hosting | <!-- fill: provider, data region, on-premise or cloud --> | <!-- fill --> | <!-- fill: choose one: Yes \| No --> |
+| Budget | <!-- fill: development budget and monthly operating budget --> | <!-- fill --> | <!-- fill: choose one: Yes \| No --> |
+| Timeline | <!-- fill: launch date, intermediate milestones, and the names of the planned releases in order (for example R1, R2), each release with a milestone and a one-sentence goal. SRS §6.1 uses exactly these labels in the Release column; SPECs and plans are made per release (PLAYBOOK §2). If not yet split into releases, write one release R1 --> | <!-- fill --> | <!-- fill: choose one: Yes \| No --> |
+| Organization | <!-- fill: internal processes, company security rules; "None" if there are none --> | <!-- fill --> | <!-- fill: choose one: Yes \| No --> |
 
-## 7. Tuân thủ (Compliance)
+## 7. Compliance
 
-| Áp dụng | Khung tuân thủ | Lý do áp dụng | Hệ quả cho SRS |
+| Applies | Compliance framework | Reason it applies | Consequence for the SRS |
 | :---: | --- | --- | --- |
-| [ ] | Luật Bảo vệ dữ liệu cá nhân số 91/2025/QH15 và Nghị định 356/2025/NĐ-CP (Việt Nam) | <!-- fill: xử lý dữ liệu cá nhân của người ở Việt Nam, hoặc N/A --> | NFR-LEGAL, NFR-DATA |
-| [ ] | GDPR | <!-- fill: người dùng ở EU, hoặc N/A --> | NFR-LEGAL, NFR-DATA |
-| [ ] | PCI DSS | <!-- fill: lưu, xử lý hoặc truyền dữ liệu thẻ thanh toán, hoặc N/A --> | NFR-SEC, NFR-LEGAL |
-| [ ] | Khác | <!-- fill: chuẩn ngành, hợp đồng với khách hàng, hoặc N/A --> | <!-- fill --> |
+| [ ] | Data protection law of the project's country | <!-- fill: name the law and say whether the project processes personal data of the people it covers, or N/A --> | NFR-LEGAL, NFR-DATA |
+| [ ] | GDPR | <!-- fill: users in the EU, or N/A --> | NFR-LEGAL, NFR-DATA |
+| [ ] | PCI DSS | <!-- fill: stores, processes or transmits payment card data, or N/A --> | NFR-SEC, NFR-LEGAL |
+| [ ] | Other | <!-- fill: industry standards, contracts with customers, or N/A --> | <!-- fill --> |
 
-Loại dữ liệu hệ thống xử lý: <!-- fill: liệt kê dữ liệu cá nhân, dữ liệu cá nhân nhạy cảm, dữ liệu tài chính, bí mật kinh doanh; "Không có dữ liệu cá nhân" nếu đúng như vậy -->
+Types of data the system processes: <!-- fill: list personal data, sensitive personal data, financial data, trade secrets; "No personal data" if that is the case -->
 
-## 8. Tích hợp ngoài (External Integrations)
+## 8. External Integrations
 
-| Hệ thống ngoài | Mục đích | Giao thức | Chiều dữ liệu | Bắt buộc ở bản đầu? |
+| External system | Purpose | Protocol | Data direction | Required in the first release? |
 | --- | --- | --- | --- | --- |
-| {{EXTERNAL_SYSTEM}} | <!-- fill --> | <!-- fill: ví dụ REST, webhook, SMTP, SDK --> | <!-- fill: chọn một: vào \| ra \| hai chiều --> | <!-- fill: chọn một: Có \| Không --> |
+| {{EXTERNAL_SYSTEM}} | <!-- fill --> | <!-- fill: for example REST, webhook, SMTP, SDK --> | <!-- fill: choose one: in \| out \| both ways --> | <!-- fill: choose one: Yes \| No --> |
 
-## 9. Đội ngũ và người duyệt (Team & Approvers)
+## 9. Team & Approvers
 
-| Vai trò | Người | Trách nhiệm |
+| Role | Person | Responsibility |
 | --- | --- | --- |
-| Chủ dự án | <!-- fill --> | Quyết định phạm vi, duyệt Gate 0 |
-| Kỹ thuật chính | <!-- fill --> | <!-- fill --> |
+| Project owner | <!-- fill --> | Decides scope, approves Gate 0 |
+| Tech lead | <!-- fill --> | <!-- fill --> |
 
-| Gate | Nội dung duyệt | Người duyệt |
+| Gate | What is approved | Approver |
 | --- | --- | --- |
-| Gate 0 | Intake và Routing Decision | {{APPROVER}} |
-| Gate 0R | Codebase Summary, As-Is Architecture, Regression Baseline <!-- fill: chỉ brownfield; greenfield xóa hàng này --> | {{APPROVER}} |
+| Gate 0 | Intake and Routing Decision | {{APPROVER}} |
+| Gate 0R | Codebase Summary, As-Is Architecture, Regression Baseline <!-- fill: brownfield only; greenfield deletes this row --> | {{APPROVER}} |
 | Gate 1 | SRS | {{APPROVER}} |
-| Gate 1W | Wireframe: chỉ mục, trang màn hình và bảng đối chiếu với SRS | {{APPROVER}} <!-- fill: mặc định là người duyệt Gate 1; ghi người phụ trách sản phẩm hoặc trải nghiệm người dùng nếu khác. Không bề mặt nào có giao diện (mục 14 ghi Giai đoạn 1W: Không) thì thay cả ô bằng N/A kèm lý do --> |
-| Gate 2 | ARCHITECTURE và ADR | {{APPROVER}} |
-| Gate 3 | Mọi SPEC của một đợt phát hành | {{APPROVER}} |
-| Gate 4 | Implementation Plan của đợt và DoR | {{APPROVER}} |
-| Gate 5 | DoD của từng SPEC | {{APPROVER}} |
+| Gate 1W | Wireframe: index, screen pages and the cross-check table with the SRS | {{APPROVER}} <!-- fill: default is the Gate 1 approver; record the product or user experience owner if different. If no surface has a UI (§14 says Stage 1W: No), replace the whole cell with N/A and a reason --> |
+| Gate 2 | ARCHITECTURE and ADR | {{APPROVER}} |
+| Gate 3 | Every SPEC of a release | {{APPROVER}} |
+| Gate 4 | Implementation Plan of the release and DoR | {{APPROVER}} |
+| Gate 5 | DoD of each SPEC | {{APPROVER}} |
 
-## 10. Chính sách ngôn ngữ (Language Confirmation)
+## 10. Language Confirmation
 
-- [ ] Dự án dùng chính sách song ngữ của CONVENTIONS mục 5: diễn giải tiếng Việt, thuật ngữ kỹ thuật và định danh tiếng Anh.
-- Ngoại lệ: <!-- fill: ví dụ tài liệu cho đối tác nước ngoài viết toàn tiếng Anh; "Không có" nếu không có -->
+The language of the project documents is the `language` key in the frontmatter of this Intake (one code from `scripts/locales/`, for example `en` or `vi`); every document of the project carries the same value. The agent sets it when creating the Intake and asks the project owner at Stage 0.
 
-## 11. Chỉ số thành công (Success Metrics)
+- [ ] The project owner confirmed the language of the project documents.
 
-| Chỉ số | Giá trị hiện tại | Mục tiêu | Cách đo | Thời điểm đo |
+## 11. Success Metrics
+
+| Metric | Current value | Target | How measured | When measured |
 | --- | --- | --- | --- | --- |
-| <!-- fill --> | <!-- fill: hoặc "Chưa có" --> | <!-- fill --> | <!-- fill: công cụ hoặc quy trình đo --> | <!-- fill --> |
+| <!-- fill --> | <!-- fill: or "None yet" --> | <!-- fill --> | <!-- fill: tool or procedure of measurement --> | <!-- fill --> |
 
-## 12. Lịch sử phiên bản (Version History)
+## 12. Version History
 
-| Phiên bản | Ngày | Người sửa | Nội dung thay đổi | Lý do và người yêu cầu | Người duyệt |
+| Version | Date | Edited by | Change | Reason and requester | Approver |
 | --- | --- | --- | --- | --- | --- |
-| 0.1.0 | {{DATE}} | {{AUTHOR}} | Bản khởi tạo từ brief | Khởi tạo theo pipeline | Chưa duyệt |
+| 0.1.0 | {{DATE}} | {{AUTHOR}} | Initial version from the brief | Created by the pipeline | Not approved |
 
-## 13. Giả định và câu hỏi mở (Assumptions & Open Questions)
+## 13. Assumptions & Open Questions
 
-| ID | Loại | Nội dung | Lý do hoặc ảnh hưởng | BLOCKING | Người trả lời |
+| ID | Type | Content | Reason or impact | BLOCKING | Respondent |
 | --- | --- | --- | --- | :---: | --- |
-| AQ-01 | <!-- fill: chọn một: Giả định \| Câu hỏi --> | <!-- fill --> | <!-- fill: câu hỏi chạm hợp đồng mà không chặn Routing Decision ghi thêm "trả lời trước Gate 1" (PLAYBOOK mục 7 quy tắc 3); brownfield: đề xuất cần duyệt trước bước chuẩn bị repo ghi "duyệt ở Gate 0" (specflow/brownfield/PLAYBOOK_BROWNFIELD.md mục 6.1) --> | <!-- fill: chọn một: Có \| Không. Có dành cho câu chặn Routing Decision; Gate 0 không cho còn câu Có --> | <!-- fill --> |
+| AQ-01 | <!-- fill: choose one: Assumption \| Question --> | <!-- fill --> | <!-- fill: a question that touches the contract but does not block the Routing Decision also says "answer before Gate 1" (PLAYBOOK §7 rule 3); brownfield: a proposal that needs approval before the repo preparation step says "approved at Gate 0" (specflow/brownfield/PLAYBOOK_BROWNFIELD.md §6.1) --> | <!-- fill: choose one: Yes \| No. Yes is for a question that blocks the Routing Decision; Gate 0 does not allow any remaining Yes --> | <!-- fill --> |
 
-## 14. Quyết định định tuyến (Routing Decision)
+## 14. Routing Decision
 
-<!-- fill: Khối này quyết định template nào được dùng ở mọi giai đoạn sau. Mọi trường MUST có giá trị trước Gate 0. -->
+<!-- fill: This block decides which templates are used at every later stage. Every field MUST have a value before Gate 0. -->
 
-| Trường | Giá trị |
+| Field | Value |
 | --- | --- |
-| `overlays` (theo thứ tự ghép) | `{{OVERLAYS}}` |
-| `starter` | <!-- fill: tên thư mục trong starters/ khớp đúng tổ hợp overlays (PLAYBOOK mục 3), hoặc none --> |
-| `mode` | <!-- fill: chọn một: greenfield \| brownfield, khớp mục 4 --> |
+| `overlays` (in assembly order) | `{{OVERLAYS}}` |
+| `starter` | <!-- fill: name of the directory in starters/ that matches the overlays combination exactly (PLAYBOOK §3), or none --> |
+| `mode` | <!-- fill: choose one: greenfield \| brownfield, matching §4 --> |
 | `docs_mode` | `{{DOCS_MODE}}` |
-| Giai đoạn 1W (Wireframe) | <!-- fill: chọn một: Có, kèm HTML đầy đủ \| Có, chỉ Markdown: <lý do> \| Không. Mặc định Có, kèm HTML đầy đủ khi overlays có frontend-web hoặc mobile-app, hoặc bề mặt khác có màn hình; Không thì Gate 1W ở mục 9 ghi N/A (PLAYBOOK mục 2) --> |
-| Định dạng tag | `{release}-{feature-key}` <!-- fill: mẫu tên tag mà agent đánh khi một SPEC qua Gate 5 (CONVENTIONS mục 11); giữ mặc định hoặc ghi mẫu khác của dự án trong backtick, ví dụ `v{release}-{feature-key}` --> |
-| Quy mô | <!-- fill: chọn một: standard \| small. small khi dự án có tối đa 15 FR, một người duyệt mọi gate và không có ràng buộc tuân thủ ở mục 7; khi đó các gate được trình gộp theo PLAYBOOK mục 5 --> |
-| Vùng rủi ro cao | <!-- fill: thư mục hoặc từ trong đường dẫn mà SPEC nào chạm tới cũng phải là risk: high, mỗi mục trong backtick, ví dụ `apps/billing/`, `ledger`; ghi Không khi dự án không có vùng riêng ngoài danh sách chung ở CONVENTIONS mục 3 --> |
-| Người duyệt | Theo mục 9 |
+| Stage 1W (Wireframe) | <!-- fill: choose one: Yes, with full HTML \| Yes, Markdown only: <reason> \| No. Default is Yes, with full HTML when overlays has frontend-web or mobile-app, or another surface that has screens; for No, Gate 1W in §9 says N/A (PLAYBOOK §2) --> |
+| Tag format | `{release}-{feature-key}` <!-- fill: the tag name pattern the agent applies when a SPEC passes Gate 5 (CONVENTIONS §11); keep the default or record another project pattern in backticks, for example `v{release}-{feature-key}` --> |
+| Project size | <!-- fill: choose one: standard \| small. small when the project has at most 15 FR, one approver for every gate and no compliance constraint in §7; the gates are then presented merged per PLAYBOOK §5 --> |
+| High-risk areas | <!-- fill: directories or words in a path such that any SPEC touching them is risk: high, each in backticks, for example `apps/billing/`, `ledger`; write None when the project has no area of its own beyond the general list in CONVENTIONS §3 --> |
+| Approver | Per §9 |
 
-| Overlay | Stack profile | Lý do chọn |
+| Overlay | Stack profile | Reason for choice |
 | --- | --- | --- |
-| <!-- fill: một hàng cho mỗi overlay, cùng thứ tự với overlays --> | `{{STACK_PROFILE}}` | <!-- fill: profile khớp theo tiêu chí ở PLAYBOOK mục 3, kèm ràng buộc ở mục 6 hoặc lý do kỹ thuật; không profile nào khớp thì ô Stack profile ghi none, cột này nêu thành phần nền không khớp và ghi "đề xuất ở ARCHITECTURE §2" theo PLAYBOOK mục 3 quy tắc 5 --> |
+| <!-- fill: one row for each overlay, in the same order as overlays --> | `{{STACK_PROFILE}}` | <!-- fill: the profile that matches by the criteria in PLAYBOOK §3, with the constraint in §6 or a technical reason; if no profile matches, the Stack profile cell says none, and this column names the base components that do not match and records "proposed at ARCHITECTURE §2" per PLAYBOOK §3 rule 5 --> |

@@ -2,76 +2,76 @@
 doc_type: overlay-section
 status: stable
 version: 1.2.1
-language: vi-en
+language: en
 surface: frontend-web
 ---
 
-# Overlay frontend-web: khối cho SRS
+# Overlay frontend-web: blocks for the SRS
 
 <!-- SLOT-CONTENT: srs.constraints.technical -->
-| Ràng buộc | Nội dung |
+| Constraint | Content |
 | --- | --- |
-| Stack | Theo stack profile `{{STACK_PROFILE}}` đã chốt ở Intake mục 14; phiên bản cụ thể ở ARCHITECTURE §2 |
-| Kiểu dữ liệu nghiêm ngặt | Ngôn ngữ có kiểm tra kiểu tĩnh, bật chế độ nghiêm ngặt; quy tắc cụ thể ở ARCHITECTURE và `.claude/rules/` |
-| Trình duyệt hỗ trợ | <!-- fill: danh sách trình duyệt và phiên bản tối thiểu, ví dụ hai phiên bản mới nhất của Chrome, Edge, Firefox, Safari; Safari trên iOS từ phiên bản cụ thể --> |
-| Thiết bị và breakpoint | <!-- fill: độ rộng màn hình nhỏ nhất phải dùng được (ví dụ 360 px) và các breakpoint chuyển bố cục --> |
-| Trợ năng | Tuân thủ WCAG 2.2 mức {{WCAG_LEVEL}} theo NFR-USAB |
-| Hiệu năng cảm nhận | <!-- fill: ngưỡng Core Web Vitals ở phân vị 75, ví dụ LCP ≤ 2,5 s, INP ≤ 200 ms, CLS ≤ 0,1; thiết bị và mạng dùng để đo --> |
-| Giao thức | Trang và lời gọi API chỉ qua HTTPS |
-| Nguồn chân lý | Giá, số tiền, quyền và trạng thái nghiệp vụ hiển thị theo dữ liệu API trả về; giao diện không tự tính rồi gửi các giá trị này lên |
-| Lưu trữ phía trình duyệt | Không lưu token, secret hay dữ liệu cá nhân trong `localStorage` hoặc `sessionStorage` |
-| Thời gian và tiền tệ | Nhận từ API theo UTC và ISO 8601; định dạng hiển thị theo locale của người dùng |
+| Stack | Per the stack profile `{{STACK_PROFILE}}` chosen at Intake §14; exact versions in ARCHITECTURE §2 |
+| Strict typing | A language with static type checking, strict mode enabled; specific rules in ARCHITECTURE and `.claude/rules/` |
+| Supported browsers | <!-- fill: list of browsers and minimum versions, for example the two latest versions of Chrome, Edge, Firefox, Safari; Safari on iOS from a specific version --> |
+| Devices and breakpoints | <!-- fill: the smallest screen width that must be usable (for example 360 px) and the breakpoints where the layout changes --> |
+| Accessibility | Comply with WCAG 2.2 level {{WCAG_LEVEL}} per NFR-USAB |
+| Perceived performance | <!-- fill: Core Web Vitals thresholds at the 75th percentile, for example LCP ≤ 2.5 s, INP ≤ 200 ms, CLS ≤ 0.1; the device and network used to measure --> |
+| Protocol | Pages and API calls over HTTPS only |
+| Source of truth | Prices, amounts, permissions and business status are displayed from the data the API returns; the UI does not compute these values and then send them up |
+| Browser-side storage | Do not store tokens, secrets or personal data in `localStorage` or `sessionStorage` |
+| Time and currency | Received from the API in UTC and ISO 8601; display format follows the user's locale |
 <!-- /SLOT-CONTENT -->
 
 <!-- SLOT-CONTENT: srs.external-interfaces -->
-### Giao diện người dùng (User Interfaces)
+### User Interfaces
 
-<!-- fill: Một hàng cho mỗi màn hình; bảng này là nguồn duy nhất của danh sách màn hình. SCR ID dạng SCR-<MOD>-NN đặt ở đây (CONVENTIONS mục 4), MOD là mã phân hệ có FR chính của màn hình, NN duy nhất theo MOD trong toàn dự án; Giai đoạn 1W chi tiết hóa mỗi SCR ID thành một trang wireframe, không đặt thêm ID. Dự án brownfield: màn hình không đổi theo Gap Analysis ghi Giữ nguyên ở ô SCR ID. Dự án có Intake cũ hơn 1.3.0 bỏ cột SCR ID. Route viết đường dẫn trang; FR là yêu cầu mà màn hình hiện thực. -->
+<!-- fill: One row for each screen; this table is the only source of the screen list. The SCR ID as SCR-<MOD>-NN is assigned here (CONVENTIONS §4), MOD is the code of the module that owns the main FR of the screen, NN is unique per MOD across the whole project; Stage 1W elaborates each SCR ID into one wireframe page, without assigning more IDs. Brownfield project: a screen that does not change per the Gap Analysis records Unchanged in the SCR ID cell. Route is the page path; FR is the requirement that the screen implements. -->
 
-| Màn hình | SCR ID | Route | Tác nhân | Mục đích | FR |
+| Screen | SCR ID | Route | Actor | Purpose | FR |
 | --- | --- | --- | --- | --- | --- |
 | <!-- fill --> | {{SCR_ID}} | `/{{ROUTE_PATH}}` | `ACT_{{ROLE_CODE}}` | <!-- fill --> | FR-{{MODULE_CODE}}-001 |
 
-Yêu cầu chung cho mọi màn hình:
+General requirements for every screen:
 
-- Năm trạng thái giao diện (UI states): mỗi màn hình và mỗi vùng dữ liệu độc lập trên màn hình có đủ `Initial` (trước khi người dùng thao tác hoặc trước khi tải), `Loading` (đang chờ dữ liệu hoặc đang gửi), `Empty` (tải xong nhưng không có dữ liệu), `Success` (có dữ liệu hoặc thao tác thành công), `Error` (lỗi, kèm cách khắc phục). Trạng thái không áp dụng ghi N/A kèm lý do; có Giai đoạn 1W thì ghi ở trang wireframe của màn hình (mục 4), SPEC nhận lại; không có Giai đoạn 1W thì ghi thẳng trong SPEC.
-- Responsive theo breakpoint ở §2.5; không có cuộn ngang ở độ rộng nhỏ nhất.
-- Trợ năng theo §2.5: mỗi màn hình đạt các tiêu chí WCAG 2.2 ở mức của NFR-USAB; tiêu chí xét ở từng màn hình khi lập wireframe theo `specflow/CONVENTIONS.md` mục 10.2.
-- Mọi chuỗi hiển thị lấy từ bộ chuỗi theo locale; locale mặc định <!-- fill: ví dụ vi-VN -->.
+- The five UI states: each screen and each independent data region on a screen has all of `Initial` (before the user acts or before loading), `Loading` (waiting for data or submitting), `Empty` (loaded but no data), `Success` (has data or the action succeeded), `Error` (an error, with a way to recover). A state that does not apply is written N/A with a reason; with Stage 1W, write it on the screen's wireframe page (§4) and the SPEC takes it over; without Stage 1W, write it directly in the SPEC.
+- Responsive per the breakpoints in §2.5; no horizontal scroll at the smallest width.
+- Accessibility per §2.5: each screen meets the WCAG 2.2 criteria at the level of NFR-USAB; the criteria are examined per screen when drawing the wireframe per `specflow/CONVENTIONS.md` §10.2.
+- Every display string comes from the string bundle by locale; default locale <!-- fill: for example en-US -->.
 
-### Giao diện phần mềm (Software Interfaces)
+### Software Interfaces
 
-<!-- fill: Giữ hàng áp dụng, ghi "Không" ở cột Áp dụng cho hàng còn lại thay vì xóa. -->
+<!-- fill: Keep the rows that apply, write "No" in the Applies column of the other rows instead of deleting them. -->
 
-| Hệ thống | Mục đích | Giao thức và định dạng | Xác thực và an toàn | Áp dụng |
+| System | Purpose | Protocol and format | Authentication and safety | Applies |
 | --- | --- | --- | --- | :---: |
-| API backend | <!-- fill: tên API và tài liệu contract (SPEC, OpenAPI) mà giao diện gọi --> | REST, JSON, HTTPS | <!-- fill: cơ chế phiên đăng nhập, chốt ở ARCHITECTURE §6.1 --> | <!-- fill: chọn một: Có \| Không --> |
-| Nhà cung cấp định danh (identity provider) | Đăng nhập liên kết | OpenID Connect trên OAuth 2.0, Authorization Code kèm PKCE | Kiểm tra `state`, `nonce`, audience | <!-- fill: chọn một: Có \| Không --> |
-| Phân tích hành vi (analytics) | <!-- fill: sự kiện nào được gửi --> | <!-- fill --> | Chỉ gửi sau khi người dùng đồng ý; không gửi dữ liệu cá nhân | <!-- fill: chọn một: Có \| Không --> |
-| Theo dõi lỗi phía trình duyệt | <!-- fill: dịch vụ nhận lỗi JavaScript --> | <!-- fill --> | Che dữ liệu cá nhân trước khi gửi | <!-- fill: chọn một: Có \| Không --> |
+| Backend API | <!-- fill: name of the API and the contract document (SPEC, OpenAPI) that the UI calls --> | REST, JSON, HTTPS | <!-- fill: login session mechanism, decided in ARCHITECTURE §6.1 --> | <!-- fill: choose one: Yes \| No --> |
+| Identity provider | Federated login | OpenID Connect on OAuth 2.0, Authorization Code with PKCE | Check `state`, `nonce`, audience | <!-- fill: choose one: Yes \| No --> |
+| Analytics | <!-- fill: which events are sent --> | <!-- fill --> | Send only after the user consents; do not send personal data | <!-- fill: choose one: Yes \| No --> |
+| Browser-side error tracking | <!-- fill: the service that receives JavaScript errors --> | <!-- fill --> | Mask personal data before sending | <!-- fill: choose one: Yes \| No --> |
 
-### Giao diện truyền thông (Communications Interfaces)
+### Communications Interfaces
 
-| Kênh | Quy ước | Áp dụng |
+| Channel | Convention | Applies |
 | --- | --- | :---: |
-| HTTPS tới API | JSON UTF-8; lỗi theo envelope của API; timeout và thử lại theo ARCHITECTURE §7 | Có |
-| Thời gian thực | <!-- fill: chọn một: WebSocket trên TLS (WSS) \| Server-Sent Events; không dùng thì thay cả ô bằng Không cần --> kèm tự kết nối lại với backoff lũy thừa | <!-- fill: chọn một: Có \| Không --> |
+| HTTPS to the API | JSON UTF-8; errors per the API's envelope; timeout and retry per ARCHITECTURE §7 | Yes |
+| Real time | <!-- fill: choose one: WebSocket over TLS (WSS) \| Server-Sent Events; if not used, replace the whole cell with Not needed --> with automatic reconnect using exponential backoff | <!-- fill: choose one: Yes \| No --> |
 
-Giao diện phần cứng (Hardware Interfaces): N/A cho bề mặt `frontend-web`; trình duyệt là lớp trung gian với thiết bị.
+Hardware Interfaces: N/A for the `frontend-web` surface; the browser is the intermediary layer to the device.
 <!-- /SLOT-CONTENT -->
 
 <!-- SLOT-CONTENT: srs.data-model -->
-#### Mô hình dữ liệu hiển thị (View Model)
+#### View Model
 
-<!-- fill: Bề mặt này không sở hữu dữ liệu lưu trữ; thực thể nghiệp vụ, ERD và quy tắc toàn vẹn thuộc SRS của API mà nó gọi. Mỗi view model lấy trường từ response của một endpoint, giữ đúng tên trường như response (kể cả ở §4.2, không đổi sang snake_case); không thêm trường mà API không trả. Dữ liệu hiển thị cần giữ lại sau khi nguồn của nó bị xóa (ví dụ tên sản phẩm của đơn vừa đặt khi giỏ đã xóa) ghi rõ nguồn chụp lại. §4.2 liệt kê view model và trạng thái phía client như thực thể; §4.3 ghi quy tắc hiển thị và lưu trữ phía client. -->
+<!-- fill: This surface owns no persistent data; business entities, the ERD and integrity rules belong to the SRS of the API it calls. Each view model takes its fields from the response of one endpoint, keeping the field names exactly as in the response (including in §4.2, without converting to snake_case); do not add fields that the API does not return. Display data that must be kept after its source is deleted (for example the product name of an order just placed when the cart has been cleared) records the snapshot source explicitly. §4.2 lists view models and client-side state as entities; §4.3 records the display and client-side storage rules. -->
 
-| View model | Nguồn (endpoint và FR của API) | Trường hiển thị | Định dạng hiển thị |
+| View model | Source (endpoint and FR of the API) | Displayed fields | Display format |
 | --- | --- | --- | --- |
-| {{ENTITY_NAME}} | <!-- fill --> | <!-- fill --> | <!-- fill: ví dụ tiền theo locale, thời gian theo múi giờ người dùng --> |
+| {{ENTITY_NAME}} | <!-- fill --> | <!-- fill --> | <!-- fill: for example currency per locale, time in the user's time zone --> |
 
-#### Trạng thái phía client (Client State)
+#### Client State
 
-| Trạng thái | Loại | Vòng đời | Nơi giữ | Chứa dữ liệu cá nhân |
+| State | Type | Lifecycle | Where it is held | Contains personal data |
 | --- | --- | --- | --- | :---: |
-| <!-- fill --> | <!-- fill: chọn một: dữ liệu từ server \| trạng thái form \| trạng thái URL \| trạng thái giao diện --> | <!-- fill: khi nào tạo, khi nào xóa --> | <!-- fill: bộ nhớ, URL, cookie; không dùng localStorage cho dữ liệu nhạy cảm --> | <!-- fill: chọn một: Có \| Không --> |
+| <!-- fill --> | <!-- fill: choose one: server data \| form state \| URL state \| UI state --> | <!-- fill: when created, when cleared --> | <!-- fill: memory, URL, cookie; do not use localStorage for sensitive data --> | <!-- fill: choose one: Yes \| No --> |
 <!-- /SLOT-CONTENT -->

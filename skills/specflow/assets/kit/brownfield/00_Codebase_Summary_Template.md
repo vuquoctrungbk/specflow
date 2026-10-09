@@ -3,58 +3,58 @@ doc_type: codebase-summary
 status: draft
 version: 0.1.0
 template_version: 1.1.0
-language: vi-en
+language: en
 parent: [docs/intake/PROJECT_INTAKE.md]
 overlays: []
 assembled_from: []
 ---
 
-# Tóm tắt mã nguồn hiện có (Codebase Summary): {{PROJECT_NAME}}
+# Codebase Summary: {{PROJECT_NAME}}
 
-<!-- fill: Chép thành docs/brownfield/CODEBASE_SUMMARY.md ở bước 0a (brownfield/PLAYBOOK_BROWNFIELD.md). Tài liệu là ảnh chụp hiện trạng tại commit ở §1, cố định sau Gate 0R. Mọi khẳng định về mã nguồn kèm bằng chứng: đường dẫn file:dòng trong inline code, hoặc lệnh đã chạy kèm exit code. Không ghi giá trị secret, token hay dữ liệu cá nhân đọc được trong repo. Điền §1 đến §6, §8, §9 bằng cách đọc file và lệnh chỉ đọc (git, liệt kê file, đếm dòng), chưa chạy lệnh của dự án; chỉ chạy lệnh ở §7 khi §2 đạt (brownfield/PLAYBOOK_BROWNFIELD.md mục 5.1). Frontmatter assembled_from ghi "brownfield/00_Codebase_Summary_Template.md@<template_version>". -->
+<!-- fill: Copy to docs/brownfield/CODEBASE_SUMMARY.md at step 0a (brownfield/PLAYBOOK_BROWNFIELD.md). The document is a snapshot of the current state at the commit in §1, frozen after Gate 0R. Every claim about the source code carries evidence: a file:line path in inline code, or a command that was run with its exit code. Do not record the value of any secret, token or personal data that can be read in the repo. Fill §1 to §6, §8 and §9 by reading files and by read-only commands (git, listing files, counting lines), without running project commands yet; run the commands in §7 only when §2 is met (brownfield/PLAYBOOK_BROWNFIELD.md §5.1). The frontmatter assembled_from records "brownfield/00_Codebase_Summary_Template.md@<template_version>". -->
 
-## 1. Phạm vi quét (Scan Scope)
+## 1. Scan Scope
 
-| Hạng mục | Giá trị |
+| Item | Value |
 | --- | --- |
-| Kho mã | <!-- fill: tên repo hoặc đường dẫn --> |
-| Nhánh và commit đo | <!-- fill: tên nhánh, mã commit đầy đủ của HEAD ngay sau commit của Prompt B0 (brownfield/PLAYBOOK_BROWNFIELD.md mục 5.1); là BASE của lệnh kiểm tra sót từ bước này --> |
-| Commit đo không đổi mã sản phẩm | <!-- fill: lệnh git diff --name-status giữa commit ở Intake §4 và commit đo, cùng kết quả; mỗi file thuộc nhóm mà brownfield/PLAYBOOK_BROWNFIELD.md mục 5.1 cho phép (tài liệu, cấu hình agent, specflow/, .gitignore đã duyệt, file có sẵn ở §9) --> |
-| Ngày quét | {{DATE}} |
-| Người quét | {{AUTHOR}} |
-| Phạm vi đã đọc | <!-- fill: thư mục và file đã đọc thật; repo lớn thì đọc manifest, cấu hình, CI, điểm vào và mã của luồng chính trước, phần còn lại theo module khi cần. Không khẳng định về phần chưa đọc --> |
-| Thư mục bỏ qua | <!-- fill: thư mục sinh tự động, thư viện vendor, file build; nêu lý do --> |
-| Tổng số dòng mã (không tính test) | <!-- fill: số, kèm lệnh đo --> |
-| Tổng số dòng test | <!-- fill: số, kèm lệnh đo --> |
+| Code repository | <!-- fill: repo name or path --> |
+| Measured branch and commit | <!-- fill: branch name, full commit hash of HEAD right after the commit of Prompt B0 (brownfield/PLAYBOOK_BROWNFIELD.md §5.1); this is the BASE of the leftover-check command from this step on --> |
+| Measured commit does not change product code | <!-- fill: the git diff --name-status command between the commit in Intake §4 and the measured commit, with its result; every file belongs to a group that brownfield/PLAYBOOK_BROWNFIELD.md §5.1 allows (documents, agent configuration, specflow/, an approved .gitignore, a file already listed in §9) --> |
+| Scan date | {{DATE}} |
+| Scanner | {{AUTHOR}} |
+| Scope read | <!-- fill: directories and files actually read; for a large repo, read the manifest, configuration, CI, entry points and the code of the main flows first, and the rest module by module when needed. Make no claim about what was not read --> |
+| Skipped directories | <!-- fill: generated directories, vendored libraries, build files; give the reason --> |
+| Total lines of code (excluding tests) | <!-- fill: number, with the measuring command --> |
+| Total lines of tests | <!-- fill: number, with the measuring command --> |
 
-## 2. Điều kiện an toàn trước khi chạy lệnh (Safety Preconditions)
+## 2. Safety Preconditions
 
-<!-- fill: Mỗi kho dữ liệu, hàng đợi, cache và dịch vụ ngoài mà mã hoặc test kết nối tới một hàng, lấy từ §6 và §8. Cột Đích khi quét ghi nơi lệnh ở §7 thật sự kết nối: cơ sở dữ liệu cục bộ hoặc dùng một lần, container, dịch vụ giả lập. Chuỗi xác thực mặc định của công cụ cloud cũng là một hàng; hook của Claude Code chạy lệnh của dự án đã tắt theo brownfield/PLAYBOOK_BROWNFIELD.md mục 5.1 quy tắc 6. Git hook đang bật (Intake §4) một hàng: các lệnh git đã chạy với core.hooksPath=/dev/null và commit tới Prompt B1 đã bỏ qua hook; công cụ quét secret của hook ghi lệnh đã chạy riêng trên file đã đổi và kết quả (brownfield/PLAYBOOK_BROWNFIELD.md mục 5.1 quy tắc 8). Hàng nào trỏ tới môi trường dùng chung (staging, production) hoặc chưa xác định được thì không chạy lệnh, ghi câu hỏi BLOCKING ở §11. Lệnh ở §7 chạy trong worktree sạch của commit đo, đặt tường minh biến trỏ tới đích ở cột Đích khi quét. -->
+<!-- fill: One row for each data store, queue, cache and external service that the code or the tests connect to, taken from §6 and §8. The "Target during the scan" column records where the commands in §7 really connect: a local or disposable database, a container, a simulated service. The default credential chain of a cloud tool is also a row; the Claude Code hook that runs a project command has been disabled per brownfield/PLAYBOOK_BROWNFIELD.md §5.1 rule 6. An enabled Git hook (Intake §4) gets one row: the git commands were run with core.hooksPath=/dev/null and the commits up to Prompt B1 skipped the hook; for the secret-scanning tool of the hook, record the command that was run separately on the changed files and its result (brownfield/PLAYBOOK_BROWNFIELD.md §5.1 rule 8). A row that points to a shared environment (staging, production) or cannot be determined means no command is run; record a BLOCKING question in §11. The commands in §7 run in a clean worktree of the measured commit, with the variables that point to the target in the "Target during the scan" column set explicitly. -->
 
-| Kho dữ liệu hoặc dịch vụ | Nơi cấu hình | Đích khi quét | Đạt |
+| Data store or service | Where configured | Target during the scan | Met |
 | --- | --- | --- | :---: |
-| {{EXTERNAL_SYSTEM}} | <!-- fill: file:dòng hoặc tên biến môi trường --> | <!-- fill: đích cục bộ hoặc dùng một lần --> | [ ] |
-| Git hook | <!-- fill: file cấu hình hook, hoặc Không có --> | <!-- fill: hook đã tắt bằng core.hooksPath=/dev/null ở commit và worktree nào; công cụ quét secret: lệnh chạy riêng và kết quả --> | [ ] |
+| {{EXTERNAL_SYSTEM}} | <!-- fill: file:line or environment variable name --> | <!-- fill: local or disposable target --> | [ ] |
+| Git hook | <!-- fill: hook configuration file, or None --> | <!-- fill: hook disabled with core.hooksPath=/dev/null at which commit and worktree; secret-scanning tool: command run separately and result --> | [ ] |
 
-## 3. Bảng module (Module Inventory)
+## 3. Module Inventory
 
-<!-- fill: Mỗi đơn vị mã có trách nhiệm riêng một hàng: thư mục, package hoặc service. Chia phân hệ theo PLAYBOOK mục 5: phần cross-cutting (xác thực, giới hạn tần suất, logging) và thư viện dùng chung không là phân hệ, trừ khi có dữ liệu riêng hoặc API riêng; chúng vẫn có hàng, cột Mã phân hệ ghi Không có. Số phân hệ ở đây đổi docs_mode so với Intake mục 5 thì ghi câu hỏi ở §11 (PLAYBOOK mục 5, xét lại ở Gate 0R). Cột Mã phân hệ đặt ở bước này theo CONVENTIONS mục 4 và được SRS to-be dùng lại cho phân hệ còn tồn tại; test REG ở Regression Baseline dùng mã này. Cột Phụ thuộc vào liệt kê module khác mà module này import hoặc gọi. -->
+<!-- fill: One row for each unit of code with its own responsibility: a directory, package or service. Split into modules per PLAYBOOK §5: cross-cutting parts (authentication, rate limiting, logging) and shared libraries are not modules unless they have their own data or their own API; they still get a row, with None in the Module code column. If the number of modules here changes docs_mode compared with Intake §5, record a question in §11 (PLAYBOOK §5, reconsidered at Gate 0R). The Module code column is set at this step per CONVENTIONS §4 and reused by the to-be SRS for modules that survive; the REG tests in the Regression Baseline use this code. The "Depends on" column lists the other modules that this module imports or calls. -->
 
-| Mã phân hệ | Module | Đường dẫn | Trách nhiệm | Số dòng mã | Có test | Phụ thuộc vào |
+| Module code | Module | Path | Responsibility | Lines of code | Has tests | Depends on |
 | --- | --- | --- | --- | --- | :---: | --- |
-| `{{MODULE_CODE}}` | {{MODULE_NAME}} | <!-- fill: đường dẫn trong inline code --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Có \| Không --> | <!-- fill: module khác, hoặc Không có --> |
+| `{{MODULE_CODE}}` | {{MODULE_NAME}} | <!-- fill: path in inline code --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Yes \| No --> | <!-- fill: other modules, or None --> |
 
-## 4. Điểm vào (Entry Points)
+## 4. Entry Points
 
-| Điểm vào | Loại | Vị trí | Ghi chú |
+| Entry point | Type | Location | Notes |
 | --- | --- | --- | --- |
-| <!-- fill --> | <!-- fill: chọn một: HTTP \| lệnh dòng lệnh \| job định kỳ \| consumer hàng đợi \| màn hình \| khác --> | <!-- fill: file:dòng --> | <!-- fill --> |
+| <!-- fill --> | <!-- fill: choose one: HTTP \| command line \| scheduled job \| queue consumer \| screen \| other --> | <!-- fill: file:line --> | <!-- fill --> |
 
-## 5. Luồng chính (Main Flows)
+## 5. Main Flows
 
-<!-- fill: Mỗi luồng nghiệp vụ quan trọng một mục 5.N có sơ đồ tuần tự dựng từ mã thật; participant là module ở §3, mỗi bước ghi file:dòng trong phần mô tả dưới sơ đồ. Luồng ở đây là nguồn cho danh sách hành vi phải giữ ở Regression Baseline. -->
+<!-- fill: One subsection 5.N for each important business flow, with a sequence diagram built from the real code; a participant is a module in §3, and each step records file:line in the description under the diagram. The flows here are the source for the list of behaviors to preserve in the Regression Baseline. -->
 
-### 5.1. Luồng {{FEATURE_NAME}}
+### 5.1. Flow {{FEATURE_NAME}}
 
 ```mermaid
 sequenceDiagram
@@ -68,57 +68,57 @@ sequenceDiagram
     A-->>U: {{MESSAGE}}
 ```
 
-## 6. Cấu hình và biến môi trường thực tế (Actual Configuration)
+## 6. Actual Configuration
 
-| Tên biến hoặc khóa cấu hình | Nơi đọc | Bắt buộc | Có giá trị mặc định trong mã | Secret |
+| Variable or configuration key | Read at | Required | Has a default value in the code | Secret |
 | --- | --- | :---: | :---: | :---: |
-| <!-- fill: tên, không ghi giá trị --> | <!-- fill: file:dòng --> | <!-- fill: chọn một: Có \| Không --> | <!-- fill: chọn một: Có \| Không --> | <!-- fill: chọn một: Có \| Không --> |
+| <!-- fill: name, do not record the value --> | <!-- fill: file:line --> | <!-- fill: choose one: Yes \| No --> | <!-- fill: choose one: Yes \| No --> | <!-- fill: choose one: Yes \| No --> |
 
-## 7. Lệnh build, test và chạy (Working Commands)
+## 7. Working Commands
 
-<!-- fill: Chỉ ghi lệnh đã chạy thật trong phiên quét, trong worktree sạch của commit đo, sau khi mọi hàng ở §2 đạt; lệnh hỏng vẫn ghi, kèm lỗi rút gọn. Không chạy lệnh ghi vào dữ liệu hay hạ tầng dùng chung, không chạy migration lên cơ sở dữ liệu không phải đích ở §2. Cài dependency đúng theo lockfile, không cập nhật lockfile; dừng mọi tiến trình đã khởi động cho hàng Chạy cục bộ; sau khi chạy, git status của worktree không có file được theo dõi nào bị đổi. Repo không có công cụ test thì hàng Test ghi Không có và nêu ở §11. Hàng Lint, Format, Typecheck, Migration: repo không có công cụ đó thì ghi Không có ở cột Lệnh và căn cứ ở cột Ghi chú (manifest, cấu hình, CI đã đọc); lệnh format chạy ở chế độ chỉ kiểm, không ghi file; migration chỉ chạy lên cơ sở dữ liệu dùng một lần ở §2. Lệnh chạy được ở bảng này là lệnh verify mà Prompt B1 điền vào CLAUDE.md, thắng lệnh của stack profile (brownfield/PLAYBOOK_BROWNFIELD.md mục 5.5). -->
+<!-- fill: Record only the commands that were really run in the scan session, in a clean worktree of the measured commit, after every row in §2 is met; a failing command is still recorded, with the error shortened. Do not run a command that writes to shared data or infrastructure, and do not run a migration against a database that is not the target in §2. Install dependencies exactly per the lockfile, without updating the lockfile; stop every process started for the Run locally row; after the run, the git status of the worktree shows no tracked file changed. If the repo has no test tool, the Test row says None and is raised in §11. For the Lint, Format, Typecheck and Migration rows: if the repo has no such tool, record None in the Command column and the basis in the Notes column (the manifest, configuration and CI that were read); a format command runs in check-only mode and writes no file; a migration runs only against the disposable database in §2. A command in this table that runs successfully is the verify command that Prompt B1 fills into CLAUDE.md, and it wins over the command of the stack profile (brownfield/PLAYBOOK_BROWNFIELD.md §5.5). -->
 
-| Mục đích | Lệnh | Exit code | Thời gian chạy | Ghi chú |
+| Purpose | Command | Exit code | Run time | Notes |
 | --- | --- | :---: | --- | --- |
-| Cài dependency | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill --> |
+| Install dependencies | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill --> |
 | Build | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill --> |
-| Test | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: số test pass, fail, skip --> |
-| Chạy cục bộ | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill --> |
-| Lint | <!-- fill: lệnh, hoặc Không có --> | <!-- fill --> | <!-- fill --> | <!-- fill --> |
-| Format | <!-- fill: lệnh ở chế độ chỉ kiểm, hoặc Không có --> | <!-- fill --> | <!-- fill --> | <!-- fill --> |
-| Typecheck | <!-- fill: lệnh, hoặc Không có --> | <!-- fill --> | <!-- fill --> | <!-- fill --> |
-| Migration | <!-- fill: lệnh áp migration lên cơ sở dữ liệu dùng một lần ở §2, hoặc Không có --> | <!-- fill --> | <!-- fill --> | <!-- fill --> |
+| Test | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: number of tests passed, failed, skipped --> |
+| Run locally | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill --> |
+| Lint | <!-- fill: command, or None --> | <!-- fill --> | <!-- fill --> | <!-- fill --> |
+| Format | <!-- fill: command in check-only mode, or None --> | <!-- fill --> | <!-- fill --> | <!-- fill --> |
+| Typecheck | <!-- fill: command, or None --> | <!-- fill --> | <!-- fill --> | <!-- fill --> |
+| Migration | <!-- fill: command that applies migrations to the disposable database in §2, or None --> | <!-- fill --> | <!-- fill --> | <!-- fill --> |
 
-## 8. Phụ thuộc ngoài (External Dependencies)
+## 8. External Dependencies
 
-| Hệ thống | Cách gọi | Vị trí trong mã | Có môi trường thử |
+| System | How it is called | Location in the code | Has a test environment |
 | --- | --- | --- | :---: |
-| {{EXTERNAL_SYSTEM}} | <!-- fill: giao thức, thư viện client --> | <!-- fill: file:dòng --> | <!-- fill: chọn một: Có \| Không --> |
+| {{EXTERNAL_SYSTEM}} | <!-- fill: protocol, client library --> | <!-- fill: file:line --> | <!-- fill: choose one: Yes \| No --> |
 
-## 9. Tài liệu và cấu hình agent có sẵn (Existing Docs & Agent Files)
+## 9. Existing Docs & Agent Files
 
-<!-- fill: Mọi file đã có trong repo mà bố cục specflow cũng dùng tên hoặc thư mục: CLAUDE.md, AGENTS.md, .claude/, .mcp.json, docs/. Cột Xử lý ghi quyết định đã duyệt ở Gate 0 (Intake §4) và đã áp ở bước chuẩn bị repo. Thêm một hàng cho .gitignore khi bước chuẩn bị repo đã sửa theo Gate 0, và một hàng cho mỗi file bị gitignore không do specflow tạo đã loại khỏi lệnh thứ ba của lệnh kiểm tra sót (brownfield/PLAYBOOK_BROWNFIELD.md mục 5.5 quy tắc 3). Dòng có sẵn trong file này không tính khi chạy lệnh kiểm tra sót. -->
+<!-- fill: Every file already in the repo whose name or directory the specflow layout also uses: CLAUDE.md, AGENTS.md, .claude/, .mcp.json, docs/. The Handling column records the decision approved at Gate 0 (Intake §4) and applied in the repo preparation step. Add a row for .gitignore when the repo preparation step edited it per Gate 0, and a row for each gitignored file not created by specflow that was excluded from the third command of the leftover-check command (brownfield/PLAYBOOK_BROWNFIELD.md §5.5 rule 3). A line already present in this file is not counted when the leftover-check command runs. -->
 
-| File hoặc thư mục | Nội dung chính | Xử lý |
+| File or directory | Main content | Handling |
 | --- | --- | --- |
-| <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: giữ nguyên \| gộp vào CLAUDE.md của specflow \| chuyển vào docs/legacy/ \| chuyển nội dung vào tài liệu specflow (ghi tài liệu đích; làm ở prompt tạo tài liệu đó). Cách xử lý và thời điểm theo brownfield/PLAYBOOK_BROWNFIELD.md mục 5.5 quy tắc 2 --> |
+| <!-- fill --> | <!-- fill --> | <!-- fill: choose one: keep as is \| merge into the specflow CLAUDE.md \| move to docs/legacy/ \| move the content into a specflow document (record the target document; done at the prompt that creates that document). How to handle it and when, per brownfield/PLAYBOOK_BROWNFIELD.md §5.5 rule 2 --> |
 
-## 10. Phạm vi tối thiểu cho repo nhỏ (Minimal Scope)
+## 10. Minimal Scope
 
-<!-- fill: Repo dưới 5.000 dòng mã (theo §1) được phép: §3 gộp theo thư mục cấp một, §5 chỉ cần luồng dài nhất và luồng ghi dữ liệu, §8 ghi một dòng. §1, §2, §6, §7 luôn đầy đủ. Ghi quyết định vào bảng; repo lớn hơn ghi Không. -->
+<!-- fill: A repo under 5,000 lines of code (per §1) is allowed: §3 grouped by first-level directory, §5 with only the longest flow and the flow that writes data, §8 with a single line. §1, §2, §6 and §7 are always complete. Record the decision in the table; a larger repo records No. -->
 
-| Áp dụng phạm vi tối thiểu | Căn cứ |
+| Minimal scope applies | Basis |
 | --- | --- |
-| <!-- fill: chọn một: Có \| Không --> | <!-- fill: số dòng mã ở §1 --> |
+| <!-- fill: choose one: Yes \| No --> | <!-- fill: line count of code in §1 --> |
 
-## 11. Giả định và câu hỏi mở (Assumptions & Open Questions)
+## 11. Assumptions & Open Questions
 
-| ID | Loại | Nội dung | Lý do hoặc ảnh hưởng | BLOCKING | Người trả lời |
+| ID | Type | Content | Reason or impact | BLOCKING | Respondent |
 | --- | --- | --- | --- | :---: | --- |
-| AQ-01 | <!-- fill: chọn một: Giả định \| Câu hỏi --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Có \| Không --> | <!-- fill --> |
+| AQ-01 | <!-- fill: choose one: Assumption \| Question --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Yes \| No --> | <!-- fill --> |
 
-## 12. Lịch sử phiên bản (Version History)
+## 12. Version History
 
-| Phiên bản | Ngày | Người sửa | Nội dung thay đổi | Lý do và người yêu cầu | Người duyệt |
+| Version | Date | Author | Change | Reason and requester | Approver |
 | --- | --- | --- | --- | --- | --- |
-| 0.1.0 | {{DATE}} | {{AUTHOR}} | Bản khởi tạo | Khởi tạo theo pipeline brownfield | Chưa duyệt |
+| 0.1.0 | {{DATE}} | {{AUTHOR}} | Initial version | Created by the brownfield pipeline | Not approved |

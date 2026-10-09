@@ -1,0 +1,5 @@
+# English labels for design.tsv (language: en). Same keys as locales/vi/design.tsv.
+design_kind_text	text
+design_kind_non_text	non-text
+design_no_text_token	None
+design_col_text_token	Text token

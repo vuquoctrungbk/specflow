@@ -1,0 +1,49 @@
+# Labels that check-templates.sh reads from, or writes into messages about, the documents of a project (language: vi).
+# Format: key<TAB>value. Each key becomes the variable L_<key>. Not here: anchors into CONVENTIONS.md and PLAYBOOK.md.
+# --- table column names ---
+tpl_col_component	Thành phần
+tpl_col_component_uses	Component dùng
+tpl_col_pattern_uses	Pattern dùng
+tpl_col_direction	Hướng
+tpl_col_chosen	Chọn
+tpl_col_token_before	Token trước
+tpl_col_requirement_statement	Phát biểu yêu cầu
+tpl_col_requirement	Yêu cầu
+tpl_col_threshold	Ngưỡng
+tpl_col_ac_or_inv	AC hoặc INV
+tpl_col_verification	Cách kiểm chứng
+tpl_col_priority	Ưu tiên
+tpl_col_source	Nguồn
+tpl_col_screen	Màn hình
+tpl_col_entry_point	Điểm vào
+tpl_col_heuristic_key	Khóa heuristic
+tpl_col_problem_level	Mức vấn đề
+tpl_col_deceptive_key	Khóa mẫu lừa
+tpl_col_pattern	Mẫu
+tpl_col_result	Kết quả
+tpl_col_evidence	Căn cứ
+tpl_col_release	Bản phát hành
+# --- row labels, words and headings ---
+tpl_row_accessibility	Trợ năng
+tpl_row_method_path	Method và path
+tpl_word_level	mức
+tpl_heading_appendix	Phụ lục
+tpl_table_placeholder_values	Giá trị placeholder
+# --- line labels (the colon is written by the script) ---
+tpl_label_choice_reason	Lý do chọn
+tpl_label_library_theme	Theme mặc định của thư viện
+tpl_label_auth_screen	Màn hình xác thực
+tpl_label_priority_info	Thông tin ưu tiên
+tpl_label_main_action	Hành động chính
+tpl_label_edge_content	Nội dung biên
+tpl_label_zone_name	Tên vùng
+# --- cell values ---
+tpl_val_yes	Có
+tpl_val_no	Không
+tpl_val_none	Không
+tpl_val_keep	Giữ nguyên
+tpl_val_no_ui	Không có giao diện
+tpl_val_by_flow	Theo luồng
+tpl_val_not_used	Không dùng
+tpl_val_used_on_purpose	Dùng có chủ đích
+tpl_val_like	Như

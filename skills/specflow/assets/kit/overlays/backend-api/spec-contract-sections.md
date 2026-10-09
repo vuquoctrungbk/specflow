@@ -2,73 +2,73 @@
 doc_type: overlay-section
 status: stable
 version: 1.1.0
-language: vi-en
+language: en
 surface: backend-api
 ---
 
-# Overlay backend-api: khối cho SPEC
+# Overlay backend-api: blocks for the SPEC
 
 <!-- SLOT-CONTENT: spec.contract -->
 ### Endpoint
 
-<!-- fill: Một bảng cho mỗi endpoint của tính năng. -->
+<!-- fill: One table for each endpoint of the feature. -->
 
-| Hạng mục | Giá trị |
+| Item | Value |
 | --- | --- |
-| Method và path | <!-- fill: chọn một: GET \| POST \| PATCH \| PUT \| DELETE --> `/api/v1/{{RESOURCE_PATH}}` |
-| Xác thực | <!-- fill: Bearer token theo ARCHITECTURE §6.1, hoặc "Không" cho endpoint công khai --> |
-| Phân quyền | <!-- fill: vai trò được phép, khớp §6 --> |
-| Header bắt buộc | `Content-Type: application/json`<!-- fill: thêm `Idempotency-Key` nếu thao tác ghi không idempotent tự nhiên --> |
-| Giới hạn tần suất | <!-- fill: giới hạn theo ARCHITECTURE §9.1 --> |
-| Mã thành công | <!-- fill: ví dụ 201 khi tạo mới, 200 khi phát lại cùng Idempotency-Key --> |
+| Method and path | <!-- fill: choose one: GET \| POST \| PATCH \| PUT \| DELETE --> `/api/v1/{{RESOURCE_PATH}}` |
+| Authentication | <!-- fill: Bearer token per ARCHITECTURE §6.1, or "No" for a public endpoint --> |
+| Authorization | <!-- fill: roles allowed, matching §6 --> |
+| Required headers | `Content-Type: application/json`<!-- fill: add `Idempotency-Key` if the write operation is not naturally idempotent --> |
+| Rate limit | <!-- fill: limit per ARCHITECTURE §9.1 --> |
+| Success code | <!-- fill: for example 201 on create, 200 when replaying the same Idempotency-Key --> |
 
-### DTO request và response (Request & Response DTO)
+### Request & Response DTO
 
-- Request được validate tại biên bằng schema runtime trước khi vào service; trường lạ bị từ chối; lỗi validate trả `VALIDATION_ERROR` kèm danh sách trường ở `error.details`.
-- Giá trị tính toán (giá, tổng tiền, quyền) không nhận từ request; service tính từ nguồn chân lý.
-- Response chỉ chứa trường đã khai báo; MUST NOT trả trường nội bộ (hash, khóa ngoại không cần thiết, dữ liệu cá nhân không cần cho client).
+- The request is validated at the boundary with a runtime schema before it enters the service; unknown fields are rejected; a validation error returns `VALIDATION_ERROR` with the list of fields in `error.details`.
+- Computed values (price, total, permissions) are not accepted from the request; the service computes them from the source of truth.
+- The response contains only declared fields; MUST NOT return internal fields (hashes, unnecessary foreign keys, personal data the client does not need).
 
 <!-- PROFILE-SLOT: spec.contract -->
 
-<!-- fill: Viết schema request và kiểu response thật của endpoint theo khuôn ở trên. -->
+<!-- fill: Write the real request schema and response type of the endpoint following the pattern above. -->
 
-### Phản hồi thành công (Success Response)
+### Success Response
 
-<!-- fill: Một ví dụ JSON trong envelope ARCHITECTURE §6.2, giá trị ví dụ khớp DTO. -->
+<!-- fill: One JSON example in the ARCHITECTURE §6.2 envelope, example values matching the DTO. -->
 
-### Ma trận lỗi (Error Matrix)
+### Error Matrix
 
-| HTTP status | `error.code` | Kịch bản kích hoạt | `error.details` |
+| HTTP status | `error.code` | Triggering scenario | `error.details` |
 | --- | --- | --- | --- |
-| `400` | `VALIDATION_ERROR` | Request sai schema | Danh sách `{ field, issue }` |
-| `401` | `UNAUTHENTICATED` | Thiếu token, token hết hạn hoặc sai chữ ký | Không có |
-| `403` | `FORBIDDEN` | Đã xác thực nhưng vai trò không được phép | Không có |
-| `429` | `RATE_LIMITED` | Vượt giới hạn tần suất | Không có; header `Retry-After` |
-| <!-- fill: status theo ARCHITECTURE §7 --> | <!-- fill: mã nghiệp vụ có trong ARCHITECTURE §7.1 --> | <!-- fill --> | <!-- fill --> |
+| `400` | `VALIDATION_ERROR` | Request does not match the schema | List of `{ field, issue }` |
+| `401` | `UNAUTHENTICATED` | Token missing, expired or with a wrong signature | None |
+| `403` | `FORBIDDEN` | Authenticated but the role is not allowed | None |
+| `429` | `RATE_LIMITED` | Rate limit exceeded | None; `Retry-After` header |
+| <!-- fill: status per ARCHITECTURE §7 --> | <!-- fill: business code present in ARCHITECTURE §7.1 --> | <!-- fill --> | <!-- fill --> |
 
-### Fragment OpenAPI 3.1 (OpenAPI Fragment)
+### OpenAPI Fragment
 
-<!-- fill: Thay dòng này bằng một dòng bắt đầu bằng "Tệp đi kèm:" theo CONVENTIONS mục 7, trỏ tới tệp cạnh SPEC này có tên là tên tệp SPEC bỏ đuôi .md cộng ".openapi.yaml", kèm danh sách operationId của fragment. Tạo tệp đó từ khung specflow/overlays/backend-api/spec-openapi-fragment-template.yaml. Fragment đủ để sinh client và chạy contract test: path, method đúng với bảng Endpoint, operationId camelCase, security, requestBody với schema thật, mọi response trong ma trận lỗi, response thành công và response lỗi có schema của envelope (khai báo trong components), mỗi loại phần tử của `error.details` có thuộc tính khai báo rõ để client sinh được kiểu. Khi hiện thực, SPEC gộp fragment vào openapi/openapi.yaml, file này nằm trong File Diff. -->
+<!-- fill: Replace this line with a line that starts with "Companion file:" per CONVENTIONS §7, pointing to the file next to this SPEC whose name is the SPEC file name without the .md extension plus ".openapi.yaml", with the list of operationIds of the fragment. Create that file from the template specflow/overlays/backend-api/spec-openapi-fragment-template.yaml. The fragment is enough to generate a client and run contract tests: path and method matching the Endpoint table, camelCase operationId, security, requestBody with a real schema, every response in the error matrix, the success response and the error responses carry the schema of the envelope (declared in components), each kind of element of `error.details` has clearly declared properties so a client can generate the type. When implemented, the SPEC merges the fragment into openapi/openapi.yaml, and this file is in the File Diff. -->
 <!-- /SLOT-CONTENT -->
 
 <!-- SLOT-CONTENT: spec.test-types -->
-### Loại test của bề mặt (Surface Test Types)
+### Surface Test Types
 
-| Loại | TYPE trong TC ID | Phạm vi | Dữ liệu | Bắt buộc |
+| Type | TYPE in the TC ID | Scope | Data | Required |
 | --- | --- | --- | --- | :---: |
-| Unit | `UNIT` | Service với repository và adapter được mock | Trong bộ nhớ | Có |
-| Integration | `INT` | Repository và truy vấn trên cơ sở dữ liệu thật chạy cô lập | Cơ sở dữ liệu tạo riêng cho lần chạy | Có khi SPEC có truy vấn mới |
-| E2E | `E2E` | Request HTTP qua toàn bộ ứng dụng tới cơ sở dữ liệu | Cơ sở dữ liệu tạo riêng cho lần chạy | Có |
-| Contract | `CTR` | Response thật so với fragment OpenAPI ở §3 | Như E2E | Có khi endpoint được client khác dùng |
-| Concurrency | `CONC` | Bất biến ở §1.2 dưới request song song | Cơ sở dữ liệu thật | Có, mỗi bất biến ở §1.2 một test |
-| Load smoke | `LOAD` | Đo nhanh độ trễ so với NFR-PERF | Môi trường staging | Khi SPEC chạm đường nóng của NFR-PERF |
+| Unit | `UNIT` | Service with the repository and adapters mocked | In memory | Yes |
+| Integration | `INT` | Repository and queries on a real database running in isolation | A database created for the run | Yes when the SPEC has a new query |
+| E2E | `E2E` | HTTP request through the whole application to the database | A database created for the run | Yes |
+| Contract | `CTR` | Real response compared with the OpenAPI fragment in §3 | Same as E2E | Yes when the endpoint is used by another client |
+| Concurrency | `CONC` | The invariant in §1.2 under parallel requests | Real database | Yes, one test per invariant in §1.2 |
+| Load smoke | `LOAD` | Quick latency measurement against NFR-PERF | Staging environment | When the SPEC touches a hot path of NFR-PERF |
 
-### Dạng test CONC của bề mặt (Concurrency Test Pattern)
+### Concurrency Test Pattern
 
-1. Chuẩn bị trạng thái giới hạn tài nguyên (ví dụ số lượng còn lại nhỏ hơn số request).
-2. Gửi N request song song (N ≥ 10) tới cùng tài nguyên, chờ tất cả kết thúc.
-3. Đếm phản hồi theo mã và truy vấn cơ sở dữ liệu để khẳng định bất biến (không âm, không trùng, tổng khớp).
-4. Không dùng mock cho tầng lưu trữ; không dùng sleep để sắp thứ tự.
+1. Prepare a state that limits the resource (for example the remaining quantity is smaller than the number of requests).
+2. Send N parallel requests (N ≥ 10) to the same resource, wait for all of them to finish.
+3. Count the responses by code and query the database to assert the invariant (non-negative, no duplicates, totals match).
+4. Do not mock the storage layer; do not use sleep to order the requests.
 
 <!-- PROFILE-SLOT: spec.test-types -->
 <!-- /SLOT-CONTENT -->

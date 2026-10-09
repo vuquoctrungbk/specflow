@@ -4,6 +4,31 @@ All notable changes to specflow. Versions follow Semantic Versioning. The
 version of the rules and templates that a release carries is in
 `skills/specflow/assets/kit/VERSION`.
 
+## [3.0.0] - 2026-10-09
+
+The kit carries rules 4.0.0. A project now chooses the language of its
+documents, Vietnamese or English.
+
+### Changed
+
+- The rules, prompts and templates of the kit are written in English. The
+  `language` key in the frontmatter of the Intake (`vi` or `en`) is the
+  language of the project, and every document specflow writes for it,
+  including headings, fixed values such as the gate and roadmap states, and the
+  approval phrase ("Approved at Gate N", "Duyệt Gate N" in a Vietnamese
+  project), is in that language with English identifiers and technical terms.
+  The labels the scripts read are in `specflow/scripts/locales/<language>/`.
+- specflow asks the user to confirm the project language before any other
+  document, and the document checker refuses a document that carries another
+  language than the Intake.
+- The scripts no longer fall back to Vietnamese when the language is missing or
+  unknown: they stop with one message that names the Intake and what it lacks.
+  The `BLOCKING` cell of a question must be exactly the yes or no word of the
+  project language; any other value is an error and `gate.py approve` refuses
+  it.
+- No compatibility layer for projects created with earlier rules: their
+  documents have no `language` key and this version does not check them.
+
 ## [2.2.0] - 2026-10-08
 
 The kit carries rules 3.2.0. The approved screen now binds the coding stage, so

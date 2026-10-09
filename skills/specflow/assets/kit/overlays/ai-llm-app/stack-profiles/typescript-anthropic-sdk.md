@@ -2,92 +2,92 @@
 doc_type: profile
 status: stable
 version: 1.0.0
-language: vi-en
+language: en
 surface: ai-llm-app
 profile: typescript-anthropic-sdk
 ---
 
 # Stack profile typescript-anthropic-sdk
 
-## 1. Phạm vi (Scope)
+## 1. Scope
 
-Tính năng AI viết bằng TypeScript chạy trên Node.js dạng ES module, gọi mô hình Claude qua Anthropic TypeScript SDK với đầu ra có cấu trúc sinh từ schema Zod (`messages.create` với `output_config.format` từ `zodOutputFormat`, rồi kiểm lại bằng schema), test bằng Vitest, lint bằng oxlint. Profile dùng cho worker hoặc module phía server. Khi tính năng AI nằm trong một backend đã có profile riêng (ví dụ `node-nestjs-prisma`), làm theo mục "Ghép với backend-api" ở `overlays/ai-llm-app/OVERLAY.md`: dùng cây thư mục, cấu hình công cụ và lệnh verify của backend, profile này chỉ thêm SDK, client mô hình, project test đánh giá và lệnh đánh giá.
+An AI feature written in TypeScript on Node.js as ES modules, calling Claude models through the Anthropic TypeScript SDK with structured output generated from a Zod schema (`messages.create` with `output_config.format` from `zodOutputFormat`, then re-checked against the schema), tested with Vitest, linted with oxlint. The profile serves a worker or a server-side module. When the AI feature sits inside a backend that already has its own profile (for example `node-nestjs-prisma`), follow the "Combining with backend-api" section of `overlays/ai-llm-app/OVERLAY.md`: use the backend's directory tree, tool configuration and verify commands; this profile adds only the SDK, the model client, the evaluation test project and the evaluation command.
 
-Phiên bản chốt ngày 2026-09-22 và đã chạy thử cùng nhau trên Node.js 24.21.0 với một dự án thử: typecheck, lint type-aware, unit test, integration test với nhà cung cấp giả lập ở tầng `fetch` (đầu ra hợp lệ, sai schema, bị cắt ở `max_tokens`, độ tin cậy thấp, lỗi cấu hình, quá tải và lỗi mạng có thử lại, hạn chót của lời gọi), test `CONC` hai worker, build và `npm audit` đều đạt. Hành vi của SDK 0.127.0 mà client dựa vào đã đối chiếu với mã nguồn của SDK: SDK tự thử lại `408`, `409`, `429`, `5xx` và lỗi mạng, tuân theo `retry-after` không giới hạn, và chỉ gửi hình dạng của schema cho nhà cung cấp, còn miền liệt kê, khoảng số, độ dài đi dưới dạng mô tả. Test đánh giá với mô hình thật chưa chạy trong môi trường soạn profile vì không có khóa API; lệnh đánh giá đã được kiểm tra là tự bỏ qua khi thiếu khóa và báo lỗi khi `EVAL_REQUIRED=1`. Nâng phiên bản theo Dependency Policy ở ARCHITECTURE §2.2.
+Versions pinned on 2026-09-22 and tried together on Node.js 24.21.0 with a trial project: typecheck, type-aware lint, unit test, integration test with a provider faked at the `fetch` layer (valid output, schema mismatch, truncation at `max_tokens`, low confidence, configuration error, overload and network error with retry, deadline of the call), the `CONC` test with two workers, build and `npm audit` all passed. The SDK 0.127.0 behavior that the client relies on was checked against the SDK source: the SDK retries `408`, `409`, `429`, `5xx` and network errors on its own, honours `retry-after` without an upper bound, and sends the provider only the shape of the schema, while enumerated domains, number ranges and lengths travel as descriptions. The evaluation test with a real model did not run in the environment where the profile was written because there was no API key; the evaluation command was checked to skip itself when the key is missing and to fail when `EVAL_REQUIRED=1`. Upgrade versions per the Dependency Policy in ARCHITECTURE §2.2.
 
-## 2. Bảng công nghệ (Tech Stack)
+## 2. Technology Table (Tech Stack)
 
-Chép vào ARCHITECTURE §2.1 với cột Bề mặt là `ai-llm-app` và cột ADR là "Mặc định của profile" (chỉ lệch profile mới cần ADR). ID mô hình không thuộc profile: chọn theo nhiệm vụ, ghi thành một hàng riêng của §2.1 kèm ADR.
+Copy into ARCHITECTURE §2.1 with the Surface column set to `ai-llm-app` and the ADR column set to "Profile default" (only a deviation from the profile needs an ADR). The model ID is not part of the profile: choose it per task and record it as a separate row of §2.1 with an ADR.
 
-| Lớp (Layer) | Công nghệ | Phiên bản chính xác | Vai trò | ADR |
+| Layer | Technology | Exact version | Role | ADR |
 | --- | --- | --- | --- | --- |
-| Runtime | Node.js | 24.21.0 (LTS) | Chạy worker và công cụ | Mặc định của profile |
-| Ngôn ngữ | TypeScript | 6.0.3 | Kiểu nghiêm ngặt, `module: nodenext`; cùng dòng với profile backend | Mặc định của profile |
-| SDK mô hình | `@anthropic-ai/sdk` | 0.127.0 | Messages API, đầu ra có cấu trúc, thử lại và thời gian chờ có sẵn | Mặc định của profile |
-| Validation | `zod` | 4.6.5 | Schema đầu ra (nguồn của định dạng đầu ra có cấu trúc), biến môi trường, dữ liệu từ hệ thống ngoài | Mặc định của profile |
-| Kiểu | `@types/node` | 24.13.6 | Kiểu cho Node.js 24 | Mặc định của profile |
-| Test | `vitest`, `@vitest/coverage-v8` | 4.1.11 | Unit, integration, đánh giá, coverage; cùng dòng với profile backend | Mặc định của profile |
-| Lint | `oxlint`, `oxlint-tsgolint` | 1.85.0, 7.0.2002 | Lint, rule cần thông tin kiểu (`--type-aware`) | Mặc định của profile |
+| Runtime | Node.js | 24.21.0 (LTS) | Runs the worker and the tools | Profile default |
+| Language | TypeScript | 6.0.3 | Strict types, `module: nodenext`; same line as the backend profile | Profile default |
+| Model SDK | `@anthropic-ai/sdk` | 0.127.0 | Messages API, structured output, built-in retry and timeout | Profile default |
+| Validation | `zod` | 4.6.5 | Output schema (the source of the structured output format), environment variables, data from external systems | Profile default |
+| Types | `@types/node` | 24.13.6 | Types for Node.js 24 | Profile default |
+| Test | `vitest`, `@vitest/coverage-v8` | 4.1.11 | Unit, integration, evaluation, coverage; same line as the backend profile | Profile default |
+| Lint | `oxlint`, `oxlint-tsgolint` | 1.85.0, 7.0.2002 | Lint, rules that need type information (`--type-aware`) | Profile default |
 
-## 3. Giá trị placeholder
+## 3. Placeholder values
 
-| Placeholder | Giá trị |
+| Placeholder | Value |
 | --- | --- |
-| `{{LANGUAGE_STRICT_MODE_RULE}}` | TypeScript bật `strict` và `noUncheckedIndexedAccess`; cấm kiểu `any` (oxlint `typescript/no-explicit-any` mức error). |
-| `{{CODEGEN_CMD}}` | `N/A: profile không có client sinh mã; kiểu của SDK có sẵn, schema đầu ra viết bằng Zod` |
+| `{{LANGUAGE_STRICT_MODE_RULE}}` | TypeScript has `strict` and `noUncheckedIndexedAccess` on; the `any` type is forbidden (oxlint `typescript/no-explicit-any` at error level). |
+| `{{CODEGEN_CMD}}` | `N/A: the profile has no generated client; the SDK types are built in and the output schema is written in Zod` |
 | `{{LINT_CMD}}` | `npx oxlint --type-aware --deny-warnings src/ test/` |
 | `{{TYPECHECK_CMD}}` | `npx tsc --noEmit` |
 | `{{UNIT_TEST_CMD}}` | `npx vitest run --project unit` |
 | `{{INTEGRATION_TEST_CMD}}` | `npx vitest run --project integration` |
-| `{{E2E_TEST_CMD}}` | `N/A: tác vụ AI chạy trong worker hoặc module phía server, không có giao diện; hành vi đầu cuối phủ bằng integration test và test đánh giá` |
+| `{{E2E_TEST_CMD}}` | `N/A: the AI task runs in a worker or a server-side module and has no UI; end-to-end behavior is covered by integration tests and evaluation tests` |
 | `{{EVAL_CMD}}` | `EVAL_REQUIRED=1 npx vitest run --project eval` |
 | `{{COVERAGE_CMD}}` | `npx vitest run --project unit --project integration --coverage` |
 | `{{BUILD_CMD}}` | `npx tsc -p tsconfig.build.json` |
 | `{{AUDIT_CMD}}` | `npm audit --audit-level=high` |
 
-Ghi chú:
+Notes:
 
-- `{{EVAL_CMD}}` gọi mô hình thật, cần `ANTHROPIC_API_KEY` (khóa của môi trường đánh giá, có hạn mức chi tiêu riêng) và tốn tiền theo số mẫu nhân số lần chạy; lệnh chỉ chạy trong job đánh giá của CI. `EVAL_REQUIRED=1` làm lệnh báo lỗi khi thiếu khóa; chạy lệnh này trong job đánh giá của CI khi đổi prompt, mô hình hoặc tham số, và theo lịch. Chạy `npx vitest run --project eval` không có khóa thì bộ test tự bỏ qua, dùng được trên máy lập trình viên.
-- Ngưỡng coverage mặc định của profile là 80% dòng và nhánh cho `src/`, trừ `src/main.ts` và `src/config/`; SRS có thể đặt ngưỡng khác ở NFR-MAINT.
-- Khi dự án thêm client sinh từ OpenAPI (hệ thống ngoài có tài liệu OpenAPI), đặt `{{CODEGEN_CMD}}` theo profile backend hoặc frontend tương ứng.
+- `{{EVAL_CMD}}` calls a real model, needs `ANTHROPIC_API_KEY` (the key of the evaluation environment, with its own spending limit) and costs money in proportion to the number of samples times the number of runs; the command runs only in the CI evaluation job. `EVAL_REQUIRED=1` makes the command fail when the key is missing; run this command in the CI evaluation job when the prompt, the model or the parameters change, and on a schedule. Running `npx vitest run --project eval` without a key makes the test suite skip itself, which is usable on a developer machine.
+- The profile default coverage threshold is 80% of lines and branches for `src/`, except `src/main.ts` and `src/config/`; the SRS may set another threshold at NFR-MAINT.
+- When the project adds a client generated from OpenAPI (an external system with OpenAPI documentation), set `{{CODEGEN_CMD}}` per the matching backend or frontend profile.
 
-## 4. Nội dung chèn vào tài liệu (Profile Content)
+## 4. Profile Content
 
-### 4.1. Cây thư mục và cấu hình công cụ (cho ARCHITECTURE §4)
+### 4.1. Directory tree and tool configuration (for ARCHITECTURE §4)
 
 <!-- PROFILE-CONTENT: arch.layout -->
-### Cây thư mục theo stack (Stack Directory Tree)
+### Stack Directory Tree
 
 ```text
 .
-├── evals/                               # bộ dữ liệu đánh giá và tấn công, JSON Lines, mỗi dòng một mẫu
+├── evals/                               # evaluation and attack datasets, JSON Lines, one sample per line
 ├── src/
-│   ├── main.ts                          # điểm vào: đọc cấu hình, khởi động worker hoặc server
-│   ├── config/env.ts                    # nơi duy nhất đọc biến môi trường, validate bằng Zod
-│   ├── llm/model-client.ts              # module duy nhất gọi Anthropic SDK
-│   ├── prompts/{{FEATURE_SLUG}}.ts       # một module cho mỗi prompt, hằng version trùng Prompt Spec
+│   ├── main.ts                          # entry point: reads the configuration, starts the worker or server
+│   ├── config/env.ts                    # the only place that reads environment variables, validated with Zod
+│   ├── llm/model-client.ts              # the only module that calls the Anthropic SDK
+│   ├── prompts/{{FEATURE_SLUG}}.ts       # one module per prompt, version constant equal to the Prompt Spec
 │   ├── {{MODULE_SLUG}}/
-│   │   ├── {{MODULE_SLUG}}.schema.ts    # schema Zod của đầu ra
-│   │   ├── guards.ts                    # guard đầu vào và đầu ra, hàm thuần
-│   │   └── index.ts                     # logic nghiệp vụ dùng kết quả đã kiểm tra
+│   │   ├── {{MODULE_SLUG}}.schema.ts    # Zod schema of the output
+│   │   ├── guards.ts                    # input and output guards, pure functions
+│   │   └── index.ts                     # business logic that uses the checked result
 │   └── lib/
 ├── test/
 │   ├── unit/                            # *.test.ts
-│   ├── integration/                     # *.int.test.ts, nhà cung cấp giả lập ở tầng fetch
-│   ├── eval/                            # *.eval.test.ts, gọi mô hình thật
-│   └── support/                         # giả lập nhà cung cấp và hệ thống ngoài
+│   ├── integration/                     # *.int.test.ts, provider faked at the fetch layer
+│   ├── eval/                            # *.eval.test.ts, calls the real model
+│   └── support/                         # fakes of the provider and of external systems
 ├── .oxlintrc.json
-├── tsconfig.json                        # typecheck cả src và test, noEmit
-├── tsconfig.build.json                  # build src ra dist
+├── tsconfig.json                        # typecheck for both src and test, noEmit
+├── tsconfig.build.json                  # build src into dist
 ├── vitest.config.ts
-└── .env.example                         # chỉ tên biến và giá trị giả
+└── .env.example                         # variable names and fake values only
 ```
 
-<!-- fill: Lặp nhánh src/{{MODULE_SLUG}} cho mỗi phân hệ ở §4.1 và file prompts/{{FEATURE_SLUG}}.ts cho mỗi Prompt Spec; bỏ thư mục mà dự án không có. -->
+<!-- fill: Repeat the src/{{MODULE_SLUG}} branch for each module in §4.1 and the prompts/{{FEATURE_SLUG}}.ts file for each Prompt Spec; drop the directories that the project does not have. -->
 
-File Diff mặc định khi SPEC thêm một tác vụ AI: module prompt trong `src/prompts/`, schema và guard trong thư mục phân hệ, test trong `test/unit/`, `test/integration/`, `test/eval/`, bộ dữ liệu trong `evals/`, Prompt Spec trong `docs/prompts/`.
+Default File Diff when a SPEC adds an AI task: the prompt module in `src/prompts/`, the schema and guards in the module directory, tests in `test/unit/`, `test/integration/`, `test/eval/`, the dataset in `evals/`, the Prompt Spec in `docs/prompts/`.
 
-Cấu hình test (`vitest.config.ts`): ba project; project `eval` có thời gian chờ dài vì gọi mô hình thật.
+Test configuration (`vitest.config.ts`): three projects; the `eval` project has a long timeout because it calls a real model.
 
 ```typescript
 import { defineConfig } from "vitest/config";
@@ -104,7 +104,7 @@ export default defineConfig({
 });
 ```
 
-Cấu hình lint (`.oxlintrc.json`):
+Lint configuration (`.oxlintrc.json`):
 
 ```json
 {
@@ -116,17 +116,17 @@ Cấu hình lint (`.oxlintrc.json`):
 }
 ```
 
-`tsconfig.json`: `target` `ES2023`, `module` và `moduleResolution` `nodenext`, `strict`, `noUncheckedIndexedAccess`, `types: ["node"]`, `noEmit`, `include` gồm `src`, `test`, `vitest.config.ts`; import tương đối ghi đuôi `.js`. `tsconfig.build.json` kế thừa, bật emit, `rootDir: "src"`, `outDir: "dist"`, chỉ `include` `src`.
+`tsconfig.json`: `target` `ES2023`, `module` and `moduleResolution` `nodenext`, `strict`, `noUncheckedIndexedAccess`, `types: ["node"]`, `noEmit`, `include` has `src`, `test`, `vitest.config.ts`; relative imports carry the `.js` extension. `tsconfig.build.json` extends it, turns emit on, sets `rootDir: "src"`, `outDir: "dist"`, and `include` is only `src`.
 <!-- /PROFILE-CONTENT -->
 
-### 4.2. Schema đầu ra và client mô hình (cho ARCHITECTURE §5)
+### 4.2. Output schema and model client (for ARCHITECTURE §5)
 
 <!-- PROFILE-CONTENT: arch.schema -->
-### Schema và client mô hình theo stack (Stack Schemas & Model Client)
+### Stack Schemas & Model Client
 
-- Schema đầu ra viết bằng Zod; `zodOutputFormat(schema)` của `@anthropic-ai/sdk/helpers/zod` chuyển nó thành định dạng đầu ra có cấu trúc gửi kèm `messages.create`. Client tự đọc câu trả lời: `stop_reason` khác `end_turn` (bị cắt ở `max_tokens`, từ chối), văn bản không phải JSON hoặc không qua `schema.safeParse` đều là `OUTPUT_INVALID`, và token của lời gọi vẫn được trả về. Không dùng `messages.parse`: hàm này ném lỗi khi đầu ra sai schema và làm mất `usage` của một lời gọi đã tính tiền.
-- Client mô hình là module duy nhất tạo `Anthropic`: `temperature` 0; `timeout` mỗi lần gọi, `maxRetries` và một hạn chót cho cả lời gọi (`AbortSignal.timeout`), vì SDK tuân theo `retry-after` của nhà cung cấp; `authToken`, `baseURL`, `logLevel` truyền tường minh để SDK không tự đọc các biến `ANTHROPIC_*` tương ứng (mức log `debug` in cả nội dung request). SDK vẫn đọc `ANTHROPIC_CUSTOM_HEADERS` và thêm các header này sau header xác thực, nên `src/config/env.ts` từ chối khởi động khi biến này được đặt, kể cả rỗng. Trong schema Zod 4, khóa đó là `z.undefined({ error: "ANTHROPIC_CUSTOM_HEADERS must not be set" }).optional()`: thiếu `.optional()` thì Zod đòi khóa phải có mặt, và worker không khởi động được ở mọi môi trường không đặt biến. Lỗi `400`, `401`, `402`, `403`, `404`, `413` là lỗi cấu hình (ném ra); lỗi còn lại sau khi thử lại, kể cả hết hạn chót, là `MODEL_UNAVAILABLE`.
-- Client nhận `fetch` qua tham số để integration test thay bằng nhà cung cấp giả lập.
+- The output schema is written in Zod; `zodOutputFormat(schema)` from `@anthropic-ai/sdk/helpers/zod` turns it into the structured output format sent with `messages.create`. The client reads the answer itself: a `stop_reason` other than `end_turn` (truncated at `max_tokens`, refusal), text that is not JSON, or text that fails `schema.safeParse` is `OUTPUT_INVALID`, and the tokens of the call are still returned. Do not use `messages.parse`: it throws when the output does not match the schema and loses the `usage` of a call that was already billed.
+- The model client is the only module that creates `Anthropic`: `temperature` 0; a `timeout` per attempt, `maxRetries` and a deadline for the whole call (`AbortSignal.timeout`), because the SDK honours the provider's `retry-after`; `authToken`, `baseURL`, `logLevel` are passed explicitly so that the SDK does not read the matching `ANTHROPIC_*` variables itself (log level `debug` prints the request content too). The SDK still reads `ANTHROPIC_CUSTOM_HEADERS` and adds those headers after the authentication headers, so `src/config/env.ts` refuses to start when this variable is set, even empty. In a Zod 4 schema that key is `z.undefined({ error: "ANTHROPIC_CUSTOM_HEADERS must not be set" }).optional()`: without `.optional()` Zod requires the key to be present, and the worker cannot start in any environment that does not set the variable. Errors `400`, `401`, `402`, `403`, `404`, `413` are configuration errors (thrown); every other error left after retries, including an expired deadline, is `MODEL_UNAVAILABLE`.
+- The client takes `fetch` as a parameter so that integration tests can swap in a fake provider.
 
 ```typescript
 import Anthropic, { AnthropicError, APIError } from "@anthropic-ai/sdk";
@@ -208,26 +208,26 @@ export type ModelClient = ReturnType<typeof createModelClient>;
 ```
 <!-- /PROFILE-CONTENT -->
 
-### 4.3. Quy ước của stack (cho ARCHITECTURE §7)
+### 4.3. Stack conventions (for ARCHITECTURE §7)
 
 <!-- PROFILE-CONTENT: arch.conventions -->
-### Hiện thực quy ước theo stack (Stack Implementation Notes)
+### Stack Implementation Notes
 
-- Mỗi prompt là một module xuất một hằng `as const` gồm `version` (trùng `version` của Prompt Spec), chuỗi prompt hệ thống và hàm ghép tin nhắn người dùng; nội dung không tin cậy chỉ đi vào hàm ghép, nằm giữa cặp thẻ phân cách.
-- Thời gian chờ mặc định 20 giây mỗi lần gọi, 2 lần thử lại và hạn chót 60 giây cho cả lời gọi với tác vụ nền; tác vụ người dùng đang chờ đặt các giá trị này theo NFR-PERF. Lỗi `400`, `401`, `402`, `403`, `404`, `413` là lỗi cấu hình hoặc lỗi lập trình, không chuyển phương án dự phòng.
-- `message.usage.input_tokens` và `output_tokens` của mỗi lời gọi có phản hồi, kể cả khi đầu ra không dùng được, đi vào nhật ký và vào kết quả trả về, để test `COST` và giám sát chi phí đọc được.
-- Khóa API chỉ đọc trong `src/config/env.ts` và truyền vào client; không đưa khóa hay nội dung prompt đầy đủ vào log.
-- Biến trong Prompt Spec viết dạng hai ngoặc nhọn bao tên chữ thường; trong mã, chúng là tham số của hàm ghép tin nhắn.
+- Each prompt is a module that exports an `as const` constant holding `version` (equal to the `version` of the Prompt Spec), the system prompt string and the function that assembles the user message; untrusted content enters only the assembling function, between the delimiter tag pair.
+- Default timeout is 20 seconds per attempt, 2 retries and a 60 second deadline for the whole call for background tasks; a task that a user is waiting on sets these values per NFR-PERF. Errors `400`, `401`, `402`, `403`, `404`, `413` are configuration or programming errors and do not switch to a fallback.
+- `message.usage.input_tokens` and `output_tokens` of every call that got a response, even when the output is unusable, go into the log and into the returned result, so that the `COST` test and cost monitoring can read them.
+- The API key is read only in `src/config/env.ts` and passed into the client; do not put the key or the full prompt content into logs.
+- Variables in the Prompt Spec are written as a lowercase name wrapped in double curly braces; in code, they are parameters of the message assembling function.
 <!-- /PROFILE-CONTENT -->
 
-### 4.4. Khuôn schema đầu ra (cho SPEC §3)
+### 4.4. Output schema template (for SPEC §3)
 
 <!-- PROFILE-CONTENT: spec.contract -->
-### Schema đầu ra với Zod (Zod Output Schema)
+### Zod Output Schema
 
-Schema khớp Prompt Spec §5; miền giá trị liệt kê đầy đủ, chuỗi có độ dài tối đa. Kiểu suy ra bằng `z.infer`.
+The schema matches Prompt Spec §5; enumerated domains are listed in full, strings have a maximum length. The type is inferred with `z.infer`.
 
-<!-- fill: Thay khối mẫu dưới đây bằng schema đầu ra thật của tác vụ. -->
+<!-- fill: Replace the sample block below with the real output schema of the task. -->
 
 ```typescript
 import { z } from "zod";
@@ -241,21 +241,21 @@ export type ClassificationOutput = z.infer<typeof ClassificationOutputSchema>;
 ```
 <!-- /PROFILE-CONTENT -->
 
-### 4.5. Công cụ test (cho SPEC §9)
+### 4.5. Test tooling (for SPEC §9)
 
 <!-- PROFILE-CONTENT: spec.test-types -->
-### Công cụ và vị trí test theo stack (Stack Test Tooling)
+### Stack Test Tooling
 
-| TYPE | Công cụ | File | Chạy bằng |
+| TYPE | Tool | File | Run with |
 | --- | --- | --- | --- |
-| `UNIT` | Vitest | `test/unit/*.test.ts` | Project Vitest `unit` |
-| `INT` | Vitest, client mô hình với `fetch` giả lập trả phản hồi của Messages API | `test/integration/*.int.test.ts` | Project Vitest `integration` |
-| `EVAL` | Vitest, mô hình thật, đọc bộ dữ liệu JSON Lines trong `evals/` | `test/eval/*.eval.test.ts` | Project Vitest `eval` |
-| `INJ` | Như `EVAL`, bộ dữ liệu tấn công | `test/eval/*.eval.test.ts` | Project Vitest `eval` |
-| `COST` | Như `EVAL`, cộng `usage` của mỗi lời gọi | `test/eval/*.eval.test.ts` | Project Vitest `eval` |
-| `CONC` | Như `INT`, giả lập hệ thống đích có ghi có điều kiện | `test/integration/*.int.test.ts` | Project Vitest `integration` |
+| `UNIT` | Vitest | `test/unit/*.test.ts` | Vitest project `unit` |
+| `INT` | Vitest, model client with a fake `fetch` that returns Messages API responses | `test/integration/*.int.test.ts` | Vitest project `integration` |
+| `EVAL` | Vitest, real model, reads JSON Lines datasets in `evals/` | `test/eval/*.eval.test.ts` | Vitest project `eval` |
+| `INJ` | Same as `EVAL`, attack dataset | `test/eval/*.eval.test.ts` | Vitest project `eval` |
+| `COST` | Same as `EVAL`, sums the `usage` of every call | `test/eval/*.eval.test.ts` | Vitest project `eval` |
+| `CONC` | Same as `INT`, fake target system with a conditional write | `test/integration/*.int.test.ts` | Vitest project `integration` |
 
-Nhà cung cấp giả lập ở tầng `fetch` (`test/support/fake-anthropic.ts`): mỗi lời gọi trả phản hồi kế tiếp trong danh sách (kể cả lỗi mạng và header `retry-after`), ghi lại body của request để test kiểm tra dữ liệu đã che và tham số, và trả lỗi `400` không thử lại khi hết phản hồi đã soạn, để test hết câu trả lời thì thất bại rõ ràng.
+The fake provider at the `fetch` layer (`test/support/fake-anthropic.ts`): each call returns the next response in the list (including network errors and the `retry-after` header), records the request body so that tests can check the masked data and the parameters, and returns a `400` error without retry when the scripted responses run out, so that a test that runs out of answers fails loudly.
 
 ```typescript
 // Fake Messages API at the fetch layer: each call returns the next scripted answer, and running out of answers
@@ -306,20 +306,20 @@ export const overloaded = (retryAfterSeconds?: number) => ({
 });
 ```
 
-Test đánh giá mở đầu bằng `describe.skipIf(!apiKey)`, và báo lỗi khi `EVAL_REQUIRED=1` mà thiếu khóa; mỗi mẫu đọc qua schema Zod của bộ dữ liệu. Test import `describe`, `it`, `expect` từ `vitest`. Tên test mô tả hành vi bằng tiếng Anh, ví dụ `it("sends the ticket to review when the answer is not valid structured output", ...)`; không chứa TC ID.
+An evaluation test starts with `describe.skipIf(!apiKey)`, and fails when `EVAL_REQUIRED=1` and the key is missing; each sample is read through the dataset's Zod schema. Tests import `describe`, `it`, `expect` from `vitest`. Test names describe behavior in English, for example `it("sends the ticket to review when the answer is not valid structured output", ...)`; they do not contain a TC ID.
 <!-- /PROFILE-CONTENT -->
 
-## 5. Quy ước riêng của stack (Stack Conventions)
+## 5. Stack Conventions
 
-- `package.json` có `"type": "module"`; import tương đối ghi đuôi `.js`.
-- Đầu ra có cấu trúc dùng `messages.create` với `output_config.format` từ `zodOutputFormat`, rồi client tự kiểm `stop_reason` và schema (mục 4.2); không dùng `messages.parse` và không dùng tool use để ép JSON khi không cần công cụ thật.
-- Bộ dữ liệu đánh giá không nằm trong `src/` và không được import vào mã chạy production.
-- Ghim ID mô hình dạng có ngày (ví dụ `claude-haiku-4-5-20251001`) khi nhà cung cấp có, để kết quả đánh giá gắn với đúng một phiên bản mô hình.
+- `package.json` has `"type": "module"`; relative imports carry the `.js` extension.
+- Structured output uses `messages.create` with `output_config.format` from `zodOutputFormat`, and then the client checks `stop_reason` and the schema itself (§4.2); do not use `messages.parse`, and do not use tool use to force JSON when no real tool is needed.
+- The evaluation datasets do not live in `src/` and are never imported into production code.
+- Pin model IDs in the dated form (for example `claude-haiku-4-5-20251001`) when the provider offers it, so that evaluation results are tied to exactly one model version.
 
-## 6. Khởi tạo dự án (Project Setup)
+## 6. Project Setup
 
-1. `npm init -y`, đặt `"type": "module"` trong `package.json`.
-2. `npm install --save-exact @anthropic-ai/sdk@0.127.0 zod@4.6.5` và `npm install --save-exact --save-dev typescript@6.0.3 @types/node@24.13.6 vitest@4.1.11 @vitest/coverage-v8@4.1.11 oxlint@1.85.0 oxlint-tsgolint@7.0.2002`.
-3. Tạo `tsconfig.json`, `tsconfig.build.json`, `vitest.config.ts`, `.oxlintrc.json` theo mục 4.1; tạo `src/config/env.ts`, `src/llm/model-client.ts` theo mục 4.2 và `test/support/fake-anthropic.ts` theo mục 4.5.
-4. Thêm `dist/`, `coverage/` và file env thật vào `.gitignore`; `.env.example` chỉ có tên biến và giá trị giả.
-5. Tạo khóa API riêng cho môi trường đánh giá với hạn mức chi tiêu, lưu vào kho secret của CI dưới tên `ANTHROPIC_API_KEY`.
+1. `npm init -y`, set `"type": "module"` in `package.json`.
+2. `npm install --save-exact @anthropic-ai/sdk@0.127.0 zod@4.6.5` and `npm install --save-exact --save-dev typescript@6.0.3 @types/node@24.13.6 vitest@4.1.11 @vitest/coverage-v8@4.1.11 oxlint@1.85.0 oxlint-tsgolint@7.0.2002`.
+3. Create `tsconfig.json`, `tsconfig.build.json`, `vitest.config.ts`, `.oxlintrc.json` per §4.1; create `src/config/env.ts`, `src/llm/model-client.ts` per §4.2 and `test/support/fake-anthropic.ts` per §4.5.
+4. Add `dist/`, `coverage/` and the real env file to `.gitignore`; `.env.example` has only variable names and fake values.
+5. Create a separate API key for the evaluation environment with a spending limit, and store it in the CI secret store under the name `ANTHROPIC_API_KEY`.

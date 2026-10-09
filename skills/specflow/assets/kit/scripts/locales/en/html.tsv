@@ -1,0 +1,5 @@
+# English labels for html.tsv (language: en). Same keys as locales/vi/html.tsv.
+html_full	Yes, with full HTML
+html_stage_1w	Stage 1W
+html_markdown_only	Yes, Markdown only
+html_no	No

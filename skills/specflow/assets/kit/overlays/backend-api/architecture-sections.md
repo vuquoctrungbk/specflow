@@ -2,28 +2,28 @@
 doc_type: overlay-section
 status: stable
 version: 1.0.0
-language: vi-en
+language: en
 surface: backend-api
 ---
 
-# Overlay backend-api: khối cho ARCHITECTURE
+# Overlay backend-api: blocks for the ARCHITECTURE
 
 <!-- SLOT-CONTENT: arch.views -->
-### C4 Level 2: vùng chứa (Container)
+### C4 Level 2: Container
 
-<!-- fill: Mỗi container là một đơn vị chạy hoặc lưu trữ độc lập. Xóa container không dùng (worker, cache, broker) và ghi lý do ở §13 nếu xóa. Cạnh ghi giao thức. -->
+<!-- fill: Each container is an independently running or storage unit. Delete containers that are not used (worker, cache, broker) and record the reason in §13 if you delete one. Edges state the protocol. -->
 
 ```mermaid
 flowchart TD
     subgraph Clients[Client]
         C1["{{ACTOR_NAME}}"]
     end
-    subgraph Server[Hạ tầng server]
+    subgraph Server[Server infrastructure]
         GW["{{COMPONENT_NAME}}"]
         API["{{COMPONENT_NAME}}"]
         WK["{{COMPONENT_NAME}}"]
     end
-    subgraph Data[Lưu trữ và nhắn tin]
+    subgraph Data[Storage and messaging]
         DB[("{{COMPONENT_NAME}}")]
         CACHE[("{{COMPONENT_NAME}}")]
     end
@@ -36,9 +36,9 @@ flowchart TD
     API -->|"{{MESSAGE}}"| EXT
 ```
 
-### C4 Level 3: thành phần của một phân hệ (Component)
+### C4 Level 3: Component
 
-<!-- fill: Vẽ cho phân hệ có luồng phức tạp nhất; các phân hệ khác theo cùng khuôn tầng ở §4. -->
+<!-- fill: Draw it for the module with the most complex flow; the other modules follow the same layering pattern in §4. -->
 
 ```mermaid
 flowchart LR
@@ -49,118 +49,118 @@ flowchart LR
         ADP["{{COMPONENT_NAME}}"]
     end
     REQ[HTTP request] --> CTRL
-    CTRL -->|DTO đã validate| SVC
+    CTRL -->|validated DTO| SVC
     SVC -->|transaction| REPO
     SVC --> ADP
-    REPO --> DB[(Cơ sở dữ liệu)]
+    REPO --> DB[(Database)]
     ADP --> EXT["{{EXTERNAL_SYSTEM}}"]
 ```
 
-### Góc nhìn triển khai (Deployment View)
+### Deployment View
 
-| Môi trường | Nơi chạy | Số instance API | Cơ sở dữ liệu | Dữ liệu | Ai được truy cập |
+| Environment | Where it runs | API instances | Database | Data | Who has access |
 | --- | --- | --- | --- | --- | --- |
-| dev | <!-- fill --> | <!-- fill --> | <!-- fill --> | Dữ liệu giả | <!-- fill --> |
-| staging | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: dữ liệu giả hoặc đã ẩn danh; MUST NOT dùng dữ liệu cá nhân thật --> | <!-- fill --> |
-| production | <!-- fill --> | <!-- fill: tối thiểu 2 nếu NFR-RELI yêu cầu sẵn sàng cao --> | <!-- fill --> | Dữ liệu thật | <!-- fill --> |
+| dev | <!-- fill --> | <!-- fill --> | <!-- fill --> | Fake data | <!-- fill --> |
+| staging | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: fake or anonymized data; MUST NOT use real personal data --> | <!-- fill --> |
+| production | <!-- fill --> | <!-- fill: at least 2 if NFR-RELI requires high availability --> | <!-- fill --> | Real data | <!-- fill --> |
 <!-- /SLOT-CONTENT -->
 
 <!-- SLOT-CONTENT: arch.layout -->
-### Quy tắc tầng trong cây thư mục (Layering Rules)
+### Layering Rules
 
-- Mỗi phân hệ ở §4.1 là một thư mục module chứa đủ: tầng giao tiếp (controller hoặc route handler), tầng nghiệp vụ (service), tầng truy cập dữ liệu (repository), DTO và schema validate, kiểu miền (entity), test của module.
-- Mã dùng chung không thuộc nghiệp vụ nằm trong thư mục shared: hằng số, lỗi, bộ lọc lỗi, guard, interceptor, tiện ích thuần.
-- Kết nối hạ tầng (cơ sở dữ liệu, cache, email, storage, client của API ngoài) nằm trong thư mục infrastructure, được inject vào repository hoặc adapter.
-- Module chỉ import module khác qua interface công khai của module đó; MUST NOT import repository hay file nội bộ của module khác.
-- Chỉ module cấu hình đọc biến môi trường.
+- Each module in §4.1 is a module directory that holds everything: the interface layer (controller or route handler), the business layer (service), the data access layer (repository), DTOs and validation schemas, domain types (entity), the module's tests.
+- Shared code that is not business logic lives in the shared directory: constants, errors, error filters, guards, interceptors, pure utilities.
+- Infrastructure connections (database, cache, email, storage, clients of external APIs) live in the infrastructure directory and are injected into a repository or adapter.
+- A module imports another module only through that module's public interface; MUST NOT import another module's repository or internal files.
+- Only the configuration module reads environment variables.
 
 <!-- PROFILE-SLOT: arch.layout -->
 <!-- /SLOT-CONTENT -->
 
 <!-- SLOT-CONTENT: arch.schema -->
-### Quy tắc schema vật lý (Physical Schema Rules)
+### Physical Schema Rules
 
-- Kiểu cụ thể cho mọi cột: UUID, chuỗi có độ dài tối đa, số thập phân có precision và scale, timestamp có múi giờ; không dùng kiểu chung chung.
-- Khóa chính kiểu `{{ID_FORMAT}}` sinh ở server hoặc cơ sở dữ liệu, không nhận từ client.
-- Mọi khóa ngoại có quy tắc xóa tường minh; dữ liệu có ràng buộc tài chính hoặc pháp lý dùng `Restrict`.
-- Index cho mọi khóa ngoại và mọi cột dùng để lọc hoặc sắp xếp trong truy vấn thường gặp; ràng buộc duy nhất (kể cả duy nhất ghép) khớp SRS §4.2.
-- Enum khớp SRS §4.2 và SRS §10.1; thêm giá trị enum là thay đổi schema, cần migration.
-- Mọi bảng có `created_at`, bảng cho phép sửa có `updated_at`; bảng xóa mềm có `deleted_at`.
-- Tên bảng và cột `snake_case`, tên bảng số nhiều.
-- Ràng buộc kiểm tra (check constraint) cho quy tắc số học đơn giản, ví dụ số lượng lớn hơn 0.
-- Migration sinh bằng công cụ của stack, đi một chiều, không chứa logic nghiệp vụ.
+- Concrete types for every column: UUID, string with a maximum length, decimal with precision and scale, timestamp with time zone; no generic types.
+- The primary key is of type `{{ID_FORMAT}}`, generated by the server or the database, not accepted from the client.
+- Every foreign key has an explicit delete rule; data with financial or legal constraints uses `Restrict`.
+- An index for every foreign key and every column used to filter or sort in common queries; unique constraints (including composite unique) match SRS §4.2.
+- Enums match SRS §4.2 and SRS §10.1; adding an enum value is a schema change and needs a migration.
+- Every table has `created_at`, a table that allows edits has `updated_at`; a soft-delete table has `deleted_at`.
+- Table and column names are `snake_case`, table names plural.
+- Check constraints for simple arithmetic rules, for example quantity greater than 0.
+- Migrations are generated with the stack's tool, go one way, and contain no business logic.
 
 <!-- PROFILE-SLOT: arch.schema -->
 
-### Schema của dự án (Project Schema)
+### Project Schema
 
-<!-- fill: Toàn bộ schema vật lý của dự án trong một khối code theo DSL của stack profile: mọi bảng, cột, khóa, index, enum, quan hệ. Schema MUST migrate được ngay và khớp SRS §4. -->
+<!-- fill: The whole physical schema of the project in one code block in the DSL of the stack profile: every table, column, key, index, enum, relationship. The schema MUST be migratable as is and match SRS §4. -->
 <!-- /SLOT-CONTENT -->
 
 <!-- SLOT-CONTENT: arch.conventions -->
-### Quy ước API HTTP (HTTP API Conventions)
+### HTTP API Conventions
 
-| Hạng mục | Quy ước |
+| Item | Convention |
 | --- | --- |
-| Phiên bản | Phiên bản major trong path: `/api/v1/...`; thay đổi phá tương thích tăng major |
-| Đặt tên tài nguyên | Danh từ số nhiều `kebab-case`, lồng tối đa một cấp, ví dụ `/api/v1/{{RESOURCE_PATH}}/{id}` |
-| Phương thức | `GET` đọc, `POST` tạo hoặc hành động, `PATCH` sửa một phần, `PUT` thay toàn bộ, `DELETE` xóa |
-| Envelope | Theo §6.2 cho mọi phản hồi |
-| Định dạng ngày giờ | ISO 8601 UTC, ví dụ `2026-01-01T00:00:00.000Z` |
-| ID tài nguyên | `{{ID_FORMAT}}` |
-| Phân trang | `{{PAGINATION_STYLE}}`. Offset: tham số `page`, `limit`; `meta` gồm `page`, `limit`, `totalItems`, `totalPages`. Cursor: tham số `cursor`, `limit`; `meta` gồm `nextCursor`, `limit`, `hasMore`. <!-- fill: giữ câu của kiểu đã chọn, xóa câu còn lại --> |
-| Lọc và sắp xếp | Lọc bằng query theo tên trường, ví dụ `?status=ACTIVE`; sắp xếp `?sort=-createdAt,name` (dấu trừ là giảm dần); chỉ nhận trường có trong danh sách cho phép của endpoint |
-| Giới hạn tần suất | Đếm theo người dùng trên route đã xác thực, theo IP client thật (qua proxy tin cậy, gồm cả server của bề mặt khác gọi API thay mặt người dùng) trên route công khai; header `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset`; phản hồi `429` có `Retry-After`; cách cấu hình theo stack ở cuối mục này |
-| Idempotency | Thao tác ghi không idempotent tự nhiên nhận header `Idempotency-Key` (chuỗi do client sinh, phạm vi theo người dùng); cơ chế lưu và thời gian giữ khóa ghi ở ADR |
-| Kích thước request | <!-- fill: giới hạn body tối đa --> |
-| Tài liệu OpenAPI | Một tài liệu OpenAPI 3.1 đầy đủ tại `openapi/openapi.yaml`: có `info` (tiêu đề, phiên bản, license) và `servers` của từng môi trường, cộng fragment ở SPEC §3 của mọi SPEC đã hiện thực; là nguồn sinh client của bề mặt khác và của contract test |
-| CORS cho client trình duyệt | Chỉ origin ở §9.1; cho phép header `Authorization`, `Content-Type`, `Idempotency-Key`; khai báo `Access-Control-Expose-Headers` cho `Retry-After` và header giới hạn tần suất để trình duyệt ở origin khác đọc được |
+| Version | Major version in the path: `/api/v1/...`; a breaking change increases the major |
+| Resource naming | Plural `kebab-case` nouns, nested at most one level, for example `/api/v1/{{RESOURCE_PATH}}/{id}` |
+| Methods | `GET` reads, `POST` creates or performs an action, `PATCH` edits partially, `PUT` replaces entirely, `DELETE` deletes |
+| Envelope | Per §6.2 for every response |
+| Date-time format | ISO 8601 UTC, for example `2026-01-01T00:00:00.000Z` |
+| Resource ID | `{{ID_FORMAT}}` |
+| Pagination | `{{PAGINATION_STYLE}}`. Offset: parameters `page`, `limit`; `meta` has `page`, `limit`, `totalItems`, `totalPages`. Cursor: parameters `cursor`, `limit`; `meta` has `nextCursor`, `limit`, `hasMore`. <!-- fill: keep the sentence of the chosen style, delete the other --> |
+| Filtering and sorting | Filter with queries by field name, for example `?status=ACTIVE`; sort with `?sort=-createdAt,name` (a minus sign means descending); accept only fields in the endpoint's allowlist |
+| Rate limit | Count per user on an authenticated route, per real client IP (through a trusted proxy, including the servers of another surface that call the API on behalf of users) on a public route; headers `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset`; a `429` response has `Retry-After`; the way to configure it per stack is at the end of this section |
+| Idempotency | A write operation that is not naturally idempotent accepts the `Idempotency-Key` header (a client-generated string, scoped per user); the storage mechanism and the key retention time are recorded in an ADR |
+| Request size | <!-- fill: maximum body limit --> |
+| OpenAPI document | One complete OpenAPI 3.1 document at `openapi/openapi.yaml`: it has `info` (title, version, license) and the `servers` of each environment, plus the fragment in SPEC §3 of every implemented SPEC; it is the source for generating clients of other surfaces and for contract tests |
+| CORS for browser clients | Only the origins in §9.1; allow the headers `Authorization`, `Content-Type`, `Idempotency-Key`; declare `Access-Control-Expose-Headers` for `Retry-After` and the rate-limit headers so a browser on another origin can read them |
 
-### Ánh xạ mã lỗi sang HTTP (Error Code to HTTP Mapping)
+### Error Code to HTTP Mapping
 
-Phần Backend API của cột "Ánh xạ theo bề mặt" ở §7.1 ghi HTTP status theo bảng này.
+The Backend API part of the "Mapping by surface" column in §7.1 records the HTTP status per this table.
 
-| Nhóm lỗi | HTTP status | Mã lỗi |
+| Error group | HTTP status | Error code |
 | --- | --- | --- |
-| Input sai schema hoặc quy tắc validate | `400` | `VALIDATION_ERROR` |
-| Thiếu, hết hạn hoặc sai token | `401` | `UNAUTHENTICATED` |
-| Không đủ quyền | `403` | `FORBIDDEN` |
-| Tài nguyên không tồn tại | `404` | Mã dạng `*_NOT_FOUND` theo tên tài nguyên, có trong §7.1 |
-| Xung đột trạng thái hoặc vi phạm quy tắc nghiệp vụ | `409` | Mã nghiệp vụ trong §7.1 |
-| Vượt giới hạn tần suất | `429` | `RATE_LIMITED` |
-| Lỗi không lường trước | `500` | `INTERNAL_ERROR` |
+| Input violating the schema or the validation rules | `400` | `VALIDATION_ERROR` |
+| Missing, expired or wrong token | `401` | `UNAUTHENTICATED` |
+| Insufficient permission | `403` | `FORBIDDEN` |
+| Resource does not exist | `404` | Codes of the form `*_NOT_FOUND` by resource name, present in §7.1 |
+| State conflict or business rule violation | `409` | Business codes in §7.1 |
+| Rate limit exceeded | `429` | `RATE_LIMITED` |
+| Unforeseen error | `500` | `INTERNAL_ERROR` |
 
 ### Transaction
 
-- Ranh giới transaction đặt ở tầng service; controller và repository không tự mở transaction.
-- Mức isolation mặc định: `{{ISOLATION_LEVEL}}`. SPEC nêu rõ khi dùng mức cao hơn hoặc khóa dòng.
-- Bất biến chịu thao tác đồng thời được giữ ở cơ sở dữ liệu: cập nhật nguyên tử có điều kiện, ràng buộc duy nhất, hoặc khóa (khóa dòng, khóa advisory) lấy trong transaction trước bước kiểm tra. Không kiểm tra rồi ghi (check-then-write) ở tầng ứng dụng khi chưa giữ khóa đó.
-- Sự kiện và lời gọi hệ thống ngoài phát sau khi transaction commit.
+- The transaction boundary sits at the service layer; the controller and the repository do not open a transaction themselves.
+- Default isolation level: `{{ISOLATION_LEVEL}}`. The SPEC states it explicitly when a higher level or a row lock is used.
+- Invariants under concurrent operations are kept in the database: a conditional atomic update, a unique constraint, or a lock (row lock, advisory lock) taken inside the transaction before the check step. No check-then-write at the application layer without holding that lock.
+- Events and calls to external systems are emitted after the transaction commits.
 
 <!-- PROFILE-SLOT: arch.conventions -->
 <!-- /SLOT-CONTENT -->
 
 <!-- SLOT-CONTENT: arch.deployment -->
-### Đóng gói và chạy (Packaging & Runtime)
+### Packaging & Runtime
 
-| Hạng mục | Quyết định |
+| Item | Decision |
 | --- | --- |
-| Đơn vị triển khai | Container image; tiến trình chạy bằng user không phải root |
-| Cấu hình | Biến môi trường theo §6.4; secret lấy từ secret manager lúc khởi động |
-| Health check | `GET /health/live` (tiến trình sống) và `GET /health/ready` (kết nối được cơ sở dữ liệu và phụ thuộc bắt buộc) |
-| Tắt an toàn | Nhận tín hiệu dừng, ngừng nhận request mới, hoàn tất request đang xử lý trong <!-- fill: số giây --> |
+| Deployment unit | Container image; the process runs as a non-root user |
+| Configuration | Environment variables per §6.4; secrets come from a secret manager at startup |
+| Health check | `GET /health/live` (process alive) and `GET /health/ready` (can connect to the database and required dependencies) |
+| Graceful shutdown | Receive the stop signal, stop accepting new requests, finish in-flight requests within <!-- fill: number of seconds --> |
 
-### Migration khi triển khai (Migrations on Deploy)
+### Migrations on Deploy
 
-- Bước phát hành chạy `{{MIGRATION_DEPLOY_CMD}}` trước khi phiên bản mới nhận traffic.
-- Migration theo kiểu mở rộng rồi thu hẹp (expand and contract): phiên bản cũ và mới cùng chạy được trên schema mới; xóa cột hoặc bảng ở một lần phát hành sau.
+- The release step runs `{{MIGRATION_DEPLOY_CMD}}` before the new version receives traffic.
+- Migrations follow the expand and contract style: the old and new versions can both run on the new schema; dropping a column or table happens in a later release.
 
-### Phát hành và quay lui (Release & Rollback)
+### Release & Rollback
 
-| Hạng mục | Quyết định |
+| Item | Decision |
 | --- | --- |
-| Chiến lược phát hành | <!-- fill: chọn một: rolling update \| blue-green; nêu lý do theo NFR-RELI --> |
-| Quay lui | Triển khai lại image của phiên bản trước; schema không cần đảo ngược nhờ expand and contract |
-| Bản sao cơ sở dữ liệu | <!-- fill: replica đọc hoặc standby, hoặc Không kèm lý do --> |
-| Sao lưu | Theo §8.2 |
+| Release strategy | <!-- fill: choose one: rolling update \| blue-green; give the reason per NFR-RELI --> |
+| Rollback | Redeploy the image of the previous version; the schema does not need to be reversed thanks to expand and contract |
+| Database replica | <!-- fill: read replica or standby, or No with the reason --> |
+| Backup | Per §8.2 |
 <!-- /SLOT-CONTENT -->

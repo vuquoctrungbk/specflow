@@ -3,7 +3,7 @@ doc_type: spec
 status: draft
 version: 0.1.0
 template_version: 1.4.0
-language: vi-en
+language: en
 spec_id: "{{SPEC_ID}}"
 release: "{{RELEASE}}"
 risk: high
@@ -15,97 +15,97 @@ assembled_from:
   - overlays/frontend-web/spec-contract-sections.md@1.2.0
 ---
 
-# Đặc tả kỹ thuật (Technical Specification): {{FEATURE_NAME}}
+# Technical Specification: {{FEATURE_NAME}}
 
-<!-- fill: Chép thành docs/specs/SPEC_<FEATURE_KEY>.md. Thêm vào parent phần SRS chứa FR của tính năng (SRS.md hoặc SRS_MODULE_<NAME>.md) và các ADR liên quan. release là nhãn đợt ở cột Bản phát hành của SRS §6.1; mọi FR ở §1.5 có Bản phát hành bằng release (CONVENTIONS mục 3, PLAYBOOK mục 2.4). Dự án có Intake cũ hơn 1.3.0 xóa dòng release. Từ khóa MUST, MUST NOT, SHOULD, MAY theo RFC 2119 và RFC 8174. Mục không áp dụng giữ heading, ghi N/A kèm lý do, không xóa. Spec là hợp đồng thực thi: coding agent chỉ làm những gì ghi ở đây. Frontmatter assembled_from ghi nguồn theo CONVENTIONS mục 3. -->
+<!-- fill: Copy to docs/specs/SPEC_<FEATURE_KEY>.md. Add to parent the part of the SRS that holds the feature's FRs (SRS.md or SRS_MODULE_<NAME>.md) and the related ADRs. release is the release label in the Release column of SRS §6.1; every FR in §1.5 has a Release equal to release (CONVENTIONS §3, PLAYBOOK §2.4). The keywords MUST, MUST NOT, SHOULD, MAY follow RFC 2119 and RFC 8174. A section that does not apply keeps its heading and states N/A with a reason; do not delete it. The SPEC is an execution contract: the coding agent does only what is written here. The frontmatter assembled_from records the sources per CONVENTIONS §3. -->
 
-## 1. Mục tiêu và phạm vi (Goal & Bounded Context)
+## 1. Goal & Bounded Context
 
-### 1.1. Mục tiêu kỹ thuật (Technical Objective)
+### 1.1. Technical Objective
 
 - SPEC ID: `{{SPEC_ID}}`
-- Mức rủi ro: <!-- fill: high hoặc normal, kèm lý do trong một câu; sửa khóa risk ở frontmatter cho khớp. high khi SPEC chạm xác thực hay phân quyền, cô lập giữa người thuê, tiền hay hạn ngạch, dữ liệu cá nhân, schema đang có dữ liệu, hoặc hợp đồng công khai đã duyệt (CONVENTIONS mục 3) -->
-- Mục tiêu: <!-- fill: tính năng làm gì, cho ai, trong 2 đến 4 câu; nêu FR chính. -->
+- Risk level: <!-- fill: high or normal, with the reason in one sentence; edit the risk key in the frontmatter to match. high when the SPEC touches authentication or authorization, tenant isolation, money or quota, personal data, a schema that already holds data, or an approved public contract (CONVENTIONS §3) -->
+- Objective: <!-- fill: what the feature does, for whom, in 2 to 4 sentences; name the main FR. -->
 
-### 1.2. Bất biến cốt lõi (Core Invariants)
+### 1.2. Core Invariants
 
-<!-- fill: Điều MUST luôn đúng trong mọi điều kiện, kể cả thao tác đồng thời hoặc xen kẽ. Mỗi bất biến có ít nhất một test CONC ở §9. -->
+<!-- fill: What MUST always hold under every condition, including concurrent or interleaved operations. Each invariant has at least one CONC test in §9. -->
 
-| ID | Bất biến | Test chứng minh |
+| ID | Invariant | Proving test |
 | --- | --- | --- |
-| INV-01 | <!-- fill: phát biểu kiểm chứng được --> | TC-{{MODULE_CODE}}-CONC-01 |
+| INV-01 | <!-- fill: a verifiable statement --> | TC-{{MODULE_CODE}}-CONC-01 |
 
-### 1.3. Ngoài phạm vi của tính năng (Out of Scope)
+### 1.3. Out of Scope
 
-<!-- fill: những gì người đọc có thể tưởng thuộc tính năng này nhưng không làm ở đây; mỗi dòng một mục, nêu SPEC hoặc phiên bản sẽ làm nếu có. -->
+<!-- fill: what a reader might assume belongs to this feature but is not done here; one item per line, naming the SPEC or version that will do it, if any. -->
 
-### 1.4. Phụ thuộc (Dependencies)
+### 1.4. Dependencies
 
-| Loại | Phụ thuộc | Ghi chú |
+| Type | Dependency | Note |
 | --- | --- | --- |
-| Thành phần nội bộ | {{COMPONENT_NAME}} | <!-- fill: dùng interface nào --> |
-| Hệ thống ngoài | {{EXTERNAL_SYSTEM}} | <!-- fill: hoặc "Không có" --> |
-| Dữ liệu bị tác động | <!-- fill: bảng, collection, file theo ARCHITECTURE §5 --> | <!-- fill: đọc hay ghi --> |
-| SPEC phụ thuộc | <!-- fill: SPEC ID phải xong trước, hoặc "Không có" --> | <!-- fill --> |
+| Internal component | {{COMPONENT_NAME}} | <!-- fill: which interface is used --> |
+| External system | {{EXTERNAL_SYSTEM}} | <!-- fill: or "None" --> |
+| Data affected | <!-- fill: tables, collections, files per ARCHITECTURE §5 --> | <!-- fill: read or write --> |
+| Dependent SPEC | <!-- fill: SPEC ID that must be done first, or "None" --> | <!-- fill --> |
 
-### 1.5. Yêu cầu được đáp ứng (Requirements Satisfied)
+### 1.5. Requirements Satisfied
 
 | FR ID | AC ID | BR ID | NFR ID |
 | --- | --- | --- | --- |
-| FR-{{MODULE_CODE}}-001 | AC-{{MODULE_CODE}}-01 | <!-- fill: hoặc "Không có" --> | <!-- fill: hoặc "Không có" --> |
+| FR-{{MODULE_CODE}}-001 | AC-{{MODULE_CODE}}-01 | <!-- fill: or "None" --> | <!-- fill: or "None" --> |
 
-## 2. Kiểm soát thay đổi file (File Diff & Impact Tracking)
+## 2. File Diff & Impact Tracking
 
-> Coding agent MUST chỉ sửa hoặc tạo file có trong mục này. Cần file khác thì dừng và đề xuất sửa SPEC (PLAYBOOK mục 7). Đường dẫn khớp cây thư mục ở ARCHITECTURE §4.
+> The coding agent MUST only modify or create files listed in this section. If another file is needed, stop and propose a SPEC change (PLAYBOOK §7). Paths match the directory tree in ARCHITECTURE §4.
 
-### 2.1. File sửa (Modified Files)
+### 2.1. Modified Files
 
-| Đường dẫn | Thay đổi |
+| Path | Change |
 | --- | --- |
-| <!-- fill: đường dẫn trong inline code --> | <!-- fill: hàm, lớp hoặc mục cần thêm hay sửa --> |
+| <!-- fill: path in inline code --> | <!-- fill: function, class or item to add or change --> |
 
-### 2.2. File tạo mới (New Files)
+### 2.2. New Files
 
-| Đường dẫn | Loại | Trách nhiệm |
+| Path | Type | Responsibility |
 | --- | --- | --- |
-| <!-- fill: đường dẫn trong inline code --> | <!-- fill: chọn một: source \| test \| migration \| config \| docs --> | <!-- fill --> |
+| <!-- fill: path in inline code --> | <!-- fill: choose one: source \| test \| migration \| config \| docs --> | <!-- fill --> |
 
-### 2.3. Không được chạm (MUST NOT Touch)
+### 2.3. MUST NOT Touch
 
-| Đường dẫn hoặc phạm vi | Lý do |
+| Path or scope | Reason |
 | --- | --- |
-| <!-- fill: file hoặc thư mục dễ bị sửa nhầm, ví dụ phân hệ khác, cấu hình dùng chung, migration đã chạy --> | <!-- fill --> |
+| <!-- fill: files or directories that are easy to change by mistake, for example another module, shared configuration, a migration that has already run --> | <!-- fill --> |
 
-## 3. Hợp đồng dữ liệu và giao tiếp (Contract)
+## 3. Contract
 
-Hình dạng contract phụ thuộc bề mặt. Mọi mã lỗi dùng trong mục này MUST có trong ARCHITECTURE §7.1.
+The shape of the contract depends on the surface. Every error code used in this section MUST appear in ARCHITECTURE §7.1.
 
-### Màn hình (Screen)
+### Screen
 
-<!-- fill: Một bảng cho mỗi màn hình của tính năng. Có Giai đoạn 1W: hàng SCR ID dẫn đúng ID ở chỉ mục wireframe và hàng Trang wireframe dẫn trang của màn hình; SPEC chỉ dẫn SCR-*, không định nghĩa lại màn hình, bố cục hay thành phần đã có ở trang wireframe, bảng năm trạng thái dưới khớp bảng trạng thái của trang và thêm hành vi thực thi. Dự án có Intake cũ hơn 1.3.0 hoặc không có Giai đoạn 1W: bỏ hai hàng này. -->
+<!-- fill: One table for each screen of the feature. With Stage 1W: the SCR ID row cites exactly the ID in the wireframe index and the Wireframe page row cites the screen's page; the SPEC only cites SCR-*, and does not redefine the screen, the layout or the components already on the wireframe page; the five-state table below matches the state table of the page and adds the execution behavior. Without Stage 1W: remove these two rows. -->
 
-| Hạng mục | Giá trị |
+| Item | Value |
 | --- | --- |
 | SCR ID | {{SCR_ID}} |
-| Trang wireframe | `docs/wireframes/{{SCR_ID}}.md` |
+| Wireframe page | `docs/wireframes/{{SCR_ID}}.md` |
 | Route | `/{{ROUTE_PATH}}` |
-| Tác nhân và điều kiện truy cập | <!-- fill: vai trò được vào; hành vi khi chưa đăng nhập hoặc không đủ quyền --> |
-| Tiêu đề trang | Khóa chuỗi <!-- fill --> |
-| Điều hướng vào | <!-- fill: từ màn hình nào, kèm tham số gì --> |
-| Điều hướng ra | <!-- fill: sau khi thành công, khi hủy --> |
-| Lập chỉ mục tìm kiếm | <!-- fill: chọn một: cho phép \| không cho phép (noindex) --> |
+| Actor and access condition | <!-- fill: roles allowed in; behavior when not logged in or without permission --> |
+| Page title | String key <!-- fill --> |
+| Navigation in | <!-- fill: from which screen, with which parameters --> |
+| Navigation out | <!-- fill: after success, on cancel --> |
+| Search indexing | <!-- fill: choose one: allowed \| not allowed (noindex) --> |
 
-### Thành phần và props (Components & Props)
+### Components & Props
 
-| Thành phần | Chạy ở | Props (tên: kiểu) | Trách nhiệm |
+| Component | Runs on | Props (name: type) | Responsibility |
 | --- | --- | --- | --- |
-| {{COMPONENT_NAME}} | <!-- fill: chọn một: server \| client --> | <!-- fill --> | <!-- fill --> |
+| {{COMPONENT_NAME}} | <!-- fill: choose one: server \| client --> | <!-- fill --> | <!-- fill --> |
 
-### Năm trạng thái giao diện (UI States)
+### UI States
 
-<!-- fill: Đủ năm hàng cho mỗi màn hình hoặc vùng dữ liệu độc lập; trạng thái không áp dụng ghi N/A kèm lý do ở cột Hiển thị. Cột AC trỏ tiêu chí nghiệm thu ở SRS §8. -->
+<!-- fill: All five rows for each screen or independent data region; a state that does not apply is written N/A with a reason in the Display column. The AC column points to the acceptance criteria in SRS §8. -->
 
-| Trạng thái | Điều kiện vào | Hiển thị | Hành động người dùng | AC |
+| State | Entry condition | Display | User action | AC |
 | --- | --- | --- | --- | --- |
 | `Initial` | <!-- fill --> | <!-- fill --> | <!-- fill --> | AC-{{MODULE_CODE}}-01 |
 | `Loading` | <!-- fill --> | <!-- fill --> | <!-- fill --> | AC-{{MODULE_CODE}}-01 |
@@ -113,64 +113,64 @@ Hình dạng contract phụ thuộc bề mặt. Mọi mã lỗi dùng trong mụ
 | `Success` | <!-- fill --> | <!-- fill --> | <!-- fill --> | AC-{{MODULE_CODE}}-01 |
 | `Error` | <!-- fill --> | <!-- fill --> | <!-- fill --> | AC-{{MODULE_CODE}}-01 |
 
-### Trạng thái tương tác (Interaction States)
+### Interaction States
 
-| Phần tử | Trạng thái | Quy tắc |
+| Element | State | Rule |
 | --- | --- | --- |
-| Nút gửi | Đang gửi | Khóa và đổi nhãn; lần bấm thứ hai không tạo request mới |
-| Form | Kết quả chưa rõ (lỗi mạng, hết thời gian chờ, `5xx`) | Các trường chỉ đọc; chỉ có hành động gửi lại cùng nội dung và cùng khóa tới khi có phản hồi xác định |
-| Trường nhập | Có lỗi | Viền lỗi, thông báo gắn với trường bằng thuộc tính trợ năng, focus về trường lỗi đầu tiên khi gửi (tiêu chí ở `specflow/CONVENTIONS.md` mục 10.2) |
+| Submit button | Submitting | Locked and the label changes; a second click does not create a new request |
+| Form | Result unknown (network error, timeout, `5xx`) | Fields are read-only; the only action is to resend the same content with the same key until a definitive response arrives |
+| Input field | Has an error | Error border, message tied to the field through an accessibility attribute, focus moves to the first error field on submit (criteria in `specflow/CONVENTIONS.md` §10.2) |
 | <!-- fill --> | <!-- fill --> | <!-- fill --> |
 
-### Form và validation (Form & Validation)
+### Form & Validation
 
-<!-- fill: Mỗi trường một hàng; ràng buộc chép từ DTO request trong SPEC của API và ghi SPEC nguồn ở cột cuối. -->
+<!-- fill: One row for each field; copy the constraints from the request DTO in the API's SPEC and record the source SPEC in the last column. -->
 
-| Trường | Kiểu | Ràng buộc | Khóa chuỗi thông báo lỗi | Nguồn ràng buộc |
+| Field | Type | Constraints | String key of the error message | Constraint source |
 | --- | --- | --- | --- | --- |
-| <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: SPEC ID của API, mục §3 --> |
+| <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: SPEC ID of the API, section §3 --> |
 
 <!-- PROFILE-SLOT: spec.contract -->
 
-### Lời gọi API (API Calls)
+### API Calls
 
-| Thời điểm gọi | Method và path | Contract nguồn | Header đặc biệt | Xử lý thành công | Xử lý lỗi |
+| When called | Method and path | Source contract | Special headers | Success handling | Error handling |
 | --- | --- | --- | --- | --- | --- |
-| <!-- fill --> | <!-- fill: chọn một: GET \| POST \| PATCH \| PUT \| DELETE; đường dẫn đúng như contract nguồn --> `/api/v1/{{RESOURCE_PATH}}` | <!-- fill: SPEC ID và operationId trong OpenAPI --> | <!-- fill: ví dụ Idempotency-Key sinh một lần cho mỗi lần gửi --> | <!-- fill --> | Theo bảng ánh xạ lỗi dưới đây |
+| <!-- fill --> | <!-- fill: choose one: GET \| POST \| PATCH \| PUT \| DELETE; the path exactly as in the source contract --> `/api/v1/{{RESOURCE_PATH}}` | <!-- fill: SPEC ID and operationId in OpenAPI --> | <!-- fill: for example Idempotency-Key generated once for each submission --> | <!-- fill --> | Per the error mapping table below |
 
-### Ánh xạ lỗi sang giao diện (Error to UI Mapping)
+### Error to UI Mapping
 
-<!-- fill: Mọi mã lỗi mà lời gọi ở trên có thể trả (theo ma trận lỗi của SPEC nguồn) và mã phía client; mã có trong ARCHITECTURE §7.1. -->
+<!-- fill: Every error code that the calls above can return (per the error matrix of the source SPEC) and the client-side codes; the codes are in ARCHITECTURE §7.1. -->
 
-| `error.code` | Trạng thái giao diện | Khóa chuỗi thông báo | Hành vi |
+| `error.code` | UI state | String key of the message | Behavior |
 | --- | --- | --- | --- |
-| `VALIDATION_ERROR` | `Error` | <!-- fill --> | Lỗi dưới từng trường theo `error.details` |
-| `UNAUTHENTICATED` | `Error` | <!-- fill --> | Chuyển tới đăng nhập rồi quay lại |
-| `NETWORK_ERROR` | `Error` | <!-- fill --> | Cho thử lại với cùng `Idempotency-Key` |
-| <!-- fill: mã nghiệp vụ của API --> | `Error` | <!-- fill --> | <!-- fill --> |
+| `VALIDATION_ERROR` | `Error` | <!-- fill --> | Errors under each field per `error.details` |
+| `UNAUTHENTICATED` | `Error` | <!-- fill --> | Go to login, then return |
+| `NETWORK_ERROR` | `Error` | <!-- fill --> | Allow retry with the same `Idempotency-Key` |
+| <!-- fill: business code of the API --> | `Error` | <!-- fill --> | <!-- fill --> |
 
-### Chuỗi hiển thị (i18n Keys)
+### i18n Keys
 
-| Khóa | Nội dung theo locale mặc định |
+| Key | Content in the default locale |
 | --- | --- |
-| <!-- fill: dạng tính năng.phần tử --> | <!-- fill --> |
+| <!-- fill: in the form feature.element --> | <!-- fill --> |
 
-## 4. Migration và dữ liệu (Migration & Data)
+## 4. Migration & Data
 
-| Hạng mục | Nội dung |
+| Item | Content |
 | --- | --- |
-| Cần migration | <!-- fill: chọn một: Có \| Không; nếu Không, các hàng dưới ghi N/A --> |
-| File migration | <!-- fill: đường dẫn, phải có trong §2.2 --> |
-| Thay đổi (forward) | <!-- fill: bảng, cột, index, ràng buộc thêm hoặc đổi --> |
-| Rollback | <!-- fill: cách đảo ngược, dữ liệu có mất không --> |
-| Backfill dữ liệu cũ | <!-- fill: cách điền dữ liệu cho bản ghi đã có, chạy lúc nào, idempotent ra sao --> |
-| Tương thích khi triển khai dần | <!-- fill: phiên bản code cũ và mới cùng chạy được với schema mới hay không --> |
+| Migration needed | <!-- fill: choose one: Yes \| No; if No, the rows below state N/A --> |
+| Migration file | <!-- fill: path, must appear in §2.2 --> |
+| Change (forward) | <!-- fill: tables, columns, indexes, constraints added or changed --> |
+| Rollback | <!-- fill: how to reverse it, whether data is lost --> |
+| Backfill of existing data | <!-- fill: how to fill data for existing records, when it runs, how it stays idempotent --> |
+| Compatibility during gradual rollout | <!-- fill: whether old and new code versions can both run against the new schema --> |
 
-## 5. Thuật toán và luồng thực thi (Algorithm & Execution Flow)
+## 5. Algorithm & Execution Flow
 
-### 5.1. Sơ đồ tuần tự (Sequence Diagram)
+### 5.1. Sequence Diagram
 
-<!-- fill: Thể hiện luồng chính và nhánh lỗi quan trọng; participant là thành phần thật ở ARCHITECTURE §3 và §4. -->
+<!-- fill: Show the main flow and the important error branches; participants are real components from ARCHITECTURE §3 and §4. -->
 
 ```mermaid
 sequenceDiagram
@@ -180,118 +180,118 @@ sequenceDiagram
     participant D as {{COMPONENT_NAME}}
     U->>C: {{MESSAGE}}
     C->>D: {{MESSAGE}}
-    alt Thành công
+    alt Success
         D-->>C: {{MESSAGE}}
         C-->>U: {{MESSAGE}}
-    else Lỗi nghiệp vụ
+    else Business error
         D-->>C: {{MESSAGE}}
         C-->>U: {{MESSAGE}}
     end
 ```
 
-### 5.2. Các bước xử lý (Processing Steps)
+### 5.2. Processing Steps
 
-<!-- fill: Các bước đánh số, mỗi bước một hành động kiểm chứng được. Bước nào có thể thất bại thì nêu điều kiện, mã lỗi và trạng thái dữ liệu sau thất bại. -->
+<!-- fill: Numbered steps, one verifiable action per step. For a step that can fail, state the condition, the error code and the state of the data after the failure. -->
 
-### 5.3. Ranh giới transaction và đồng thời (Transaction Boundary & Concurrency)
+### 5.3. Transaction Boundary & Concurrency
 
-| Hạng mục | Quyết định |
+| Item | Decision |
 | --- | --- |
-| Ranh giới transaction | <!-- fill: bước nào nằm trong cùng một transaction; "Không dùng transaction" kèm lý do nếu vậy --> |
-| Mức isolation | <!-- fill: mức mặc định ghi trong quy ước của bề mặt ở ARCHITECTURE §7; dùng mức khác thì ghi lý do --> |
-| Kiểm soát đồng thời | <!-- fill: cách giữ bất biến §1.2 khi có thao tác song song, ví dụ cập nhật nguyên tử có điều kiện, khóa dòng, khóa lạc quan theo version --> |
-| Idempotency | <!-- fill: khóa idempotency lấy từ đâu, lưu ở đâu, phản hồi khi trùng khóa; một cơ chế duy nhất --> |
-| Tác vụ sau commit | <!-- fill: sự kiện hoặc tác vụ chỉ chạy sau khi transaction thành công --> |
+| Transaction boundary | <!-- fill: which steps are in the same transaction; "No transaction" with the reason if so --> |
+| Isolation level | <!-- fill: the default level stated in the surface conventions in ARCHITECTURE §7; if another level is used, give the reason --> |
+| Concurrency control | <!-- fill: how the §1.2 invariants are kept under parallel operations, for example a conditional atomic update, a row lock, an optimistic lock by version --> |
+| Idempotency | <!-- fill: where the idempotency key comes from, where it is stored, the response on a duplicate key; a single mechanism --> |
+| Post-commit tasks | <!-- fill: events or tasks that run only after the transaction succeeds --> |
 
-## 6. Ma trận phân quyền (Authorization Matrix)
+## 6. Authorization Matrix
 
-| Tác nhân | Hành động | Kết quả mong đợi | Mã lỗi khi bị chặn | Test |
+| Actor | Action | Expected result | Error code when blocked | Test |
 | --- | --- | --- | --- | --- |
-| `ACT_{{ROLE_CODE}}` | <!-- fill --> | <!-- fill: chọn một: Cho phép \| Từ chối --> | <!-- fill: mã trong ARCHITECTURE §7.1, hoặc N/A --> | <!-- fill: TC ID --> |
+| `ACT_{{ROLE_CODE}}` | <!-- fill --> | <!-- fill: choose one: Allow \| Deny --> | <!-- fill: code from ARCHITECTURE §7.1, or N/A --> | <!-- fill: TC ID --> |
 
-## 7. Hợp đồng sự kiện (Event Contract)
+## 7. Event Contract
 
-| Sự kiện | Payload (schema) | Phát khi | Consumer | Đảm bảo giao nhận | Phiên bản |
+| Event | Payload (schema) | Emitted when | Consumer | Delivery guarantee | Version |
 | --- | --- | --- | --- | --- | --- |
-| `{{EVENT_NAME}}` | <!-- fill: tên trường, kiểu, bắt buộc; không chứa dữ liệu cá nhân nhạy cảm --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: at-most-once \| at-least-once kèm consumer idempotent --> | <!-- fill: ví dụ v1 --> |
+| `{{EVENT_NAME}}` | <!-- fill: field name, type, required; no sensitive personal data --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: at-most-once \| at-least-once with an idempotent consumer --> | <!-- fill: for example v1 --> |
 
-## 8. Quan sát (Observability)
+## 8. Observability
 
-| Loại | Tên | Nội dung | Mức hoặc ngưỡng |
+| Type | Name | Content | Level or threshold |
 | --- | --- | --- | --- |
-| Log | <!-- fill: tên sự kiện log --> | <!-- fill: trường ghi kèm, không có dữ liệu cấm ghi --> | <!-- fill: mức log --> |
+| Log | <!-- fill: log event name --> | <!-- fill: fields recorded with it, no data that is forbidden to log --> | <!-- fill: log level --> |
 | Metric | <!-- fill --> | <!-- fill --> | <!-- fill --> |
-| Audit | <!-- fill: hành động cần dấu vết kiểm toán, hoặc N/A --> | <!-- fill: ai, làm gì, lúc nào, trên dữ liệu nào --> | <!-- fill --> |
-| Cảnh báo | <!-- fill: hoặc N/A --> | <!-- fill --> | <!-- fill --> |
+| Audit | <!-- fill: action that needs an audit trail, or N/A --> | <!-- fill: who, did what, when, on which data --> | <!-- fill --> |
+| Alert | <!-- fill: or N/A --> | <!-- fill --> | <!-- fill --> |
 
-## 9. Kiểm thử (Tests)
+## 9. Tests
 
-> Coding agent MUST viết test theo bảng này trước khi viết logic (TDD). Mỗi AC ở §1.5 có ít nhất một TC; mỗi bất biến ở §1.2 có ít nhất một TC loại `CONC`; mỗi NFR ở §1.5 mà SRS §8 kiểm bằng Test có TC ghi NFR đó ở cột "AC hoặc INV", trừ khi TC của nó đã nằm ở SPEC khác. TC lấy số kế tiếp ở `docs/INDEX.md` mục 3 (CONVENTIONS mục 4). Bảng ghi đúng file và tên của từng test; tên test mô tả hành vi bằng tiếng Anh, không chứa TC ID (CONVENTIONS mục 4).
+> The coding agent MUST write tests per this table before writing logic (TDD). Every AC in §1.5 has at least one TC; every invariant in §1.2 has at least one TC of type `CONC`; every NFR in §1.5 that SRS §8 verifies by Test has a TC that names that NFR in the "AC or INV" column, unless its TC already sits in another SPEC. TCs take the next number from `docs/INDEX.md` §3 (CONVENTIONS §4). The table records the exact file and name of each test; test names describe behavior in English and do not contain the TC ID (CONVENTIONS §4).
 
-### 9.1. Danh sách test bắt buộc (Required Tests)
+### 9.1. Required Tests
 
-| TC ID | AC hoặc INV | Loại | Kịch bản (Given-When-Then) | File test | Tên test |
+| TC ID | AC or INV | Type | Scenario (Given-When-Then) | Test file | Test name |
 | --- | --- | --- | --- | --- | --- |
-| TC-{{MODULE_CODE}}-UNIT-01 | AC-{{MODULE_CODE}}-01 | Unit | **Given:** <!-- fill --><br>**When:** <!-- fill --><br>**Then:** <!-- fill --> | <!-- fill: đường dẫn, phải có trong §2 --> | <!-- fill: tên test mô tả hành vi --> |
-| TC-{{MODULE_CODE}}-CONC-01 | INV-01 | Concurrency | **Given:** <!-- fill --><br>**When:** <!-- fill: thao tác đồng thời hoặc xen kẽ --><br>**Then:** <!-- fill: bất biến vẫn đúng, đo được --> | <!-- fill --> | <!-- fill --> |
+| TC-{{MODULE_CODE}}-UNIT-01 | AC-{{MODULE_CODE}}-01 | Unit | **Given:** <!-- fill --><br>**When:** <!-- fill --><br>**Then:** <!-- fill --> | <!-- fill: path, must appear in §2 --> | <!-- fill: test name that describes behavior --> |
+| TC-{{MODULE_CODE}}-CONC-01 | INV-01 | Concurrency | **Given:** <!-- fill --><br>**When:** <!-- fill: concurrent or interleaved operations --><br>**Then:** <!-- fill: the invariant still holds, measurable --> | <!-- fill --> | <!-- fill --> |
 
-### Loại test của bề mặt (Surface Test Types)
+### Surface Test Types
 
-| Loại | TYPE trong TC ID | Phạm vi | Dữ liệu | Bắt buộc |
+| Type | TYPE in the TC ID | Scope | Data | Required |
 | --- | --- | --- | --- | :---: |
-| Unit | `UNIT` | Schema form, hàm định dạng, hook, thành phần render độc lập | Trong bộ nhớ | Có |
-| Integration | `INT` | Thành phần của tính năng cùng client API thật, API giả lập ở tầng mạng theo contract | Response giả lập khớp OpenAPI | Có khi tính năng gọi API |
-| E2E | `E2E` | Luồng người dùng trên ứng dụng đã build, trong trình duyệt thật | API giả lập ở tầng mạng hoặc API môi trường staging | Có |
-| Trợ năng | `A11Y` | Quét tự động theo mức WCAG của NFR-USAB trên mỗi màn hình và trạng thái chính | Như E2E | Có, mỗi màn hình |
-| Visual regression | `VIS` | Ảnh chụp màn hình so với ảnh gốc đã duyệt | Như E2E, dữ liệu cố định | Có, mỗi màn hình ở trạng thái `Success` |
-| Concurrency | `CONC` | Bất biến ở §1.2 khi thao tác ghi bị kích hoạt lặp | Như E2E | Có, mỗi bất biến ở §1.2 một test |
+| Unit | `UNIT` | Form schema, formatting functions, hooks, components rendered in isolation | In memory | Yes |
+| Integration | `INT` | The feature's components together with the real API client, with the API mocked at the network layer per the contract | Mock response that matches OpenAPI | Yes when the feature calls the API |
+| E2E | `E2E` | User flows on the built app, in a real browser | API mocked at the network layer, or the staging environment API | Yes |
+| Accessibility | `A11Y` | Automated scan at the WCAG level of NFR-USAB on every screen and main state | Same as E2E | Yes, for each screen |
+| Visual regression | `VIS` | Screenshot compared with the approved baseline | Same as E2E, fixed data | Yes, for each screen in the `Success` state |
+| Concurrency | `CONC` | The invariants in §1.2 when a write action is triggered repeatedly | Same as E2E | Yes, one test for each invariant in §1.2 |
 
-### Dạng test CONC của bề mặt (Concurrency Test Pattern)
+### Concurrency Test Pattern
 
-1. Mở màn hình trên ứng dụng đã build; chặn lời gọi ghi bằng route giả lập có độ trễ đủ để lần kích hoạt thứ hai xảy ra khi request đầu chưa xong.
-2. Kích hoạt thao tác ghi lặp trong cùng một lần gửi: bấm đúp, nhấn Enter rồi bấm, hoặc gửi lại sau lỗi mạng (form phải đang khóa sửa). Route giả lập trả lỗi mạng cũng phải có độ trễ, để lần bấm thứ hai rơi vào lúc request đầu chưa kết thúc.
-3. Đếm request ghi đã gửi và khóa `Idempotency-Key` của chúng; khẳng định bất biến (một request cho một lần gửi, cùng khóa khi thử lại) và giao diện chỉ hiển thị một kết quả.
-4. Không dùng sleep để sắp thứ tự; chờ theo trạng thái hiển thị.
+1. Open the screen on the built app; intercept the write call with a mock route that has enough delay for the second trigger to happen while the first request has not finished.
+2. Trigger the write action repeatedly within one submission: double click, press Enter then click, or resend after a network error (the form must be locked for editing). The mock route that returns a network error must also have a delay, so that the second click lands while the first request has not ended.
+3. Count the write requests sent and their `Idempotency-Key`; assert the invariant (one request for one submission, the same key on retry) and that the UI shows only one result.
+4. Do not use sleep to order events; wait on the displayed state.
 
 <!-- PROFILE-SLOT: spec.test-types -->
 
-## 10. Triển khai dần (Rollout)
+## 10. Rollout
 
-| Hạng mục | Quyết định |
+| Item | Decision |
 | --- | --- |
-| Cờ tính năng | <!-- fill: tên flag theo ARCHITECTURE §6.7, hoặc "Không dùng" kèm lý do --> |
-| Tương thích ngược | <!-- fill: client hoặc phiên bản cũ bị ảnh hưởng thế nào --> |
-| Kế hoạch tắt hoặc quay lui | <!-- fill: cách tắt tính năng khi có sự cố, dữ liệu xử lý ra sao --> |
+| Feature flag | <!-- fill: flag name per ARCHITECTURE §6.7, or "Not used" with the reason --> |
+| Backward compatibility | <!-- fill: how old clients or versions are affected --> |
+| Shutoff or rollback plan | <!-- fill: how to turn the feature off on an incident, how the data is handled --> |
 
-## 11. Giả định và câu hỏi mở (Assumptions & Open Questions)
+## 11. Assumptions & Open Questions
 
-| ID | Loại | Nội dung | Lý do hoặc ảnh hưởng | BLOCKING | Người trả lời |
+| ID | Type | Content | Reason or impact | BLOCKING | Respondent |
 | --- | --- | --- | --- | :---: | --- |
-| AQ-01 | <!-- fill: chọn một: Giả định \| Câu hỏi --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Có \| Không --> | <!-- fill --> |
+| AQ-01 | <!-- fill: choose one: Assumption \| Question --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Yes \| No --> | <!-- fill --> |
 
-## 12. Quy trình thực thi và Definition of Done (Execution Workflow & DoD)
+## 12. Execution Workflow & Definition of Done
 
 ```mermaid
 flowchart TD
-    R[Rà soát contract, File Diff, test] --> T[Viết contract, DTO, kiểu dữ liệu]
-    T --> RED[Viết test theo §9, chạy thấy đỏ]
-    RED --> GREEN[Viết logic tới khi test xanh]
-    GREEN --> INT[Gắn lớp giao tiếp, viết test tích hợp và e2e]
-    INT --> V[Chạy lệnh verify trong CLAUDE.md]
-    V --> S[Đồng bộ tài liệu theo PLAYBOOK mục 2.6]
+    R[Review contract, File Diff, tests] --> T[Write contract, DTOs, data types]
+    T --> RED[Write tests per §9, run them red]
+    RED --> GREEN[Write logic until tests are green]
+    GREEN --> INT[Wire up the interface layer, write integration and e2e tests]
+    INT --> V[Run the verify commands in CLAUDE.md]
+    V --> S[Sync documents per PLAYBOOK §2.6]
 ```
 
-Definition of Done của SPEC:
+Definition of Done of the SPEC:
 
-- [ ] Mọi lệnh verify trong `CLAUDE.md` đạt điều kiện pass của bảng lệnh verify (PLAYBOOK mục 11).
-- [ ] 100% test ở §9 pass, đúng file và tên ghi trong bảng.
-- [ ] Mã nguồn chỉ thay đổi trong các file ở §2; ngoài ra chỉ có tài liệu và plan được cập nhật theo PLAYBOOK mục 2.6.
-- [ ] Không có dependency mới ngoài ARCHITECTURE §2 hoặc ADR `accepted`.
-- [ ] Mọi lỗi trả về theo envelope ARCHITECTURE §6.2 với mã trong §7.1 (bề mặt có request/response).
-- [ ] SPEC chuyển status `implemented`, bảng §9 ghi đúng file test và tên test, checkbox của plan đã đồng bộ.
+- [ ] Every verify command in `CLAUDE.md` meets the pass condition of the verify command table (PLAYBOOK §11).
+- [ ] 100% of the tests in §9 pass, in the exact files and names recorded in the table.
+- [ ] Source code changes only in the files in §2; apart from that, only documents and the plan are updated per PLAYBOOK §2.6.
+- [ ] No new dependency outside ARCHITECTURE §2 or an `accepted` ADR.
+- [ ] Every error is returned in the ARCHITECTURE §6.2 envelope with a code from §7.1 (surfaces that have request/response).
+- [ ] The SPEC moves to status `implemented`, the §9 table records the exact test file and test name, and the plan checkboxes are synced.
 
-## 13. Lịch sử phiên bản (Version History)
+## 13. Version History
 
-| Phiên bản | Ngày | Người sửa | Nội dung thay đổi | Lý do và người yêu cầu | Người duyệt |
+| Version | Date | Editor | Change | Reason and requester | Approver |
 | --- | --- | --- | --- | --- | --- |
-| 0.1.0 | {{DATE}} | {{AUTHOR}} | Bản khởi tạo | Khởi tạo theo pipeline | Chưa duyệt |
+| 0.1.0 | {{DATE}} | {{AUTHOR}} | Initial version | Created by the pipeline | Not approved |

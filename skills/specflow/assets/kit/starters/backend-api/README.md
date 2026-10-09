@@ -1,25 +1,25 @@
 # Starter backend-api
 
-Bộ template đã ghép sẵn cho dự án có một bề mặt `backend-api` (Routing Decision: `overlays: [backend-api]`, `starter: backend-api`). Mỗi file là template lõi trong `core/` với các slot đã thay bằng nội dung của overlay [`backend-api`](../../overlays/backend-api/OVERLAY.md). Starter không gắn stack profile: dòng `PROFILE-SLOT` và placeholder nguồn `Profile` được giữ lại để agent điền bằng profile chọn trong Intake.
+Pre-assembled templates for a project with one `backend-api` surface (Routing Decision: `overlays: [backend-api]`, `starter: backend-api`). Each file is a core template in `core/` with its slots replaced by the content of the [`backend-api`](../../overlays/backend-api/OVERLAY.md) overlay. The starter is not tied to a stack profile: the `PROFILE-SLOT` lines and the `Profile`-sourced placeholders are kept so that the agent fills them with the profile chosen in the Intake.
 
-## File trong starter
+## Files in the starter
 
-| File | Ghép từ | Đầu ra trong dự án | Giai đoạn |
+| File | Assembled from | Output in the project | Stage |
 | --- | --- | --- | --- |
-| [SRS_Template.md](SRS_Template.md) | `core/01_SRS_Template.md` + `overlays/backend-api/srs-sections.md` | `docs/srs/SRS.md` hoặc SRS modular | 1 |
+| [SRS_Template.md](SRS_Template.md) | `core/01_SRS_Template.md` + `overlays/backend-api/srs-sections.md` | `docs/srs/SRS.md` or a modular SRS | 1 |
 | [ARCHITECTURE_Template.md](ARCHITECTURE_Template.md) | `core/02_Architecture_Core_Template.md` + `overlays/backend-api/architecture-sections.md` | `docs/ARCHITECTURE.md` | 2 |
 | [SPEC_Template.md](SPEC_Template.md) | `core/04_Spec_Core_Template.md` + `overlays/backend-api/spec-contract-sections.md` | `docs/specs/SPEC_<FEATURE_KEY>.md` | 3 |
-| [CLAUDE.md.template](CLAUDE.md.template) | `core/06_Agent_Context_Template.md` + `overlays/backend-api/verify-commands.md` + rule của overlay (Phụ lục A.3) | `CLAUDE.md`, `.claude/rules/` | 0 và 2 |
+| [CLAUDE.md.template](CLAUDE.md.template) | `core/06_Agent_Context_Template.md` + `overlays/backend-api/verify-commands.md` + the overlay rule (Appendix A.3) | `CLAUDE.md`, `.claude/rules/` | 0 and 2 |
 
-Template dùng thẳng từ core, không qua starter: [Intake](../../core/00_Project_Intake_Template.md), [ADR](../../core/03_ADR_Template.md), [Implementation Plan](../../core/05_Implementation_Plan_Template/plan.md).
+Templates used straight from core, not through the starter: [Intake](../../core/00_Project_Intake_Template.md), [ADR](../../core/03_ADR_Template.md), [Roadmap](../../core/08_Roadmap_Template.md), [Implementation Plan](../../core/05_Implementation_Plan_Template/plan.md).
 
-## Cách dùng
+## Usage
 
-1. Cài bộ mẫu vào `specflow/` theo README gốc; starter nằm ở `specflow/starters/backend-api/`.
-2. Chạy prompt của `PROMPTS.md`; prompt tự chọn file của starter khi Routing Decision có `starter: backend-api`.
-3. Khi chép một file starter sang dự án, áp stack profile đã chọn (PLAYBOOK mục 4, bước 3): thay mỗi dòng `PROFILE-SLOT` bằng khối `PROFILE-CONTENT` cùng ID trong profile, thay placeholder nguồn `Profile` bằng bảng "Giá trị placeholder", và thêm profile vào `assembled_from`.
+1. Install the kit into `specflow/` per PLAYBOOK §1.4; the starter is at `specflow/starters/backend-api/`.
+2. Run the prompts of `PROMPTS.md`; the prompts pick the starter files by themselves when the Routing Decision has `starter: backend-api`.
+3. When copying a starter file into the project, apply the chosen stack profile (PLAYBOOK §4, step 3): replace each `PROFILE-SLOT` line with the `PROFILE-CONTENT` block of the same ID in the profile, replace the `Profile`-sourced placeholders with the table "Placeholder values", and add the profile to `assembled_from`.
 
-## Bảo trì
+## Maintenance
 
-- Không sửa file trong starter. Sửa `core/` hoặc `overlays/backend-api/`, rồi ghép lại starter theo CONVENTIONS mục 2; frontmatter của starter (`overlays`, `assembled_from`, `template_version`) cũng là kết quả của phép ghép.
-- `scripts/check-templates.sh` tự ghép lại từng file starter từ nguồn khai báo trong `assembled_from` và `overlays`, rồi báo lỗi khi file trong starter khác kết quả ghép dù một ký tự. Sửa nguồn mà chưa ghép lại starter thì checker không pass.
+- Do not edit the files in the starter. Edit `core/` or `overlays/backend-api/`, then re-assemble the starter per CONVENTIONS §2; the frontmatter of the starter (`overlays`, `assembled_from`, `template_version`) is also a result of the assembly.
+- `scripts/check-templates.sh` re-assembles each starter file from the sources declared in `assembled_from` and `overlays`, and reports an error when a file in the starter differs from the assembly result by even one character. If you change a source without re-assembling the starter, the checker does not pass.

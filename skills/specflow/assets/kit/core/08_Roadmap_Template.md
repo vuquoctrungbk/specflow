@@ -3,7 +3,7 @@ doc_type: roadmap
 status: active
 version: 0.1.0
 template_version: 1.0.0
-language: vi-en
+language: en
 parent: [docs/srs/SRS.md]
 overlays: []
 assembled_from: []
@@ -11,56 +11,56 @@ assembled_from: []
 
 # {{PROJECT_NAME}}: Roadmap
 
-<!-- fill: Chép thành docs/ROADMAP.md khi nhận "Duyệt Gate 1" (PLAYBOOK mục 2.7), cho dự án có Intake tạo từ template Intake 1.4.0 trở lên. Roadmap là danh sách việc phải làm dẫn xuất từ SRS: lệch thì SRS thắng. Quy tắc của từng mục, trạng thái dòng (Chưa làm, Đang làm, Xong, Đã xác nhận, Bỏ), thứ tự và bằng chứng ở CONVENTIONS mục 11; chú thích dưới chỉ nêu cách điền. Coding agent cập nhật roadmap theo PLAYBOOK mục 2.5, đối soát theo mục 2.6, và chỉ đặt Đã xác nhận khi nhận "Duyệt Gate 5". Frontmatter: parent liệt kê file SRS; overlays chép từ Intake; assembled_from ghi "core/08_Roadmap_Template.md@<template_version>". Roadmap không qua gate riêng và không có Version History: lịch sử của nó là git. -->
+<!-- fill: Copy to docs/ROADMAP.md on receiving "Approved at Gate 1" (PLAYBOOK §2.7). The roadmap is a to-do list derived from the SRS: on a mismatch, the SRS wins. The rules of each section, the row statuses (Not started, In progress, Done, Confirmed, Dropped), the order and the evidence are in CONVENTIONS §11; the notes below only say how to fill. The coding agent updates the roadmap per PLAYBOOK §2.5, reconciles it per §2.6, and sets Confirmed only on receiving "Approved at Gate 5". The document language: set the language key of the generated document to the language of the project (the language key of the Intake). Frontmatter: parent lists the SRS files; overlays is copied from the Intake; assembled_from records "core/08_Roadmap_Template.md@<template_version>". The roadmap has no gate of its own and no Version History: its history is git. -->
 
-## 1. Tiến độ (Progress)
+## 1. Progress
 
-<!-- fill: Một hàng cho mỗi đợt, theo thứ tự đợt ở Intake (mục Mốc thời gian). Số đếm và dòng Đang làm theo CONVENTIONS mục 11. -->
+<!-- fill: One row per release, in the release order of the Intake (the Timeline row of the constraints). The counts and the In progress line follow CONVENTIONS §11. -->
 
-| Đợt | Tổng | Xong | Đã xác nhận | Hoàn thành |
+| Release | Total | Done | Confirmed | Complete |
 | --- | --- | --- | --- | --- |
 | {{RELEASE}} | <!-- fill --> | 0 | 0 | 0% |
 
-- Đang làm: Không
+- In progress: None
 
-## 2. Hàng việc (Work Queue)
+## 2. Work Queue
 
-### 2.1. Yêu cầu chức năng (Functional Requirements)
+### 2.1. Functional Requirements
 
-<!-- fill: Một dòng cho mỗi FR ở SRS §6.1 có Ưu tiên khác Won't; Tên, Ưu tiên, Đợt chép từ SRS §6.1. SPEC ghi Chưa có trước Gate 3, Pha ghi Chưa có trước Gate 4; định dạng hai cột này và thứ tự dòng theo CONVENTIONS mục 11. -->
+<!-- fill: One line for each FR in SRS §6.1 whose Priority is other than Won't; Name, Priority and Release are copied from SRS §6.1. SPEC says Not yet before Gate 3, Phase says Not yet before Gate 4; the format of these two columns and the order of the lines follow CONVENTIONS §11. -->
 
-| # | ID | Tên | Ưu tiên | Đợt | SPEC | Pha | Trạng thái |
+| # | ID | Name | Priority | Release | SPEC | Phase | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | FR-{{MODULE_CODE}}-001 | <!-- fill: tên ngắn ở SRS §6.1 --> | Must | {{RELEASE}} | Chưa có | Chưa có | Chưa làm |
+| 1 | FR-{{MODULE_CODE}}-001 | <!-- fill: short name in SRS §6.1 --> | Must | {{RELEASE}} | Not yet | Not yet | Not started |
 
-### 2.2. Yêu cầu phi chức năng mức Must (Must NFRs)
+### 2.2. Must NFRs
 
-<!-- fill: Một dòng cho mỗi NFR ở SRS §7 có Ưu tiên Must, theo thứ tự ở SRS §7; Tên chép cột Nhóm, Cách kiểm chứng chép SRS §7. SPEC liệt kê các SPEC dẫn NFR hoặc ghi Không có. Đợt đóng và cách xác nhận theo CONVENTIONS mục 11 và PLAYBOOK mục 2.7. -->
+<!-- fill: One line for each NFR in SRS §7 whose Priority is Must, in the order of SRS §7; Name copies the Group column, Verification method copies SRS §7. SPEC lists the SPECs that cite the NFR or says None. Closing release and the way of confirming follow CONVENTIONS §11 and PLAYBOOK §2.7. -->
 
-| # | ID | Tên | SPEC | Cách kiểm chứng | Đợt đóng | Trạng thái |
+| # | ID | Name | SPEC | Verification method | Closing release | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | NFR-SEC-01 | <!-- fill: cột Nhóm ở SRS §7 --> | Không có | Test | {{RELEASE}} | Chưa làm |
+| 1 | NFR-SEC-01 | <!-- fill: Group column in SRS §7 --> | None | Test | {{RELEASE}} | Not started |
 
-## 3. Yêu cầu mới (New Requests)
+## 3. New Requests
 
-<!-- fill: Ý tưởng hoặc yêu cầu phát sinh sau Gate 1. Agent chỉ ghi, không làm. Người duyệt của gate gần nhất quyết: Đưa vào change request (ghi tài liệu bị đổi, rồi đi theo PLAYBOOK mục 8) hoặc Bỏ (kèm lý do); chưa quyết thì Chờ. Không có yêu cầu thì giữ một hàng Không có. -->
+<!-- fill: Ideas or requirements that arise after Gate 1. The agent only records them, it does not do them. The approver of the nearest gate decides: Raise change request (record the document that changes, then follow PLAYBOOK §8) or Dropped (with the reason); undecided is Pending. With no requests, keep one None row. -->
 
-| Ngày | Nội dung | Người nêu | Quyết định |
+| Date | Content | Raised by | Decision |
 | --- | --- | --- | --- |
-| Không có | Không có | Không có | Không có |
+| None | None | None | None |
 
-## 4. Đã hoàn thành (Done)
+## 4. Done
 
-<!-- fill: Một hàng cho mỗi dòng Xong hoặc Đã xác nhận ở mục 2: bằng chứng (ID TC, hoặc bằng chứng theo SRS §8 với NFR), commit, tag (Chưa có tới khi Đã xác nhận), theo CONVENTIONS mục 11. Chưa có dòng nào xong thì giữ một hàng Không có. -->
+<!-- fill: One row for each Done or Confirmed line in §2: the evidence (TC ID, or the evidence per SRS §8 for an NFR), the commit, the tag (Not yet until Confirmed), per CONVENTIONS §11. With no line done yet, keep one None row. -->
 
-| ID | Bằng chứng | Commit | Tag |
+| ID | Evidence | Commit | Tag |
 | --- | --- | --- | --- |
-| Không có | Không có | Không có | Không có |
+| None | None | None | None |
 
-## 5. Mốc version (Milestones)
+## 5. Milestones
 
-<!-- fill: Một hàng cho mỗi lần một SPEC qua Gate 5, theo thứ tự duyệt; tên tag theo dòng Định dạng tag ở Intake mục 14, lần thứ hai trở đi của cùng SPEC thêm hậu tố -2, -3 (PLAYBOOK mục 2.7). Rollback: revert khoảng commit của SPEC (PLAYBOOK mục 2.6) về tag trước; pha có migration theo mục hoàn tác của pha. Chưa có mốc thì giữ một hàng Không có. -->
+<!-- fill: One row each time a SPEC passes Gate 5, in the order of approval; the tag name follows the Tag format line in Intake §14, and the second time and later for the same SPEC adds the suffix -2, -3 (PLAYBOOK §2.7). Rollback: revert the commit range of the SPEC (PLAYBOOK §2.6) to the previous tag; a phase with a migration follows the rollback section of the phase. With no milestone yet, keep one None row. -->
 
-| Tag | SPEC | Commit | Ngày | Người duyệt | Cách rollback |
+| Tag | SPEC | Commit | Date | Approver | Rollback method |
 | --- | --- | --- | --- | --- | --- |
-| Không có | Không có | Không có | Không có | Không có | Không có |
+| None | None | None | None | None | None |

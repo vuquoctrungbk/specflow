@@ -1,0 +1,7 @@
+# Lists that depend on the language of the project's documents: the words that a check compares a cell or a requirement with.
+# Values are separated by |. They replace what the checker used to read from CONVENTIONS, which holds no language-specific word any more.
+lang_vague_terms	user-friendly|easy to use|fast|optimal|efficient|flexible|better|if possible|when appropriate|and/or|etc.|but not limited to
+lang_problem_levels	Critical|Minor|None
+lang_problem_blocking	Critical
+lang_dp_clean	None
+lang_dp_found	Found

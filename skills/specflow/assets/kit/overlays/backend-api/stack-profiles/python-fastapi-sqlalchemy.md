@@ -2,61 +2,61 @@
 doc_type: profile
 status: stable
 version: 1.0.1
-language: vi-en
+language: en
 surface: backend-api
 profile: python-fastapi-sqlalchemy
 ---
 
 # Stack profile python-fastapi-sqlalchemy
 
-## 1. Phạm vi (Scope)
+## 1. Scope
 
-Backend API viết bằng Python chạy trên CPython 3.13, framework FastAPI trên ASGI, ORM SQLAlchemy 2 ở chế độ async với driver `psycopg` 3, migration bằng Alembic, cơ sở dữ liệu PostgreSQL, quản lý dependency và môi trường bằng `uv`. Profile khớp dự án khởi tạo bằng `uv init --package` cộng các thư viện ở mục 2.
+Backend API written in Python on CPython 3.13, FastAPI framework on ASGI, SQLAlchemy 2 ORM in async mode with the `psycopg` 3 driver, Alembic migrations, PostgreSQL database, dependencies and environment managed with `uv`. The profile matches a project created with `uv init --package` plus the libraries in §2.
 
-Phiên bản chốt ngày 2026-09-23 và đã chạy thử cùng nhau trên một dự án thử: xuất tài liệu OpenAPI, lint và định dạng cho cả `migrations/`, typecheck nghiêm ngặt, unit, integration trên PostgreSQL chạy cô lập, e2e, contract, giới hạn tần suất, `CONC`, coverage, build wheel, audit, `alembic check` và lint OpenAPI đều exit 0. `{{MIGRATION_DEPLOY_CMD}}` chạy riêng trên một cơ sở dữ liệu rỗng, kể cả với mật khẩu có ký tự percent-encode và môi trường chỉ có biến kết nối.
+The versions were pinned on 2026-09-23 and run together on a trial project: OpenAPI document export, lint and format for `migrations/` as well, strict typecheck, unit, integration on an isolated PostgreSQL, e2e, contract, rate limiting, `CONC`, coverage, wheel build, audit, `alembic check` and OpenAPI lint all exit 0. `{{MIGRATION_DEPLOY_CMD}}` ran on its own against an empty database, including with a password that has percent-encoded characters and an environment that holds only the connection variable.
 
-Chưa kiểm chứng trong dự án thử, dự án dùng profile phải tự xác nhận: chạy ứng dụng bằng `uvicorn` sau reverse proxy, giới hạn tần suất với storage dùng chung khi có nhiều instance, khóa ngoại, `UniqueConstraint` và cột `Numeric`. Nâng phiên bản theo Dependency Policy ở ARCHITECTURE §2.2.
+Not verified in the trial project; a project that uses the profile has to confirm them itself: running the application with `uvicorn` behind a reverse proxy, rate limiting with shared storage when there are several instances, foreign keys, `UniqueConstraint` and `Numeric` columns. Upgrade versions under the Dependency Policy in ARCHITECTURE §2.2.
 
-Chọn profile này khi dự án đã có hệ sinh thái Python (mô hình học máy, thư viện xử lý dữ liệu, đội ngũ viết Python). Dự án mới không ràng buộc ngôn ngữ thì so sánh với profile `node-nestjs-prisma` của cùng overlay và ghi lựa chọn vào ADR.
+Choose this profile when the project already has a Python ecosystem (machine learning models, data processing libraries, a team that writes Python). A new project with no language constraint compares it with the `node-nestjs-prisma` profile of the same overlay and records the choice in an ADR.
 
-## 2. Bảng công nghệ (Tech Stack)
+## 2. Technology Table (Tech Stack)
 
-Chép vào ARCHITECTURE §2.1 với cột Bề mặt là `backend-api` và cột ADR là "Mặc định của profile" (chỉ lệch profile mới cần ADR).
+Copy into ARCHITECTURE §2.1 with the Surface column set to `backend-api` and the ADR column set to "Profile default" (only a deviation from the profile needs an ADR).
 
-| Lớp (Layer) | Công nghệ | Phiên bản chính xác | Vai trò | ADR |
+| Layer | Technology | Exact version | Role | ADR |
 | --- | --- | --- | --- | --- |
-| Runtime | CPython | 3.13.13 | Chạy ứng dụng và công cụ; ghim bằng `.python-version` | Mặc định của profile |
-| Quản lý dự án | `uv` | 0.12.18 | Khóa dependency, môi trường ảo, chạy lệnh, build wheel | Mặc định của profile |
-| Build backend | `uv_build` | 0.12.18 | Backend build wheel, khai báo ở `[build-system]` | Mặc định của profile |
-| Framework | `fastapi` | 0.141.1 | Router, dependency injection, sinh OpenAPI 3.1 | Mặc định của profile |
-| Máy chủ ASGI | `uvicorn[standard]` | 0.53.0 | Chạy ứng dụng, dùng `uvloop` và `httptools` | Mặc định của profile |
-| Validation | `pydantic` | 2.13.5 | DTO request và response, ràng buộc trường | Mặc định của profile |
-| Cấu hình | `pydantic-settings` | 2.15.0 | Đọc và kiểm tra biến môi trường ở một nơi duy nhất | Mặc định của profile |
-| ORM | `sqlalchemy[asyncio]` | 2.0.54 | Mapping có kiểu (`Mapped`, `mapped_column`), truy vấn, transaction | Mặc định của profile |
-| Migration | `alembic` | 1.20.0 | Sinh và chạy migration, `alembic check` so schema với metadata | Mặc định của profile |
-| Driver | `psycopg[binary,pool]` | 3.3.6 | Driver PostgreSQL async, pool kết nối | Mặc định của profile |
-| Cơ sở dữ liệu | PostgreSQL | 18.6 | Lưu trữ quan hệ, transaction ACID | Mặc định của profile |
-| Logging | `structlog` | 26.1.0 | Log JSON một dòng, gắn correlation ID theo context | Mặc định của profile |
-| Xác thực | `pyjwt` | 2.14.0 | Ký và kiểm tra access token | Mặc định của profile |
-| Hash mật khẩu | `argon2-cffi` | 25.1.0 | Argon2id | Mặc định của profile |
-| Giới hạn tần suất | `limits` | 5.8.0 | Cửa sổ trượt, storage trong tiến trình hoặc Redis khi nhiều instance | Mặc định của profile |
-| Test | `pytest` | 9.1.1 | Chạy test | Mặc định của profile |
-| Test | `pytest-asyncio` | 1.4.0 | Test async, chế độ `auto` | Mặc định của profile |
-| Test | `pytest-cov` | 7.1.0 | Coverage dòng và nhánh | Mặc định của profile |
-| Test | `httpx` | 0.28.1 | Client e2e gọi ứng dụng qua `ASGITransport`, không mở cổng | Mặc định của profile |
-| Test | `testcontainers[postgres]` | 4.15.0 | PostgreSQL chạy cô lập cho integration, e2e, `CONC` | Mặc định của profile |
-| Test | `jsonschema`, `types-jsonschema` | 4.26.0, 4.26.0.20260518 | Test `CTR` đối chiếu phản hồi với schema trong tài liệu OpenAPI | Mặc định của profile |
-| Lint và định dạng | `ruff` | 0.16.8 | Lint và định dạng, thay cho bộ flake8 cộng black | Mặc định của profile |
-| Typecheck | `mypy` | 2.3.1 | Kiểm kiểu ở chế độ `strict` | Mặc định của profile |
-| Audit | `pip-audit` | 2.10.1 | Đối chiếu dependency đã khóa với cơ sở dữ liệu lỗ hổng | Mặc định của profile |
-| Tài liệu API | `openapi-spec-validator` | 0.9.0 | Kiểm `openapi/openapi.yaml` theo OpenAPI 3.1, không cần Node.js | Mặc định của profile |
-| Tài liệu API | `pyyaml`, `types-pyyaml` | 6.0.3, 6.0.12.20260906 | Ghi và đọc tài liệu OpenAPI dạng YAML; stub kiểu cho mypy | Mặc định của profile |
+| Runtime | CPython | 3.13.13 | Runs the application and tools; pinned by `.python-version` | Profile default |
+| Project manager | `uv` | 0.12.18 | Locks dependencies, virtual environment, runs commands, builds the wheel | Profile default |
+| Build backend | `uv_build` | 0.12.18 | Wheel build backend, declared in `[build-system]` | Profile default |
+| Framework | `fastapi` | 0.141.1 | Router, dependency injection, OpenAPI 3.1 generation | Profile default |
+| ASGI server | `uvicorn[standard]` | 0.53.0 | Runs the application, uses `uvloop` and `httptools` | Profile default |
+| Validation | `pydantic` | 2.13.5 | Request and response DTOs, field constraints | Profile default |
+| Configuration | `pydantic-settings` | 2.15.0 | Reads and validates environment variables in a single place | Profile default |
+| ORM | `sqlalchemy[asyncio]` | 2.0.54 | Typed mapping (`Mapped`, `mapped_column`), queries, transactions | Profile default |
+| Migration | `alembic` | 1.20.0 | Generates and runs migrations, `alembic check` compares the schema with the metadata | Profile default |
+| Driver | `psycopg[binary,pool]` | 3.3.6 | Async PostgreSQL driver, connection pool | Profile default |
+| Database | PostgreSQL | 18.6 | Relational storage, ACID transactions | Profile default |
+| Logging | `structlog` | 26.1.0 | One-line JSON logs, attaches the correlation ID from context | Profile default |
+| Authentication | `pyjwt` | 2.14.0 | Signs and verifies access tokens | Profile default |
+| Password hashing | `argon2-cffi` | 25.1.0 | Argon2id | Profile default |
+| Rate limiting | `limits` | 5.8.0 | Sliding window, in-process storage or Redis when there are several instances | Profile default |
+| Test | `pytest` | 9.1.1 | Runs tests | Profile default |
+| Test | `pytest-asyncio` | 1.4.0 | Async tests, `auto` mode | Profile default |
+| Test | `pytest-cov` | 7.1.0 | Line and branch coverage | Profile default |
+| Test | `httpx` | 0.28.1 | E2E client that calls the application through `ASGITransport`, without opening a port | Profile default |
+| Test | `testcontainers[postgres]` | 4.15.0 | Isolated PostgreSQL for integration, e2e, `CONC` | Profile default |
+| Test | `jsonschema`, `types-jsonschema` | 4.26.0, 4.26.0.20260518 | `CTR` tests compare responses with the schema in the OpenAPI document | Profile default |
+| Lint and format | `ruff` | 0.16.8 | Lint and format, replaces the flake8 plus black set | Profile default |
+| Typecheck | `mypy` | 2.3.1 | Type checking in `strict` mode | Profile default |
+| Audit | `pip-audit` | 2.10.1 | Compares locked dependencies with the vulnerability database | Profile default |
+| API documentation | `openapi-spec-validator` | 0.9.0 | Checks `openapi/openapi.yaml` against OpenAPI 3.1, no Node.js needed | Profile default |
+| API documentation | `pyyaml`, `types-pyyaml` | 6.0.3, 6.0.12.20260906 | Writes and reads the OpenAPI document as YAML; type stubs for mypy | Profile default |
 
-## 3. Giá trị placeholder
+## 3. Placeholder values
 
-| Placeholder | Giá trị |
+| Placeholder | Value |
 | --- | --- |
-| `{{LANGUAGE_STRICT_MODE_RULE}}` | `mypy` chạy `strict` cho `src/` và `tests/`; `ruff` bật nhóm `ANN` nên mọi hàm phải có annotation và `Any` trong annotation bị chặn; `Any` chỉ dùng ở ranh giới serialize JSON. |
+| `{{LANGUAGE_STRICT_MODE_RULE}}` | `mypy` runs `strict` for `src/` and `tests/`; `ruff` enables the `ANN` group so every function must have annotations and `Any` in an annotation is blocked; `Any` is used only at the JSON serialization boundary. |
 | `{{ISOLATION_LEVEL}}` | `READ COMMITTED` |
 | `{{CODEGEN_CMD}}` | `uv run python -m app.openapi_export` |
 | `{{LINT_CMD}}` | `uv run ruff check src tests migrations && uv run ruff format --check src tests migrations` |
@@ -71,66 +71,66 @@ Chép vào ARCHITECTURE §2.1 với cột Bề mặt là `backend-api` và cột
 | `{{MIGRATION_DEPLOY_CMD}}` | `uv run alembic upgrade head` |
 | `{{OPENAPI_LINT_CMD}}` | `uv run openapi-spec-validator openapi/openapi.yaml` |
 
-Ghi chú:
+Notes:
 
-- FastAPI sinh tài liệu OpenAPI từ mã, nên `{{CODEGEN_CMD}}` là bước xuất tài liệu đó ra `openapi/openapi.yaml` chứ không sinh mã. Lệnh chạy trước mọi lệnh khác và chạy lại sau mỗi lần đổi router hoặc DTO; file kết quả được commit để so khác biệt trong review và để test `CTR` đối chiếu.
-- Hai lệnh migration chỉ cần biến `DATABASE_URL`, không cần biến nào khác của ứng dụng, nên job migration lúc phát hành không phải mang theo secret của ứng dụng.
-- `{{MIGRATION_CHECK_CMD}}` cần một cơ sở dữ liệu đang chạy và đã `upgrade head`: `alembic check` so metadata của ORM với schema thật và trả khác 0 khi còn thay đổi chưa có migration. Ở CI, chạy trên cơ sở dữ liệu dùng một lần của job.
-- `uv run` tự đồng bộ môi trường theo `uv.lock` trước khi chạy, nên không cần bước cài riêng; CI dùng `uv sync --frozen` để lỗi khi lock không khớp `pyproject.toml`.
-- `pip-audit` đọc môi trường đã khóa; `--strict` làm cảnh báo thành lỗi. Lỗ hổng không có bản vá thì ghi ADR chấp nhận rủi ro và thêm `--ignore-vuln <id>` kèm ngày xem lại.
-- Ngưỡng coverage mặc định của profile là 80% dòng và nhánh cho `src/app/`, đo bằng cấu hình `[tool.coverage.run]`; SRS có thể đặt ngưỡng khác ở NFR-MAINT.
-- Test dùng `testcontainers`, nên máy chạy test cần Docker. Môi trường không có Docker thì đặt biến trỏ tới một PostgreSQL dùng một lần và ghi cách làm vào ARCHITECTURE §11.
-- Chạy ứng dụng khi phát triển: `uv run uvicorn --factory app.main:create_app --port 8000`; sau reverse proxy thì thêm `--proxy-headers --forwarded-allow-ips <IP của proxy>` để địa chỉ client trong log và trong bộ đếm giới hạn tần suất là địa chỉ thật.
+- FastAPI generates the OpenAPI document from code, so `{{CODEGEN_CMD}}` is the step that exports that document to `openapi/openapi.yaml`, not one that generates code. The command runs before every other command and runs again after each router or DTO change; the resulting file is committed so review can diff it and so the `CTR` tests can compare against it.
+- The two migration commands need only the `DATABASE_URL` variable, no other application variable, so the migration job at release time does not have to carry the application secrets.
+- `{{MIGRATION_CHECK_CMD}}` needs a running database that is already at `upgrade head`: `alembic check` compares the ORM metadata with the real schema and returns non-zero when a change has no migration yet. In CI, run it against the job's disposable database.
+- `uv run` syncs the environment with `uv.lock` before it runs, so no separate install step is needed; CI uses `uv sync --frozen` so it fails when the lock does not match `pyproject.toml`.
+- `pip-audit` reads the locked environment; `--strict` turns warnings into errors. A vulnerability without a patch gets an ADR accepting the risk and `--ignore-vuln <id>` with a review date.
+- The profile's default coverage threshold is 80% of lines and branches for `src/app/`, measured by the `[tool.coverage.run]` configuration; the SRS may set another threshold in NFR-MAINT.
+- Tests use `testcontainers`, so the machine that runs the tests needs Docker. An environment without Docker sets a variable that points to a disposable PostgreSQL and records the method in ARCHITECTURE §11.
+- Run the application during development: `uv run uvicorn --factory app.main:create_app --port 8000`; behind a reverse proxy add `--proxy-headers --forwarded-allow-ips <proxy IP>` so the client address in the logs and in the rate limit counter is the real address.
 
-## 4. Nội dung chèn vào tài liệu (Profile Content)
+## 4. Profile Content
 
-### 4.1. Cây thư mục và cấu hình công cụ (cho ARCHITECTURE §4)
+### 4.1. Directory tree and tool configuration (for ARCHITECTURE §4)
 
 <!-- PROFILE-CONTENT: arch.layout -->
-### Cây thư mục theo stack (Stack Directory Tree)
+### Stack Directory Tree
 
 ```text
 .
-├── pyproject.toml                       # dependency, cấu hình ruff, mypy, pytest, coverage, build
-├── uv.lock                              # khóa toàn bộ cây dependency, commit vào repo
-├── .python-version                      # bản CPython chính xác, uv đọc file này
-├── .env.example                         # tên mọi biến môi trường kèm giá trị mẫu, không chứa giá trị thật
-├── alembic.ini                          # cấu hình Alembic, script_location và prepend_sys_path
-├── openapi/openapi.yaml                 # tài liệu OpenAPI 3.1 xuất từ ứng dụng, commit vào repo
+├── pyproject.toml                       # dependencies, ruff, mypy, pytest, coverage, build configuration
+├── uv.lock                              # locks the whole dependency tree, committed to the repo
+├── .python-version                      # exact CPython version, uv reads this file
+├── .env.example                         # names of all environment variables with sample values, no real values
+├── alembic.ini                          # Alembic configuration, script_location and prepend_sys_path
+├── openapi/openapi.yaml                 # OpenAPI 3.1 document exported from the application, committed to the repo
 ├── migrations/
-│   ├── env.py                           # nạp metadata của ORM, chạy migration trên engine async
-│   ├── script.py.mako                   # khuôn file migration, đã sửa cho ruff và kiểu hiện đại
-│   └── versions/                        # migration đã sinh, không sửa sau khi đã chạy ở môi trường khác
+│   ├── env.py                           # loads the ORM metadata, runs migrations on the async engine
+│   ├── script.py.mako                   # migration file template, adjusted for ruff and modern types
+│   └── versions/                        # generated migrations, not edited once run in another environment
 ├── src/app/
-│   ├── main.py                          # create_app: middleware, exception handler, router, lifespan, openapi
-│   ├── config.py                        # nơi duy nhất đọc biến môi trường, và dependency đọc cấu hình
-│   ├── openapi_export.py                # ghi tài liệu OpenAPI ra openapi/openapi.yaml
+│   ├── main.py                          # create_app: middleware, exception handlers, routers, lifespan, openapi
+│   ├── config.py                        # the only place that reads environment variables, and the settings dependency
+│   ├── openapi_export.py                # writes the OpenAPI document to openapi/openapi.yaml
 │   ├── db/
-│   │   ├── base.py                      # DeclarativeBase và quy ước đặt tên ràng buộc
-│   │   └── session.py                   # engine, session factory, dependency một session mỗi request
+│   │   ├── base.py                      # DeclarativeBase and constraint naming convention
+│   │   └── session.py                   # engine, session factory, one session per request dependency
 │   ├── lib/
-│   │   ├── envelope.py                  # envelope thành công theo ARCHITECTURE §6.2
-│   │   ├── errors.py                    # error code của Registry, ánh xạ HTTP status, envelope lỗi
-│   │   ├── logging.py                   # cấu hình structlog và middleware correlation ID
-│   │   ├── security.py                  # hash mật khẩu, ký và đọc token, scheme bearer cho OpenAPI
-│   │   └── rate_limit.py                # dependency giới hạn tần suất và header RateLimit-*
+│   │   ├── envelope.py                  # success envelope per ARCHITECTURE §6.2
+│   │   ├── errors.py                    # Registry error codes, HTTP status mapping, error envelope
+│   │   ├── logging.py                   # structlog configuration and correlation ID middleware
+│   │   ├── security.py                  # password hashing, token signing and reading, bearer scheme for OpenAPI
+│   │   └── rate_limit.py                # rate limit dependency and RateLimit-* headers
 │   └── modules/{{MODULE_SLUG}}/
-│       ├── router.py                    # APIRouter, khai báo endpoint, mã phản hồi và response model
-│       ├── schemas.py                   # DTO request và response bằng Pydantic
-│       ├── service.py                   # quy tắc nghiệp vụ, ranh giới transaction, idempotency
-│       ├── repository.py                # truy vấn SQLAlchemy, không chứa quy tắc nghiệp vụ
-│       └── model.py                     # bảng của phân hệ, mapping có kiểu
+│       ├── router.py                    # APIRouter, endpoint declarations, response codes and response models
+│       ├── schemas.py                   # request and response DTOs in Pydantic
+│       ├── service.py                   # business rules, transaction boundary, idempotency
+│       ├── repository.py                # SQLAlchemy queries, no business rules
+│       └── model.py                     # tables of the module, typed mapping
 └── tests/
-    ├── conftest.py                      # fixture container PostgreSQL, session, client, dọn bảng
-    ├── unit/                            # hàm thuần, không chạm cơ sở dữ liệu
-    ├── integration/                     # service và repository trên cơ sở dữ liệu thật
-    ├── e2e/                             # gọi ứng dụng qua ASGITransport của httpx, gồm test CTR
-    └── concurrency/                     # test CONC, nhiều request song song trên một bất biến
+    ├── conftest.py                      # PostgreSQL container fixture, session, client, table cleanup
+    ├── unit/                            # pure functions, no database access
+    ├── integration/                     # service and repository on a real database
+    ├── e2e/                             # calls the application through httpx ASGITransport, includes CTR tests
+    └── concurrency/                     # CONC tests, many parallel requests against one invariant
 ```
 
-Với stack này `{{MODULE_SLUG}}` viết `snake_case` số nhiều, vì tên thư mục cũng là tên package Python và dấu gạch ngang không hợp lệ.
+For this stack `{{MODULE_SLUG}}` is written in plural `snake_case`, because the directory name is also the Python package name and a hyphen is not valid.
 
-Cấu hình công cụ nằm cùng một file `pyproject.toml`:
+Tool configuration lives in the same `pyproject.toml` file:
 
 ```toml
 [tool.ruff]
@@ -171,16 +171,15 @@ branch = true
 [tool.coverage.report]
 skip_empty = true
 ```
-
-File Diff mặc định khi SPEC thêm một endpoint ghi: `router.py`, `schemas.py`, `service.py`, `repository.py`, `model.py` của phân hệ, một file trong `migrations/versions/`, `openapi/openapi.yaml`, và test của các loại trong `tests/`.
+Default Diff files when a SPEC adds a write endpoint: `router.py`, `schemas.py`, `service.py`, `repository.py`, `model.py` of the module, one file in `migrations/versions/`, `openapi/openapi.yaml`, and the tests of each kind in `tests/`.
 <!-- /PROFILE-CONTENT -->
 
-### 4.2. Schema SQLAlchemy và Alembic (cho ARCHITECTURE §5)
+### 4.2. SQLAlchemy schema and Alembic (for ARCHITECTURE §5)
 
 <!-- PROFILE-CONTENT: arch.schema -->
-### Quy ước schema SQLAlchemy (SQLAlchemy Schema Conventions)
+### SQLAlchemy Schema Conventions
 
-Lớp cơ sở khai báo quy ước đặt tên, để migration đặt tên ràng buộc giống nhau trên mọi môi trường và `alembic check` so sánh được:
+The base class declares the naming convention, so migrations name constraints the same way in every environment and `alembic check` can compare them:
 
 ```python
 from sqlalchemy import MetaData
@@ -199,22 +198,21 @@ NAMING_CONVENTION = {
 class Base(DeclarativeBase):
     metadata = MetaData(naming_convention=NAMING_CONVENTION)
 ```
-
-| Khái niệm | Cách viết trong SQLAlchemy |
+| Concept | SQLAlchemy form |
 | --- | --- |
-| Tên lớp và bảng | Lớp `PascalCase` số ít cho `{{ENTITY_NAME}}`, `__tablename__` là `snake_case` số nhiều |
-| Cột | `title: Mapped[str] = mapped_column(String(200))`; kiểu Python quyết định `nullable`, nên `Mapped[str | None]` nghĩa là cột cho phép rỗng |
-| Khóa chính UUID | `mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)` |
-| Chuỗi | `String(n)` với `n` khớp ràng buộc ở DTO; `Text()` chỉ khi DTO cũng không giới hạn độ dài |
-| Tiền tệ | `Numeric(12, 2)`, đọc ra `decimal.Decimal`, không dùng `float` |
-| Thời gian | `DateTime(timezone=True)` với `server_default=func.now()`; cột sửa lần cuối thêm `onupdate=func.now()` |
-| Enum | `String(n)` cộng `CheckConstraint` liệt kê giá trị `UPPER_SNAKE`, khớp SRS §4.2; kiểu `ENUM` của PostgreSQL cần ADR vì đổi giá trị phải migration |
-| Ràng buộc kiểm tra | `__table_args__ = (CheckConstraint("...", name="..."),)`, tên ngắn vì quy ước đặt tên thêm tiền tố bảng |
-| Khóa ngoại | `mapped_column(ForeignKey("parents.id", ondelete="RESTRICT"), index=True)`, tên bảng cha viết số nhiều như `__tablename__` của nó |
-| Duy nhất ghép | `UniqueConstraint("a", "b")` trong `__table_args__` |
-| JSON | `JSONB()` của phương ngữ PostgreSQL, kiểu Python là `dict[str, Any]` |
+| Class and table name | Singular `PascalCase` class for `{{ENTITY_NAME}}`, `__tablename__` in plural `snake_case` |
+| Column | `title: Mapped[str] = mapped_column(String(200))`; the Python type decides `nullable`, so `Mapped[str | None]` means the column allows null |
+| UUID primary key | `mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)` |
+| String | `String(n)` with `n` matching the constraint in the DTO; `Text()` only when the DTO has no length limit either |
+| Currency | `Numeric(12, 2)`, read out as `decimal.Decimal`, never `float` |
+| Time | `DateTime(timezone=True)` with `server_default=func.now()`; a last-modified column adds `onupdate=func.now()` |
+| Enum | `String(n)` plus a `CheckConstraint` listing the `UPPER_SNAKE` values, matching SRS §4.2; the PostgreSQL `ENUM` type needs an ADR because changing a value requires a migration |
+| Check constraint | `__table_args__ = (CheckConstraint("...", name="..."),)`, short name because the naming convention adds the table prefix |
+| Foreign key | `mapped_column(ForeignKey("parents.id", ondelete="RESTRICT"), index=True)`, the parent table name in plural like its `__tablename__` |
+| Composite unique | `UniqueConstraint("a", "b")` in `__table_args__` |
+| JSON | `JSONB()` from the PostgreSQL dialect, the Python type is `dict[str, Any]` |
 
-`migrations/env.py` chỉ đọc biến kết nối và tạo engine thẳng từ giá trị đó. Không đẩy URL qua `config.set_main_option`: configparser nội suy dấu `%`, nên mật khẩu percent-encode làm lệnh migration chết với `ValueError: invalid interpolation syntax`. Nạp cả lớp `Settings` của ứng dụng cũng không được, vì khi đó job migration lúc phát hành phải mang theo mọi secret của ứng dụng.
+`migrations/env.py` reads only the connection variable and creates the engine straight from that value. Do not push the URL through `config.set_main_option`: configparser interpolates the `%` character, so a percent-encoded password kills the migration command with `ValueError: invalid interpolation syntax`. Loading the application's whole `Settings` class is not allowed either, because then the migration job at release time would have to carry every application secret.
 
 ```python
 import asyncio
@@ -264,22 +262,21 @@ if context.is_offline_mode():
 else:
     asyncio.run(run_migrations_online())
 ```
+Remaining rules:
 
-Quy tắc còn lại:
-
-- `migrations/env.py` import `Base` và mọi module `model` để metadata đủ bảng.
-- `alembic revision --autogenerate` chỉ là bản nháp: đọc lại file sinh ra, thêm chỉ mục thiếu và câu SQL cho dữ liệu, rồi mới commit.
-- `compare_type=True` trong `context.configure` để đổi kiểu cột không bị bỏ sót; đây là thứ làm `{{MIGRATION_CHECK_CMD}}` bắt được thay đổi độ dài chuỗi.
-- Migration đã chạy ở môi trường khác thì không sửa; viết migration mới.
+- `migrations/env.py` imports `Base` and every `model` module so the metadata holds all tables.
+- `alembic revision --autogenerate` is only a draft: reread the generated file, add the missing indexes and the SQL for data, and only then commit.
+- `compare_type=True` in `context.configure` so a column type change is not missed; this is what lets `{{MIGRATION_CHECK_CMD}}` catch a change in string length.
+- A migration that has run in another environment is not edited; write a new migration.
 <!-- /PROFILE-CONTENT -->
 
-### 4.3. Quy ước giao tiếp của stack (cho ARCHITECTURE §7)
+### 4.3. Communication conventions of the stack (for ARCHITECTURE §7)
 
 <!-- PROFILE-CONTENT: arch.conventions -->
-### Hiện thực quy ước theo stack (Stack Implementation Notes)
+### Stack Implementation Notes
 
-- `create_app(settings)` trong `src/app/main.py` là nơi duy nhất dựng ứng dụng: gắn middleware correlation ID, đăng ký exception handler cho lỗi nghiệp vụ và lỗi validate, include router của từng phân hệ, mở engine trong `lifespan` rồi `dispose` khi tắt, và ghi đè `app.openapi()` để tài liệu xuất ra đúng hợp đồng. Test dựng ứng dụng bằng chính hàm này với `Settings` riêng.
-- Cấu hình đọc một lần bằng `pydantic-settings`; dependency đọc lại từ `app.state`, không đọc biến môi trường trong route, nhờ vậy test tiêm được cấu hình:
+- `create_app(settings)` in `src/app/main.py` is the only place that builds the application: it attaches the correlation ID middleware, registers exception handlers for business errors and validation errors, includes the router of each module, opens the engine in `lifespan` and calls `dispose` on shutdown, and overrides `app.openapi()` so the exported document matches the contract. Tests build the application with this same function and their own `Settings`.
+- Configuration is read once with `pydantic-settings`; dependencies read it back from `app.state`, never read environment variables in a route, so tests can inject configuration:
 
   ```python
   from functools import lru_cache
@@ -317,8 +314,7 @@ Quy tắc còn lại:
 
   SettingsDep = Annotated[Settings, Depends(settings_of)]
   ```
-
-- Một session cho mỗi request, lấy từ session factory nằm trong `app.state`; mức isolation đặt ở engine:
+- One session per request, taken from the session factory held in `app.state`; the isolation level is set on the engine:
 
   ```python
   from collections.abc import AsyncIterator
@@ -354,10 +350,9 @@ Quy tắc còn lại:
 
   SessionDep = Annotated[AsyncSession, Depends(get_session)]
   ```
-
-- Ranh giới transaction nằm ở service: đọc và ghi của một thao tác chạy trong transaction ngầm mà session đã mở, và service gọi `await session.commit()` đúng một lần ở cuối. Không gọi `session.begin()` sau khi đã có câu truy vấn trong session, vì SQLAlchemy đã mở transaction từ câu đó và lời gọi thứ hai ném `InvalidRequestError`.
-- Idempotency cho thao tác ghi: một bảng giữ khóa, vân tay của body và bản phản hồi đã trả. Lần gửi lại với cùng khóa đọc lại phản hồi cũ; cùng khóa mà body khác thì trả mã lỗi của Registry. Hai request song song cùng khóa thì khóa chính của bảng làm request thua cuộc nhận `IntegrityError`, service bắt lỗi đó, rollback và đọc lại phản hồi của request thắng.
-- Mọi phản hồi thành công bọc trong envelope của ARCHITECTURE §6.2; route khai báo kiểu trả về là `Envelope[...]` nên tài liệu OpenAPI mang đúng hình dạng này:
+- The transaction boundary is in the service: the reads and writes of one operation run in the implicit transaction the session has already opened, and the service calls `await session.commit()` exactly once at the end. Do not call `session.begin()` after the session already ran a query, because SQLAlchemy opened a transaction at that query and the second call raises `InvalidRequestError`.
+- Idempotency for write operations: one table holds the key, the body fingerprint and the response already returned. A resend with the same key reads back the old response; the same key with a different body returns the Registry error code. When two parallel requests carry the same key, the table's primary key makes the losing request receive an `IntegrityError`; the service catches that error, rolls back and reads back the response of the winning request.
+- Every successful response is wrapped in the envelope of ARCHITECTURE §6.2; a route declares its return type as `Envelope[...]` so the OpenAPI document carries this exact shape:
 
   ```python
   import datetime as dt
@@ -386,8 +381,7 @@ Quy tắc còn lại:
   def ok[T](data: T, meta: Meta | None = None) -> Envelope[T]:
     return Envelope[T](data=data, meta=meta)
   ```
-
-- <!-- fill: liệt kê đúng mã lỗi của Error Code Registry ở ARCHITECTURE §7.1; bảng dưới là phần mẫu --> Mã lỗi khai báo một chỗ cùng HTTP status, và lỗi nghiệp vụ là một exception mang mã đó; envelope lỗi có `timestamp` và `details` là danh sách `{field, issue}`:
+- <!-- fill: list exactly the error codes of the Error Code Registry in ARCHITECTURE §7.1; the table below is a sample --> Error codes are declared in one place together with the HTTP status, and a business error is an exception that carries that code; the error envelope has `timestamp` and `details` as a list of `{field, issue}`:
 
   ```python
   import datetime as dt
@@ -435,11 +429,10 @@ Quy tắc còn lại:
           error["details"] = details
       return {"success": False, "error": error}
   ```
-
-- Handler của `AppError` trả envelope lỗi kèm `correlationId` và các header mà lỗi mang theo; handler của `RequestValidationError` trả mã `VALIDATION_ERROR` với danh sách trường sai, để lỗi validate của FastAPI không lọt ra ngoài dưới dạng `422` mặc định.
-- `app.openapi()` được ghi đè để xóa response `422` mà FastAPI tự thêm, giữ tài liệu khớp ma trận lỗi của SPEC. `FastAPI(...)` khai báo `servers`, `license_info`, `responses` chung cho mã lỗi mọi route có thể trả, và `generate_unique_id_function` sinh `operationId` dạng `camelCase`.
-- Log là JSON một dòng bằng `structlog`; middleware nhận `X-Correlation-Id` của người gọi hoặc sinh mới, gắn vào context và trả lại trong header phản hồi. Không log token, mật khẩu hay dữ liệu cá nhân.
-- Giới hạn tần suất là một dependency đếm theo chủ thể đã xác thực; mọi phản hồi mang ba header `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset`, và lần bị từ chối thêm `Retry-After` tính từ cửa sổ hiện tại:
+- The `AppError` handler returns the error envelope with the `correlationId` and the headers the error carries; the `RequestValidationError` handler returns the code `VALIDATION_ERROR` with the list of invalid fields, so FastAPI validation errors do not leak out as the default `422`.
+- `app.openapi()` is overridden to remove the `422` response FastAPI adds by itself, keeping the document aligned with the error matrix of the SPEC. `FastAPI(...)` declares `servers`, `license_info`, and shared `responses` for the error codes any route can return, and `generate_unique_id_function` generates `operationId` in `camelCase`.
+- Logs are one-line JSON from `structlog`; the middleware takes the caller's `X-Correlation-Id` or generates a new one, attaches it to the context and returns it in the response header. Never log tokens, passwords or personal data.
+- Rate limiting is a dependency that counts per authenticated subject; every response carries the three headers `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset`, and a rejection adds `Retry-After` computed from the current window:
 
   ```python
   import datetime as dt
@@ -487,17 +480,16 @@ Quy tắc còn lại:
   async def reset_rate_limits() -> None:
       await _storage.reset()
   ```
-
-  Route công khai (chưa xác thực) đếm theo địa chỉ client thật: chạy `uvicorn` với `--proxy-headers --forwarded-allow-ips` của proxy tin cậy rồi lấy `request.client.host`. Nhiều instance thì đổi `MemoryStorage` sang storage dùng chung của `limits`, nếu không mỗi instance cấp trọn hạn mức.
-- Xác thực dùng `pyjwt` với thuật toán `HS256` và hạn dùng ngắn; mật khẩu băm bằng Argon2id của `argon2-cffi`. Scheme `HTTPBearer(auto_error=False)` vừa sinh `securitySchemes` trong tài liệu OpenAPI, vừa để header thiếu trở thành envelope `UNAUTHENTICATED` của dự án thay vì thân lỗi mặc định của FastAPI.
+  A public (unauthenticated) route counts per real client address: run `uvicorn` with `--proxy-headers --forwarded-allow-ips` of the trusted proxy, then take `request.client.host`. With several instances, replace `MemoryStorage` with shared storage from `limits`, otherwise each instance grants the full quota.
+- Authentication uses `pyjwt` with the `HS256` algorithm and a short lifetime; passwords are hashed with Argon2id from `argon2-cffi`. The `HTTPBearer(auto_error=False)` scheme both generates `securitySchemes` in the OpenAPI document and turns a missing header into the project's `UNAUTHENTICATED` envelope instead of FastAPI's default error body.
 <!-- /PROFILE-CONTENT -->
 
-### 4.4. Khuôn DTO (cho SPEC §3)
+### 4.4. DTO template (for SPEC §3)
 
 <!-- PROFILE-CONTENT: spec.contract -->
-### DTO với Pydantic (Pydantic DTO Schema)
+### Pydantic DTO Schema
 
-<!-- fill: thay tên trường và ràng buộc theo DTO của tính năng; khối dưới là phần mẫu -->
+<!-- fill: replace field names and constraints with the DTO of the feature; the block below is a sample -->
 
 ```python
 import datetime as dt
@@ -528,29 +520,28 @@ class RecordResponse(BaseModel):
     created_at: dt.datetime = Field(serialization_alias="createdAt")
     updated_at: dt.datetime = Field(serialization_alias="updatedAt")
 ```
-
-- `extra="forbid"` ở request nên trường lạ bị từ chối thay vì bị bỏ qua.
-- Tên trường trong Python là `snake_case`; JSON ra ngoài dùng `camelCase` qua `serialization_alias`, khớp quy ước envelope ở ARCHITECTURE §6.2.
-- `from_attributes=True` cho response để dựng thẳng từ đối tượng ORM.
-- Ràng buộc độ dài và miền giá trị ghi ngay trong kiểu (`StringConstraints`, `Literal`, `Field(ge=..., le=...)`), nên tài liệu OpenAPI sinh ra mang đúng ràng buộc của SPEC.
-- Route khai báo kiểu trả về `Envelope[{{ENTITY_NAME}}Response]` và các mã lỗi riêng của nó trong `responses`; fragment OpenAPI của SPEC (tệp đi kèm của SPEC) là phần cắt ra từ `openapi/openapi.yaml` đã xuất, không viết tay.
+- `extra="forbid"` on requests so an unknown field is rejected instead of ignored.
+- Field names in Python are `snake_case`; the outgoing JSON uses `camelCase` through `serialization_alias`, matching the envelope convention in ARCHITECTURE §6.2.
+- `from_attributes=True` on responses to build straight from ORM objects.
+- Length and value-domain constraints are written right in the type (`StringConstraints`, `Literal`, `Field(ge=..., le=...)`), so the generated OpenAPI document carries the exact constraints of the SPEC.
+- A route declares the return type `Envelope[{{ENTITY_NAME}}Response]` and its own error codes in `responses`; the OpenAPI fragment of the SPEC (a companion file of the SPEC) is a cut from the exported `openapi/openapi.yaml`, not written by hand.
 <!-- /PROFILE-CONTENT -->
 
-### 4.5. Công cụ test (cho SPEC §9)
+### 4.5. Test tooling (for SPEC §9)
 
 <!-- PROFILE-CONTENT: spec.test-types -->
-### Công cụ và vị trí test theo stack (Stack Test Tooling)
+### Stack Test Tooling
 
-| TYPE | Công cụ | File | Chạy bằng |
+| TYPE | Tool | File | Run with |
 | --- | --- | --- | --- |
-| `UNIT` | pytest, hàm thuần và lớp không chạm cơ sở dữ liệu | `tests/unit/test_*.py` | `{{UNIT_TEST_CMD}}` |
-| `INT` | pytest, `testcontainers[postgres]`, session thật của SQLAlchemy | `tests/integration/test_*.py` | `{{INTEGRATION_TEST_CMD}}` |
-| `E2E` | pytest, `httpx.AsyncClient` với `ASGITransport`, ứng dụng dựng bằng `create_app` | `tests/e2e/test_*.py` | `{{E2E_TEST_CMD}}` |
-| `CTR` | Như `E2E`, lấy schema của phản hồi từ `openapi/openapi.yaml` đã xuất và kiểm bằng `jsonschema` | `tests/e2e/test_contract.py` | `{{E2E_TEST_CMD}}` |
-| `CONC` | pytest, `asyncio.gather` gửi N request song song, rồi truy vấn khẳng định bất biến | `tests/concurrency/test_*.py` | `{{E2E_TEST_CMD}}` |
-| `LOAD` | Công cụ chọn bằng ADR khi SPEC cần | Ngoài `tests/` | Không thuộc pytest |
+| `UNIT` | pytest, pure functions and classes that do not touch the database | `tests/unit/test_*.py` | `{{UNIT_TEST_CMD}}` |
+| `INT` | pytest, `testcontainers[postgres]`, a real SQLAlchemy session | `tests/integration/test_*.py` | `{{INTEGRATION_TEST_CMD}}` |
+| `E2E` | pytest, `httpx.AsyncClient` with `ASGITransport`, application built by `create_app` | `tests/e2e/test_*.py` | `{{E2E_TEST_CMD}}` |
+| `CTR` | Like `E2E`, takes the response schema from the exported `openapi/openapi.yaml` and checks with `jsonschema` | `tests/e2e/test_contract.py` | `{{E2E_TEST_CMD}}` |
+| `CONC` | pytest, `asyncio.gather` sends N parallel requests, then queries to assert the invariant | `tests/concurrency/test_*.py` | `{{E2E_TEST_CMD}}` |
+| `LOAD` | Tool chosen by ADR when the SPEC needs it | Outside `tests/` | Not part of pytest |
 
-Fixture dùng chung nằm ở `tests/conftest.py`: một container PostgreSQL cho cả phiên test, `Settings` của môi trường test, session factory đã tạo bảng, một session cho mỗi test, client `httpx` mang sẵn token, và một fixture tự chạy dọn sạch bảng sau mỗi test.
+Shared fixtures live in `tests/conftest.py`: one PostgreSQL container for the whole test session, the `Settings` of the test environment, a session factory with the tables created, one session per test, an `httpx` client that carries a token, and an autouse fixture that wipes the tables after each test.
 
 ```python
 from collections.abc import AsyncIterator, Iterator
@@ -582,27 +573,26 @@ async def client(settings: Settings, session_factory: async_sessionmaker[AsyncSe
     ) as opened:
         yield opened
 ```
-
-`asyncio_mode = "auto"` nên test async không cần decorator. Tên test mô tả hành vi bằng tiếng Anh, ví dụ `def test_a_request_without_a_token_is_refused(...)`; không chứa TC ID.
+`asyncio_mode = "auto"` so async tests need no decorator. Test names describe behavior in English, for example `def test_a_request_without_a_token_is_refused(...)`; they do not contain a TC ID.
 <!-- /PROFILE-CONTENT -->
 
-## 5. Quy ước riêng của stack (Stack Conventions)
+## 5. Stack Conventions
 
-- `src/` layout: mã nằm trong `src/app/`, khai báo ở `[tool.uv.build-backend]` với `module-name = "app"` và `module-root = "src"`; `pythonpath = ["src"]` của pytest cho test import thẳng từ cây nguồn.
-- `uv.lock` và `.python-version` commit vào repo; CI chạy `uv sync --frozen` để phát hiện lock cũ.
-- Tên thư mục phân hệ là `snake_case` số nhiều vì nó cũng là tên package Python; ngoại lệ này của `{{MODULE_SLUG}}` ghi luôn vào ARCHITECTURE §4 khi ghép.
-- Lint và định dạng chạy cho cả `migrations/`; chỉ thân file trong `migrations/versions/` được miễn nhóm `ANN` vì khuôn của Alembic sinh phần thân không annotation, và `mypy` bỏ qua đúng thư mục đó.
-- Mọi hàm async chạm mạng hoặc cơ sở dữ liệu đều có annotation trả về; `ruff` nhóm `ASYNC` bắt lệnh chặn vòng lặp sự kiện, ví dụ đọc file bằng `pathlib` trong hàm async.
-- `ruff` nhóm `S` (bandit) bật cho `src/`; `tests/` bỏ qua `S101` vì test dùng `assert`.
-- Không dùng `print`; mọi bản ghi đi qua logger của `structlog`.
-- `mypy` ở chế độ `strict` cần `# type: ignore[call-arg]` khi khởi tạo `Settings` không tham số (mọi giá trị đến từ môi trường) và `# type: ignore[arg-type]` khi truyền chuỗi vào trường `PostgresDsn` trong test; giữ đúng hai chỗ đó, không nới `strict`.
+- `src/` layout: code lives in `src/app/`, declared in `[tool.uv.build-backend]` with `module-name = "app"` and `module-root = "src"`; the pytest `pythonpath = ["src"]` lets tests import straight from the source tree.
+- `uv.lock` and `.python-version` are committed to the repo; CI runs `uv sync --frozen` to detect a stale lock.
+- The module directory name is plural `snake_case` because it is also the Python package name; this exception for `{{MODULE_SLUG}}` is recorded in ARCHITECTURE §4 when it is assembled.
+- Lint and format run for `migrations/` as well; only the body of files in `migrations/versions/` is exempt from the `ANN` group, because the Alembic template generates bodies without annotations, and `mypy` skips exactly that directory.
+- Every async function that touches the network or the database has a return annotation; the `ruff` `ASYNC` group catches calls that block the event loop, for example reading a file with `pathlib` in an async function.
+- The `ruff` `S` group (bandit) is enabled for `src/`; `tests/` ignores `S101` because tests use `assert`.
+- Do not use `print`; every record goes through the `structlog` logger.
+- `mypy` in `strict` mode needs `# type: ignore[call-arg]` when instantiating `Settings` with no arguments (every value comes from the environment) and `# type: ignore[arg-type]` when passing a string into a `PostgresDsn` field in a test; keep exactly those two places, do not loosen `strict`.
 
-## 6. Khởi tạo dự án (Project Setup)
+## 6. Project Setup
 
-1. Cài `uv` 0.12.18, rồi `uv python install 3.13` và `uv python pin 3.13.13` để ghim đúng runtime của profile.
-2. `uv init --package <tên>` rồi sửa dự án cho khớp cây ở mục 4.1: đổi `src/<tên>` thành `src/app`, thêm `[tool.uv.build-backend]` với `module-name = "app"` và `module-root = "src"`, gỡ khối `[project.scripts]` mà scaffold sinh ra, đặt `requires-python = "==3.13.*"`.
-3. Thêm dependency với phiên bản chính xác ở mục 2, ví dụ `uv add "fastapi==0.141.1" "sqlalchemy[asyncio]==2.0.54" "psycopg[binary,pool]==3.3.6" "alembic==1.20.0" "pydantic-settings==2.15.0"`, và nhóm dev bằng `uv add --dev "pytest==9.1.1" "ruff==0.16.8" "mypy==2.3.1"`.
-4. Chép các khối cấu hình ở mục 4.1 vào `pyproject.toml`, và tạo `.env.example` liệt kê mọi biến môi trường kèm giá trị mẫu.
-5. `uv run alembic init -t async migrations`, rồi sửa: `alembic.ini` đặt `prepend_sys_path = src`, `script_location = migrations`, `timezone = UTC`; giữ `%%` trong `file_template` (configparser nội suy) nhưng giữ `%` đơn trong `[formatter_generic] format`, vì nhân đôi ở đó làm log in ra chính chuỗi định dạng; `migrations/env.py` viết lại theo mục 4.2; `migrations/script.py.mako` đổi `from typing import Sequence` thành `from collections.abc import Sequence` và `Union[str, None]` thành `str | None` để file sinh ra qua được `ruff`.
-6. Tạo `src/app/` theo cây ở mục 4.1, viết `create_app`, cấu hình, session, envelope, lỗi, log, bảo mật, giới hạn tần suất trước khi viết phân hệ đầu tiên.
-7. Chạy `{{CODEGEN_CMD}}` rồi lần lượt các lệnh verify còn lại để xác nhận môi trường đủ (Docker cho `testcontainers`, PostgreSQL và biến `DATABASE_URL` cho hai lệnh migration).
+1. Install `uv` 0.12.18, then `uv python install 3.13` and `uv python pin 3.13.13` to pin the exact runtime of the profile.
+2. `uv init --package <name>` then adjust the project to match the tree in §4.1: rename `src/<name>` to `src/app`, add `[tool.uv.build-backend]` with `module-name = "app"` and `module-root = "src"`, remove the `[project.scripts]` block the scaffold generates, set `requires-python = "==3.13.*"`.
+3. Add dependencies with the exact versions in §2, for example `uv add "fastapi==0.141.1" "sqlalchemy[asyncio]==2.0.54" "psycopg[binary,pool]==3.3.6" "alembic==1.20.0" "pydantic-settings==2.15.0"`, and the dev group with `uv add --dev "pytest==9.1.1" "ruff==0.16.8" "mypy==2.3.1"`.
+4. Copy the configuration blocks in §4.1 into `pyproject.toml`, and create `.env.example` listing every environment variable with sample values.
+5. `uv run alembic init -t async migrations`, then edit: in `alembic.ini` set `prepend_sys_path = src`, `script_location = migrations`, `timezone = UTC`; keep `%%` in `file_template` (configparser interpolates) but keep a single `%` in `[formatter_generic] format`, because doubling it there makes the log print the format string itself; rewrite `migrations/env.py` per §4.2; in `migrations/script.py.mako` change `from typing import Sequence` to `from collections.abc import Sequence` and `Union[str, None]` to `str | None` so the generated file passes `ruff`.
+6. Create `src/app/` per the tree in §4.1, write `create_app`, configuration, session, envelope, errors, logging, security, rate limiting before writing the first module.
+7. Run `{{CODEGEN_CMD}}` and then the remaining verify commands in turn to confirm the environment is complete (Docker for `testcontainers`, PostgreSQL and the `DATABASE_URL` variable for the two migration commands).

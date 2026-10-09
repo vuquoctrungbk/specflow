@@ -1,0 +1,10 @@
+# English labels for gate.tsv (language: en). Same keys as locales/vi/gate.tsv.
+gate_not_approved	Not approved
+gate_approved_content	Approved at Gate {gate}
+gate_approved_by	approved
+gate_sync_reason	Docs synced after implementation (PLAYBOOK §2.6)
+gate_col_date	Date
+gate_col_approver	Approver
+gate_col_doc	Document
+gate_col_version	Version
+gate_col_status	Status

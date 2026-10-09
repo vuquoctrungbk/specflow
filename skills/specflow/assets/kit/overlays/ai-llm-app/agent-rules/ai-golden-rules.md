@@ -3,23 +3,23 @@ doc_type: agent-rule
 status: draft
 version: 0.1.0
 template_version: 1.0.0
-language: vi-en
+language: en
 paths: ["{{SOURCE_GLOB}}"]
 parent: [docs/ARCHITECTURE.md]
 overlays: [ai-llm-app]
 assembled_from: []
 ---
 
-# Quy tắc tính năng AI (AI Golden Rules)
+# AI Golden Rules
 
-<!-- fill: Chép thành .claude/rules/ai-golden-rules.md ở Giai đoạn 2. paths liệt kê thư mục prompt, client mô hình, guard, mọi thư mục test (unit, integration, đánh giá, giả lập) và bộ dữ liệu theo ARCHITECTURE §4, mỗi glob một phần tử. assembled_from ghi "overlays/ai-llm-app/agent-rules/ai-golden-rules.md@<template_version>" và stack profile đã dùng. -->
+<!-- fill: Copy to .claude/rules/ai-golden-rules.md at Stage 2. paths lists the prompt directory, the model client, the guards, every test directory (unit, integration, evaluation, fakes) and the datasets per ARCHITECTURE §4, one glob per element. assembled_from records "overlays/ai-llm-app/agent-rules/ai-golden-rules.md@<template_version>" and the stack profile used. -->
 
-- Chỉ client mô hình gọi SDK của nhà cung cấp; MUST NOT gọi mô hình từ nơi khác trong mã.
-- Mỗi prompt là một module chép đúng Prompt Spec đã duyệt, hằng phiên bản trùng `version` của Prompt Spec. MUST NOT đổi prompt, ví dụ mẫu, schema đầu ra, mô hình hay tham số khác Prompt Spec; cần đổi thì dừng và đề xuất sửa Prompt Spec theo PLAYBOOK mục 8.
-- Đầu ra của mô hình luôn qua schema và quy tắc nghiệp vụ trước khi dùng; MUST NOT tách JSON từ văn bản tự do hay sửa đoán đầu ra sai.
-- Nội dung không tin cậy chỉ nằm trong cặp thẻ phân cách mà prompt hệ thống khai báo là dữ liệu; guard đầu vào thay dấu ngoặc nhọn trong nội dung để nó không thể mở hay đóng thẻ phân cách. MUST NOT ghép nội dung không tin cậy vào phần chỉ dẫn.
-- Che dữ liệu cá nhân trước khi gửi tới nhà cung cấp theo SRS §2.5; MUST NOT đưa secret vào prompt, log hay thông báo lỗi.
-- Dùng đúng ID mô hình và tham số ở ARCHITECTURE §2.1 và Prompt Spec; đổi mô hình cần ADR.
-- Bộ dữ liệu đánh giá chỉ chứa mẫu tổng hợp hoặc đã ẩn danh không đảo ngược; MUST NOT sửa nhãn mong đợi để test đánh giá đạt.
-- Test unit và integration không gọi mô hình thật; mô hình thật chỉ chạy trong project đánh giá.
+- Only the model client calls the provider SDK; agent MUST NOT call a model from anywhere else in the code.
+- Each prompt is a module that copies the approved Prompt Spec exactly, with a version constant equal to the `version` of the Prompt Spec. Agent MUST NOT change the prompt, the examples, the output schema, the model or the parameters away from the Prompt Spec; when a change is needed, stop and propose a Prompt Spec change per PLAYBOOK §8.
+- Model output always passes the schema and the business rules before use; agent MUST NOT extract JSON from free text or guess-repair invalid output.
+- Untrusted content sits only inside the delimiter tag pair that the system prompt declares as data; the input guard replaces angle brackets in the content so that it cannot open or close the delimiter tags. Agent MUST NOT concatenate untrusted content into the instruction part.
+- Mask personal data before sending it to the provider per SRS §2.5; agent MUST NOT put secrets in prompts, logs or error messages.
+- Use exactly the model ID and parameters in ARCHITECTURE §2.1 and the Prompt Spec; changing the model needs an ADR.
+- The evaluation dataset holds only synthetic samples or samples anonymized irreversibly; agent MUST NOT edit the expected labels to make an evaluation test pass.
+- Unit and integration tests do not call a real model; the real model runs only in the evaluation project.
 - {{LANGUAGE_STRICT_MODE_RULE}}

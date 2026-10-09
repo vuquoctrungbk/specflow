@@ -3,7 +3,7 @@ doc_type: adr
 status: proposed
 version: 0.1.0
 template_version: 1.0.1
-language: vi-en
+language: en
 adr_id: "ADR-{{ADR_NUMBER}}"
 date: "{{DATE}}"
 deciders: []
@@ -14,53 +14,53 @@ assembled_from: []
 
 # ADR-{{ADR_NUMBER}}: {{ADR_TITLE}}
 
-<!-- fill: Chép thành docs/adr/NNNN-<slug>.md, NNNN tăng dần, slug kebab-case tiếng Anh. Theo MADR 4.0.0 có điều chỉnh: giữ khóa deciders (MADR 4.0.0 gọi là decision-makers) và bố cục mục gọn hơn. Status: proposed khi chờ duyệt; accepted khi được duyệt; rejected khi người duyệt không chấp nhận, giữ file để ghi lại phương án đã loại; deprecated hoặc superseded khi không còn hiệu lực. Một ADR có thể gom nhiều lựa chọn cùng chủ đề (PLAYBOOK mục 2.3). ADR đã accepted không sửa nội dung quyết định; khi đổi quyết định, tạo ADR mới, đặt ADR này status superseded và thêm khóa superseded_by vào frontmatter. Ghi deciders là danh sách người quyết định; assembled_from ghi "core/03_ADR_Template.md@<template_version>". Thêm ADR vào ARCHITECTURE §12. -->
+<!-- fill: Copy to docs/adr/NNNN-<slug>.md, NNNN increasing, slug in English kebab-case. Follows MADR 4.0.0 with adjustments: keeps the deciders key (MADR 4.0.0 calls it decision-makers) and a more compact section layout. The document language: set the language key of the generated document to the language of the project (the language key of the Intake). Status: proposed while awaiting approval; accepted once approved; rejected when the approver does not accept it, keep the file to record the rejected option; deprecated or superseded when it is no longer in force. One ADR may group several choices on the same topic (PLAYBOOK §2.3). An accepted ADR does not change its decision content; to change the decision, create a new ADR, set this ADR to status superseded and add the key superseded_by to the frontmatter. Record deciders as the list of decision makers; assembled_from records "core/03_ADR_Template.md@<template_version>". Add the ADR to ARCHITECTURE §12. -->
 
-## 1. Bối cảnh và vấn đề (Context and Problem Statement)
+## 1. Context and Problem Statement
 
-<!-- fill: tình huống buộc phải quyết định, ràng buộc liên quan, câu hỏi cần trả lời. Viết để người đọc sau một năm vẫn hiểu vì sao phải chọn. -->
+<!-- fill: the situation that forces a decision, the relevant constraints, the question to answer. Write it so that a reader one year later still understands why a choice had to be made. -->
 
-## 2. Yếu tố quyết định (Decision Drivers)
+## 2. Decision Drivers
 
-<!-- fill: mỗi dòng một yếu tố, gắn ID nếu có (NFR, FR, BR, ràng buộc ở Intake mục 6). -->
+<!-- fill: one driver per line, with an ID if it has one (NFR, FR, BR, constraint in Intake §6). -->
 
-## 3. Phương án đã xét (Considered Options)
+## 3. Considered Options
 
-<!-- fill: tối thiểu hai phương án, trong đó có phương án đơn giản nhất hoặc không làm gì. Mỗi phương án một hàng. -->
+<!-- fill: at least two options, including the simplest option or doing nothing. One row per option. -->
 
-| Phương án | Mô tả | Ưu điểm | Nhược điểm |
+| Option | Description | Pros | Cons |
 | --- | --- | --- | --- |
 | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill --> |
 
-## 4. Quyết định (Decision Outcome)
+## 4. Decision Outcome
 
-- Phương án được chọn: <!-- fill -->
-- Lý do: <!-- fill: đối chiếu với từng yếu tố ở mục 2 -->
-- Lựa chọn bắt buộc được ADR này bao phủ: <!-- fill: placeholder buộc chọn trong ARCHITECTURE và giá trị đã chọn, ví dụ phương thức ký token; ghi "Không có" nếu không có -->
+- Chosen option: <!-- fill -->
+- Reason: <!-- fill: check against each driver in §2 -->
+- Mandatory choices covered by this ADR: <!-- fill: placeholders that ARCHITECTURE forces a choice for, and the chosen value, for example the token signing method; write "None" if there are none -->
 
-## 5. Hệ quả (Consequences)
+## 5. Consequences
 
-| Loại | Hệ quả |
+| Type | Consequence |
 | --- | --- |
-| Tốt | <!-- fill --> |
-| Xấu hoặc chi phí chấp nhận | <!-- fill --> |
-| Việc phải làm tiếp | <!-- fill: tài liệu, SPEC, cấu hình cần cập nhật; ghi "Không có" nếu không có --> |
+| Good | <!-- fill --> |
+| Bad or accepted cost | <!-- fill --> |
+| Follow-up work | <!-- fill: documents, SPECs, configuration to update; write "None" if there are none --> |
 
-## 6. Kiểm chứng tuân thủ (Confirmation)
+## 6. Confirmation
 
-<!-- fill: cách phát hiện khi code đi ngược quyết định: test cụ thể (TC ID), rule của linter, kiểm tra trong CI, điểm kiểm trong review. -->
+<!-- fill: how to detect code that goes against the decision: a specific test (TC ID), a linter rule, a CI check, a review checkpoint. -->
 
-## 7. Liên kết (Links)
+## 7. Links
 
-| Loại | Tham chiếu |
+| Type | Reference |
 | --- | --- |
-| Yêu cầu | <!-- fill: FR, NFR, BR ID --> |
-| Mục kiến trúc | <!-- fill: mục trong ARCHITECTURE --> |
-| SPEC liên quan | <!-- fill: SPEC ID hoặc "Không có" --> |
-| Thay thế ADR | <!-- fill: ADR ID bị ADR này thay thế, hoặc "Không có" --> |
+| Requirements | <!-- fill: FR, NFR, BR IDs --> |
+| Architecture section | <!-- fill: section in ARCHITECTURE --> |
+| Related SPEC | <!-- fill: SPEC ID or "None" --> |
+| Supersedes ADR | <!-- fill: ID of the ADR this ADR supersedes, or "None" --> |
 
-## 8. Giả định và câu hỏi mở (Assumptions & Open Questions)
+## 8. Assumptions & Open Questions
 
-| ID | Loại | Nội dung | Lý do hoặc ảnh hưởng | BLOCKING | Người trả lời |
+| ID | Type | Content | Reason or impact | BLOCKING | Respondent |
 | --- | --- | --- | --- | :---: | --- |
-| AQ-01 | <!-- fill: chọn một: Giả định \| Câu hỏi --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Có \| Không --> | <!-- fill --> |
+| AQ-01 | <!-- fill: choose one: Assumption \| Question --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Yes \| No --> | <!-- fill --> |

@@ -2,24 +2,24 @@
 doc_type: overlay-section
 status: stable
 version: 1.3.0
-language: vi-en
+language: en
 surface: frontend-web
 ---
 
-# Overlay frontend-web: khối cho ARCHITECTURE
+# Overlay frontend-web: blocks for the ARCHITECTURE
 
 <!-- SLOT-CONTENT: arch.views -->
-### C4 Level 2: vùng chứa (Container)
+### C4 Level 2: Container
 
-<!-- fill: Trình duyệt, ứng dụng web (server render nếu có), API backend và dịch vụ ngoài mà trình duyệt gọi trực tiếp. Xóa container không dùng và ghi lý do ở §13. Cạnh ghi giao thức. -->
+<!-- fill: The browser, the web app (server rendering if any), the backend API and the external services that the browser calls directly. Delete unused containers and record the reason in §13. Edges record the protocol. -->
 
 ```mermaid
 flowchart TD
     U["{{ACTOR_NAME}}"]
-    subgraph Browser[Trình duyệt]
+    subgraph Browser[Browser]
         UI["{{COMPONENT_NAME}}"]
     end
-    subgraph Web[Hạ tầng web]
+    subgraph Web[Web infrastructure]
         CDN["{{COMPONENT_NAME}}"]
         APP["{{COMPONENT_NAME}}"]
     end
@@ -31,141 +31,141 @@ flowchart TD
     APP -->|"{{MESSAGE}}"| API
 ```
 
-### Bản đồ route (Route Map)
+### Route Map
 
-<!-- fill: Mọi route của ứng dụng, cạnh là điều hướng chính; route cần đăng nhập ghi rõ. -->
+<!-- fill: Every route of the app, with the main navigation as edges; routes that need login are marked explicitly. -->
 
 ```mermaid
 flowchart LR
     R1["/{{ROUTE_PATH}}"] -->|"{{MESSAGE}}"| R2["/{{ROUTE_PATH}}"]
 ```
 
-<!-- fill: Bảng route: một hàng cho mỗi route. Có Giai đoạn 1W: cột SCR ID ghi màn hình mà route hiển thị; mỗi SCR-* của chỉ mục wireframe có ít nhất một hàng (Gate 2); route không hiển thị màn hình của chỉ mục (ví dụ route chuyển hướng, trang lỗi chung) ghi N/A kèm lý do. Dự án có Intake cũ hơn 1.3.0 hoặc không có Giai đoạn 1W: bỏ cột SCR ID. -->
+<!-- fill: Route table: one row for each route. With Stage 1W: the SCR ID column records the screen that the route displays; each SCR-* of the wireframe index has at least one row (Gate 2); a route that displays no screen of the index (for example a redirect route, a shared error page) records N/A with a reason. Without Stage 1W: remove the SCR ID column. -->
 
-| Route | SCR ID | Cần đăng nhập | Ghi chú |
+| Route | SCR ID | Requires login | Notes |
 | --- | --- | :---: | --- |
-| `/{{ROUTE_PATH}}` | {{SCR_ID}} | <!-- fill: chọn một: Có \| Không --> | <!-- fill --> |
+| `/{{ROUTE_PATH}}` | {{SCR_ID}} | <!-- fill: choose one: Yes \| No --> | <!-- fill --> |
 
-### Cây thành phần của một màn hình (Component Tree)
+### Component Tree
 
-<!-- fill: Vẽ cho màn hình phức tạp nhất; ghi thành phần nào render ở server, thành phần nào chạy ở client, và nơi gọi API. -->
+<!-- fill: Draw it for the most complex screen; record which components render on the server, which run on the client, and where the API is called. -->
 
 ```mermaid
 flowchart TD
     PAGE["{{COMPONENT_NAME}}"] --> SEC["{{COMPONENT_NAME}}"]
     SEC --> FORM["{{COMPONENT_NAME}}"]
-    FORM -->|"{{MESSAGE}}"| APIC["Client API sinh từ OpenAPI"]
+    FORM -->|"{{MESSAGE}}"| APIC["API client generated from OpenAPI"]
 ```
 
-### Góc nhìn triển khai (Deployment View)
+### Deployment View
 
-| Môi trường | Nơi chạy | API gọi tới | Dữ liệu | Ai được truy cập |
+| Environment | Where it runs | API called | Data | Who has access |
 | --- | --- | --- | --- | --- |
-| dev | <!-- fill --> | <!-- fill: API dev hoặc API giả lập --> | Dữ liệu giả | <!-- fill --> |
-| staging | <!-- fill --> | <!-- fill --> | <!-- fill: dữ liệu giả hoặc đã ẩn danh; MUST NOT dùng dữ liệu cá nhân thật --> | <!-- fill --> |
-| production | <!-- fill --> | <!-- fill --> | Dữ liệu thật | <!-- fill --> |
+| dev | <!-- fill --> | <!-- fill: dev API or a mock API --> | Fake data | <!-- fill --> |
+| staging | <!-- fill --> | <!-- fill --> | <!-- fill: fake or anonymized data; MUST NOT use real personal data --> | <!-- fill --> |
+| production | <!-- fill --> | <!-- fill --> | Real data | <!-- fill --> |
 <!-- /SLOT-CONTENT -->
 
 <!-- SLOT-CONTENT: arch.layout -->
-### Quy tắc tầng trong cây thư mục (Layering Rules)
+### Layering Rules
 
-- Tầng route (trang, layout, màn hình tải, màn hình lỗi của từng route) chỉ lấy dữ liệu ban đầu và ghép thành phần của tính năng; MUST NOT chứa logic nghiệp vụ hiển thị hay gọi API trực tiếp bằng URL.
-- Mỗi phân hệ ở §4.1 là một thư mục tính năng chứa: thành phần của tính năng, hook, schema form, lời gọi API qua client dùng chung, chuỗi hiển thị theo khóa, test của tính năng.
-- Thành phần giao diện dùng chung (nút, trường nhập, hộp thoại) nằm trong thư mục design system; không chứa nghiệp vụ, không gọi API.
-- Client API sinh từ tài liệu OpenAPI và tiện ích dùng chung nằm trong thư mục lib; mọi lời gọi API đi qua client này.
-- Tính năng chỉ import tính năng khác qua file xuất công khai của tính năng đó; MUST NOT import file nội bộ của tính năng khác.
-- Chỉ module cấu hình đọc biến môi trường; biến gửi xuống trình duyệt là công khai và MUST NOT chứa secret.
+- The route layer (pages, layouts, loading screens, error screens of each route) only fetches initial data and composes the feature's components; MUST NOT contain display business logic or call the API directly by URL.
+- Each module in §4.1 is a feature directory containing: the feature's components, hooks, form schemas, API calls through the shared client, display strings by key, and the feature's tests.
+- Shared UI components (button, input field, dialog) live in the design system directory; they contain no business logic and do not call the API.
+- The API client generated from the OpenAPI document and the shared utilities live in the lib directory; every API call goes through this client.
+- A feature imports another feature only through that feature's public export file; MUST NOT import the internal files of another feature.
+- Only the configuration module reads environment variables; variables sent to the browser are public and MUST NOT contain secrets.
 
 <!-- PROFILE-SLOT: arch.layout -->
 <!-- /SLOT-CONTENT -->
 
 <!-- SLOT-CONTENT: arch.schema -->
-### Kiểu dữ liệu phía client (Client Data Types)
+### Client Data Types
 
-Bề mặt này không có schema lưu trữ vật lý; dữ liệu nghiệp vụ thuộc API. Mục này chốt nguồn của mọi kiểu dữ liệu phía client.
+This surface has no physical storage schema; business data belongs to the API. This section fixes the source of every client-side data type.
 
-- Kiểu request và response của API sinh tự động từ tài liệu OpenAPI của API; MUST NOT viết tay kiểu response. Bản tài liệu OpenAPI dùng để sinh kiểu được ghi rõ nguồn và phiên bản ở bảng dưới.
-- Schema validate form chép ràng buộc (bắt buộc, độ dài, khoảng giá trị, định dạng) từ DTO request trong SPEC của API; mỗi ràng buộc có test biên. Form không thêm trường mà API không nhận.
-- Dữ liệu từ server giữ ở đúng một nơi theo quy ước của stack (dữ liệu render ở server hoặc cache truy vấn ở trình duyệt); không chép sang state cục bộ.
-- Lưu trữ trình duyệt chỉ dùng cho dữ liệu không nhạy cảm ở bảng dưới; token và dữ liệu cá nhân theo ARCHITECTURE §6.1 và §9.1.
+- API request and response types are generated automatically from the API's OpenAPI document; MUST NOT hand-write response types. The OpenAPI document used for generation has its source and version recorded in the table below.
+- The form validation schema copies the constraints (required, length, value range, format) from the request DTO in the API's SPEC; each constraint has a boundary test. A form adds no field that the API does not accept.
+- Server data is held in exactly one place per the stack's convention (server-rendered data or the query cache in the browser); it is not copied into local state.
+- Browser storage is used only for the non-sensitive data in the table below; tokens and personal data follow ARCHITECTURE §6.1 and §9.1.
 
-| Hạng mục | Quyết định |
+| Item | Decision |
 | --- | --- |
-| Tài liệu OpenAPI nguồn | <!-- fill: đường dẫn bản sao trong repo hoặc URL, kèm phiên bản API --> |
-| Cách cập nhật khi API đổi contract | <!-- fill: ai cập nhật bản sao, chạy lệnh sinh mã nào, SPEC nào ghi thay đổi --> |
-| Lưu trữ trình duyệt được dùng | <!-- fill: khóa, nội dung, thời hạn; ghi Không nếu không dùng --> |
+| Source OpenAPI document | <!-- fill: path of the copy in the repo or the URL, with the API version --> |
+| How to update when the API changes its contract | <!-- fill: who updates the copy, which generation command runs, which SPEC records the change --> |
+| Browser storage used | <!-- fill: key, content, lifetime; write No if not used --> |
 
 <!-- PROFILE-SLOT: arch.schema -->
 <!-- /SLOT-CONTENT -->
 
 <!-- SLOT-CONTENT: arch.conventions -->
-### Quy ước giao diện (UI Conventions)
+### UI Conventions
 
-| Hạng mục | Quy ước |
+| Item | Convention |
 | --- | --- |
-| Design token | Màu, khoảng cách, cỡ chữ, bo góc lấy từ token; không dùng giá trị rời trong thành phần. Nguồn token: `docs/design-system/tokens.json`; file ánh xạ trong mã nguồn (biến CSS hoặc theme của thư viện giao diện) theo stack profile là ánh xạ từ `tokens.json`, viết tay theo bảng ánh xạ của profile hoặc sinh bằng công cụ dự án chọn, sửa cùng lúc với `tokens.json` và là nơi duy nhất được chứa giá trị màu, spacing, radius, cỡ chữ thô; theme của thư viện giao diện chỉ đổi qua token |
-| Đặt tên thành phần | Tên thành phần `PascalCase`, tên file `kebab-case`; một thành phần xuất ra mỗi file |
-| Trợ năng | Mức WCAG ở NFR-USAB; dùng thẻ ngữ nghĩa trước ARIA; mọi thao tác làm được bằng bàn phím; focus hiển thị rõ; tiêu chí đầy đủ ở `specflow/CONVENTIONS.md` mục 10.2 |
-| Chuỗi hiển thị | Khóa gồm tên tính năng và tên phần tử nối bằng dấu chấm, theo `camelCase`, ví dụ `{{MODULE_SLUG}}.submit`; không ghép chuỗi hiển thị bằng nối chuỗi |
-| Định dạng số, tiền, thời gian | Dùng API định dạng theo locale của nền tảng; tiền nhận dạng chuỗi từ API, không chuyển sang số dấu phẩy động để tính toán |
-| Màn hình tải và màn hình lỗi | Mỗi route có trạng thái `Loading` dạng khung (skeleton) và ranh giới lỗi hiển thị trạng thái `Error` kèm cách thử lại |
+| Design token | Color, spacing, font size, corner radius come from tokens; no loose values in components. Token source: `docs/design-system/tokens.json`; the mapping file in the source code (CSS variables or the UI library theme) per the stack profile is a mapping from `tokens.json`, hand-written per the profile's mapping table or generated by a tool the project chooses, edited at the same time as `tokens.json`, and is the only place allowed to hold raw color, spacing, radius and font size values; the UI library theme changes only through tokens |
+| Component naming | Component names in `PascalCase`, file names in `kebab-case`; one exported component per file |
+| Accessibility | WCAG level of NFR-USAB; semantic tags before ARIA; every action can be done with the keyboard; visible focus; full criteria in `specflow/CONVENTIONS.md` §10.2 |
+| Display strings | The key is the feature name and the element name joined by a dot, in `camelCase`, for example `{{MODULE_SLUG}}.submit`; do not build display strings by string concatenation |
+| Number, currency, time format | Use the platform's locale formatting API; currency is received as a string from the API and not converted to floating point for computation |
+| Loading screen and error screen | Each route has a `Loading` state as a skeleton and an error boundary that shows the `Error` state with a way to retry |
 
-### Năm trạng thái giao diện (Five UI States)
+### Five UI States
 
-| Trạng thái | Khi nào | Yêu cầu hiển thị |
+| State | When | Display requirement |
 | --- | --- | --- |
-| `Initial` | Trước khi người dùng thao tác hoặc trước khi tải | Nội dung mặc định, không có thông báo lỗi |
-| `Loading` | Đang tải hoặc đang gửi | Khung chờ hoặc chỉ báo tiến trình; khóa thao tác ghi đang chạy |
-| `Empty` | Tải xong nhưng không có dữ liệu | Giải thích và hành động tiếp theo |
-| `Success` | Có dữ liệu hoặc thao tác thành công | Kết quả, thông báo được trình đọc màn hình đọc |
-| `Error` | Lỗi mạng hoặc lỗi từ API | Thông báo theo bảng ánh xạ bên dưới, giữ dữ liệu người dùng đã nhập, cách khắc phục |
+| `Initial` | Before the user acts or before loading | Default content, no error message |
+| `Loading` | Loading or submitting | Skeleton or progress indicator; lock the write action in progress |
+| `Empty` | Loaded but no data | An explanation and the next action |
+| `Success` | Has data or the action succeeded | The result, a message that screen readers announce |
+| `Error` | Network error or error from the API | A message per the mapping table below, keep the data the user entered, a way to recover |
 
-### Ánh xạ mã lỗi sang giao diện (Error Code to UI Mapping)
+### Error Code to UI Mapping
 
-Phần Frontend Web của cột "Ánh xạ theo bề mặt" ở §7.1 ghi khóa chuỗi hiển thị và hành vi theo bảng này; §7.1 có mọi mã mà giao diện xử lý.
+The Frontend Web part of the "Mapping by surface" column in §7.1 records the display string key and behavior per this table; §7.1 has every code the UI handles.
 
-<!-- fill: API thuộc dự án khác: mã của API chép nguyên tên từ registry của API, cột Phân hệ sở hữu bắt đầu bằng API rồi tên của API. API cùng dự án: mã do phân hệ backend sở hữu như mọi hàng khác. Mã chỉ có ở phía web (lỗi mạng) ghi Phân hệ sở hữu là phân hệ của web hoặc Dùng chung. Tên mã và cấu trúc lỗi (error.details, correlationId) ở bảng dưới theo quy ước của overlay backend-api; API khác thì thay bằng tên và cấu trúc của API đó. -->
+<!-- fill: An API that belongs to another project: copy the API's codes exactly by name from the API's registry, and the Owning module column starts with API followed by the API's name. An API in the same project: the code is owned by the backend module like every other row. A code that exists only on the web side (network error) records the Owning module as the web module or Shared. The code names and the error structure (error.details, correlationId) in the table below follow the convention of the backend-api overlay; for another API, replace them with that API's names and structure. -->
 
-| Nhóm lỗi | Hành vi hiển thị |
+| Error group | Display behavior |
 | --- | --- |
-| `VALIDATION_ERROR` | Hiện lỗi dưới từng trường theo `error.details`, focus vào trường lỗi đầu tiên |
-| `UNAUTHENTICATED` | Chuyển tới màn hình đăng nhập, quay lại màn hình cũ sau khi đăng nhập |
-| `FORBIDDEN` | Thông báo không có quyền, không thử lại |
-| Mã nghiệp vụ của API | Thông báo riêng theo khóa chuỗi của mã, giữ dữ liệu đã nhập |
-| `RATE_LIMITED` | Thông báo chờ, cho thử lại sau thời gian ở header `Retry-After` |
-| Lỗi mạng, hết thời gian chờ | Mã phía client `NETWORK_ERROR`; thông báo mất kết nối, cho thử lại với cùng `Idempotency-Key` |
-| `INTERNAL_ERROR` và mã chưa biết | Thông báo chung kèm `correlationId` để báo hỗ trợ |
+| `VALIDATION_ERROR` | Show errors under each field per `error.details`, focus the first error field |
+| `UNAUTHENTICATED` | Go to the login screen, return to the previous screen after login |
+| `FORBIDDEN` | A no-permission message, no retry |
+| Business code of the API | A dedicated message by the code's string key, keep the entered data |
+| `RATE_LIMITED` | A wait message, allow retry after the time in the `Retry-After` header |
+| Network error, timeout | Client-side code `NETWORK_ERROR`; a lost-connection message, allow retry with the same `Idempotency-Key` |
+| `INTERNAL_ERROR` and unknown codes | A generic message with the `correlationId` for reporting to support |
 
-### Gọi API (API Calls)
+### API Calls
 
-- Mọi lời gọi đi qua client sinh từ OpenAPI; base URL lấy từ cấu hình, không viết cứng.
-- Thao tác ghi không idempotent tự nhiên sinh `Idempotency-Key` một lần cho mỗi nội dung người dùng gửi; một khóa không bao giờ đi với nội dung khác.
-- Sau lỗi mạng, hết thời gian chờ hoặc `5xx`, kết quả chưa rõ: form khóa sửa, người dùng chỉ được gửi lại đúng nội dung đó với cùng khóa, tới khi nhận phản hồi xác định. Phản hồi xác định là thành công, hoặc lỗi mà API chỉ trả sau khi đã tra khóa idempotency (liệt kê theo SPEC của API). Sau phản hồi xác định, form mở lại và lần gửi mới dùng khóa mới.
-- Lỗi trả về khi chưa có lần gửi nào chưa rõ kết quả (ví dụ lỗi validate ở lần gửi đầu) cho phép sửa ngay; lần gửi sau dùng khóa mới.
-- Khóa thao tác ghi trong lúc đang gửi; lần kích hoạt thứ hai trong lúc đó không tạo request mới.
-- Mỗi lời gọi có thời gian chờ tối đa <!-- fill: số giây -->; thử lại tự động chỉ cho request đọc.
-- Lời gọi API chạy ở server của web thay mặt người dùng (render trang, route handler) gửi kèm `X-Forwarded-For` chỉ gồm một địa chỉ: địa chỉ client do load balancer của web ghi (phần tử cuối của header nhận được), không chuyển nguyên header mà client tự gửi. Server web chỉ nhận request đi qua load balancer đó. Nhờ vậy API giới hạn tần suất theo người dùng thật mà client không giả được địa chỉ.
-- API ở origin khác: API cho phép origin của web, các header request mà giao diện gửi (`Authorization`, `Content-Type`, `Idempotency-Key`) và khai báo `Access-Control-Expose-Headers` cho header mà giao diện đọc (ví dụ `Retry-After`); ghi phụ thuộc này ở §9.1.
+- Every call goes through the client generated from OpenAPI; the base URL comes from configuration and is not hard-coded.
+- A write action that is not naturally idempotent generates an `Idempotency-Key` once for each content the user submits; one key never goes with different content.
+- After a network error, a timeout or `5xx`, the result is unknown: the form locks editing, and the user may only resend exactly that content with the same key until a definitive response arrives. A definitive response is a success, or an error that the API returns only after it has looked up the idempotency key (listed per the API's SPEC). After a definitive response, the form reopens and the next submission uses a new key.
+- An error returned when there is no submission with an unknown result (for example a validation error on the first submission) allows immediate editing; the next submission uses a new key.
+- Lock the write action while submitting; a second trigger during that time does not create a new request.
+- Each call has a maximum timeout of <!-- fill: number of seconds -->; automatic retry only for read requests.
+- An API call made on the web's server on behalf of the user (page rendering, route handler) carries an `X-Forwarded-For` of a single address: the client address written by the web's load balancer (the last element of the received header), and does not forward the header the client sent itself. The web server accepts only requests that pass through that load balancer. This way the API rate-limits per real user and the client cannot spoof the address.
+- An API on a different origin: the API allows the web's origin and the request headers that the UI sends (`Authorization`, `Content-Type`, `Idempotency-Key`), and declares `Access-Control-Expose-Headers` for the headers the UI reads (for example `Retry-After`); record this dependency in §9.1.
 
 <!-- PROFILE-SLOT: arch.conventions -->
 <!-- /SLOT-CONTENT -->
 
 <!-- SLOT-CONTENT: arch.deployment -->
-### Đóng gói và chạy (Packaging & Runtime)
+### Packaging & Runtime
 
-| Hạng mục | Quyết định |
+| Item | Decision |
 | --- | --- |
-| Đơn vị triển khai | <!-- fill: chọn một: container chạy server render \| file tĩnh trên CDN; nêu lý do --> |
-| Cấu hình | Biến môi trường theo §6.4; biến công khai được nhúng lúc build, đổi giá trị cần build lại; secret chỉ dùng ở server |
-| Tài nguyên tĩnh | Phục vụ qua CDN với tên file có mã băm và cache dài hạn; trang HTML không cache dài hạn |
-| Header bảo mật | Content-Security-Policy, HSTS, `X-Content-Type-Options: nosniff`, `Referrer-Policy` theo §9.1 |
-| Health check | <!-- fill: đường dẫn kiểm tra khi chạy server render; N/A với file tĩnh --> |
+| Deployment unit | <!-- fill: choose one: container running server rendering \| static files on a CDN; give the reason --> |
+| Configuration | Environment variables per §6.4; public variables are embedded at build time, changing a value needs a rebuild; secrets are used only on the server |
+| Static assets | Served through a CDN with hashed file names and long-term caching; HTML pages are not cached long-term |
+| Security headers | Content-Security-Policy, HSTS, `X-Content-Type-Options: nosniff`, `Referrer-Policy` per §9.1 |
+| Health check | <!-- fill: the check path when running a server-rendering server; N/A for static files --> |
 
-### Phát hành và quay lui (Release & Rollback)
+### Release & Rollback
 
-| Hạng mục | Quyết định |
+| Item | Decision |
 | --- | --- |
-| Thứ tự phát hành với API | Giao diện dùng contract mới chỉ phát hành sau khi API hỗ trợ contract đó ở môi trường đích |
-| Chiến lược phát hành | <!-- fill: chọn một: rolling update \| blue-green \| chuyển phiên bản trên CDN; nêu lý do --> |
-| Quay lui | Triển khai lại bản build trước; tài nguyên tĩnh của bản trước giữ lại tới khi phiên người dùng cũ kết thúc |
+| Release order with the API | A UI that uses a new contract is released only after the API supports that contract in the target environment |
+| Release strategy | <!-- fill: choose one: rolling update \| blue-green \| version switch on the CDN; give the reason --> |
+| Rollback | Redeploy the previous build; the previous build's static assets are kept until old user sessions end |
 <!-- /SLOT-CONTENT -->

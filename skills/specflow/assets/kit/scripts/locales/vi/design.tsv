@@ -1,0 +1,5 @@
+# Cells of the contrast table of DESIGN_SYSTEM.md that check-design-token-use.py reads, in Vietnamese.
+design_kind_text	chữ
+design_kind_non_text	phi văn bản
+design_no_text_token	Không
+design_col_text_token	Token chữ

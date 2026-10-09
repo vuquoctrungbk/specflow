@@ -2,197 +2,187 @@
 doc_type: playbook
 status: stable
 version: 2.5.0
-language: vi-en
+language: en
 ---
 
-# Playbook cho dự án đang có mã nguồn (Brownfield Playbook)
+# Brownfield Playbook
 
-## 1. Phạm vi (Scope)
+## 1. Scope
 
-Dùng khi Intake chốt `mode: brownfield`: dự án đã có mã nguồn đang chạy và hành vi của nó phải được giữ. Playbook này bổ sung cho [PLAYBOOK.md](../PLAYBOOK.md): mọi giai đoạn, template lõi, overlay, stack profile, starter, prompt và quy tắc ở PLAYBOOK vẫn áp dụng, trừ ngoại lệ ghi rõ ở mục 5.1 (test `REG` ở Giai đoạn 0R). Khi `CLAUDE.md` hay rule có sẵn của repo mâu thuẫn với mục 5, mục 5 thắng. Phần thêm vào:
+Use when Intake fixes `mode: brownfield`: the project already has running source code and its behavior has to be preserved. This playbook supplements [PLAYBOOK.md](../PLAYBOOK.md): every stage, core template, overlay, stack profile, starter, prompt, and rule in PLAYBOOK still applies, except the exception stated in §5.1 (`REG` tests at Stage 0R). When the repo's existing `CLAUDE.md` or rules conflict with §5, §5 wins. What it adds:
 
-- Bước chuẩn bị repo sau Gate 0: áp quyết định về `CLAUDE.md`, `.claude/` và tài liệu có sẵn.
-- Giai đoạn 0R (phục hồi hiện trạng) trước SRS: 0a Codebase Summary, 0b As-Is Architecture, 0c Regression Baseline.
-- 0d Gap Analysis sau khi viết SRS to-be; Giai đoạn 1W vẽ wireframe to-be sau Gap Analysis khi có giao diện; 0e Migration Plan cùng Architecture to-be.
-- Phụ lục SPEC cho brownfield ở Giai đoạn 3, và phần bổ sung cho từng prompt của PLAYBOOK (mục 6.1).
+- A repo preparation step after Gate 0: apply the decisions about `CLAUDE.md`, `.claude/`, and existing documents.
+- Stage 0R (recover the current state) before the SRS: 0a Codebase Summary, 0b As-Is Architecture, 0c Regression Baseline.
+- 0d Gap Analysis after the to-be SRS is written; Stage 1W draws the to-be wireframes after the Gap Analysis when there is a UI; 0e Migration Plan together with the to-be Architecture.
+- The brownfield SPEC addendum at Stage 3, and additions to each PLAYBOOK prompt (§6.1).
 
-Template của bộ này nằm trong `brownfield/`; tài liệu sinh ra nằm trong `docs/brownfield/` theo bố cục ở CONVENTIONS mục 6. Chọn overlay theo bề mặt của hệ thống đang chạy (PLAYBOOK mục 3); stack profile theo mục 5.5.
+The templates of this set are in `brownfield/`; generated documents are in `docs/brownfield/` according to the layout in CONVENTIONS §6. Choose the overlay by the surface of the running system (PLAYBOOK §3); the stack profile by §5.5.
 
-Phần thêm ở bản `2.1.0` của file này áp cho dự án có Intake tạo từ template Intake `1.2.0` trở lên: commit đo, git hook, vòng viết và chạy test `REG`, loại và số TC ở Regression Baseline §6.1, profile khớp, nơi đích `docs/legacy/`, sửa `.gitignore`, lệnh kiểm tra sót quét file bị gitignore, ba tiêu chí Gate 0R mới ở mục 3.1 và các bước mới của Prompt B0 đến B2. Dự án có Intake cũ hơn giữ quy tắc của bản `2.0.0`; tài liệu đã duyệt không phải sửa lại.
+## 2. Brownfield Pipeline
 
-Phần thêm ở bản `2.2.0` của file này áp cho dự án có Intake tạo từ template Intake `1.3.0` trở lên: Giai đoạn 1W sau Gap Analysis với wireframe to-be, giá trị `Giữ nguyên` cho màn hình không đổi (mục 5.3 quy tắc 5), việc sửa Gap Analysis khi Giai đoạn 1W sửa SRS to-be (mục 2.1), tiêu chí Gate 1W ở mục 3.2 và dòng Prompt 1W ở mục 6.1. Dự án có Intake cũ hơn không có Giai đoạn 1W và giữ quy tắc của bản `2.1.0`.
-
-Phần thêm ở bản `2.5.0` của file này (mục 5.3 quy tắc 6, roadmap) áp cho dự án có Intake tạo từ template Intake `1.4.0` trở lên.
-
-Bản `2.3.0` của file này ghép các bước brownfield vào quy trình 3 bước của PLAYBOOK mục 2 (mục 2 dưới đây) và sửa dòng Prompt 4 ở mục 6.1 cho plan của đợt: pha đầu của mỗi SPEC chạy test ở §9.2 của SPEC đó. Plan một SPEC (Intake cũ hơn `1.3.0`) có một SPEC nên quy tắc cũ không đổi.
-
-Bản `2.4.0` của file này thêm vào tiêu chí Gate 1W ở mục 3.2 phạm vi của bảng đánh giá heuristic và bảng kiểm mẫu thiết kế lừa người dùng (CONVENTIONS mục 10): chỉ màn hình có trang. Quy tắc áp cho chỉ mục tạo từ template wireframe `1.2.0` trở lên; chỉ mục tạo từ bản cũ hơn không có hai bảng này.
-
-## 2. Pipeline brownfield (Brownfield Pipeline)
-
-Các bước brownfield nằm trong 3 bước của PLAYBOOK mục 2: chuẩn bị repo, Giai đoạn 0R (0a, 0b, 0c) và 0d Gap Analysis thuộc bước 1 Yêu cầu; 0e Migration Plan và phụ lục SPEC thuộc bước 2 Thiết kế; bước 3 Kế hoạch và thực thi như PLAYBOOK, cộng mục 6.1 và 7.
+The brownfield steps sit inside the 3 steps of PLAYBOOK §2: repo preparation, Stage 0R (0a, 0b, 0c), and 0d Gap Analysis belong to step 1 Requirements; 0e Migration Plan and the SPEC addendum belong to step 2 Design; step 3 Plan and execution is as in PLAYBOOK, plus §6.1 and 7.
 
 ```mermaid
 flowchart TD
-    B[Brief và kho mã hiện có] --> S0[Giai đoạn 0: Intake, mode brownfield]
-    S0 -->|Gate 0| P[Chuẩn bị repo]
+    B[Brief and existing codebase] --> S0[Stage 0: Intake, mode brownfield]
+    S0 -->|Gate 0| P[Repo preparation]
     P --> A[0a: Codebase Summary]
     A --> R[0b: As-Is Architecture]
     R --> C[0c: Regression Baseline]
-    C -->|Gate 0R: baseline đo được| S1[Giai đoạn 1: SRS to-be]
+    C -->|Gate 0R: measurable baseline| S1[Stage 1: to-be SRS]
     S1 --> G[0d: Gap Analysis]
-    G -->|Gate 1: SRS và Gap Analysis duyệt| W[Giai đoạn 1W: Wireframe to-be]
-    W -->|Gate 1W| S2[Giai đoạn 2: Architecture to-be, ADR, 0e: Migration Plan]
-    G -.->|Không có giao diện: Gate 1W N/A| S2
-    S2 -->|Gate 2| S3[Giai đoạn 3: Spec kèm phụ lục brownfield]
-    S3 -->|Gate 3 theo đợt| S4[Giai đoạn 4 và 5 như PLAYBOOK, cộng mục 6.1 và 7]
+    G -->|Gate 1: SRS and Gap Analysis approved| W[Stage 1W: to-be Wireframe]
+    W -->|Gate 1W| S2[Stage 2: to-be Architecture, ADR, 0e: Migration Plan]
+    G -.->|No UI: Gate 1W N/A| S2
+    S2 -->|Gate 2| S3[Stage 3: Spec with brownfield addendum]
+    S3 -->|Gate 3 per release| S4[Stage 4 and 5 as PLAYBOOK, plus §6.1 and 7]
 ```
 
-| Giai đoạn | Trả lời câu hỏi | Template | Đầu ra trong dự án | Gate |
+| Stage | Answers the question | Template | Output in the project | Gate |
 | --- | --- | --- | --- | --- |
-| Chuẩn bị repo | `CLAUDE.md` và tài liệu có sẵn được xử lý thế nào | Không có | `CLAUDE.md` của specflow, tài liệu trùng đường dẫn đã chuyển vào `docs/legacy/` | Không có gate riêng |
-| 0a. Codebase Summary | Mã đang có gì, chạy thế nào, lệnh nào chạy được an toàn | [00_Codebase_Summary_Template.md](00_Codebase_Summary_Template.md) | `docs/brownfield/CODEBASE_SUMMARY.md` | Gate 0R |
-| 0b. As-Is Architecture | Kiến trúc thật đang chạy và nợ kỹ thuật, có bằng chứng | [01_As_Is_Architecture_Recovery_Template.md](01_As_Is_Architecture_Recovery_Template.md) | `docs/brownfield/AS_IS_ARCHITECTURE.md` | Gate 0R |
-| 0c. Regression Baseline | Hành vi nào phải giữ, được test nào bảo vệ, coverage hiện tại bao nhiêu | [02_Regression_Baseline_Template.md](02_Regression_Baseline_Template.md) | `docs/brownfield/REGRESSION_BASELINE.md` | Gate 0R |
-| 1. SRS to-be | Toàn bộ hệ thống đích làm gì, kể cả phần giữ nguyên | SRS của giai đoạn (PLAYBOOK mục 4) | `docs/srs/` | Gate 1 |
-| 0d. Gap Analysis | To-be khác hiện trạng ở đâu, RB nào đổi | [03_Gap_Analysis_Template.md](03_Gap_Analysis_Template.md) | `docs/brownfield/GAP_ANALYSIS.md` | Gate 1 |
-| 1W. Wireframe to-be | Màn hình mới hoặc đổi theo Gap Analysis trông và điều hướng thế nào; màn hình nào giữ nguyên | `core/07_Wireframe_Template/` (PLAYBOOK mục 2.2.1) | `docs/wireframes/` | Gate 1W |
-| 2. Architecture to-be và ADR | Hệ thống sẽ được xây thế nào | Architecture của giai đoạn, `core/03_ADR_Template.md` | `docs/ARCHITECTURE.md`, `docs/adr/` | Gate 2 |
-| 0e. Migration Plan | Đi từ hiện trạng tới to-be qua bước nào, quay lui ra sao | [04_Migration_Plan_Template.md](04_Migration_Plan_Template.md) | `docs/brownfield/MIGRATION_PLAN.md` | Gate 2 |
-| 3. Spec | Hợp đồng thực thi của một bước | Spec của giai đoạn và [Spec_Brownfield_Addendum.md](Spec_Brownfield_Addendum.md) | `docs/specs/` | Gate 3 |
+| Repo preparation | How are the existing `CLAUDE.md` and documents handled | None | specflow `CLAUDE.md`, documents with a colliding path moved to `docs/legacy/` | No gate of its own |
+| 0a. Codebase Summary | What the code contains, how it runs, which commands are safe to run | [00_Codebase_Summary_Template.md](00_Codebase_Summary_Template.md) | `docs/brownfield/CODEBASE_SUMMARY.md` | Gate 0R |
+| 0b. As-Is Architecture | The real running architecture and technical debt, with evidence | [01_As_Is_Architecture_Recovery_Template.md](01_As_Is_Architecture_Recovery_Template.md) | `docs/brownfield/AS_IS_ARCHITECTURE.md` | Gate 0R |
+| 0c. Regression Baseline | Which behavior has to be preserved, which tests protect it, what the current coverage is | [02_Regression_Baseline_Template.md](02_Regression_Baseline_Template.md) | `docs/brownfield/REGRESSION_BASELINE.md` | Gate 0R |
+| 1. to-be SRS | What the whole target system does, including the parts left unchanged | The stage's SRS (PLAYBOOK §4) | `docs/srs/` | Gate 1 |
+| 0d. Gap Analysis | Where the to-be differs from the current state, which RBs change | [03_Gap_Analysis_Template.md](03_Gap_Analysis_Template.md) | `docs/brownfield/GAP_ANALYSIS.md` | Gate 1 |
+| 1W. to-be Wireframe | How the new or changed screens (per the Gap Analysis) look and navigate; which screens stay unchanged | `core/07_Wireframe_Template/` (PLAYBOOK §2.2.1) | `docs/wireframes/` | Gate 1W |
+| 2. to-be Architecture and ADR | How the system will be built | The stage's Architecture, `core/03_ADR_Template.md` | `docs/ARCHITECTURE.md`, `docs/adr/` | Gate 2 |
+| 0e. Migration Plan | Which steps lead from the current state to the to-be, and how to roll back | [04_Migration_Plan_Template.md](04_Migration_Plan_Template.md) | `docs/brownfield/MIGRATION_PLAN.md` | Gate 2 |
+| 3. Spec | The execution contract of one step | The stage's Spec and [Spec_Brownfield_Addendum.md](Spec_Brownfield_Addendum.md) | `docs/specs/` | Gate 3 |
 
-### 2.1. Vòng đời tài liệu (Document Lifecycle)
+### 2.1. Document Lifecycle
 
-| Tài liệu | Sau gate của nó | Cập nhật khi nào |
+| Document | After its gate | Updated when |
 | --- | --- | --- |
-| Codebase Summary, As-Is Architecture | Cố định: ảnh chụp tại commit đo | Chỉ sửa lỗi ghi chép (PLAYBOOK mục 8, mức PATCH). Kiến trúc sau thay đổi nằm ở `docs/ARCHITECTURE.md` |
-| Regression Baseline | Sống | Đầu Giai đoạn 2, sau khi Gate 1 duyệt: trạng thái RB theo Gap Analysis §5. Sync Docs của mỗi SPEC: hàng của RB được đổi hoặc bỏ, và hàng §6.1 cho test `REG` mới mà SPEC thêm (cột Bảo vệ bởi của RB trỏ tới test đó) |
-| SRS to-be | Sống, như SRS greenfield | Theo PLAYBOOK mục 8; SRS to-be mô tả toàn bộ hệ thống đích và trở thành SRS của dự án |
-| Gap Analysis | Cố định sau Gate 1 | Chỉ khi SRS to-be đổi, theo PLAYBOOK mục 8, kể cả khi Giai đoạn 1W phát hiện lệch và sửa SRS to-be (Intake tạo từ template Intake `1.3.0` trở lên); Gap Analysis được duyệt lại cùng SRS trước Gate 1W |
-| Wireframe to-be | Sống, như SRS to-be | Theo PLAYBOOK mục 8 |
-| Migration Plan | Sống | Sync Docs của mỗi SPEC: cột Trạng thái ở §2. Đổi chiến lược thì ADR mới và PLAYBOOK mục 8 |
+| Codebase Summary, As-Is Architecture | Frozen: a snapshot at the measured commit | Only for recording errors (PLAYBOOK §8, PATCH level). The architecture after changes lives in `docs/ARCHITECTURE.md` |
+| Regression Baseline | Living | At the start of Stage 2, after Gate 1 approves: the RB status per Gap Analysis §5. In the Sync Docs of each SPEC: the row of an RB that is changed or removed, and the §6.1 row for a new `REG` test that the SPEC adds (the Protected by column of the RB points to that test) |
+| to-be SRS | Living, like the greenfield SRS | Per PLAYBOOK §8; the to-be SRS describes the whole target system and becomes the project's SRS |
+| Gap Analysis | Frozen after Gate 1 | Only when the to-be SRS changes, per PLAYBOOK §8, including when Stage 1W finds a mismatch and the to-be SRS is fixed; the Gap Analysis is re-approved together with the SRS before Gate 1W |
+| to-be Wireframe | Living, like the to-be SRS | Per PLAYBOOK §8 |
+| Migration Plan | Living | In the Sync Docs of each SPEC: the Status column in §2. A strategy change needs a new ADR and PLAYBOOK §8 |
 
-## 3. Gate brownfield (Brownfield Gates)
+## 3. Brownfield Gates
 
-### 3.1. Gate 0R: mốc hồi quy đo được (Regression Gate)
+### 3.1. Gate 0R: Regression Gate
 
-Không viết SRS to-be khi Gate 0R chưa đạt. Gate đạt khi mọi tiêu chí ở hai bảng dưới đạt.
+Do not write the to-be SRS before Gate 0R passes. The gate passes when every criterion in the two tables below passes.
 
-| Tiêu chí | Kiểm chứng |
+| Criterion | Verified by |
 | --- | --- |
-| Mọi hàng ở mục điều kiện an toàn đạt trước khi chạy lệnh đầu tiên của dự án | Codebase Summary §2 |
-| Lệnh build và test hiện có đã chạy thật trong worktree sạch của commit đo, ghi exit code | Codebase Summary §1, §7 |
-| Commit đo chỉ khác commit ở Intake §4 ở những file mà mục 5.1 cho phép | Codebase Summary §1 |
-| Mọi phân hệ có mã phân hệ theo CONVENTIONS mục 4 | Codebase Summary §3 |
-| `docs_mode` ở Intake khớp tiêu chí ở PLAYBOOK mục 5 khi tính lại với mã phân hệ ở Codebase Summary §3, hoặc Intake và dòng `docs_mode` của `CLAUDE.md` đã cập nhật để người duyệt Gate 0 duyệt lại cùng Gate 0R | Intake mục 5, mục 14 và Version History; `CLAUDE.md` |
-| Mục lệnh verify của `CLAUDE.md` đã điền từ Codebase Summary §7 | `CLAUDE.md` |
-| Mọi luồng chính có sơ đồ dựng từ mã, mỗi bước có `file:dòng` | Codebase Summary §5 |
-| Mọi khẳng định ở As-Is Architecture có bằng chứng, hoặc ghi "Chưa xác định" kèm câu hỏi | As-Is Architecture |
-| Chủ dự án duyệt ba tài liệu, không còn câu hỏi `BLOCKING` | `status: approved` và Version History của ba tài liệu; mục Giả định và câu hỏi mở |
+| Every row of the safety conditions section passes before the first project command runs | Codebase Summary §2 |
+| The existing build and test commands have actually run in a clean worktree of the measured commit, with the exit code recorded | Codebase Summary §1, §7 |
+| The measured commit differs from the commit in Intake §4 only in files that §5.1 allows | Codebase Summary §1 |
+| Every module has a module code per CONVENTIONS §4 | Codebase Summary §3 |
+| `docs_mode` in Intake matches the criteria in PLAYBOOK §5 when recomputed with the module codes in Codebase Summary §3, or Intake and the `docs_mode` line of `CLAUDE.md` are updated so that the Gate 0 approver re-approves together with Gate 0R | Intake §5, §14 and Version History; `CLAUDE.md` |
+| The verify commands section of `CLAUDE.md` is filled from Codebase Summary §7 | `CLAUDE.md` |
+| Every main flow has a diagram built from the code, each step with `file:line` | Codebase Summary §5 |
+| Every claim in the As-Is Architecture has evidence, or is marked "Undetermined" with a question | As-Is Architecture |
+| The project owner approves the three documents, no `BLOCKING` question remains | `status: approved` and Version History of the three documents; Assumptions & Open Questions section |
 
-Tiêu chí thuộc Regression Baseline; số mục tính theo tài liệu đó, và Regression Baseline §8 ghi cùng câu chữ:
+The criteria that belong to the Regression Baseline; section numbers follow that document, and Regression Baseline §8 states the same wording:
 
-| Tiêu chí | Đạt? |
+| Criterion | Met? |
 | --- | :---: |
-| §1 và §2 có số liệu từ lệnh đã chạy; §2 theo module, hoặc một dòng cho toàn repo khi §9 ghi Có | [ ] |
-| Mọi luồng chính ở Codebase Summary §5 có ít nhất một RB | [ ] |
-| Mọi RB mức Must có test bảo vệ pass trên mã sản phẩm của commit đo, hoặc thủ tục thủ công ở §6.2 được chủ dự án chấp nhận | [ ] |
-| Contract bên ngoài đã chụp ở §5 trên dữ liệu ở §4 | [ ] |
-| Test hỏng sẵn đã liệt kê ở §7 | [ ] |
-| Không còn câu hỏi BLOCKING ở §11 | [ ] |
+| §1 and §2 have figures from commands that were run; §2 per module, or one line for the whole repo when §9 says Yes | [ ] |
+| Every main flow in Codebase Summary §5 has at least one RB | [ ] |
+| Every Must-level RB has a protecting test that passes on the product code of the measured commit, or the manual procedure in §6.2 is accepted by the project owner | [ ] |
+| The external contract is captured in §5 on the data in §4 | [ ] |
+| Pre-existing failing tests are listed in §7 | [ ] |
+| No BLOCKING question remains in §11 | [ ] |
 
-### 3.2. Bổ sung cho Gate 1, Gate 1W và Gate 2 (Gate 1, Gate 1W & Gate 2 Additions)
+### 3.2. Gate 1, Gate 1W & Gate 2 Additions
 
-| Gate | Thêm tiêu chí |
+| Gate | Added criteria |
 | --- | --- |
-| Gate 1 | Gap Analysis `approved`; mọi RB bị đổi hoặc bỏ có hàng ở Gap Analysis §5 và được chủ dự án duyệt; SRS to-be §1.2 và Gap Analysis §1.2 khớp nhau |
-| Gate 1W | Intake tạo từ template Intake `1.3.0` trở lên và có Giai đoạn 1W: màn hình mới hoặc đổi theo Gap Analysis có trang wireframe; FR mà màn hình của nó không đổi ghi `Giữ nguyên` ở bảng đối chiếu kèm dẫn Regression Baseline §5; SRS to-be đổi ở Giai đoạn 1W thì Gap Analysis đã sửa và duyệt lại; chỉ mục tạo từ template wireframe `1.2.0` trở lên: bảng đánh giá heuristic và bảng kiểm mẫu thiết kế lừa người dùng (CONVENTIONS mục 10.3, 10.4) chỉ xét màn hình có trang, màn hình `Giữ nguyên` không có đánh giá riêng |
-| Gate 2 | Regression Baseline §3 ghi trạng thái theo Gap Analysis §5 đã duyệt; Migration Plan `approved`; ADR chiến lược chuyển đổi `accepted`; mỗi bước ở Migration Plan §2 có danh sách RB phải pass |
+| Gate 1 | The Gap Analysis is `approved`; every RB that is changed or removed has a row in Gap Analysis §5 and is approved by the project owner; to-be SRS §1.2 and Gap Analysis §1.2 match |
+| Gate 1W | Stage 1W exists: a new or changed screen per the Gap Analysis has a wireframe page; an FR whose screen does not change records `Unchanged` in the mapping table with a reference to Regression Baseline §5; if the to-be SRS changes at Stage 1W then the Gap Analysis is fixed and re-approved; the heuristic evaluation table and the deceptive pattern checklist (CONVENTIONS §10.3, 10.4) cover only screens that have a page, an `Unchanged` screen has no evaluation of its own |
+| Gate 2 | Regression Baseline §3 records the status per the approved Gap Analysis §5; the Migration Plan is `approved`; the migration strategy ADR is `accepted`; each step in Migration Plan §2 has a list of RBs that have to pass |
 
-## 4. Danh mục nạp ngữ cảnh (Context Loading Manifest)
+## 4. Context Loading Manifest
 
-Bảng này bổ sung PLAYBOOK mục 6; giai đoạn không có trong bảng dùng nguyên dòng của PLAYBOOK. Quy tắc "MUST NOT đọc `examples/` hoặc bộ mẫu cũ" vẫn áp dụng ở mọi giai đoạn.
+This table supplements PLAYBOOK §6; a stage not in the table uses the PLAYBOOK row as is. The rule "MUST NOT read `examples/` or the old template set" still applies at every stage.
 
-| Giai đoạn | MUST đọc | MUST NOT đọc |
+| Stage | MUST read | MUST NOT read |
 | --- | --- | --- |
-| 0. Intake | Như PLAYBOOK mục 6, cộng file này mục 1 và 5, cây thư mục và manifest của repo, `CLAUDE.md`, `AGENTS.md`, `.claude/`, `.mcp.json` và `docs/` có sẵn trong repo, `.gitignore`, cấu hình git hook (`.pre-commit-config.yaml`, `.husky/`, `.git/hooks`, `core.hooksPath`), cấu hình và fixture của bộ chạy test | Như PLAYBOOK mục 6, cộng file env không phải file mẫu |
-| Chuẩn bị repo | `CLAUDE.md` có sẵn, file này mục 5.1 và 5.5, Intake §4 và §13, Agent Context của giai đoạn, `.gitignore` và cấu hình git hook | Mã nguồn |
-| 0a, 0b | `CLAUDE.md`, file này, `specflow/CONVENTIONS.md`, Intake, template của bước, `specflow/core/02_Architecture_Core_Template.md` §1.2; trong repo: theo thứ tự đọc ở mục 5.2 | File env không phải file mẫu; tài liệu cũ của repo dùng làm bằng chứng (chỉ dùng làm gợi ý để tìm mã) |
-| 0c | `CLAUDE.md`, file này mục 3 đến 5, `specflow/CONVENTIONS.md` mục 4, Intake §4, Codebase Summary, As-Is Architecture, template Regression Baseline, test hiện có, mã của luồng chính | Như 0a, cộng mã ngoài luồng chính khi đã đủ bằng chứng |
-| 1. SRS to-be | Như PLAYBOOK mục 6, cộng file này mục 5.3, Codebase Summary, As-Is Architecture, Regression Baseline | Như PLAYBOOK mục 6 |
-| 0d | `CLAUDE.md`, file này mục 3 đến 5, `specflow/CONVENTIONS.md` mục 4, SRS to-be, Codebase Summary §3, As-Is Architecture, Regression Baseline, template Gap Analysis | Mã nguồn, trừ khi cần xác nhận một hàng "Một phần" |
-| 1W. Wireframe to-be | Như PLAYBOOK mục 6, cộng file này mục 2.1 và 5.3, Gap Analysis, Regression Baseline §5 | Như PLAYBOOK mục 6 |
-| 2. Architecture to-be, 0e | Như PLAYBOOK mục 6, cộng file này mục 3 đến 5, As-Is Architecture, Gap Analysis, Regression Baseline, template Migration Plan | Như PLAYBOOK mục 6 |
-| 3. Spec | Như PLAYBOOK mục 6, cộng Migration Plan (bước đang làm), Regression Baseline, Gap Analysis §1.2 và §5, phụ lục SPEC | Như PLAYBOOK mục 6, cộng mã của phân hệ không thuộc bước đang làm |
-| 4a. Plan | Như PLAYBOOK mục 6, cộng Migration Plan §6 | Như PLAYBOOK mục 6 |
-| 4b. Coding | Như PLAYBOOK mục 6; test ở SPEC §9.2 được chạy dù nằm ngoài File Diff, chỉ sửa test nằm trong File Diff | Như PLAYBOOK mục 6 |
-| 5. Verify và Sync | Như PLAYBOOK mục 6, cộng file này mục 2.1 và 7, Regression Baseline, Migration Plan | Như PLAYBOOK mục 6 |
-| Resume | Như PLAYBOOK mục 6, cộng file này mục 2, 4, 5 và prompt của bước đang dở ở mục 6 | Như PLAYBOOK mục 6 |
+| 0. Intake | As PLAYBOOK §6, plus this file §1 and §5, the directory tree and manifests of the repo, `CLAUDE.md`, `AGENTS.md`, `.claude/`, `.mcp.json`, and the repo's existing `docs/`, `.gitignore`, git hook configuration (`.pre-commit-config.yaml`, `.husky/`, `.git/hooks`, `core.hooksPath`), test runner configuration and fixtures | As PLAYBOOK §6, plus env files that are not sample files |
+| Repo preparation | The existing `CLAUDE.md`, this file §5.1 and 5.5, Intake §4 and §13, the stage's Agent Context, `.gitignore`, and git hook configuration | Source code |
+| 0a, 0b | `CLAUDE.md`, this file, `specflow/CONVENTIONS.md`, Intake, the step's template, `specflow/core/02_Architecture_Core_Template.md` §1.2; in the repo: in the reading order of §5.2 | Env files that are not sample files; the repo's old documents as evidence (use them only as hints to find code) |
+| 0c | `CLAUDE.md`, this file §3 to §5, `specflow/CONVENTIONS.md` §4, Intake §4, Codebase Summary, As-Is Architecture, the Regression Baseline template, existing tests, the code of the main flows | As 0a, plus code outside the main flows once the evidence is sufficient |
+| 1. to-be SRS | As PLAYBOOK §6, plus this file §5.3, Codebase Summary, As-Is Architecture, Regression Baseline | As PLAYBOOK §6 |
+| 0d | `CLAUDE.md`, this file §3 to §5, `specflow/CONVENTIONS.md` §4, the to-be SRS, Codebase Summary §3, As-Is Architecture, Regression Baseline, the Gap Analysis template | Source code, unless needed to confirm a "Partial" row |
+| 1W. to-be Wireframe | As PLAYBOOK §6, plus this file §2.1 and §5.3, Gap Analysis, Regression Baseline §5 | As PLAYBOOK §6 |
+| 2. to-be Architecture, 0e | As PLAYBOOK §6, plus this file §3 to §5, As-Is Architecture, Gap Analysis, Regression Baseline, the Migration Plan template | As PLAYBOOK §6 |
+| 3. Spec | As PLAYBOOK §6, plus the Migration Plan (the current step), Regression Baseline, Gap Analysis §1.2 and §5, the SPEC addendum | As PLAYBOOK §6, plus the code of modules outside the current step |
+| 4a. Plan | As PLAYBOOK §6, plus Migration Plan §6 | As PLAYBOOK §6 |
+| 4b. Coding | As PLAYBOOK §6; the tests in SPEC §9.2 are run even when they are outside the File Diff, only edit tests that are inside the File Diff | As PLAYBOOK §6 |
+| 5. Verify and Sync | As PLAYBOOK §6, plus this file §2.1 and 7, Regression Baseline, Migration Plan | As PLAYBOOK §6 |
+| Resume | As PLAYBOOK §6, plus this file §2, §4, §5 and the prompt of the unfinished step in §6 | As PLAYBOOK §6 |
 
-## 5. Quy tắc cho agent (Agent Rules)
+## 5. Agent Rules
 
-Các quy tắc dưới bổ sung PLAYBOOK mục 7. Phạm vi áp của phần thêm ở bản `2.1.0` và `2.2.0` theo mục 1.
+The rules below supplement PLAYBOOK §7.
 
-### 5.1. An toàn ở Giai đoạn 0R (Phase 0R Safety)
+### 5.1. Stage 0R Safety
 
-"Lệnh của dự án" là lệnh chạy mã hoặc script của repo: cài dependency, build, test, chạy cục bộ, migration. Lệnh chỉ đọc (git, liệt kê file, đếm dòng) không thuộc nhóm này.
+"Project command" is a command that runs the repo's code or scripts: install dependencies, build, test, run locally, migrations. Read-only commands (git, listing files, counting lines) are not in this group.
 
-"Commit đo" là HEAD của nhánh làm việc khi Prompt B0 xong: commit của Prompt B0, hoặc HEAD lúc đó nếu B0 không có gì để commit. So với commit ghi ở Intake §4, nó chỉ được khác ở tài liệu và cấu hình agent (`docs/`, `plans/`, `CLAUDE.md`, `AGENTS.md`, `.claude/`, `.mcp.json`), thư mục `specflow/`, `.gitignore` đã duyệt ở Gate 0 và file có sẵn đã xử lý theo mục 5.5 quy tắc 2. Prompt B1 kiểm điều này bằng `git diff --name-status <commit ở Intake §4> <commit đo>` và ghi lệnh cùng kết quả ở Codebase Summary §1; mỗi dòng của kết quả thuộc một trong các nhóm trên, không có file mã sản phẩm nào.
+"Measured commit" is the HEAD of the working branch when Prompt B0 is done: the commit of Prompt B0, or the HEAD at that time if B0 has nothing to commit. Compared with the commit recorded in Intake §4, it may differ only in documents and agent configuration (`docs/`, `plans/`, `CLAUDE.md`, `AGENTS.md`, `.claude/`, `.mcp.json`), the `specflow/` directory, the `.gitignore` approved at Gate 0, and existing files handled under §5.5 rule 2. Prompt B1 checks this with `git diff --name-status <commit in Intake §4> <measured commit>` and records the command and its result in Codebase Summary §1; each line of the result belongs to one of the groups above, with no product code file.
 
-1. Trước lệnh đầu tiên của dự án, điền Codebase Summary §2, §6, §8 chỉ bằng cách đọc file. Mọi biến hay khóa cấu hình trỏ tới kho dữ liệu, hàng đợi, cache hay dịch vụ ngoài MUST trỏ tới đích cục bộ hoặc dùng một lần (container, cơ sở dữ liệu rỗng, dịch vụ giả lập). Không xác định được đích thì không chạy lệnh, ghi câu hỏi `BLOCKING`.
-2. Lệnh của dự án chỉ chạy trong một worktree sạch tạo từ commit đo (`git worktree add` ra thư mục ngoài repo, hoặc bản clone mới), để file env và file cấu hình cục bộ bị git bỏ qua trong thư mục làm việc không được nạp tự động. Mỗi lệnh đặt tường minh mọi biến ở Codebase Summary §6 trỏ tới kho dữ liệu hoặc dịch vụ, với giá trị là đích ở §2; biến xác thực thừa hưởng từ shell (khóa cloud, cấu hình kube, token của công cụ) được bỏ khỏi môi trường của lệnh; chuỗi xác thực mặc định của công cụ cloud tính là một dịch vụ ngoài ở §2.
-3. MUST NOT mở file env không phải file mẫu. Tên biến đọc từ mã và file env mẫu; cần biết một biến trỏ tới đâu thì hỏi chủ dự án.
-4. Cấu trúc hay số bản ghi của cơ sở dữ liệu đang chạy chỉ lấy khi chủ dự án tự chạy truy vấn và gửi kết quả, hoặc cấp quyền chỉ đọc trên một bản sao không phải production. Không ghi chuỗi kết nối vào tài liệu.
-5. Không ghi giá trị secret, token hay dữ liệu cá nhân vào bất kỳ tài liệu nào. Bản ghi request, response và ảnh chụp màn hình che dữ liệu cá nhân và thông tin xác thực (header `Authorization`, cookie, token, khóa API, mã phiên) trước khi lưu (Regression Baseline §4, §5).
-6. Cấu hình Claude Code có sẵn trong repo: trước Prompt 0, chủ dự án xem hook trong `.claude/settings.json`, `.claude/settings.local.json` và server trong `.mcp.json`. Hook chạy lệnh của dự án được tắt từ trước Prompt 0 tới khi Gate 0R đạt; sau đó chỉ bật lại khi hook đặt tường minh biến môi trường theo mục 5.4 quy tắc 6. `CLAUDE.md` có sẵn mâu thuẫn với mục 5 này thì mục 5 thắng.
-7. Giai đoạn 0R không sửa mã sản phẩm. Ngoại lệ duy nhất, ghi đè PLAYBOOK mục 1.2 nguyên tắc 1, mục 7 quy tắc 4, 5 và 7 chỉ cho phần này: ở bước 0c agent thêm test `REG` cho RB mức Must chưa có test. Phần được thêm gồm file test, dữ liệu test tổng hợp, và cấu hình cùng dependency test mà Gate 0 đã duyệt (Intake §4); test viết trong thư mục làm việc theo vòng ở quy tắc 9, nằm trong một commit riêng trên nhánh làm việc không chạm mã sản phẩm, là hậu duệ của commit đo (không bắt buộc là con trực tiếp; commit ở giữa chỉ đổi tài liệu và cấu hình agent), và pass khi chạy trong worktree sạch tạo từ commit đó; Regression Baseline §1 ghi commit đó; dependency test mới được ghi ADR ở Giai đoạn 2. Ngoại lệ mặc định được phép; chủ dự án có thể từ chối ở Gate 0. Khi bị từ chối, hoặc khi repo chưa có công cụ test và Gate 0 không duyệt thêm, thủ tục thủ công ở Regression Baseline §6.2 có rủi ro được chủ dự án chấp nhận thay cho test, và SPEC đầu tiên chạm RB đó thêm test `REG` theo phụ lục SPEC.
-8. Git hook đang bật (Intake §4; `.pre-commit-config.yaml`, `.husky/`, hook trong `.git/hooks`, `core.hooksPath`) chạy không chỉ ở commit mà cả ở `git worktree add` và `git checkout` (hook `post-checkout`), trước khi Codebase Summary §2 đạt. Vì vậy mọi lệnh git có thể gọi hook trong Giai đoạn 0R (commit, `worktree add`, checkout) chạy với `git -c core.hooksPath=/dev/null`, kể cả hook chỉ định dạng hay lint, vì chúng có thể sửa file đã kiểm. Commit message ghi hook đã bỏ qua; Codebase Summary §2 tổng hợp cho commit tới Prompt B1, Regression Baseline §1 ghi cho commit test `REG`. Hook quét secret thì không được thay bằng việc bỏ qua: trước mỗi commit, chạy trực tiếp công cụ quét của hook (không qua trình quản lý hook, vì nó có thể chạy script cục bộ của repo) chỉ trên file đã đổi của commit đó, không nạp file env, và ghi lệnh cùng kết quả ở cùng chỗ. Công cụ báo có secret thì không commit (quy tắc 5). Không chạy riêng được công cụ quét (thiếu công cụ, thiếu file cấu hình như baseline của nó) thì hỏi chủ dự án trước khi commit.
-9. Vòng viết và chạy test `REG` ở bước 0c: viết và sửa test trong thư mục làm việc, không chạy test ở đó. Để chạy, chép các file test, dữ liệu test và cấu hình test chưa commit, cùng manifest và lockfile khi Gate 0 duyệt thêm dependency test, vào worktree sạch của commit đo, giữ đường dẫn tương đối, rồi chạy theo quy tắc 2; lỗi thì sửa ở thư mục làm việc và chép lại. Worktree này chỉ để chạy, không commit từ đó. Khi mọi test pass, tạo một commit test `REG` duy nhất trên nhánh làm việc theo quy tắc 7, rồi tạo worktree sạch mới từ commit đó, chạy lại toàn bộ test và đo lại coverage cho Regression Baseline §1 và §2. Lượt chạy lại này hỏng, hoặc Gate 0R đòi thêm test, thì sửa theo cùng vòng và gộp vào commit test `REG` đó (`git commit --amend` khi nó còn là HEAD, nếu không thì một commit sửa rồi gộp lại trước Gate 0R), để Regression Baseline §1 vẫn ghi một commit.
+1. Before the first project command, fill Codebase Summary §2, §6, §8 by reading files only. Every variable or configuration key that points to a data store, queue, cache, or external service MUST point to a local or disposable target (container, empty database, simulated service). If the target cannot be determined, do not run the command, and record a `BLOCKING` question.
+2. Project commands run only in a clean worktree created from the measured commit (`git worktree add` into a directory outside the repo, or a fresh clone), so that env files and local configuration files that git ignores in the working directory are not loaded automatically. Each command explicitly sets every variable in Codebase Summary §6 that points to a data store or service, with the target in §2 as the value; authentication variables inherited from the shell (cloud keys, kube configuration, tool tokens) are removed from the command's environment; the default authentication chain of a cloud tool counts as an external service in §2.
+3. MUST NOT open env files that are not sample files. Variable names are read from the code and sample env files; if you need to know where a variable points, ask the project owner.
+4. The structure or record counts of the running database are obtained only when the project owner runs the query and sends the result, or grants read-only access to a non-production copy. Do not write connection strings into documents.
+5. Do not write secret values, tokens, or personal data into any document. Recorded requests, responses, and screenshots mask personal data and credentials (`Authorization` header, cookies, tokens, API keys, session IDs) before saving (Regression Baseline §4, §5).
+6. Claude Code configuration already in the repo: before Prompt 0, the project owner reviews the hooks in `.claude/settings.json`, `.claude/settings.local.json` and the servers in `.mcp.json`. Hooks that run project commands are disabled from before Prompt 0 until Gate 0R passes; afterwards they are re-enabled only when the hook explicitly sets the environment variables per §5.4 rule 6. If the existing `CLAUDE.md` conflicts with this §5, §5 wins.
+7. Stage 0R does not modify product code. The only exception, which overrides PLAYBOOK §1.2 principle 1 and §7 rules 4, 5 and 7 for this part only: at step 0c the agent adds `REG` tests for Must-level RBs that have no test. What may be added is test files, synthetic test data, and the test configuration and dependencies that Gate 0 has approved (Intake §4); the tests are written in the working directory following the loop in rule 9, sit in one separate commit on the working branch that does not touch product code, are a descendant of the measured commit (not necessarily a direct child; commits in between change only documents and agent configuration), and pass when run in a clean worktree created from that commit; Regression Baseline §1 records that commit; a new test dependency is recorded in an ADR at Stage 2. The exception is allowed by default; the project owner may refuse it at Gate 0. When it is refused, or when the repo has no test tool and Gate 0 does not approve adding one, the manual procedure in Regression Baseline §6.2 with a risk accepted by the project owner replaces the test, and the first SPEC that touches that RB adds a `REG` test per the SPEC addendum.
+8. Active git hooks (Intake §4; `.pre-commit-config.yaml`, `.husky/`, hooks in `.git/hooks`, `core.hooksPath`) run not only at commit but also at `git worktree add` and `git checkout` (the `post-checkout` hook), before Codebase Summary §2 passes. Therefore every git command that may call hooks during Stage 0R (commit, `worktree add`, checkout) runs with `git -c core.hooksPath=/dev/null`, even for hooks that only format or lint, because they may modify checked files. The commit message records the hooks that were skipped; Codebase Summary §2 summarizes this for commits up to Prompt B1, and Regression Baseline §1 records it for the `REG` test commit. A secret-scanning hook is not replaced by skipping it: before each commit, run the hook's scanning tool directly (not through the hook manager, because it may run the repo's local scripts) only on the files changed by that commit, without loading env files, and record the command and result in the same place. If the tool reports a secret, do not commit (rule 5). If the scanning tool cannot be run on its own (missing tool, missing configuration file such as its baseline), ask the project owner before committing.
+9. The loop for writing and running `REG` tests at step 0c: write and fix tests in the working directory, do not run tests there. To run, copy the uncommitted test files, test data, and test configuration, together with the manifest and lockfile when Gate 0 approved a test dependency, into a clean worktree of the measured commit, keeping relative paths, then run per rule 2; on failure, fix in the working directory and copy again. This worktree is only for running, never commit from it. When all tests pass, make one single `REG` test commit on the working branch per rule 7, then create a new clean worktree from that commit, rerun the whole test suite, and re-measure coverage for Regression Baseline §1 and §2. If this rerun fails, or Gate 0R demands more tests, fix by the same loop and fold the fix into that `REG` test commit (`git commit --amend` while it is still HEAD, otherwise a fix commit and then squash before Gate 0R), so that Regression Baseline §1 still records one commit.
 
-### 5.2. Bằng chứng và phạm vi đọc (Evidence & Reading Scope)
+### 5.2. Evidence & Reading Scope
 
-1. Mọi khẳng định về hiện trạng kèm bằng chứng: `file:dòng`, file manifest, hoặc lệnh đã chạy kèm exit code. Không suy đoán; thiếu bằng chứng thì ghi "Chưa xác định" và đặt câu hỏi.
-2. Thứ tự đọc repo: cây thư mục và số dòng theo thư mục; manifest và lockfile; cấu hình và CI; điểm vào; rồi đọc kỹ mã của từng luồng chính. Phần còn lại đọc theo phân hệ khi cần. Codebase Summary §1 ghi phạm vi đã đọc thật; không khẳng định về phần chưa đọc.
-3. Repo từ 5.000 dòng mã trở lên: Prompt B1 chạy hai lượt, lượt đầu chỉ Codebase Summary, lượt sau As-Is Architecture.
-4. Tài liệu cũ của repo chỉ là gợi ý để tìm mã, không là bằng chứng.
+1. Every claim about the current state comes with evidence: `file:line`, a manifest file, or a command that was run with its exit code. Do not guess; with no evidence, write "Undetermined" and ask a question.
+2. Order of reading the repo: the directory tree and line counts per directory; manifests and lockfiles; configuration and CI; entry points; then close reading of the code of each main flow. Read the rest by module as needed. Codebase Summary §1 records the scope actually read; make no claim about what was not read.
+3. A repo of 5,000 lines of code or more: Prompt B1 runs in two passes, the first only the Codebase Summary, the second the As-Is Architecture.
+4. The repo's old documents are only hints for finding code, not evidence.
 
-### 5.3. Mã phân hệ và ID (Module Codes & IDs)
+### 5.3. Module Codes & IDs
 
-1. Codebase Summary §3 đặt mã phân hệ theo CONVENTIONS mục 4 ở bước 0a, và chia phân hệ theo PLAYBOOK mục 5: phần cross-cutting (xác thực, giới hạn tần suất, logging) và thư viện dùng chung không là phân hệ, trừ khi có dữ liệu riêng hoặc API riêng; chúng vẫn có hàng ở §3, cột Mã phân hệ ghi `Không có`. Regression Baseline dùng mã phân hệ này cho TC ID của test `REG`.
-2. SRS to-be §1.2 dùng lại mã as-is cho phân hệ còn tồn tại; phân hệ mới có mã mới; phân hệ tách hoặc gộp ghi ánh xạ ở Gap Analysis §1.2.
-3. Regression Baseline §6.1 theo CONVENTIONS mục 4: mọi test bảo vệ một RB mang loại `REG`, kể cả test đã có trước Giai đoạn 0R; một test tham số hóa là một TC; TC dùng mã phân hệ của hành vi được bảo vệ, không phải mã phân hệ chứa file test (hành vi cross-cutting dùng mã phân hệ của luồng chịu hành vi đó); NN duy nhất theo cặp mã phân hệ và loại trong toàn dự án. TC ID giữ mã as-is, không đánh số lại; test `REG` mà SPEC thêm sau này đánh số tiếp theo số lớn nhất của cặp đó ở SRS §8, Regression Baseline §6.1 và các SPEC. RB ID không dùng lại; RB bị bỏ ghi `deprecated` (PLAYBOOK mục 7 quy tắc 8).
-4. Tên test không chứa TC ID hay RB ID (CONVENTIONS mục 4).
-5. Màn hình và wireframe (áp cho dự án có Intake tạo từ template Intake `1.3.0` trở lên và có Giai đoạn 1W). Wireframe mô tả giao diện to-be; màn hình đang có không được vẽ lại dạng as-is, vì ảnh chụp đã có ở Regression Baseline §5. Màn hình mới hoặc đổi theo Gap Analysis có `SCR ID` ở SRS to-be §3 và có trang wireframe. Màn hình không đổi ghi `Giữ nguyên` ở cột `SCR ID` của SRS to-be §3, không có trang; FR chỉ dùng màn hình không đổi ghi `Giữ nguyên` ở bảng đối chiếu của chỉ mục wireframe, kèm dẫn hàng ảnh chụp ở Regression Baseline §5. Một màn hình đang có mà phải hiện thực thêm FR mới là màn hình đổi.
-6. Roadmap (áp cho dự án có Intake tạo từ template Intake `1.4.0` trở lên; CONVENTIONS mục 11): roadmap chỉ theo dõi việc phải làm. FR có Việc cần làm `Giữ nguyên` ở Gap Analysis §2 không có dòng, vì hành vi đó do Regression Baseline và test `REG` bảo vệ; FR `Sửa` hoặc `Viết mới` có dòng như dự án greenfield. Việc cần làm `Bỏ` ở Gap Analysis (gỡ hành vi cũ) là việc phải làm: FR đó có dòng khi SRS to-be còn giữ nó với ưu tiên khác `Won't`; trạng thái `Bỏ` của roadmap là chuyện khác, chỉ dành cho yêu cầu mà SRS đã bỏ (CONVENTIONS mục 11). Gap Analysis duyệt lại làm một FR đổi giữa `Giữ nguyên` và việc khác thì roadmap thêm dòng hoặc đặt dòng sang `Bỏ` theo PLAYBOOK mục 8.
+1. Codebase Summary §3 sets the module codes per CONVENTIONS §4 at step 0a, and divides modules per PLAYBOOK §5: cross-cutting parts (authentication, rate limiting, logging) and shared libraries are not modules, unless they have their own data or their own API; they still have a row in §3, with `None` in the Module code column. The Regression Baseline uses these module codes for the TC IDs of `REG` tests.
+2. to-be SRS §1.2 reuses the as-is code for a module that still exists; a new module has a new code; a module that is split or merged records the mapping in Gap Analysis §1.2.
+3. Regression Baseline §6.1 follows CONVENTIONS §4: every test that protects an RB carries the type `REG`, including tests that existed before Stage 0R; a parameterized test is one TC; the TC uses the module code of the behavior being protected, not the module code containing the test file (cross-cutting behavior uses the module code of the flow that exhibits the behavior); NN is unique per pair of module code and type across the whole project. A TC ID keeps the as-is code and is not renumbered; a `REG` test that a SPEC adds later is numbered after the largest number of that pair in SRS §8, Regression Baseline §6.1 and the SPECs. An RB ID is not reused; a removed RB is marked `deprecated` (PLAYBOOK §7 rule 8).
+4. A test name does not contain a TC ID or an RB ID (CONVENTIONS §4).
+5. Screens and wireframes (a project that has Stage 1W). The wireframe describes the to-be UI; an existing screen is not redrawn as as-is, because the screenshot already exists in Regression Baseline §5. A new or changed screen per the Gap Analysis has an `SCR ID` in to-be SRS §3 and has a wireframe page. A screen that does not change records `Unchanged` in the `SCR ID` column of to-be SRS §3 and has no page; an FR that uses only unchanged screens records `Unchanged` in the mapping table of the wireframe index, with a reference to the screenshot row in Regression Baseline §5. An existing screen that has to implement an additional new FR is a changed screen.
+6. Roadmap (CONVENTIONS §11): the roadmap tracks only work to be done. An FR whose Work needed is `Unchanged` in Gap Analysis §2 has no line, because that behavior is protected by the Regression Baseline and the `REG` tests; an FR marked `Modify` or `Write new` has a line as in a greenfield project. Work needed `Remove` in the Gap Analysis (removing old behavior) is work to be done: that FR has a line when the to-be SRS keeps it with a priority other than `Won't`; the roadmap status `Dropped` is a different matter, only for requirements that the SRS has dropped (CONVENTIONS §11). When a re-approved Gap Analysis moves an FR between `Unchanged` and other work, the roadmap adds a line or sets the line to `Dropped` per PLAYBOOK §8.
 
-### 5.4. Giữ hành vi khi đổi mã (Preserving Behavior)
+### 5.4. Preserving Behavior
 
-1. Giữ nguyên mọi hành vi trong Regression Baseline, trừ RB được duyệt đổi hoặc bỏ ở Gap Analysis §5.
-2. Không refactor ngoài File Diff của SPEC đang làm, kể cả khi thấy mã cần cải thiện; đề xuất ghi vào mục Giả định và câu hỏi mở hoặc bảng nợ kỹ thuật.
-3. Test `REG` mô tả hành vi hiện tại, kể cả hành vi có vẻ sai; sửa hành vi đó là một thay đổi to-be, đi qua Gap Analysis.
-4. Test ở SPEC §9.2 chạy xanh trên mã hiện tại trước khi đổi mã, không theo bước đỏ; test mới ở SPEC §9.1 vẫn đỏ trước, xanh sau (phụ lục SPEC mục 4).
-5. RB mức Should không có test thì không nằm trong mốc kiểm tra bắt buộc ở Migration Plan §6; rủi ro ghi ở Regression Baseline §11.
-6. Từ Giai đoạn 1 trở đi, lệnh của dự án chạy trong thư mục làm việc (không bắt buộc worktree sạch), nhưng mọi biến trỏ tới kho dữ liệu, hàng đợi, cache hay dịch vụ ngoài được đặt tường minh tới đích cục bộ hoặc dùng một lần theo ARCHITECTURE §10.2; lệnh không dựa vào file env của máy và bỏ biến xác thực thừa hưởng từ shell như mục 5.1 quy tắc 2. Lệnh verify trong `CLAUDE.md` ghi sẵn các biến này.
+1. Preserve every behavior in the Regression Baseline, except RBs approved for change or removal in Gap Analysis §5.
+2. Do not refactor outside the File Diff of the current SPEC, even if the code looks like it needs improvement; record suggestions in the Assumptions & Open Questions section or the technical debt table.
+3. A `REG` test describes the current behavior, including behavior that looks wrong; fixing that behavior is a to-be change and goes through the Gap Analysis.
+4. The tests in SPEC §9.2 run green on the current code before the code changes, not following the red step; new tests in SPEC §9.1 still go red first, then green (SPEC addendum §4).
+5. A Should-level RB with no test is not in the mandatory checkpoint in Migration Plan §6; the risk is recorded in Regression Baseline §11.
+6. From Stage 1 onward, project commands run in the working directory (a clean worktree is not required), but every variable pointing to a data store, queue, cache, or external service is explicitly set to a local or disposable target per ARCHITECTURE §10.2; commands do not rely on the machine's env files and drop authentication variables inherited from the shell as in §5.1 rule 2. The verify commands in `CLAUDE.md` already include these variables.
 
-### 5.5. Stack profile và file có sẵn trong repo (Stack Profile & Existing Files)
+### 5.5. Stack Profile & Existing Files
 
-1. Chọn stack profile khớp stack hiện có theo định nghĩa ở PLAYBOOK mục 3. Có profile khớp:
-   - ARCHITECTURE to-be §2.1 ghi version, cây thư mục và cách làm đang chạy (As-Is Architecture §2), không ghi giá trị của profile. Mọi điểm hiện trạng lệch profile (minor version, cây thư mục, cách xác thực, envelope lỗi, lệnh verify) gom vào một ADR ở Giai đoạn 2.
-   - Khối PROFILE-CONTENT và placeholder nguồn `Profile` mâu thuẫn với hiện trạng không chép nguyên văn: tài liệu ghi giá trị đang chạy và dẫn ADR đó.
-   - Nâng hiện trạng lên giá trị của profile là thay đổi to-be, đi qua Gap Analysis và Migration Plan.
+1. Choose the stack profile that matches the existing stack per the definition in PLAYBOOK §3. When a profile matches:
+   - ARCHITECTURE to-be §2.1 records the version, directory tree, and practices that are running (As-Is Architecture §2), not the profile's values. Every point where the current state deviates from the profile (minor version, directory tree, authentication method, error envelope, verify commands) is gathered into one ADR at Stage 2.
+   - The PROFILE-CONTENT block and the `Profile` source placeholders that conflict with the current state are not copied verbatim: the document records the running value and refers to that ADR.
+   - Raising the current state to the profile's value is a to-be change, and goes through the Gap Analysis and the Migration Plan.
 
-   Không có profile khớp thì ghi `none`, theo PLAYBOOK mục 3 quy tắc 5 và CONVENTIONS mục 2; không chọn một profile lệch thành phần nền rồi ghi lệch từng điểm. Khi đó ARCHITECTURE to-be §2.1 dựng từ As-Is Architecture §2 cộng thay đổi có ADR. Trong cả hai trường hợp, lệnh verify lấy từ lệnh đã chạy được ở Codebase Summary §7, vì lệnh đã chạy được trên repo thắng lệnh của profile (PLAYBOOK mục 2.1; Prompt B1 điền vào `CLAUDE.md`).
-2. `CLAUDE.md`, `AGENTS.md`, `.claude/` hay tài liệu trong `docs/` đã có trong repo: không ghi đè. Ở Prompt 0, liệt kê chúng ở Intake §4 và mục Giả định và câu hỏi mở của Intake, mỗi mục một cách xử lý đề xuất. Chủ dự án quyết định ở Gate 0; Codebase Summary §9 ghi lại. Bốn cách xử lý và thời điểm làm:
-   - Giữ nguyên.
-   - Gộp vào `CLAUDE.md` của specflow, ở Prompt B0: mục `## Documentation Layout` của specflow đứng đầu, rule sẵn có của dự án giữ ở các mục sau.
-   - Chuyển vào `docs/legacy/`, ở Prompt B0: giữ đường dẫn con (ví dụ `docs/architecture.md` thành `docs/legacy/architecture.md`). Dùng khi file trùng bố cục specflow: trùng đường dẫn mà CONVENTIONS mục 6 dùng (so không phân biệt hoa thường, vì `docs/architecture.md` và `docs/ARCHITECTURE.md` là cùng một file trên hệ thống file không phân biệt hoa thường), hoặc trùng tên với tài liệu mà khối Documentation Layout thay thế. Tài liệu viết cho bên ngoài (ví dụ contract cho bên gọi API) thường chọn giữ nguyên. File trong `docs/legacy/` là tài liệu cũ, chỉ dùng làm gợi ý (mục 5.2 quy tắc 4); lệnh kiểm tra sót ở quy tắc 3 bỏ qua thư mục này.
-   - Chuyển nội dung vào tài liệu specflow: Prompt B0 giữ nguyên file. Prompt tạo tài liệu đích (ví dụ Prompt 2 cho `docs/ARCHITECTURE.md`) chuyển phần nội dung có bằng chứng vào tài liệu đó, xóa file cũ và ghi việc này ở Version History của tài liệu đích. File trùng đường dẫn với một tài liệu specflow cần tạo sớm hơn thì Prompt B0 chuyển nó vào `docs/legacy/` trước.
+   When no profile matches, record `none`, per PLAYBOOK §3 rule 5 and CONVENTIONS §2; do not pick a profile with a different base component and then record each deviation. In that case ARCHITECTURE to-be §2.1 is built from As-Is Architecture §2 plus changes that have an ADR. In both cases, the verify commands come from the commands that ran successfully in Codebase Summary §7, because commands that ran successfully on the repo win over the profile's commands (PLAYBOOK §2.1; Prompt B1 fills them into `CLAUDE.md`).
+2. `CLAUDE.md`, `AGENTS.md`, `.claude/`, or documents in `docs/` that already exist in the repo: do not overwrite. At Prompt 0, list them in Intake §4 and in the Assumptions & Open Questions section of the Intake, one proposed handling for each. The project owner decides at Gate 0; Codebase Summary §9 records it. The four ways of handling them and when to do them:
+   - Keep as is.
+   - Merge into the specflow `CLAUDE.md`, at Prompt B0: the specflow `## Documentation Layout` section comes first, the project's existing rules stay in the later sections.
+   - Move into `docs/legacy/`, at Prompt B0: keep the sub-path (for example `docs/architecture.md` becomes `docs/legacy/architecture.md`). Use when the file collides with the specflow layout: the same path that CONVENTIONS §6 uses (compared case-insensitively, because `docs/architecture.md` and `docs/ARCHITECTURE.md` are the same file on a case-insensitive file system), or the same name as a document that the Documentation Layout block replaces. Documents written for outside parties (for example an API contract for callers) are usually kept as is. Files in `docs/legacy/` are old documents, used only as hints (§5.2 rule 4); the leftover check command in rule 3 skips this directory.
+   - Move the content into a specflow document: Prompt B0 leaves the file as is. The prompt that creates the target document (for example Prompt 2 for `docs/ARCHITECTURE.md`) moves the evidenced content into that document, deletes the old file, and records this in the target document's Version History. A file whose path collides with a specflow document that must be created earlier is moved into `docs/legacy/` by Prompt B0 first.
 
-   Thư mục hay file mà specflow cần commit (`CLAUDE.md`, `.claude/rules/`, `docs/`, `plans/`) bị `.gitignore` bỏ qua: Prompt 0 ghi dòng `.gitignore` đề xuất ở Intake mục 13. Git không mở lại được file nằm trong thư mục đã bị bỏ qua, nên ví dụ `.claude/` được đổi thành `.claude/*` kèm `!.claude/rules/`. Gate 0 duyệt; Prompt B0 sửa `.gitignore` đúng như đã duyệt.
-3. Lệnh kiểm tra sót ở PLAYBOOK mục 4 chỉ chạy trên phần do specflow tạo hoặc sửa: dòng thêm mới trong file đã có từ trước, toàn bộ file mới chưa commit, và file bị `.gitignore` bỏ qua gồm `CLAUDE.md`, file Markdown trong `docs/` và `plans/`, mọi file trong `.claude/rules/` (lệnh thứ ba; lượt quét này bắt rule hay tài liệu mà git không theo dõi nên không commit được). Thư mục `docs/legacy/` không được quét. Chạy ở thư mục gốc của dự án (thư mục con nếu repo là monorepo), với biến `BASE` là commit ở Codebase Summary §1; trước khi có Codebase Summary, `BASE` là commit ghi ở Intake §4. Kết quả MUST rỗng. Một dòng đến từ file bị bỏ qua mà không do specflow tạo (ví dụ output build trong `docs/`) thì ghi file hoặc thư mục đó ở Codebase Summary §9 và thêm `':(exclude)<đường dẫn>'` vào lệnh thứ ba; một thư mục loại một lần cho cả cây con.
+   A directory or file that specflow needs to commit (`CLAUDE.md`, `.claude/rules/`, `docs/`, `plans/`) that `.gitignore` ignores: Prompt 0 records a proposed `.gitignore` line in Intake §13. Git cannot re-include a file inside an ignored directory, so for example `.claude/` is changed to `.claude/*` together with `!.claude/rules/`. Gate 0 approves; Prompt B0 edits `.gitignore` exactly as approved.
+3. The leftover check command in PLAYBOOK §4 runs only on what specflow created or modified: newly added lines in files that already existed, whole new uncommitted files, and files ignored by `.gitignore`, including `CLAUDE.md`, Markdown files in `docs/` and `plans/`, and every file in `.claude/rules/` (the third command; this pass catches rules or documents that git does not track and so cannot be committed). The `docs/legacy/` directory is not scanned. Run at the project root (a subdirectory if the repo is a monorepo), with the `BASE` variable set to the commit in Codebase Summary §1; before the Codebase Summary exists, `BASE` is the commit recorded in Intake §4. The result MUST be empty. If a line comes from an ignored file that specflow did not create (for example build output in `docs/`), record that file or directory in Codebase Summary §9 and add `':(exclude)<path>'` to the third command; exclude a directory once for its whole subtree.
 
 ```bash
-: "${BASE:?BASE chưa đặt}"
+: "${BASE:?BASE is not set}"
 pattern='<!-- (SLOT|PROFILE-SLOT|slot-hint|fill)[ :-]|[{][{][A-Z][A-Z0-9_]*[}][}]|"[$]description": *"fill:'
 paths=(docs plans CLAUDE.md .claude ':(exclude)docs/legacy')
 git diff -z --name-only --relative --no-ext-diff --diff-filter=d "$BASE" -- "${paths[@]}" |
@@ -206,121 +196,121 @@ git ls-files -z --others --ignored --exclude-standard -- ':(glob)docs/**/*.md' '
   while IFS= read -r -d '' f; do grep -HnE "$pattern" "$f"; done
 ```
 
-## 6. Prompt cho Claude Code (Prompts)
+## 6. Prompts
 
-Chạy trong phiên Claude Code ở gốc repo đang có. Prompt 0 đến 6, Prompt 1W và Prompt Resume dùng như ở PROMPTS.md, cộng phần bổ sung ở mục 6.1. Prompt B0 đến B4 chạy ở các bước riêng của brownfield theo pipeline ở mục 2.
+Run in a Claude Code session at the root of the existing repo. Prompt 0 to 6, Prompt 1W, and Prompt Resume are used as in PROMPTS.md, plus the additions in §6.1. Prompts B0 to B4 run at the brownfield-specific steps per the pipeline in §2.
 
-### 6.1. Bổ sung cho prompt của PROMPTS.md (Additions to PROMPTS.md Prompts)
+### 6.1. Additions to PROMPTS.md Prompts
 
-Mỗi prompt của PLAYBOOK thêm vào phần Đọc và phần Nhiệm vụ như bảng dưới. Mọi prompt: lệnh kiểm tra sót chạy theo mục 5.5 thay cho lệnh ở PLAYBOOK mục 4.
+Each PLAYBOOK prompt adds to its Read part and its Task part as in the table below. Every prompt: the leftover check command runs per §5.5 in place of the command in PLAYBOOK §4.
 
-| Prompt | Thêm vào phần Đọc | Thêm vào Nhiệm vụ |
+| Prompt | Add to the Read part | Add to the Task |
 | --- | --- | --- |
-| Prompt 0 | `specflow/brownfield/PLAYBOOK_BROWNFIELD.md` mục 1 và 5; cây thư mục, manifest, `CLAUDE.md`, `AGENTS.md`, `.claude/`, `.mcp.json`, `docs/` có sẵn | Intake §4 ghi kho mã và commit `HEAD` lúc bắt đầu, quy mô, công cụ test hiện có, quyết định về test `REG`, công cụ đo độ phủ test, git hook đang bật (mục 5.1 quy tắc 8), file có sẵn kèm cách xử lý đề xuất (mục 5.5 quy tắc 2); thư mục specflow cần commit mà bị `.gitignore` bỏ qua thì đề xuất dòng `.gitignore` ở Intake mục 13; không ghi đè file có sẵn. Đề xuất cần chủ dự án duyệt trước bước chuẩn bị repo hay trước lệnh đầu tiên của dự án (cách xử lý file có sẵn, dòng `.gitignore`, cách xử lý git hook, môi trường chạy test `REG`, công cụ đo độ phủ) ghi ở Intake mục 13 là Giả định, `BLOCKING: Không`, kèm "duyệt ở Gate 0": duyệt Gate 0 là duyệt các đề xuất đó, và chủ dự án sửa đề xuất nào thì sửa trước khi duyệt. Repo đã có `CLAUDE.md`: chưa tạo `CLAUDE.md`, ghi bản specflow đề xuất vào mục Giả định và câu hỏi mở của Intake; điều kiện dừng thành "Intake đã tạo". Repo chưa có `CLAUDE.md`: tạo như PLAYBOOK, giữ các dòng Brownfield của Agent Context |
-| Prompt 1 | File này mục 5.3; `docs/brownfield/CODEBASE_SUMMARY.md`, `docs/brownfield/AS_IS_ARCHITECTURE.md`, `docs/brownfield/REGRESSION_BASELINE.md` | SRS to-be mô tả toàn bộ hệ thống đích; §1.2 dùng lại mã phân hệ ở Codebase Summary §3; hành vi RB đang Giữ có FR tương ứng; có giao diện (Intake tạo từ template Intake `1.3.0` trở lên): màn hình không đổi so với hiện trạng ghi `Giữ nguyên` ở cột `SCR ID` của SRS §3 theo mục 5.3 quy tắc 5, Gap Analysis xác nhận ở Prompt B3; file có sẵn có cách xử lý "chuyển nội dung vào tài liệu specflow" với SRS là tài liệu đích thì chuyển ở bước này (mục 5.5 quy tắc 2). Sau khi dừng, chạy Prompt B3 |
-| Prompt 1W | File này mục 2.1 và 5.3; `docs/brownfield/GAP_ANALYSIS.md`, `docs/brownfield/REGRESSION_BASELINE.md` §5 | Chạy sau khi Gate 1 duyệt SRS to-be và Gap Analysis. Wireframe to-be theo mục 5.3 quy tắc 5: trang cho màn hình mới hoặc đổi, `Giữ nguyên` kèm dẫn Regression Baseline §5 cho FR của màn hình không đổi. Lệch làm SRS to-be đổi thì sửa cả Gap Analysis theo PLAYBOOK mục 8 (chạy lại phần tương ứng của Prompt B3) để duyệt lại cùng SRS trước Gate 1W. Intake cũ hơn `1.3.0`: không có prompt này |
-| Prompt 2 | File này mục 3 đến 5; `docs/brownfield/AS_IS_ARCHITECTURE.md`, `docs/brownfield/GAP_ANALYSIS.md`, `docs/brownfield/REGRESSION_BASELINE.md` | Trước khi viết ARCHITECTURE, ghi trạng thái Đổi đã duyệt hoặc Bỏ đã duyệt ở Regression Baseline §3 cho mọi RB ở Gap Analysis §5 đã duyệt, kèm version của Gap Analysis. ARCHITECTURE §2.1 theo mục 5.5 quy tắc 1, các điểm lệch so với profile khớp gom vào một ADR; ADR cho mọi thay đổi so với As-Is Architecture §2 và cho dependency test thêm ở Giai đoạn 0R. Cổng verify ở PLAYBOOK mục 11 cần lệnh mà Codebase Summary §7 chưa có (độ phủ test khi Giai đoạn 0R chỉ cài tạm hoặc đo cách khác, audit dependency, kiểm contract): chọn công cụ ở ARCHITECTURE kèm ADR và thêm lệnh vào mục lệnh verify của `CLAUDE.md`, sau các lệnh B1 đã điền. File có sẵn có cách xử lý "chuyển nội dung vào tài liệu specflow" với ARCHITECTURE là tài liệu đích thì chuyển ở bước này (mục 5.5 quy tắc 2). Sau khi dừng, chạy Prompt B4 |
-| Prompt 3 | `specflow/brownfield/Spec_Brownfield_Addendum.md`; `docs/brownfield/MIGRATION_PLAN.md` (bước đang làm), `docs/brownfield/REGRESSION_BASELINE.md`, `docs/brownfield/GAP_ANALYSIS.md` §1.2 và §5 | Áp đủ ba phần và các quy tắc của phụ lục |
-| Prompt 4 | `docs/brownfield/MIGRATION_PLAN.md` §6 | Pha đầu của mỗi SPEC chạy test ở §9.2 của SPEC đó trên mã hiện tại (sau các SPEC đứng trước trong plan) và ghi cột Pass trước khi SPEC đó đổi mã; mỗi pha chạy lại mốc kiểm tra hồi quy |
-| Prompt 5 | File này mục 7; `docs/brownfield/MIGRATION_PLAN.md` §6, `docs/brownfield/REGRESSION_BASELINE.md` §5 | Chạy test ở SPEC §9.2 và mốc kiểm tra hồi quy của bước; so contract bên ngoài với ảnh chụp |
-| Prompt 6 | File này mục 2.1; `docs/brownfield/REGRESSION_BASELINE.md`, `docs/brownfield/MIGRATION_PLAN.md` | Cập nhật Regression Baseline §3 và §6.1, cột Trạng thái ở Migration Plan §2 theo mục 2.1 |
-| Prompt Resume | File này mục 2, 4 và 5 | Giai đoạn đang dở gồm cả bước chuẩn bị repo, bước 0a đến 0e và Giai đoạn 1W sau Gap Analysis; tiếp tục bằng Prompt B0 đến B4, hoặc prompt của PROMPTS.md cộng bảng này |
+| Prompt 0 | `specflow/brownfield/PLAYBOOK_BROWNFIELD.md` §1 and §5; the directory tree, manifests, `CLAUDE.md`, `AGENTS.md`, `.claude/`, `.mcp.json`, the existing `docs/` | Intake §4 records the code repository and the `HEAD` commit at the start, the size, the existing test tools, the decision on `REG` tests, the test coverage tool, the active git hooks (§5.1 rule 8), the existing files with a proposed handling each (§5.5 rule 2); a specflow directory that must be committed but is ignored by `.gitignore` gets a proposed `.gitignore` line in Intake §13; do not overwrite existing files. Proposals that need the project owner's approval before the repo preparation step or before the first project command (handling of existing files, the `.gitignore` line, git hook handling, the environment for running `REG` tests, the coverage tool) are recorded in Intake §13 as Assumptions, `BLOCKING: No`, with "approved at Gate 0": approving Gate 0 approves those proposals, and the project owner edits any proposal before approving. Repo already has a `CLAUDE.md`: do not create `CLAUDE.md` yet, record the proposed specflow version in the Assumptions & Open Questions section of the Intake; the stop condition becomes "Intake created". Repo has no `CLAUDE.md`: create it as in PLAYBOOK, keeping the Brownfield lines of the Agent Context |
+| Prompt 1 | This file §5.3; `docs/brownfield/CODEBASE_SUMMARY.md`, `docs/brownfield/AS_IS_ARCHITECTURE.md`, `docs/brownfield/REGRESSION_BASELINE.md` | The to-be SRS describes the whole target system; §1.2 reuses the module codes in Codebase Summary §3; behavior of an RB with `Keep` has a corresponding FR; with a UI: a screen that does not change from the current state records `Unchanged` in the `SCR ID` column of SRS §3 per §5.3 rule 5, which the Gap Analysis confirms at Prompt B3; an existing file whose handling is "move the content into a specflow document" with the SRS as the target document is moved at this step (§5.5 rule 2). After stopping, run Prompt B3 |
+| Prompt 1W | This file §2.1 and §5.3; `docs/brownfield/GAP_ANALYSIS.md`, `docs/brownfield/REGRESSION_BASELINE.md` §5 | Runs after Gate 1 approves the to-be SRS and the Gap Analysis. The to-be wireframe per §5.3 rule 5: pages for new or changed screens, `Unchanged` with a reference to Regression Baseline §5 for FRs of screens that do not change. A mismatch that changes the to-be SRS means the Gap Analysis is fixed as well per PLAYBOOK §8 (rerun the corresponding part of Prompt B3) to be re-approved together with the SRS before Gate 1W |
+| Prompt 2 | This file §3 to §5; `docs/brownfield/AS_IS_ARCHITECTURE.md`, `docs/brownfield/GAP_ANALYSIS.md`, `docs/brownfield/REGRESSION_BASELINE.md` | Before writing ARCHITECTURE, record the status Change approved or Removal approved in Regression Baseline §3 for every RB in the approved Gap Analysis §5, with the version of the Gap Analysis. ARCHITECTURE §2.1 follows §5.5 rule 1, the deviations from the matching profile gathered into one ADR; an ADR for every change from As-Is Architecture §2 and for test dependencies added at Stage 0R. The verify gate in PLAYBOOK §11 needs commands that Codebase Summary §7 does not have yet (test coverage when Stage 0R only installed it temporarily or measured another way, dependency audit, contract checks): choose the tool in ARCHITECTURE with an ADR and add the commands to the verify commands section of `CLAUDE.md`, after the commands B1 already filled. An existing file whose handling is "move the content into a specflow document" with ARCHITECTURE as the target document is moved at this step (§5.5 rule 2). After stopping, run Prompt B4 |
+| Prompt 3 | `specflow/brownfield/Spec_Brownfield_Addendum.md`; `docs/brownfield/MIGRATION_PLAN.md` (the current step), `docs/brownfield/REGRESSION_BASELINE.md`, `docs/brownfield/GAP_ANALYSIS.md` §1.2 and §5 | Apply all three parts and the rules of the addendum |
+| Prompt 4 | `docs/brownfield/MIGRATION_PLAN.md` §6 | The first phase of each SPEC runs the tests in that SPEC's §9.2 on the current code (after the SPECs before it in the plan) and records the Pass column before that SPEC changes code; each phase reruns the regression checkpoint |
+| Prompt 5 | This file §7; `docs/brownfield/MIGRATION_PLAN.md` §6, `docs/brownfield/REGRESSION_BASELINE.md` §5 | Run the tests in SPEC §9.2 and the step's regression checkpoint; compare the external contract with the snapshot |
+| Prompt 6 | This file §2.1; `docs/brownfield/REGRESSION_BASELINE.md`, `docs/brownfield/MIGRATION_PLAN.md` | Update Regression Baseline §3 and §6.1, and the Status column in Migration Plan §2 per §2.1 |
+| Prompt Resume | This file §2, §4 and §5 | The unfinished stage includes the repo preparation step, steps 0a to 0e, and Stage 1W after the Gap Analysis; continue with Prompt B0 to B4, or the prompt of PROMPTS.md plus this table |
 
-### Prompt B0: Chuẩn bị repo
+### Prompt B0: Repo preparation
 
 ```text
-Intake đã duyệt với mode brownfield. Áp quyết định của Gate 0 về file có sẵn trong repo.
+Intake approved with mode brownfield. Apply the Gate 0 decisions about the files already in the repo.
 
-Đọc: CLAUDE.md nếu có, specflow/brownfield/PLAYBOOK_BROWNFIELD.md mục 1, 5.1 và 5.5, docs/intake/PROJECT_INTAKE.md §4 và §13, Agent Context của giai đoạn, .gitignore, cấu hình git hook.
+Read: CLAUDE.md if it exists, specflow/brownfield/PLAYBOOK_BROWNFIELD.md §1, §5.1 and §5.5, docs/intake/PROJECT_INTAKE.md §4 and §13, the stage's Agent Context, .gitignore, git hook configuration.
 
-Nhiệm vụ:
-1. Với mỗi file có sẵn ở Intake §4, làm đúng cách xử lý đã duyệt, theo mục 5.5 quy tắc 2: giữ nguyên; gộp vào CLAUDE.md của specflow; chuyển vào docs/legacy/ giữ đường dẫn con; hoặc, với "chuyển nội dung vào tài liệu specflow", giữ nguyên file tới prompt tạo tài liệu đích.
-2. CLAUDE.md: Prompt 0 đã tạo thì chỉ kiểm mục Documentation Layout đứng đầu và các dòng Brownfield còn đủ. Repo có CLAUDE.md từ trước thì gộp theo Agent Context của giai đoạn: mục Documentation Layout đứng đầu, giữ các dòng Brownfield, rule sẵn có của dự án ở các mục sau.
-3. Gate 0 duyệt sửa .gitignore (Intake §13) thì sửa đúng dòng đã duyệt, để CLAUDE.md, .claude/rules/, docs/ và plans/ commit được.
-4. Chỉ đổi tài liệu, cấu hình agent và .gitignore đã duyệt; không đổi mã, không chạy lệnh của dự án. Commit riêng các thay đổi này, xử lý git hook theo mục 5.1 quy tắc 8. HEAD sau commit này là commit đo (mục 5.1).
+Task:
+1. For each existing file in Intake §4, do exactly the approved handling, per §5.5 rule 2: keep as is; merge into the specflow CLAUDE.md; move into docs/legacy/ keeping the sub-path; or, for "move the content into a specflow document", leave the file as is until the prompt that creates the target document.
+2. CLAUDE.md: if Prompt 0 already created it, only check that the Documentation Layout section comes first and the Brownfield lines are complete. If the repo had a CLAUDE.md before, merge per the stage's Agent Context: the Documentation Layout section first, keep the Brownfield lines, the project's existing rules in the later sections.
+3. If Gate 0 approved editing .gitignore (Intake §13), edit exactly the approved lines, so that CLAUDE.md, .claude/rules/, docs/ and plans/ can be committed.
+4. Change only documents, agent configuration, and the approved .gitignore; do not change code, do not run project commands. Commit these changes separately, handling git hooks per §5.1 rule 8. The HEAD after this commit is the measured commit (§5.1).
 
-Dừng khi: mọi file có sẵn đã xử lý đúng quyết định, lệnh kiểm tra sót ở mục 5.5 của PLAYBOOK_BROWNFIELD trả về rỗng, git status sạch. Mở phiên mới cho Prompt B1 để Claude Code nạp CLAUDE.md mới.
+Stop when: every existing file is handled per the decision, the leftover check command in §5.5 of PLAYBOOK_BROWNFIELD returns empty, git status is clean. Open a new session for Prompt B1 so that Claude Code loads the new CLAUDE.md.
 ```
 
-### Prompt B1: Codebase Summary và As-Is Architecture
+### Prompt B1: Codebase Summary and As-Is Architecture
 
 ```text
-Repo đã chuẩn bị theo Prompt B0. Bắt đầu bước 0a và 0b.
+The repo has been prepared per Prompt B0. Start steps 0a and 0b.
 
-Đọc: CLAUDE.md, specflow/brownfield/PLAYBOOK_BROWNFIELD.md, specflow/CONVENTIONS.md, docs/intake/PROJECT_INTAKE.md, specflow/core/02_Architecture_Core_Template.md §1.2; trong repo đọc theo thứ tự ở mục 5.2 của PLAYBOOK_BROWNFIELD.
+Read: CLAUDE.md, specflow/brownfield/PLAYBOOK_BROWNFIELD.md, specflow/CONVENTIONS.md, docs/intake/PROJECT_INTAKE.md, specflow/core/02_Architecture_Core_Template.md §1.2; in the repo read in the order of §5.2 of PLAYBOOK_BROWNFIELD.
 Template: specflow/brownfield/00_Codebase_Summary_Template.md, specflow/brownfield/01_As_Is_Architecture_Recovery_Template.md.
 
-Nhiệm vụ:
-1. Tạo docs/brownfield/CODEBASE_SUMMARY.md. Điền §1, §2, §3, §4, §6, §8, §9 bằng cách đọc file và lệnh chỉ đọc (git, liệt kê file, đếm dòng); chưa chạy lệnh của dự án. Commit đo ở §1 là HEAD sau commit của Prompt B0; chạy git diff --name-status giữa commit ở Intake §4 và commit đo, ghi lệnh và kết quả ở §1, và dừng nếu có file mã sản phẩm (mục 5.1). Mã phân hệ ở §3 theo CONVENTIONS mục 4 và quy tắc chia phân hệ ở PLAYBOOK mục 5; số phân hệ đổi docs_mode so với Intake mục 5 thì ghi câu hỏi ở §11 (BLOCKING: Không, quyết ở Gate 0R) kèm đề xuất cập nhật Intake và dòng docs_mode của CLAUDE.md.
-2. Khi mọi hàng ở §2 đạt: tạo worktree sạch từ commit đo ngoài repo, rồi chạy trong đó lệnh cài dependency, build, test, chạy cục bộ và mọi lệnh lint, format, typecheck, migration mà repo có, mỗi lệnh đặt tường minh biến trỏ tới đích ở §2 và bỏ biến xác thực thừa hưởng; ghi vào §7 kèm exit code. Migration chỉ chạy lên cơ sở dữ liệu dùng một lần ở §2. Hàng nào ở §2 không đạt: không chạy lệnh, ghi câu hỏi BLOCKING và dừng.
-3. Điền mục lệnh verify của CLAUDE.md: thay đúng dòng "Hoàn thiện ở Giai đoạn 0R (Prompt B1)." bằng một câu dẫn và bảng lệnh đã chạy được ở §7, mỗi lệnh ghi sẵn biến môi trường theo mục 5.4 quy tắc 6. Lệnh ở §7 thắng lệnh của stack profile (mục 5.5 quy tắc 1).
-4. Vẽ luồng chính ở §5 từ mã thật, mỗi bước có file:dòng.
-5. Tạo docs/brownfield/AS_IS_ARCHITECTURE.md: tech stack từ lockfile, C4 phục dựng, cây thư mục thực tế, schema từ file migration hoặc schema của ORM, cross-cutting, triển khai, bảo mật, test, nợ kỹ thuật; mỗi hàng có bằng chứng.
-6. Không sửa mã; không mở file env không phải file mẫu; không ghi secret hay dữ liệu cá nhân; không tạo Regression Baseline. Commit theo mục 5.1 quy tắc 8.
+Task:
+1. Create docs/brownfield/CODEBASE_SUMMARY.md. Fill §1, §2, §3, §4, §6, §8, §9 by reading files and read-only commands (git, listing files, counting lines); do not run project commands yet. The measured commit in §1 is the HEAD after the commit of Prompt B0; run git diff --name-status between the commit in Intake §4 and the measured commit, record the command and result in §1, and stop if there is a product code file (§5.1). The module codes in §3 follow CONVENTIONS §4 and the module division rules in PLAYBOOK §5; if the number of modules changes docs_mode compared with Intake §5, record a question in §11 (BLOCKING: No, decided at Gate 0R) with a proposal to update the Intake and the docs_mode line of CLAUDE.md.
+2. When every row in §2 passes: create a clean worktree from the measured commit outside the repo, then run in it the commands for installing dependencies, build, test, run locally, and every lint, format, typecheck, and migration command the repo has, each command explicitly setting the variables that point to the targets in §2 and removing inherited authentication variables; record them in §7 with the exit code. Migrations run only against the disposable database in §2. If any row in §2 does not pass: do not run commands, record a BLOCKING question and stop.
+3. Fill the verify commands section of CLAUDE.md: replace exactly the line "Complete at Stage 0R (Prompt B1)." with a lead-in sentence and a table of the commands that ran successfully in §7, each with its environment variables already set per §5.4 rule 6. The commands in §7 win over the stack profile's commands (§5.5 rule 1).
+4. Draw the main flows in §5 from the real code, each step with file:line.
+5. Create docs/brownfield/AS_IS_ARCHITECTURE.md: tech stack from lockfiles, reconstructed C4, the actual directory tree, schema from migration files or the ORM schema, cross-cutting concerns, deployment, security, tests, technical debt; every row has evidence.
+6. Do not change code; do not open env files that are not sample files; do not write secrets or personal data; do not create the Regression Baseline. Commit per §5.1 rule 8.
 
-Repo từ 5.000 dòng mã trở lên: lượt này chỉ làm nhiệm vụ 1 đến 4 rồi dừng; nhiệm vụ 5 làm ở lượt sau khi tôi xác nhận.
+A repo of 5,000 lines of code or more: this pass does only tasks 1 to 4 and then stops; task 5 is done in a later pass after I confirm.
 
-Dừng khi: tài liệu của lượt ở status in-review, mục lệnh verify của CLAUDE.md không còn dòng "Hoàn thiện ở Giai đoạn", lệnh kiểm tra sót ở mục 5.5 của PLAYBOOK_BROWNFIELD trả về rỗng.
+Stop when: the documents of this pass are in status in-review, the verify commands section of CLAUDE.md no longer has the line "Complete at Stage", the leftover check command in §5.5 of PLAYBOOK_BROWNFIELD returns empty.
 ```
 
 ### Prompt B2: Regression Baseline
 
 ```text
-Codebase Summary và As-Is Architecture đã duyệt. Bắt đầu bước 0c.
+The Codebase Summary and As-Is Architecture are approved. Start step 0c.
 
-Đọc: CLAUDE.md, specflow/brownfield/PLAYBOOK_BROWNFIELD.md mục 3 đến 5, specflow/CONVENTIONS.md mục 4, docs/intake/PROJECT_INTAKE.md §4, docs/brownfield/CODEBASE_SUMMARY.md, docs/brownfield/AS_IS_ARCHITECTURE.md, test hiện có, mã của các luồng chính.
+Read: CLAUDE.md, specflow/brownfield/PLAYBOOK_BROWNFIELD.md §3 to §5, specflow/CONVENTIONS.md §4, docs/intake/PROJECT_INTAKE.md §4, docs/brownfield/CODEBASE_SUMMARY.md, docs/brownfield/AS_IS_ARCHITECTURE.md, the existing tests, the code of the main flows.
 Template: specflow/brownfield/02_Regression_Baseline_Template.md.
 
-Nhiệm vụ:
-1. Tạo docs/brownfield/REGRESSION_BASELINE.md. Đo coverage theo mã phân hệ của Codebase Summary §3 trong worktree sạch của commit đo, theo lựa chọn ở hàng "Công cụ đo độ phủ test" của Intake §4: có sẵn; cài tạm trong worktree đo, không đổi manifest hay lockfile; thêm vào dev-dependency ở commit test REG, còn số ở commit đo vẫn đo bằng cài tạm; hoặc đo bằng cách khác kèm giới hạn. Intake không có hàng này thì hỏi tôi trước khi đo. Ghi công cụ, lệnh và số liệu ở §1, §2; không đo được nhánh thì ghi N/A kèm lý do.
-2. Lập danh sách RB ở §3: mỗi luồng chính ít nhất một RB, mỗi RB có bằng chứng; RB mức Must có test bảo vệ hoặc thủ tục thủ công.
-3. Chuẩn bị dữ liệu tổng hợp ở §4; chụp contract bên ngoài ở §5 trên môi trường cục bộ, che dữ liệu cá nhân và thông tin xác thực.
-4. Theo quyết định ở Intake §4: nếu được phép, viết test REG cho RB mức Must chưa có test (chỉ file test, dữ liệu test tổng hợp, cấu hình và dependency test đã duyệt) theo vòng ở mục 5.1 quy tắc 9: viết trong thư mục làm việc, chạy trong worktree sạch của commit đo tới khi pass trên mã hiện tại, rồi một commit test REG duy nhất không chạm mã sản phẩm, xử lý git hook theo mục 5.1 quy tắc 8, và đo lại coverage; nếu không, viết thủ tục thủ công ở §6.2 để tôi duyệt rủi ro. Gán TC ID ở §6.1 cho mọi test bảo vệ theo mục 5.3 quy tắc 3: mọi test mang loại REG, kể cả test đã có; test tham số hóa là một TC; mã phân hệ của hành vi được bảo vệ.
-5. Liệt kê test hỏng sẵn ở §7; tự kiểm §8 và mục 3.1 của PLAYBOOK_BROWNFIELD.
+Task:
+1. Create docs/brownfield/REGRESSION_BASELINE.md. Measure coverage by the module codes of Codebase Summary §3 in a clean worktree of the measured commit, following the choice in the "Test coverage tool" row of Intake §4: already available; installed temporarily in the measurement worktree, without changing the manifest or lockfile; added as a dev-dependency in the REG test commit, while the figures at the measured commit are still measured with the temporary install; or measured another way with its limits. If Intake has no such row, ask me before measuring. Record the tool, command, and figures in §1, §2; if branch coverage cannot be measured, record N/A with the reason.
+2. List the RBs in §3: each main flow at least one RB, each RB has evidence; a Must-level RB has a protecting test or a manual procedure.
+3. Prepare the synthetic data in §4; capture the external contract in §5 on the local environment, masking personal data and credentials.
+4. Per the decision in Intake §4: if allowed, write REG tests for Must-level RBs that have no test (only test files, synthetic test data, configuration and approved test dependencies) following the loop in §5.1 rule 9: write in the working directory, run in a clean worktree of the measured commit until they pass on the current code, then one single REG test commit that does not touch product code, handling git hooks per §5.1 rule 8, and re-measure coverage; if not, write the manual procedure in §6.2 for me to approve the risk. Assign the TC IDs in §6.1 to every protecting test per §5.3 rule 3: every test carries the type REG, including existing tests; a parameterized test is one TC; the module code of the behavior being protected.
+5. List the pre-existing failing tests in §7; self-check §8 and §3.1 of PLAYBOOK_BROWNFIELD.
 
-Dừng khi: Regression Baseline ở status in-review, lệnh kiểm tra sót ở mục 5.5 của PLAYBOOK_BROWNFIELD trả về rỗng. Không viết SRS.
+Stop when: the Regression Baseline is in status in-review, the leftover check command in §5.5 of PLAYBOOK_BROWNFIELD returns empty. Do not write the SRS.
 ```
 
 ### Prompt B3: Gap Analysis
 
 ```text
-SRS to-be đã viết theo Prompt 1 của specflow/PROMPTS.md cộng phần bổ sung ở mục 6.1 của PLAYBOOK_BROWNFIELD. Bắt đầu bước 0d.
+The to-be SRS was written per Prompt 1 of specflow/PROMPTS.md plus the additions in §6.1 of PLAYBOOK_BROWNFIELD. Start step 0d.
 
-Đọc: CLAUDE.md, specflow/brownfield/PLAYBOOK_BROWNFIELD.md mục 3 đến 5, specflow/CONVENTIONS.md mục 4, SRS to-be, docs/brownfield/CODEBASE_SUMMARY.md §3, docs/brownfield/AS_IS_ARCHITECTURE.md, docs/brownfield/REGRESSION_BASELINE.md.
+Read: CLAUDE.md, specflow/brownfield/PLAYBOOK_BROWNFIELD.md §3 to §5, specflow/CONVENTIONS.md §4, the to-be SRS, docs/brownfield/CODEBASE_SUMMARY.md §3, docs/brownfield/AS_IS_ARCHITECTURE.md, docs/brownfield/REGRESSION_BASELINE.md.
 Template: specflow/brownfield/03_Gap_Analysis_Template.md.
 
-Nhiệm vụ:
-1. Tạo docs/brownfield/GAP_ANALYSIS.md. Lập ánh xạ mã phân hệ as-is sang to-be ở §1.2, khớp SRS to-be §1.2.
-2. Mỗi FR và NFR của SRS to-be một hàng ở §2 hoặc §3, so với hiện trạng có bằng chứng; khác biệt dữ liệu ở §4.
-3. Mọi RB mà SRS to-be đổi hoặc bỏ ghi ở §5; RB bị đổi mà SRS to-be không nêu lý do thì ghi câu hỏi BLOCKING. Chưa sửa Regression Baseline; trạng thái RB ghi sau khi Gate 1 duyệt.
-4. Tổng hợp việc cần làm theo ưu tiên ở §6.
+Task:
+1. Create docs/brownfield/GAP_ANALYSIS.md. Build the mapping from as-is to to-be module codes in §1.2, matching to-be SRS §1.2.
+2. Each FR and NFR of the to-be SRS gets one row in §2 or §3, compared with the current state with evidence; data differences in §4.
+3. Every RB that the to-be SRS changes or removes is recorded in §5; an RB that is changed with no reason stated in the to-be SRS gets a BLOCKING question. Do not edit the Regression Baseline yet; the RB status is recorded after Gate 1 approves.
+4. Summarize the work to do by priority in §6.
 
-Dừng khi: Gap Analysis ở status in-review, lệnh kiểm tra sót ở mục 5.5 của PLAYBOOK_BROWNFIELD trả về rỗng. Không viết ARCHITECTURE.
+Stop when: the Gap Analysis is in status in-review, the leftover check command in §5.5 of PLAYBOOK_BROWNFIELD returns empty. Do not write ARCHITECTURE.
 ```
 
 ### Prompt B4: Migration Plan
 
 ```text
-ARCHITECTURE to-be đã viết theo Prompt 2 của specflow/PROMPTS.md cộng phần bổ sung ở mục 6.1 của PLAYBOOK_BROWNFIELD. Bắt đầu bước 0e.
+The to-be ARCHITECTURE was written per Prompt 2 of specflow/PROMPTS.md plus the additions in §6.1 of PLAYBOOK_BROWNFIELD. Start step 0e.
 
-Đọc: CLAUDE.md, specflow/brownfield/PLAYBOOK_BROWNFIELD.md mục 3 đến 5, specflow/CONVENTIONS.md mục 4, docs/ARCHITECTURE.md, ADR liên quan, docs/brownfield/GAP_ANALYSIS.md, docs/brownfield/REGRESSION_BASELINE.md.
+Read: CLAUDE.md, specflow/brownfield/PLAYBOOK_BROWNFIELD.md §3 to 5, specflow/CONVENTIONS.md §4, docs/ARCHITECTURE.md, the related ADRs, docs/brownfield/GAP_ANALYSIS.md, docs/brownfield/REGRESSION_BASELINE.md.
 Template: specflow/brownfield/04_Migration_Plan_Template.md, specflow/core/03_ADR_Template.md.
 
-Nhiệm vụ:
-1. Tạo docs/brownfield/MIGRATION_PLAN.md. Chọn chiến lược chuyển đổi và tạo ADR proposed cho lựa chọn đó.
-2. Chia việc ở Gap Analysis §6 thành các bước nhỏ theo thứ tự; mỗi bước có điều kiện bắt đầu, điều kiện xong, RB phải pass, cách ngắt, cách quay lui và SPEC dự kiến.
-3. Lập kế hoạch di chuyển dữ liệu có đối soát nếu Gap Analysis §4 có thực thể cần chuyển.
-4. Ghi lệnh kiểm tra hồi quy cho từng bước ở §6.
+Task:
+1. Create docs/brownfield/MIGRATION_PLAN.md. Choose the migration strategy and create a proposed ADR for that choice.
+2. Split the work in Gap Analysis §6 into small ordered steps; each step has an entry condition, an exit condition, the RBs that must pass, how to cut over, how to roll back, and the expected SPEC.
+3. Make a data migration plan with reconciliation if Gap Analysis §4 has entities that must be migrated.
+4. Record the regression check commands for each step in §6.
 
-Dừng khi: Migration Plan ở status in-review cùng ARCHITECTURE, ADR chiến lược ở status proposed, lệnh kiểm tra sót ở mục 5.5 của PLAYBOOK_BROWNFIELD trả về rỗng. Không viết SPEC.
+Stop when: the Migration Plan is in status in-review together with ARCHITECTURE, the strategy ADR is in status proposed, the leftover check command in §5.5 of PLAYBOOK_BROWNFIELD returns empty. Do not write SPEC.
 ```
 
-## 7. Bổ sung Definition of Ready và Definition of Done (DoR & DoD Additions)
+## 7. DoR & DoD Additions
 
-| Hạng mục | Tiêu chí | Đạt? |
+| Item | Criterion | Passed? |
 | --- | --- | :---: |
-| DoR | Gate 0R đạt; Gap Analysis và Migration Plan `approved`; ADR chiến lược `accepted`; bước đang làm ở Migration Plan §2 có SPEC | [ ] |
-| DoR | SPEC áp đủ phụ lục brownfield: bảng §2.1 mở rộng, bảng §9.2 phủ mọi RB của bước, DoD bổ sung, `parent` có Migration Plan và Regression Baseline | [ ] |
-| DoD | Mọi test ở SPEC §9.2 pass trên mã hiện tại trước khi đổi; sau khi đổi, test của RB Giữ và test đã cập nhật của RB Đổi đã duyệt pass, test của RB Bỏ đã duyệt đã xóa; contract bên ngoài khớp ảnh chụp, trừ khác biệt đã duyệt | [ ] |
-| DoD | Mốc kiểm tra hồi quy của bước ở Migration Plan §6 đạt | [ ] |
-| DoD | Regression Baseline §3 và §6.1, cột Trạng thái ở Migration Plan §2 đã cập nhật theo mục 2.1 | [ ] |
+| DoR | Gate 0R passed; the Gap Analysis and Migration Plan are `approved`; the strategy ADR is `accepted`; the current step in Migration Plan §2 has a SPEC | [ ] |
+| DoR | The SPEC applies the full brownfield addendum: the extended §2.1 table, the §9.2 table covering every RB of the step, the additional DoD, `parent` including the Migration Plan and Regression Baseline | [ ] |
+| DoD | Every test in SPEC §9.2 passes on the current code before the change; after the change, the tests of RBs with `Keep` and the updated tests of RBs with `Change approved` pass, the tests of RBs with `Removal approved` are deleted; the external contract matches the snapshot, except approved differences | [ ] |
+| DoD | The step's regression checkpoint in Migration Plan §6 passes | [ ] |
+| DoD | Regression Baseline §3 and §6.1, and the Status column in Migration Plan §2, are updated per §2.1 | [ ] |

@@ -9,7 +9,7 @@
 #
 # Contract source: CONVENTIONS.md. The placeholder catalog (with value sources), slot catalog,
 # doc_type groups, required-section rules and the docs-layout override block are parsed from it,
-# so this script never duplicates those lists. It also parses the "- Giai đoạn 1W có khi" line of
+# so this script never duplicates those lists. It also parses the "- Stage 1W applies when" line of
 # PLAYBOOK.md §2 for the UI overlays of Stage 1W. Marker lines and links inside fenced code blocks
 # are ignored. Exit status: 0 when no error was found, 1 on errors, 2 on bad usage.
 # Warnings are printed but never fail the run.
@@ -40,11 +40,17 @@ if [[ "$MODE" != project && ! -f scripts/expected-structure.txt ]]; then
   exit 2
 fi
 
+# Labels of the project documents (column names, line labels, cell values) come from the language table, not from this script.
+# No language is loaded here: the templates of the kit are written in English, and an example or a project has the language
+# of its own Intake (use_project_language).
+KIT_DIR="$ROOT"
+# shellcheck source=i18n.sh
+source "$KIT_DIR/scripts/i18n.sh"
+
 CONVENTIONS="CONVENTIONS.md"
-LEGACY_LAYOUTS="COMPATIBILITY.md"  # the layout blocks of earlier releases, kept out of the rules every agent loads
 STRUCTURE_LIST="scripts/expected-structure.txt"
 KIT_DIRS=(core overlays starters brownfield)
-TOP_DOCS=(PLAYBOOK.md PROMPTS.md COMPATIBILITY.md CONVENTIONS.md README.md CHANGELOG.md)
+TOP_DOCS=(PLAYBOOK.md PROMPTS.md CONVENTIONS.md README.md CHANGELOG.md)
 PLACEHOLDER_RE='\{\{[A-Z][A-Z0-9_]*\}\}'
 
 ERRORS=0
@@ -69,6 +75,9 @@ trap 'rm -rf "$TMP"' EXIT
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+# helper_last_line <output>: the last line a failed helper printed, which says why it stopped.
+helper_last_line() { tail -n 1 <<< "$1"; }
 
 # existing <path...>: print only the paths that exist, one per line.
 existing() {
@@ -156,74 +165,53 @@ load_catalogs() {
   # Slot catalog: table rows whose first cell is a backticked slot marker with a concrete id.
   grep -E '^\| `<!-- SLOT: [a-z0-9.-]+ -->`' "$CONVENTIONS" > "$TMP/slot-rows"
   sed -E 's/^\| `<!-- SLOT: ([a-z0-9.-]+) -->`.*/\1/' "$TMP/slot-rows" | sort -u > "$TMP/slots"
-  # doc_type groups: the bullet lines after the "`doc_type` hợp lệ" line; the infrastructure group is named "File hạ tầng".
-  awk '/`doc_type` hợp lệ/ { on = 1; next } on && /^- / { print; next } on && NF { exit }' "$CONVENTIONS" > "$TMP/doc-type-lines"
+  # doc_type groups: the bullet lines after the "Valid `doc_type` values:" line; the infrastructure group is named "infrastructure files".
+  awk '/Valid `doc_type` values:/ { on = 1; next } on && /^- / { print; next } on && NF { exit }' "$CONVENTIONS" > "$TMP/doc-type-lines"
   sed 's/^[^:]*://' "$TMP/doc-type-lines" | grep -oE '`[a-z-]+`' | tr -d '`' | sort -u > "$TMP/doc-types"
-  grep 'File hạ tầng' "$TMP/doc-type-lines" | sed 's/^[^:]*://' | grep -oE '`[a-z-]+`' | tr -d '`' | sort -u > "$TMP/infra-types"
+  grep 'infrastructure files' "$TMP/doc-type-lines" | sed 's/^[^:]*://' | grep -oE '`[a-z-]+`' | tr -d '`' | sort -u > "$TMP/infra-types"
   comm -23 "$TMP/doc-types" "$TMP/infra-types" > "$TMP/document-types"
-  # Required sections: the two indented bullets under "Mục bắt buộc theo `doc_type`".
-  grep -E '^  - `Assumptions & Open Questions`:' "$CONVENTIONS" | sed 's/.*trừ//' | grep -oE '`[a-z-]+`' | tr -d '`' | sort -u > "$TMP/aoq-exempt"
+  # Required sections: the two indented bullets under "Required sections by `doc_type`".
+  grep -E '^  - `Assumptions & Open Questions`:' "$CONVENTIONS" | sed 's/.*except//' | grep -oE '`[a-z-]+`' | tr -d '`' | sort -u > "$TMP/aoq-exempt"
   grep -E '^  - `Version History`:' "$CONVENTIONS" | sed 's/^  - `Version History`://' | grep -oE '`[a-z-]+`' | tr -d '`' | sort -u > "$TMP/history-types"
   # Further bullets there name sections before the colon and doc_types after it: "<doc_type>\t<section>" pairs.
-  awk '/Mục bắt buộc theo `doc_type`/ { on = 1; next } on && /^  - / { print; next } on { exit }' "$CONVENTIONS" |
+  awk '/Required sections by `doc_type`/ { on = 1; next } on && /^  - / { print; next } on { exit }' "$CONVENTIONS" |
     grep -vE '^  - `(Assumptions & Open Questions|Version History)`:' |
     awk '{ i = index($0, ":"); names = substr($0, 1, i - 1); types = substr($0, i + 1); n = 0
       while (match(names, /`[^`]+`/)) { sec[++n] = substr(names, RSTART + 1, RLENGTH - 2); names = substr(names, RSTART + RLENGTH) }
       while (match(types, /`[a-z-]+`/)) { t = substr(types, RSTART + 1, RLENGTH - 2); types = substr(types, RSTART + RLENGTH); for (k = 1; k <= n; k++) print t "\t" sec[k] } }' \
     > "$TMP/extra-sections"
-  # Vague terms of the requirement-quality rules (CONVENTIONS §8): backticked first cells of the "Từ mơ hồ" table.
-  awk '/^\| Từ mơ hồ \|/ { on = 1; next } on && /^\|/ { print; next } on { exit }' "$CONVENTIONS" |
-    grep -oE '^\| `[^`]+`' | sed -E 's/^\| `//; s/`$//' > "$TMP/vague-terms"
   # Valid status per doc_type (CONVENTIONS §3): "<doc_type>\t<status>" pairs from the status table.
-  awk '/^Trạng thái hợp lệ theo `doc_type`/ { on = 1; next } on && /^\| `/ { print; next } on && /^\| ---/ { next } on && /^\|/ { next } on && NF && !/^\|/ { exit }' "$CONVENTIONS" |
+  awk '/^Valid status by `doc_type`/ { on = 1; next } on && /^\| `/ { print; next } on && /^\| ---/ { next } on && /^\|/ { next } on && NF && !/^\|/ { exit }' "$CONVENTIONS" |
     awk -F'|' '{ n = split($2, t, ","); m = split($3, v, ",")
       for (i = 1; i <= n; i++) { gsub(/[ `]/, "", t[i]); for (j = 1; j <= m; j++) { x = v[j]; gsub(/[ `]/, "", x); print t[i] "\t" x } } }' > "$TMP/status-map"
   # Docs-layout override block, markers excluded.
   awk '/^<!-- END: docs-layout-override -->$/ { on = 0 } on { print } /^<!-- BEGIN: docs-layout-override -->$/ { on = 1 }' \
     "$CONVENTIONS" > "$TMP/layout-block"
-  # Legacy blocks still accepted (COMPATIBILITY §6): one "docs-layout-legacy-<label>" diff per earlier release, each
-  # rebuilt into the old block it stands for (build_legacy_layout). Labels are listed in $TMP/layout-legacy-labels.
-  grep -oE '^<!-- BEGIN: docs-layout-legacy-[A-Za-z0-9._-]+ -->$' "$LEGACY_LAYOUTS" |
-    sed -E 's/^<!-- BEGIN: docs-layout-legacy-//; s/ -->$//' > "$TMP/layout-legacy-labels"
-  local label
-  while IFS= read -r label; do
-    build_legacy_layout "$label"
-  done < "$TMP/layout-legacy-labels"
-
-  # Overlays whose projects have Stage 1W (PLAYBOOK §2): the backticked names before ", hoặc bề mặt khác" on its
-  # "- Giai đoạn 1W có khi" line.
-  grep -m1 '^- Giai đoạn 1W có khi' PLAYBOOK.md 2>/dev/null | sed 's/, hoặc bề mặt khác.*//; s/^[^:]*://' |
+  # Overlays whose projects have Stage 1W (PLAYBOOK §2): the backticked names before ", or another surface" on its
+  # "- Stage 1W applies when" line.
+  grep -m1 '^- Stage 1W applies when' PLAYBOOK.md 2>/dev/null | sed 's/, or another surface.*//; s/^[^:]*://' |
     grep -oE '`[a-z0-9-]+`' | tr -d '`' | sort -u > "$TMP/ui-overlays"
-  [[ -s "$TMP/ui-overlays" ]] || err "PLAYBOOK.md" "cannot parse the UI overlays of Stage 1W from the '- Giai đoạn 1W có khi' line of §2"
+  [[ -s "$TMP/ui-overlays" ]] || err "PLAYBOOK.md" "cannot parse the UI overlays of Stage 1W from the '- Stage 1W applies when' line of §2"
 
   # UI/UX standards of the wireframe (CONVENTIONS §10), so no key, name or value is written into this script:
-  # "<key>\t<name>" rows of the heuristic table (§10.3, first column "Khóa heuristic") and of the deceptive pattern table
-  # (§10.4, first column "Khóa mẫu lừa"); the problem levels of §10.3 ("mức vấn đề là một trong `A | B | C`") and the
-  # level that Gate 1W blocks ("Vấn đề `X` được sửa trước Gate 1W"); the two results of §10.4 ("Kết quả là `clean` kèm
-  # căn cứ ..., hoặc `found` kèm vị trí").
-  first_header_table "$CONVENTIONS" 'Khóa heuristic' 'Tên' | grep -v '^#HEADER$' | tr -d '`' > "$TMP/ux-heuristics"
-  first_header_table "$CONVENTIONS" 'Khóa mẫu lừa' 'Tên' | grep -v '^#HEADER$' | tr -d '`' > "$TMP/ux-deceptive"
-  # The four lines below only make sense inside §10.3 and §10.4 (the levels, blocking level and clean/found result
-  # words belong to those two sections); reading them from the whole file would pick up an unrelated sentence placed
-  # anywhere earlier, such as in an ID scheme example. section_rows already cuts one section to its next heading.
-  { section_rows "$CONVENTIONS" '^### 10\.3\.'; section_rows "$CONVENTIONS" '^### 10\.4\.'; } > "$TMP/ux-1034"
-  grep -m1 -oE 'mức vấn đề là một trong `[^`]+`' "$TMP/ux-1034" | sed -E 's/.*`([^`]+)`$/\1/' | tr '|' '\n' |
-    sed -E 's/^ +| +$//g' | grep -v '^$' > "$TMP/ux-levels"
-  grep -m1 -oE '^Vấn đề `[^`]+` được sửa trước Gate 1W' "$TMP/ux-1034" | cut -d'`' -f2 > "$TMP/ux-level-blocking"
-  grep -m1 -oE 'Kết quả là `[^`]+` kèm căn cứ' "$TMP/ux-1034" | cut -d'`' -f2 > "$TMP/ux-dp-clean"
-  grep -m1 -oE 'hoặc `[^`]+` kèm vị trí' "$TMP/ux-1034" | cut -d'`' -f2 > "$TMP/ux-dp-found"
+  # "<key>\t<name>" rows of the heuristic table (§10.3, first column "Heuristic key") and of the deceptive pattern table
+  # (§10.4, first column "Deceptive pattern key"); the problem levels of §10.3 are in the language table and the
+  # level that Gate 1W blocks (the CONVENTIONS sentence "A `Critical` problem is fixed before Gate 1W"); the two results of
+  # §10.4 (the sentence "The result is `None` with evidence ..., or `Found` with the location"); all in lists.tsv.
+  first_header_table "$CONVENTIONS" 'Heuristic key' 'Name' | grep -v '^#HEADER$' | tr -d '`' > "$TMP/ux-heuristics"
+  first_header_table "$CONVENTIONS" 'Deceptive pattern key' 'Name' | grep -v '^#HEADER$' | tr -d '`' > "$TMP/ux-deceptive"
 
-  # Design tokens (§10.7): the DTCG types of the table "Kiểu DTCG" and the tier groups of the table "Nhóm tầng", in the
+  # Design tokens (§10.7): the DTCG types of the table "DTCG type" and the tier groups of the table "Tier group", in the
   # order written there (lowest tier first), one name per line, for scripts/check-design-tokens.py.
   # Both tables sit inside list items, indented; first_header_table reads tables from the line start, so the indent of
   # table lines is dropped in a copy first.
   sed -E 's/^ +\|/|/' "$CONVENTIONS" > "$TMP/conventions-flat"
-  first_header_table "$TMP/conventions-flat" 'Kiểu DTCG' 'Kiểu DTCG' | grep -v '^#HEADER$' | cut -f1 | tr -d '`' > "$TMP/dtcg-types"
-  first_header_table "$TMP/conventions-flat" 'Nhóm tầng' 'Nhóm tầng' | grep -v '^#HEADER$' | cut -f1 | tr -d '`' > "$TMP/dtcg-tiers"
+  first_header_table "$TMP/conventions-flat" 'DTCG type' 'DTCG type' | grep -v '^#HEADER$' | cut -f1 | tr -d '`' > "$TMP/dtcg-types"
+  first_header_table "$TMP/conventions-flat" 'Tier group' 'Tier group' | grep -v '^#HEADER$' | cut -f1 | tr -d '`' > "$TMP/dtcg-tiers"
 
   local name
-  for name in placeholders slots doc-types infra-types history-types layout-block layout-legacy-labels vague-terms status-map \
-    ux-heuristics ux-deceptive ux-levels ux-level-blocking ux-dp-clean ux-dp-found; do
+  for name in placeholders slots doc-types infra-types history-types layout-block status-map \
+    ux-heuristics ux-deceptive; do
     [[ -s "$TMP/$name" ]] || err "$CONVENTIONS" "cannot parse '$name' from the contract"
   done
   for name in dtcg-types dtcg-tiers; do
@@ -265,18 +253,17 @@ run_token_helper() {
   out="$(python3 scripts/check-design-tokens.py --types "$TMP/dtcg-types" --tiers "$TMP/dtcg-tiers" ${TOKEN_HELPER_OPTS:-} "$@" 2>&1)"
   status=$?
   if ((status != 0)); then
-    err "$label" "design token helper failed (exit $status) (CONVENTIONS §10.7)"
+    err "$label" "design token helper failed (exit $status): $(helper_last_line "$out") (CONVENTIONS §10.7)"
     return 0
   fi
   emit_helper_lines "$label" "$out"
 }
 
-# check_design_tokens <example-dir>: the token files of a project whose Intake comes from template 1.3.0 or later
-# (CONVENTIONS §10.7): docs/design-system/tokens.json and its mode files tokens.<mode>.json.
+# check_design_tokens <example-dir>: the token files of a project (CONVENTIONS §10.7): docs/design-system/tokens.json and
+# its mode files tokens.<mode>.json.
 check_design_tokens() {
-  local dir="$1" intake="$1/docs/intake/PROJECT_INTAKE.md" ds="$1/docs/design-system" mode
+  local dir="$1" ds="$1/docs/design-system" mode
   local modes=()
-  [[ -f "$intake" ]] && version_at_least "$(gate_version "$intake" core/00_Project_Intake_Template.md)" 1.3.0 || return 0
   [[ -d "$ds" ]] || return 0
   while IFS= read -r mode; do
     modes+=("$mode")
@@ -285,13 +272,12 @@ check_design_tokens() {
   run_token_helper "$dir" "$ds/tokens.json" ${modes[@]+"${modes[@]}"}
 }
 
-# check_roadmap <example-dir>: the roadmap of a project whose Intake comes from template 1.4.0 or later (CONVENTIONS §11),
-# checked by scripts/check-roadmap.py against the SRS, SPECs, plans and Gap Analysis. The helper prints findings only and
+# check_roadmap <example-dir>: the roadmap of a project (CONVENTIONS §11), checked by scripts/check-roadmap.py against the SRS, SPECs, plans and Gap Analysis. The helper prints findings only and
 # exits 0; a non-zero exit status is an error of its own. Without python3 the roadmap is not validated and one warning
 # says so.
 check_roadmap() {
   local dir="$1" intake="$1/docs/intake/PROJECT_INTAKE.md" out status
-  [[ -f "$intake" ]] && version_at_least "$(gate_version "$intake" core/00_Project_Intake_Template.md)" 1.4.0 || return 0
+  [[ -f "$intake" ]] || return 0
   if ! command -v python3 >/dev/null 2>&1; then
     warn "$dir" "no python3; roadmap not validated (CONVENTIONS §11)"
     return 0
@@ -299,7 +285,7 @@ check_roadmap() {
   out="$(python3 scripts/check-roadmap.py "$dir" 2>&1)"
   status=$?
   if ((status != 0)); then
-    err "$dir" "roadmap helper failed (exit $status) (CONVENTIONS §11)"
+    err "$dir" "roadmap helper failed (exit $status): $(helper_last_line "$out") (CONVENTIONS §11)"
     return 0
   fi
   emit_helper_lines "$dir" "$out" "roadmap helper" "CONVENTIONS §11"
@@ -331,33 +317,32 @@ table_rows() {
 catalog_rows() { first_header_table "$1" "$2" "$3" | grep -v '^#HEADER$' > "$4"; }
 
 # check_design_system <example-dir>: the design system document and the pages that use it (CONVENTIONS §10.7).
-# Gated: the Intake is from template 1.3.0 or later, the wireframe index from 1.3.0, and at least one page from 1.4.0.
+# Skipped when the project has no wireframe index or no page.
 # Bash checks the document (the file set, the Template, Pattern and Component IDs of the pages, unused catalog entries,
 # the visual direction). Contrast and the token use of HTML wireframes need the token values, so they go to
 # scripts/check-design-token-use.py, which is skipped without python3 (check_design_tokens already warns).
 check_design_system() {
-  local dir="$1" intake="$1/docs/intake/PROJECT_INTAKE.md" wf="$1/docs/wireframes" ds="$1/docs/design-system/DESIGN_SYSTEM.md"
+  local dir="$1" wf="$1/docs/wireframes" ds="$1/docs/design-system/DESIGN_SYSTEM.md"
   local index="$1/docs/wireframes/00_WIREFRAME_INDEX.md" page pages=() id ids n line name html out status surface
   local suffix=" (CONVENTIONS §10.7)" cmp_re='CMP-[0-9]{2}' pat_re='PAT-[0-9]{2}' tpl_re='TPL-[0-9]{2}'
-  [[ -f "$intake" ]] && version_at_least "$(gate_version "$intake" core/00_Project_Intake_Template.md)" 1.3.0 || return 0
-  [[ -f "$index" ]] && version_at_least "$(gate_version "$index" core/07_Wireframe_Template/00_Wireframe_Index_Template.md)" 1.3.0 || return 0
+  [[ -f "$index" ]] || return 0
   for page in "$wf"/SCR-*.md; do
-    [[ -f "$page" ]] && version_at_least "$(gate_version "$page" core/07_Wireframe_Template/SCR_Screen_Template.md)" 1.4.0 && pages+=("$page")
+    [[ -f "$page" ]] && pages+=("$page")
   done
   ((${#pages[@]})) || return 0
 
   # 1. The document and the token file exist.
   if [[ ! -f "$ds" ]]; then
-    err "$index" "the project has pages from screen template 1.4.0 but no docs/design-system/DESIGN_SYSTEM.md$suffix"
+    err "$index" "the project has pages but no docs/design-system/DESIGN_SYSTEM.md$suffix"
     return 0
   fi
   [[ -f "$1/docs/design-system/tokens.json" ]] || err "$ds" "no docs/design-system/tokens.json next to the design system document$suffix"
 
-  # 2. Each page names one Template, its Patterns (or Không) and a Component ID per component, all in the catalogs.
-  catalog_rows "$ds" 'Component ID' 'Component dùng' "$TMP/ds-cmp"
-  catalog_rows "$ds" 'Pattern ID' 'Component dùng' "$TMP/ds-pat"
-  catalog_rows "$ds" 'Template ID' 'Pattern dùng' "$TMP/ds-tpl-pat"
-  catalog_rows "$ds" 'Template ID' 'Component dùng' "$TMP/ds-tpl-cmp"
+  # 2. Each page names one Template, its Patterns (or None) and a Component ID per component, all in the catalogs.
+  catalog_rows "$ds" 'Component ID' "$L_tpl_col_component_uses" "$TMP/ds-cmp"
+  catalog_rows "$ds" 'Pattern ID' "$L_tpl_col_component_uses" "$TMP/ds-pat"
+  catalog_rows "$ds" 'Template ID' "$L_tpl_col_pattern_uses" "$TMP/ds-tpl-pat"
+  catalog_rows "$ds" 'Template ID' "$L_tpl_col_component_uses" "$TMP/ds-tpl-cmp"
   cut -f1 "$TMP/ds-cmp" | grep -oE "$cmp_re" | sort -u > "$TMP/ds-cmp-ids"
   cut -f1 "$TMP/ds-pat" | grep -oE "$pat_re" | sort -u > "$TMP/ds-pat-ids"
   cut -f1 "$TMP/ds-tpl-pat" | grep -oE "$tpl_re" | sort -u > "$TMP/ds-tpl-ids"
@@ -383,12 +368,12 @@ check_design_system() {
 
     line="$(grep -m 1 '^- Pattern:' "$page")"
     if [[ -z "$line" ]]; then
-      err "$page" "no 'Pattern:' line; write the PAT-NN the page uses, or Không$suffix"
+      err "$page" "no 'Pattern:' line; write the PAT-NN the page uses, or $L_tpl_val_none$suffix"
     else
       ids="$(grep -oE "$pat_re" <<< "$line")"
       line="${line#- Pattern:}"; line="${line//\`/}"; line="${line# }"
-      if [[ -z "$ids" && "$line" != Không* ]]; then
-        err "$page" "the 'Pattern:' line names no PAT-NN and is not Không$suffix"
+      if [[ -z "$ids" && "$line" != "$L_tpl_val_none"* ]]; then
+        err "$page" "the 'Pattern:' line names no PAT-NN and is not $L_tpl_val_none$suffix"
       fi
       while IFS= read -r id; do
         [[ -n "$id" ]] || continue
@@ -397,7 +382,7 @@ check_design_system() {
       done <<< "$ids"
     fi
 
-    first_header_table "$page" 'Thành phần' 'Component ID' > "$TMP/ds-page-cmp"
+    first_header_table "$page" "$L_tpl_col_component" 'Component ID' > "$TMP/ds-page-cmp"
     if ! grep -qx '#HEADER' "$TMP/ds-page-cmp"; then
       err "$page" "the components table has no 'Component ID' column$suffix"
       continue
@@ -415,7 +400,7 @@ check_design_system() {
     done < <(grep -v '^#HEADER$' "$TMP/ds-page-cmp")
   done
 
-  # 3. The catalogs list only entries a page uses, directly or through the Component dùng and Pattern dùng columns of
+  # 3. The catalogs list only entries a page uses, directly or through the `Components used` and `Patterns used` columns of
   #    an entry that is used.
   : > "$TMP/ds-edges"
   for name in ds-cmp ds-pat ds-tpl-pat ds-tpl-cmp; do
@@ -433,34 +418,37 @@ check_design_system() {
   done
 
   # 6. One visual direction: two or three directions, exactly one chosen with a reason, and the library default theme stated.
-  first_header_table "$ds" 'Hướng' 'Chọn' | grep -v '^#HEADER$' > "$TMP/ds-directions"
+  first_header_table "$ds" "$L_tpl_col_direction" "$L_tpl_col_chosen" | grep -v '^#HEADER$' > "$TMP/ds-directions"
   n="$(wc -l < "$TMP/ds-directions")"; n="${n// /}"
   if ((n < 2 || n > 3)); then
     err "$ds" "the direction table has $n row$([[ $n == 1 ]] || printf s); propose 2 to 3 visual directions$suffix"
   fi
-  n="$(cut -f2 "$TMP/ds-directions" | grep -cxF 'Có')"
-  ((n == 1)) || err "$ds" "$n directions are marked 'Có' in the Chọn column; the owner chooses exactly one$suffix"
-  line="$(sed -n 's/^Lý do chọn:[[:space:]]*//p' "$ds" | head -n 1)"
+  n="$(cut -f2 "$TMP/ds-directions" | grep -cxF "$L_tpl_val_yes")"
+  ((n == 1)) || err "$ds" "$n directions are marked '$L_tpl_val_yes' in the $L_tpl_col_chosen column; the owner chooses exactly one$suffix"
+  line="$(sed -n "s/^$L_tpl_label_choice_reason:[[:space:]]*//p" "$ds" | head -n 1)"
   line="${line//<!--*-->/}"
-  [[ -n "${line//[[:space:]]/}" ]] || err "$ds" "the 'Lý do chọn:' line is missing or empty; give the reason for the chosen direction$suffix"
-  if ! grep -q '^Theme mặc định của thư viện:' "$ds"; then
-    err "$ds" "the 'Theme mặc định của thư viện:' line is missing; write Không dùng, or Dùng có chủ đích with a reason$suffix"
+  [[ -n "${line//[[:space:]]/}" ]] || err "$ds" "the '$L_tpl_label_choice_reason:' line is missing or empty; give the reason for the chosen direction$suffix"
+  if ! grep -q "^$L_tpl_label_library_theme:" "$ds"; then
+    err "$ds" "the '$L_tpl_label_library_theme:' line is missing; write $L_tpl_val_not_used, or $L_tpl_val_used_on_purpose with a reason$suffix"
   else
-    line="$(sed -n 's/^Theme mặc định của thư viện:[[:space:]]*//p' "$ds" | head -n 1)"
+    line="$(sed -n "s/^$L_tpl_label_library_theme:[[:space:]]*//p" "$ds" | head -n 1)"
     case "$line" in
-      "Không dùng"*) ;;
-      "Dùng có chủ đích"*)
-        line="${line#Dùng có chủ đích}"
+      "$L_tpl_val_not_used"*) ;;
+      "$L_tpl_val_used_on_purpose"*)
+        line="${line#"$L_tpl_val_used_on_purpose"}"
         [[ -n "$(tr -d '[:space:],.:;-' <<< "$line")" ]] ||
-          err "$ds" "'Dùng có chủ đích' needs a reason after it$suffix" ;;
-      *) err "$ds" "the 'Theme mặc định của thư viện:' line must start with 'Không dùng' or 'Dùng có chủ đích'$suffix" ;;
+          err "$ds" "'$L_tpl_val_used_on_purpose' needs a reason after it$suffix" ;;
+      *) err "$ds" "the '$L_tpl_label_library_theme:' line must start with '$L_tpl_val_not_used' or '$L_tpl_val_used_on_purpose'$suffix" ;;
     esac
   fi
 
-  # 4 and 5. Contrast and the token use of HTML wireframes: the values come from the token files.
+  # 4 and 5. Contrast and the token use of HTML wireframes: the values come from the token files. The contrast table is found
+  # by the label of its first column; without it nothing would be checked and nothing said.
+  first_header_table "$ds" "$L_tpl_col_token_before" "$L_tpl_col_token_before" | grep -x '#HEADER' >/dev/null ||
+    err "$ds" "no contrast table whose first column is '$L_tpl_col_token_before', so the colour contrast is not checked; write the table of the design system template$suffix"
   command -v python3 >/dev/null 2>&1 || return 0
   table_rows "$ds" 'Mode' > "$TMP/ds-modes"
-  table_rows "$ds" 'Token trước' | awk -F'\t' -v OFS='\t' '{ print NR, $0 }' > "$TMP/ds-contrast"
+  table_rows "$ds" "$L_tpl_col_token_before" | awk -F'\t' -v OFS='\t' '{ print NR, $0 }' > "$TMP/ds-contrast"
   : > "$TMP/ds-html"
   for page in "${pages[@]}"; do
     html="$wf/html/$(basename "$page" .md).html"
@@ -472,47 +460,17 @@ check_design_system() {
     --modes "$TMP/ds-modes" --contrast "$TMP/ds-contrast" --html "$TMP/ds-html" 2>&1)"
   status=$?
   if ((status != 0)); then
-    err "$ds" "design token use helper failed (exit $status)$suffix"
+    err "$ds" "design token use helper failed (exit $status): $(helper_last_line "$out")$suffix"
     return 0
   fi
   emit_helper_lines "$ds" "$out"
   out="$(python3 scripts/check-full-html.py "$dir" 2>&1)"
   status=$?
   if ((status != 0)); then
-    err "$ds" "full HTML helper failed (exit $status) (CONVENTIONS §7)"
+    err "$ds" "full HTML helper failed (exit $status): $(helper_last_line "$out") (CONVENTIONS §7)"
     return 0
   fi
   emit_helper_lines "$ds" "$out" "full HTML helper" "CONVENTIONS §7"
-}
-
-# build_legacy_layout <label>: write $TMP/layout-legacy-<label>, the old docs-layout block that the labelled diff of
-# CONVENTIONS §6 describes. The diff lists lines in the order of the current block. A "+" line right after a "-" line is
-# a changed line: the old block has the "-" text in its place. A "+" line with no "-" line right before it is an
-# inserted line: the old block does not have it. Every other line of the current block is unchanged. The "+" lines are
-# matched against the current block in order, so a diff that does not fit the current block is a contract error.
-build_legacy_layout() {
-  local label="$1" diff="$TMP/layout-legacy-diff-$1"
-  awk -v label="$label" '
-    $0 == "<!-- END: docs-layout-legacy-" label " -->" { on = 0 }
-    on && /^[-+]/ { print }
-    $0 == "<!-- BEGIN: docs-layout-legacy-" label " -->" { on = 1 }' "$LEGACY_LAYOUTS" > "$diff"
-  if [[ ! -s "$diff" ]]; then
-    err "$LEGACY_LAYOUTS" "legacy layout block docs-layout-legacy-$label has no '-' or '+' line (COMPATIBILITY §6)"
-    return
-  fi
-  awk -v diff="$diff" '
-    BEGIN {
-      while ((getline line < diff) > 0) {
-        t = substr(line, 1, 1); s = substr(line, 2)
-        if (t == "-") { if (pending) bad = 1; pending = 1; old = s; continue }
-        n++; plus[n] = s; changed[n] = pending; if (pending) was[n] = old; pending = 0
-      }
-      if (pending) bad = 1
-    }
-    k < n && $0 == plus[k + 1] { k++; if (changed[k]) print was[k]; next }
-    { print }
-    END { exit (bad || k != n) ? 3 : 0 }' "$TMP/layout-block" > "$TMP/layout-legacy-$label" ||
-    err "$LEGACY_LAYOUTS" "legacy layout block docs-layout-legacy-$label does not fit the current block: a '-' line without a '+' line after it, or a '+' line that is not in the current block in diff order (CONVENTIONS §6)"
 }
 
 # ---------------------------------------------------------------------------
@@ -605,10 +563,10 @@ check_links() {
   done
 }
 
-# check_layout_block <file> [current-only]: the file carries the docs-layout override block verbatim, markers included.
-# Generated CLAUDE.md files may keep any legacy block listed in CONVENTIONS §6; templates must carry the current one.
+# check_layout_block <file>: the file carries the docs-layout override block verbatim, markers included. Only the current
+# block is accepted: a block edited by hand or mixed from two releases is refused.
 check_layout_block() {
-  local f="$1" current_only="${2:-}" label
+  local f="$1"
   if ! grep -qx '<!-- BEGIN: docs-layout-override -->' "$f" || ! grep -qx '<!-- END: docs-layout-override -->' "$f"; then
     err "$f" "missing docs-layout-override block (copy both marker lines and the content from $CONVENTIONS §6)"
     return
@@ -616,12 +574,7 @@ check_layout_block() {
   awk '/^<!-- END: docs-layout-override -->$/ { on = 0 } on { print } /^<!-- BEGIN: docs-layout-override -->$/ { on = 1 }' \
     "$f" > "$TMP/layout-candidate"
   cmp -s "$TMP/layout-block" "$TMP/layout-candidate" && return
-  if [[ -z "$current_only" ]]; then
-    while IFS= read -r label; do
-      [[ -f "$TMP/layout-legacy-$label" ]] && cmp -s "$TMP/layout-legacy-$label" "$TMP/layout-candidate" && return
-    done < "$TMP/layout-legacy-labels"
-  fi
-  err "$f" "docs-layout-override block differs from $CONVENTIONS (must be copied verbatim; the legacy blocks of COMPATIBILITY.md §6 are also accepted)"
+  err "$f" "docs-layout-override block differs from $CONVENTIONS (must be copied verbatim)"
 }
 
 # check_assembled_from <file...>: every "path@version" source exists; warn when the source is newer by a MINOR or MAJOR.
@@ -681,7 +634,7 @@ check_profile_listed() {
 # and compare byte for byte. Verification only; the kit ships no starter generator.
 # ---------------------------------------------------------------------------
 
-# slot_levels: "slot-id=###;..." from the "Cấp khối" column of the CONVENTIONS slot catalog.
+# slot_levels: "slot-id=###;..." from the "Block level" column of the CONVENTIONS slot catalog.
 slot_levels() {
   grep -E '^\| `<!-- SLOT: [a-z0-9.-]+ -->` \|' "$CONVENTIONS" |
     sed -E 's/^\| `<!-- SLOT: ([a-z0-9.-]+) -->` \|[^|]*\| `(#+)` \|.*/\1=\2/' | paste -sd';' -
@@ -692,10 +645,10 @@ min_heading_level() {
   awk '/^[ \t]*(```|~~~)/ { fence = !fence; next } !fence && /^#+ / { n = index($0, " ") - 1; if (min == "" || n < min) min = n } END { print (min == "" ? 99 : min) }' "$1"
 }
 
-# display_names: "surface=Display Name;..." parsed from the "Tên hiển thị bề mặt" line of CONVENTIONS §2.
+# display_names: "surface=Display Name;..." parsed from the "Surface display names" line of CONVENTIONS §2.
 display_names() {
-  grep -m1 -E '^- Tên hiển thị bề mặt: ' "$CONVENTIONS" | sed -E 's/^- Tên hiển thị bề mặt: //; s/\.$//' |
-    sed -E 's/, /\n/g' | sed -E 's/^`([a-z0-9-]+)` là (.+)$/\1=\2/' | paste -sd';' -
+  grep -m1 -E '^- Surface display names: ' "$CONVENTIONS" | sed -E 's/^- Surface display names: //; s/\.$//' |
+    sed -E 's/, /\n/g' | sed -E 's/^`([a-z0-9-]+)` is (.+)$/\1=\2/' | paste -sd';' -
 }
 
 # extract_overlay_blocks <surface> <out-dir>: one file per SLOT-CONTENT id, plus "<id>\t<path@version>" lines in <out-dir>/src.
@@ -812,6 +765,8 @@ check_starter_assembly() {
     expected="$TMP/expected-starter"
     assemble_starter "$core" "$surfaces" "$is_claude" "$expected"
     if ! cmp -s "$expected" "$file"; then
+      # Maintainers only: KIT_REGEN_STARTERS=1 rewrites a starter from its sources instead of reporting it (after a change of a core template or an overlay).
+      [[ -n "${KIT_REGEN_STARTERS:-}" ]] && { cp "$expected" "$file"; echo "regenerated $file"; continue; }
       first="$(diff "$expected" "$file" | grep -m1 -E '^[<>]')"
       err "$file" "differs from re-assembling $core with overlays [$surfaces] (first difference: ${first:0:80}); re-assemble instead of editing the starter"
     fi
@@ -879,7 +834,7 @@ check_stack_neutral_core() {
 
 check_placeholders() {
   local targets hit file lineno token
-  mapfile -t targets < <(existing "${KIT_DIRS[@]}" PLAYBOOK.md PROMPTS.md COMPATIBILITY.md)
+  mapfile -t targets < <(existing "${KIT_DIRS[@]}" PLAYBOOK.md PROMPTS.md)
   ((${#targets[@]})) || return 0
   while IFS= read -r hit; do
     file="${hit%%:*}"
@@ -903,8 +858,8 @@ check_numbered_headings() {
     is_document_type "$doc_type" || continue
     while IFS=$'\t' read -r lineno text; do
       err "$f:$lineno" "heading is not numbered as '## N.' or '### N.M.' (see $CONVENTIONS §7): $text"
-    done < <(unfenced "$f" | awk -F'\t' -v agent_context="$([[ "$f" == core/06_Agent_Context_Template.md ]] && echo 1)" '
-      agent_context && $2 ~ /^## Phụ lục/ { appendix = 1 }
+    done < <(unfenced "$f" | awk -F'\t' -v appendix_re="^## $L_tpl_heading_appendix" -v agent_context="$([[ "$f" == core/06_Agent_Context_Template.md ]] && echo 1)" '
+      agent_context && $2 ~ appendix_re { appendix = 1 }
       appendix || (agent_context && $2 == "## Documentation Layout") { next }
       $2 ~ /^###? / && $2 !~ /^## [0-9]+\. / && $2 !~ /^### [0-9]+\.[0-9]+\. / { print }')
   done < <(markdown_files core brownfield)
@@ -992,7 +947,7 @@ check_slots() {
         err "$file:$lineno" "overlay or profile marker in a core file"
       fi
     done < <(unfenced "$file")
-  done < <(markdown_files core brownfield; existing PLAYBOOK.md PROMPTS.md COMPATIBILITY.md)
+  done < <(markdown_files core brownfield; existing PLAYBOOK.md PROMPTS.md)
   sort -u -o "$TMP/core-slot-ids" "$TMP/core-slot-ids"
 
   # Every catalogued slot is present in each file named in its location column.
@@ -1038,7 +993,7 @@ check_slots() {
         err "${located%@*}" "SLOT-CONTENT $id uses $token, a stack-profile placeholder; SRS content stays stack-neutral (CONVENTIONS §1)"
       done < <(grep -oE "$PLACEHOLDER_RE" "$TMP/xb-$surface/$id" | sort -u | comm -12 - "$TMP/profile-placeholders")
     done < "$TMP/xb-$surface/src"
-    # Heading levels: block content never rises above the slot's "Cấp khối" (CONVENTIONS §2).
+    # Heading levels: block content never rises above the slot's "Block level" (CONVENTIONS §2).
     while IFS=$'\t' read -r id located; do
       level="$(tr ';' '\n' <<< "$levels" | awk -F= -v id="$id" '$1 == id { print length($2) }')"
       [[ -n "$level" ]] || continue
@@ -1098,7 +1053,7 @@ check_slots() {
       done < <(sort -u "$TMP/pblock-ids" | comm -23 - "$TMP/profile-slot-ids")
       while IFS= read -r id; do
         grep -qE "^\| \`\{\{$id\}\}\` \|" "$profile" 2>/dev/null ||
-          err "$profile" "no value for {{$id}} in the 'Giá trị placeholder' table"
+          err "$profile" "no value for {{$id}} in the '$L_tpl_table_placeholder_values' table"
       done < <(sed -E 's/^\{\{(.*)\}\}$/\1/' "$TMP/needed-values")
     done
   done
@@ -1226,9 +1181,9 @@ check_starters() {
 
 check_layout_blocks_in_templates() {
   local file
-  [[ -f core/06_Agent_Context_Template.md ]] && check_layout_block core/06_Agent_Context_Template.md current-only
+  [[ -f core/06_Agent_Context_Template.md ]] && check_layout_block core/06_Agent_Context_Template.md
   for file in starters/*/CLAUDE.md.template; do
-    [[ -f "$file" ]] && check_layout_block "$file" current-only
+    [[ -f "$file" ]] && check_layout_block "$file"
   done
 }
 
@@ -1244,7 +1199,7 @@ run_templates() {
   check_stack_neutral_core
   mapfile -t kit_files < <(markdown_files "${KIT_DIRS[@]}")
   ((${#kit_files[@]})) && check_frontmatter "${kit_files[@]}"
-  check_frontmatter $(existing PLAYBOOK.md PROMPTS.md COMPATIBILITY.md CONVENTIONS.md)
+  check_frontmatter $(existing PLAYBOOK.md PROMPTS.md CONVENTIONS.md)
   check_template_frontmatter
   ((${#kit_files[@]})) && check_required_sections "${kit_files[@]}"
   check_placeholders
@@ -1467,7 +1422,7 @@ check_example_consistency() {
     fi
   done < <(for file in "$dir"/docs/srs/*.md "$dir"/docs/specs/* "$dir"/docs/prompts/*.md; do [[ -f "$file" ]] && used_error_codes "$file" "$TMP/known-names"; done)
 
-  # 2. A state machine announced as "(`EnumName`):" on the line before its diagram ("Đơn hàng (`OrderStatus`):")
+  # 2. A state machine announced as "(`EnumName`):" on the line before its diagram ("Order (`OrderStatus`):")
   #    uses exactly the values of that enum in an ARCHITECTURE schema of the example's scope.
   #    Diagrams announced any other way (UI or process states) are not checked.
   enums="$(example_enums "$TMP/scope")"
@@ -1500,15 +1455,14 @@ check_example_consistency() {
         err "$file" "$inv has no CONC test in the SPEC test table"
     done < <(section_rows "$file" '^### 1\.2\.' | grep -oE '^\| INV-[0-9]{2} \|' | grep -oE 'INV-[0-9]{2}')
     # 4. Every TC in a SPEC is scheduled in a phase of the example's Implementation Plan, once a plan already covers
-    #    this SPEC (its spec_id is in a release plan's spec_ids, or is the spec_id of an older, single-SPEC plan). A
+    #    this SPEC (its spec_id is in a release plan's spec_ids). A
     #    SPEC not yet claimed by any plan is not held to this rule (PLAYBOOK §2.4: a plan comes after Gate 3).
     spec_id="$(frontmatter_value "$file" spec_id)"
     has_plan=0
     if [[ -n "$spec_id" ]]; then
       for plan_dir in ${PLAN_DIRS[@]+"${PLAN_DIRS[@]}"}; do
         [[ -f "${plan_dir}plan.md" ]] || continue
-        if frontmatter_list "${plan_dir}plan.md" spec_ids | grep -qxF -- "$spec_id" ||
-          [[ "$(frontmatter_value "${plan_dir}plan.md" spec_id)" == "$spec_id" ]]; then
+        if frontmatter_list "${plan_dir}plan.md" spec_ids | grep -qxF -- "$spec_id"; then
           has_plan=1
           break
         fi
@@ -1535,20 +1489,23 @@ check_example_consistency() {
   # 6. An example that builds on other examples (a web client of an API example) redefines nothing they own. Across
   #    all of its docs:
   #    - every versioned API endpoint ("METHOD /api/vN/...", path parameters compared as {}) is defined in the
-  #      "Method và path" row of a referenced example's SPEC; an unversioned "/api/..." endpoint is one of the
+  #      "Method and path" row of a referenced example's SPEC; an unversioned "/api/..." endpoint is one of the
   #      example's own route handlers (an api/<path>/route file in its ARCHITECTURE layout);
   #    - every operationId it cites is an operationId of a referenced example's SPEC;
   #    - every FR or SPEC ID whose module code belongs to a referenced example (and not to the example itself) exists
   #      there (SRS §6.1, spec_id);
-  #    - every code in its own registry whose owner cell starts with "API" is in a referenced example's registry.
+  #    - every code in its own registry whose owner cell names the API is in a referenced example's registry.
   grep -vxF -- "$dir" "$TMP/scope" > "$TMP/referenced" || true
   if [[ -s "$TMP/referenced" ]]; then
     local endpoint_re='\b(GET|POST|PUT|PATCH|DELETE) `?/api/[A-Za-z0-9/{}_.-]*'
     normalize_endpoints() { tr -d '`' | sed -E 's/\{[^}]*\}/{}/g; s#/+$##' | sort -u; }
     module_codes() { section_rows "$1" '^### 1\.2\.' | grep -oE '^\| MOD-[0-9]{2} \| `[A-Z]{2,6}(-[A-Z]{2,6})?`' | grep -oE '`[A-Z-]+`' | tr -d '`'; }
+    # A referenced example may be written in another language than this one: its "Method and path" row is read under the label of any language.
+    local method_path_any
+    method_path_any="($(awk -F'\t' '$1 == "tpl_row_method_path" { print $2 }' "$ROOT"/scripts/locales/*/templates.tsv | sort -u | paste -sd'|'))"
     while IFS= read -r member; do
-      grep -ohE '^\| Method và path \| (GET|POST|PUT|PATCH|DELETE) `?/api/[A-Za-z0-9/{}_.-]*' "$member"/docs/specs/*.md 2>/dev/null |
-        sed -E 's/^\| Method và path \| //'
+      grep -ohE '^\| '"$method_path_any"' \| (GET|POST|PUT|PATCH|DELETE) `?/api/[A-Za-z0-9/{}_.-]*' "$member"/docs/specs/*.md 2>/dev/null |
+        sed -E 's/^\| '"$method_path_any"' \| //'
     done < "$TMP/referenced" | normalize_endpoints > "$TMP/referenced-endpoints"
     : > "$TMP/own-handlers"
     [[ -f "$arch" ]] && route_handlers "$arch" | sort -u > "$TMP/own-handlers"
@@ -1590,7 +1547,7 @@ check_example_consistency() {
     done < <(find "$dir/docs" -name '*.md' -type f | sort)
     if [[ -f "$arch" ]]; then
       while IFS=$'\t' read -r code owner; do
-        [[ "$owner" == API* ]] || continue
+        [[ "$owner" == *API* ]] || continue   # the API is named in the language of the example: "API Shop Mini", "Shop Mini API"
         grep -qxF -- "$code" "$TMP/referenced-registry" ||
           err "$arch" "registry row $code is owned by the API but is not in a referenced example's Error Code Registry"
       done < <(section_rows "$arch" '^### 7\.1\.' | awk -F'|' '/^\| `[A-Z][A-Z0-9_]+` \|/ { code = $2; owner = $4; gsub(/[ `]/, "", code); sub(/^ +/, "", owner); sub(/ +$/, "", owner); print code "\t" owner }')
@@ -1632,7 +1589,7 @@ check_example_consistency() {
       fi
       count="$(grep -c '[^[:space:]]' "$dir/$path")"
       if [[ ! "$samples" =~ ^[0-9]+$ ]]; then
-        [[ "$samples" == Như* ]] || err "$file" "$tc gives '$samples' as the sample count of $path; write the number"
+        [[ "$samples" == "$L_tpl_val_like"* ]] || err "$file" "$tc gives '$samples' as the sample count of $path; write the number"
       elif ((samples != count)); then
         err "$file" "$tc gives $samples samples for $path, which has $count"
       fi
@@ -1751,28 +1708,38 @@ table_column() {
     }' "$1"
 }
 
+# has_word <term>: success when standard input holds <term> as a whole word or phrase, not inside a longer word, so that
+# "coefficient" does not hold "efficient". Letters and digits of any script count as part of a word (grep -P needs the
+# UTF-8 locale; without it the match falls back to a plain substring, which can only report more).
+if LC_ALL=C.UTF-8 grep -qP '(?<![\p{L}])a' <<< 'a' 2>/dev/null; then HAS_WORD_PCRE=1; else HAS_WORD_PCRE=0; fi
+has_word() {
+  if ((HAS_WORD_PCRE)); then
+    LC_ALL=C.UTF-8 grep -qP -- "(?<![\p{L}\p{N}])\Q$1\E(?![\p{L}\p{N}])"
+  else
+    grep -qF -- "$1"
+  fi
+}
+
 # NFR_RE: an NFR ID per CONVENTIONS §3 (NFR-{CAT}-NN); CAT may itself contain digits (e.g. I18N), so the category
 # class must be [A-Z0-9], not [A-Z]. Every rule below that collects or matches an NFR ID uses this one pattern.
 NFR_RE='NFR-[A-Z0-9]+-[0-9]{2}'
 
-# check_srs_requirements <example-dir>: requirement-quality rules of CONVENTIONS §8 for SRS files built from template
-# 1.1.0 or later. 1. The §6.1 catalog has a "Phát biểu yêu cầu" column; every row states one MUST or MUST NOT.
-# 2. FR statements and the NFR "Yêu cầu" and "Ngưỡng" cells use no vague term. 3. Every applicable NFR of §7 has a
+# check_srs_requirements <example-dir>: requirement-quality rules of CONVENTIONS §8 for SRS files.
+# 1. The §6.1 catalog has a "Requirement statement" column (`tpl_col_requirement_statement`); every row states one MUST or MUST NOT.
+# 2. FR statements and the NFR "Requirement" and "Threshold" cells use no vague term. 3. Every applicable NFR of §7 has a
 # row in §8; in modular mode the NFR set of the master and the §8 rows of every module are pooled.
 check_srs_requirements() {
-  local dir="$1" file ver id cell count term rows applies=0
+  local dir="$1" file id cell count term rows applies=0
   : > "$TMP/nfr-ids"; : > "$TMP/nfr-traced"
   for file in "$dir"/docs/srs/*.md; do
     [[ -f "$file" ]] || continue
-    # Every SRS file feeds the §8 trace set, so a module still on an older template does not cause false errors.
+    # Every SRS file feeds the §8 trace set.
     awk '/^## 8\./ { on = 1; next } on && /^##? / { exit } on' "$file" | grep -oE "\\b$NFR_RE\\b" >> "$TMP/nfr-traced"
-    ver="$(gate_version "$file" core/01_SRS_Template.md)"
-    [[ -n "$ver" && "$(printf '%s\n%s\n' "$ver" 1.1.0 | sort -V | head -n 1)" == 1.1.0 ]] || continue
     applies=1
     if grep -qE '^### 6\.1\.' "$file" || [[ "$(frontmatter_value "$file" doc_type)" == srs-module || "$file" != */00_SRS_MASTER.md ]]; then
-      rows="$(table_column "$file" '^### 6\.1\.' 'Phát biểu yêu cầu')"
+      rows="$(table_column "$file" '^### 6\.1\.' "$L_tpl_col_requirement_statement")"
       if ! grep -qx '#HEADER' <<< "$rows"; then
-        err "$file" "SRS §6.1 has no catalog table with a 'Phát biểu yêu cầu' column (CONVENTIONS §8)"
+        err "$file" "SRS §6.1 has no catalog table with a '$L_tpl_col_requirement_statement' column (CONVENTIONS §8)"
       fi
       while IFS=$'\t' read -r id cell; do
         [[ "$id" == '#HEADER' || -z "$id" ]] && continue
@@ -1786,9 +1753,9 @@ check_srs_requirements() {
       done <<< "$rows"
     fi
     # §7 and §8 may carry ### subsections; they end only at the next # or ## heading.
-    rows="$(table_column "$file" '^## 7\.' 'Yêu cầu' '^##? ')"
+    rows="$(table_column "$file" '^## 7\.' "$L_tpl_col_requirement" '^##? ')"
     if [[ "$(frontmatter_value "$file" doc_type)" == srs ]] && grep -qE '^## 7\.' "$file" && ! grep -qE "^${NFR_RE}"$'\t' <<< "$rows"; then
-      err "$file" "SRS §7 has no NFR table with a 'Yêu cầu' column (CONVENTIONS §8)"
+      err "$file" "SRS §7 has no NFR table with a '$L_tpl_col_requirement' column (CONVENTIONS §8)"
     fi
     while IFS=$'\t' read -r id cell; do
       [[ "$id" =~ ^NFR- ]] || continue
@@ -1797,7 +1764,7 @@ check_srs_requirements() {
     done <<< "$rows"
     while IFS=$'\t' read -r id cell; do
       [[ "$id" =~ ^NFR- ]] && printf '%s\t%s\t%s\n' "$file" "$id" "$cell" >> "$TMP/vague-cells"
-    done < <(table_column "$file" '^## 7\.' 'Ngưỡng' '^##? ')
+    done < <(table_column "$file" '^## 7\.' "$L_tpl_col_threshold" '^##? ')
   done
   ((applies)) || return 0
   if [[ -s "$TMP/vague-cells" ]]; then
@@ -1805,7 +1772,7 @@ check_srs_requirements() {
     while IFS=$'\t' read -r file id cell; do
       while IFS= read -r term; do
         [[ -n "$term" ]] || continue
-        grep -qF -- "$term" <<< "$(lower_text <<< "$cell")" && err "$file" "$id uses the vague term '$term' (CONVENTIONS §8)"
+        has_word "$term" <<< "$(lower_text <<< "$cell")" && err "$file" "$id uses the vague term '$term' (CONVENTIONS §8)"
       done < "$TMP/vague-lower"
     done < "$TMP/vague-cells"
   fi
@@ -1862,10 +1829,9 @@ check_status_values() {
   done
 }
 
-# check_crossdoc <example-dir>: cross-document traceability rules (CONVENTIONS §4). Rules marked "gated" apply only to
-# documents built from the template version named in the rule.
+# check_crossdoc <example-dir>: cross-document traceability rules (CONVENTIONS §4).
 check_crossdoc() {
-  local dir="$1" member spec srs file id ids cell tc ac nfr method goal ver intake adr spec_new srs_new
+  local dir="$1" member spec srs file id ids cell tc ac nfr method goal intake adr srs_seen
   example_scope "$dir" > "$TMP/cd-scope"
   : > "$TMP/cd-fr"; : > "$TMP/cd-ac"; : > "$TMP/cd-own-br"; : > "$TMP/cd-own-nfr"
   while IFS= read -r member; do
@@ -1879,26 +1845,21 @@ check_crossdoc() {
       fi
     done
   done < "$TMP/cd-scope"
-  : > "$TMP/cd-spec-tc"; : > "$TMP/cd-spec-tc-new"; : > "$TMP/cd-spec-nfr"; : > "$TMP/cd-tested-nfr"
+  : > "$TMP/cd-spec-tc"; : > "$TMP/cd-spec-nfr"; : > "$TMP/cd-tested-nfr"
   for spec in "$dir"/docs/specs/*.md; do
     [[ -f "$spec" ]] || continue
-    spec_new=0
-    version_at_least "$(gate_version "$spec" core/04_Spec_Core_Template.md)" 1.1.0 && spec_new=1
-    # A SPEC from template 1.1.0 keeps the tables these rules read; a renamed header must not switch the rules off.
-    if ((spec_new)); then
-      table_pair "$spec" '^### 1\.5\.' 'FR ID' 'AC ID' | grep -q . || err "$spec" "SPEC §1.5 has no table with 'FR ID' and 'AC ID' columns (CONVENTIONS §4)"
-      table_pair "$spec" '^### 9\.1\.' 'TC ID' 'AC hoặc INV' | grep -q . || err "$spec" "SPEC §9.1 has no table with 'TC ID' and 'AC hoặc INV' columns (CONVENTIONS §4)"
-    fi
+    # A SPEC keeps the tables these rules read; a renamed header must not switch the rules off.
+    table_pair "$spec" '^### 1\.5\.' 'FR ID' 'AC ID' | grep -q . || err "$spec" "SPEC §1.5 has no table with 'FR ID' and 'AC ID' columns (CONVENTIONS §4)"
+    table_pair "$spec" '^### 9\.1\.' 'TC ID' "$L_tpl_col_ac_or_inv" | grep -q . || err "$spec" "SPEC §9.1 has no table with 'TC ID' and '$L_tpl_col_ac_or_inv' columns (CONVENTIONS §4)"
     # 1. Every FR, AC, BR and NFR that SPEC §1.5 names exists in a SRS (FR and AC also in referenced examples).
     for ids in "FR ID:cd-fr" "AC ID:cd-ac" "BR ID:cd-own-br" "NFR ID:cd-own-nfr"; do
       while IFS= read -r id; do
         grep -qxF -- "$id" "$TMP/${ids#*:}" || err "$spec" "SPEC §1.5 names $id, which no SRS in the example's scope defines (CONVENTIONS §4)"
       done < <(table_pair "$spec" '^### 1\.5\.' 'FR ID' "${ids%%:*}" | cut -f2 | grep -oE '\b(FR|AC|BR|NFR)-[A-Z0-9-]*[0-9]\b' | sort -u)
     done
-    table_pair "$spec" '^### 9\.1\.' 'TC ID' 'AC hoặc INV' > "$TMP/cd-s9"
+    table_pair "$spec" '^### 9\.1\.' 'TC ID' "$L_tpl_col_ac_or_inv" > "$TMP/cd-s9"
     cut -f2 "$TMP/cd-s9" | grep -oE "\\b$NFR_RE\\b" >> "$TMP/cd-tested-nfr"
     cut -f1 "$TMP/cd-s9" | grep -oE '^TC-[A-Z0-9-]+' | sed "s|^|$spec\t|" >> "$TMP/cd-spec-tc"
-    ((spec_new)) && cut -f1 "$TMP/cd-s9" | grep -oE '^TC-[A-Z0-9-]+' | sed "s|^|$spec\t|" >> "$TMP/cd-spec-tc-new"
     # 2. Every AC that SPEC §1.5 names has a test row in SPEC §9.
     while IFS= read -r ac; do
       grep -qE -- "(^|[^A-Z0-9-])$ac([^0-9]|$)" <(cut -f2 "$TMP/cd-s9") || err "$spec" "$ac is named in SPEC §1.5 but has no test in SPEC §9 (CONVENTIONS §4)"
@@ -1911,61 +1872,50 @@ check_crossdoc() {
       awk -v f="$file" '$0 == f || (length($0) > length(f) && substr($0, length($0) - length(f)) == "/" f) { found = 1 } END { exit !found }' "$TMP/cd-diff" ||
         err "$spec" "test file $file in SPEC §9 is not in the File Diff §2 (CONVENTIONS §4)"
     done < <(table_pair "$spec" '^### 9\.1\.' 'TC ID' 'File test' | cut -f2 | grep -oE '`[^`]+`' | tr -d '`' | sort -u)
-    # A TC lives in SPEC §9 and in the phase files only (CONVENTIONS §4). The TC column that SRS §8 of a document
-    # from an older template still has is read by rule 5 below but is never compared with SPEC §9, for any version.
+    # A TC lives in SPEC §9 and in the phase files only (CONVENTIONS §4); SRS §8 has no TC column.
   done
-  # 6. (gated: SPEC template 1.1.0) No TC of a SPEC from template 1.1.0 is defined by another SPEC of the example.
+  # 6. No TC is defined by more than one SPEC of the example.
   while IFS= read -r tc; do
-    grep -qP -- "\t$tc\$" "$TMP/cd-spec-tc-new" || continue
     err "$dir" "$tc is defined in more than one SPEC §9: $(awk -F'\t' -v t="$tc" '$2 == t { printf "%s ", $1 }' "$TMP/cd-spec-tc")(CONVENTIONS §4)"
   done < <(cut -f2 "$TMP/cd-spec-tc" | sort | uniq -d)
   for srs in "$dir"/docs/srs/*.md; do
     [[ -f "$srs" ]] || continue
-    ver="$(gate_version "$srs" core/01_SRS_Template.md)"
-    # 5. (gated: SRS template 1.2.0) An NFR a SPEC names and SRS §8 verifies by Test is tested: the SPEC's §9 names the
-    #    NFR, or at least one TC that SRS §8 plans for it is in a SPEC §9 of the example.
-    if version_at_least "$ver" 1.2.0; then
-      if [[ "$(frontmatter_value "$srs" doc_type)" == srs ]] && ! table_pair "$srs" '^## 8\.' 'NFR ID' 'Cách kiểm chứng' '^##? ' | grep -q .; then
-        err "$srs" "SRS §8 has no NFR table with 'NFR ID' and 'Cách kiểm chứng' columns (CONVENTIONS §4)"
-      fi
-      while IFS=$'\t' read -r nfr method; do
-        [[ "$method" == Test* ]] || continue
-        tc="$(table_pair "$srs" '^## 8\.' 'NFR ID' 'TC' '^##? ' | awk -F'\t' -v n="$nfr" '$1 == n { print $2 }' | grep -oE '\bTC-[A-Z0-9-]+-[0-9]{2}\b' | sort -u)"
-        cut -f2 "$TMP/cd-spec-tc" | grep -qxF -f <(printf '%s\n' "${tc:--}") && continue
-        grep -qxF -- "$nfr" "$TMP/cd-tested-nfr" && continue  # a shared NFR may be tested by another SPEC of the project
-        while IFS=$'\t' read -r spec id; do
-          [[ "$id" == "$nfr" ]] || continue
-          table_pair "$spec" '^### 9\.1\.' 'TC ID' 'AC hoặc INV' | cut -f2 | grep -qE -- "(^|[^A-Z0-9-])$nfr([^0-9]|\$)" && continue
-          err "$srs" "$nfr is named by ${spec##*/} and verified by Test, but no SPEC §9 of the project has a test that names it (CONVENTIONS §4)"
-        done < "$TMP/cd-spec-nfr"
-      done < <(table_pair "$srs" '^## 8\.' 'NFR ID' 'Cách kiểm chứng' '^##? ')
+    # 5. An NFR a SPEC names and SRS §8 verifies by Test is tested: the SPEC's §9 names the NFR.
+    if [[ "$(frontmatter_value "$srs" doc_type)" == srs ]] && ! table_pair "$srs" '^## 8\.' 'NFR ID' "$L_tpl_col_verification" '^##? ' | grep -q .; then
+      err "$srs" "SRS §8 has no NFR table with 'NFR ID' and '$L_tpl_col_verification' columns (CONVENTIONS §4)"
     fi
-    # 9. (gated: SRS template 1.1.0) Every FR has an AC in §8; every Must FR has a use case in §6.2.
-    if version_at_least "$ver" 1.1.0; then
-      while IFS=$'\t' read -r id cell; do
-        [[ "$id" =~ ^FR- ]] || continue
-        table_pair "$srs" '^## 8\.' 'FR ID' 'AC ID' '^##? ' | cut -f1 | grep -qxF -- "$id" || err "$srs" "$id has no acceptance criterion in SRS §8 (CONVENTIONS §4)"
-        [[ "$cell" == Must* ]] && ! grep -qE "^#### Use case $id:" "$srs" && err "$srs" "$id has priority Must but no use case in SRS §6.2 (PLAYBOOK §2.2)"
-      done < <(table_column "$srs" '^### 6\.1\.' 'Ưu tiên')
-    fi
+    while IFS=$'\t' read -r nfr method; do
+      [[ "$method" == Test* ]] || continue
+      grep -qxF -- "$nfr" "$TMP/cd-tested-nfr" && continue  # a shared NFR may be tested by another SPEC of the project
+      while IFS=$'\t' read -r spec id; do
+        [[ "$id" == "$nfr" ]] || continue
+        table_pair "$spec" '^### 9\.1\.' 'TC ID' "$L_tpl_col_ac_or_inv" | cut -f2 | grep -qE -- "(^|[^A-Z0-9-])$nfr([^0-9]|\$)" && continue
+        err "$srs" "$nfr is named by ${spec##*/} and verified by Test, but no SPEC §9 of the project has a test that names it (CONVENTIONS §4)"
+      done < "$TMP/cd-spec-nfr"
+    done < <(table_pair "$srs" '^## 8\.' 'NFR ID' "$L_tpl_col_verification" '^##? ')
+    # 9. Every FR has an AC in §8; every Must FR has a use case in §6.2.
+    while IFS=$'\t' read -r id cell; do
+      [[ "$id" =~ ^FR- ]] || continue
+      table_pair "$srs" '^## 8\.' 'FR ID' 'AC ID' '^##? ' | cut -f1 | grep -qxF -- "$id" || err "$srs" "$id has no acceptance criterion in SRS §8 (CONVENTIONS §4)"
+      [[ "$cell" == Must* ]] && ! grep -qE "^#### Use case $id:" "$srs" && err "$srs" "$id has priority Must but no use case in SRS §6.2 (PLAYBOOK §2.2)"
+    done < <(table_column "$srs" '^### 6\.1\.' "$L_tpl_col_priority")
   done
-  # 8. (gated: Intake template 1.1.0, SRS template 1.2.0) GOAL IDs cited by FR and NFR exist in Intake §2.2, and every
-  #    goal is cited at least once.
+  # 8. GOAL IDs cited by FR and NFR exist in Intake §2.2, and every goal is cited at least once.
   intake="$dir/docs/intake/PROJECT_INTAKE.md"
-  if [[ -f "$intake" ]] && version_at_least "$(gate_version "$intake" core/00_Project_Intake_Template.md)" 1.1.0; then
+  if [[ -f "$intake" ]]; then
     section_rows "$intake" '^### 2\.2\.' | grep -oE '^\| GOAL-[0-9]{2} \|' | grep -oE 'GOAL-[0-9]+' | sort -u > "$TMP/cd-goals"
     [[ -s "$TMP/cd-goals" ]] || err "$intake" "Intake §2.2 has no GOAL-NN row (CONVENTIONS §4)"
-    : > "$TMP/cd-goal-cited"; srs_new=0
+    : > "$TMP/cd-goal-cited"; srs_seen=0
     for srs in "$dir"/docs/srs/*.md; do
-      [[ -f "$srs" ]] && version_at_least "$(gate_version "$srs" core/01_SRS_Template.md)" 1.2.0 || continue
-      srs_new=1
-      { table_pair "$srs" '^### 6\.1\.' 'FR ID' 'Nguồn'; table_pair "$srs" '^## 7\.' 'NFR ID' 'Nguồn' '^##? '; } |
+      [[ -f "$srs" ]] || continue
+      srs_seen=1
+      { table_pair "$srs" '^### 6\.1\.' 'FR ID' "$L_tpl_col_source"; table_pair "$srs" '^## 7\.' 'NFR ID' "$L_tpl_col_source" '^##? '; } |
         cut -f2 | grep -oE '\bGOAL-[0-9]{2}\b' >> "$TMP/cd-goal-cited"
     done
     sort -u "$TMP/cd-goal-cited" -o "$TMP/cd-goal-cited"
     while IFS= read -r goal; do grep -qxF -- "$goal" "$TMP/cd-goals" || err "$dir" "$goal is cited by a requirement but not defined in Intake §2.2 (CONVENTIONS §4)"; done < "$TMP/cd-goal-cited"
-    # Coverage is checked only once a SRS from template 1.2.0 carries goal citations.
-    ((srs_new)) && while IFS= read -r goal; do grep -qxF -- "$goal" "$TMP/cd-goal-cited" || err "$intake" "$goal is cited by no FR or NFR (CONVENTIONS §4)"; done < "$TMP/cd-goals"
+    # Coverage is checked once an SRS exists to carry the citations.
+    ((srs_seen)) && while IFS= read -r goal; do grep -qxF -- "$goal" "$TMP/cd-goal-cited" || err "$intake" "$goal is cited by no FR or NFR (CONVENTIONS §4)"; done < "$TMP/cd-goals"
   fi
   # 10. ADR IDs cited by ARCHITECTURE have a file in docs/adr/; approved documents keep no BLOCKING question.
   if [[ -f "$dir/docs/ARCHITECTURE.md" ]]; then
@@ -1973,27 +1923,21 @@ check_crossdoc() {
       compgen -G "$dir/docs/adr/${adr#ADR-}-*.md" >/dev/null || err "$dir/docs/ARCHITECTURE.md" "$adr is cited but docs/adr/${adr#ADR-}-*.md does not exist (CONVENTIONS §4)"
     done
   fi
+  # The BLOCKING cell of a question is the word for yes or the word for no of the project language and nothing else: a cell
+  # such as "Yes" in a Vietnamese project would otherwise read as "not blocking" (a template marker is reported elsewhere).
   while IFS= read -r file; do
-    [[ "$(frontmatter_value "$file" status)" == approved ]] || continue
     while IFS=$'\t' read -r id cell; do
-      [[ "$id" =~ ^AQ- && "$cell" == Có* ]] && err "$file" "approved document still has BLOCKING question $id (PLAYBOOK §7 rules 1, 3)"
+      [[ "$id" =~ ^AQ- ]] || continue
+      if [[ "$cell" == *'<!--'* || "$cell" == *'{{'* ]]; then
+        continue
+      elif [[ "$cell" != "$L_tpl_val_yes" && "$cell" != "$L_tpl_val_no" ]]; then
+        err "$file" "question $id: the BLOCKING cell is '$cell'; write '$L_tpl_val_yes' or '$L_tpl_val_no', the words of the language of the project (PLAYBOOK §7 rules 1, 3)"
+      elif [[ "$cell" == "$L_tpl_val_yes" && "$(frontmatter_value "$file" status)" == approved ]]; then
+        err "$file" "approved document still has BLOCKING question $id (PLAYBOOK §7 rules 1, 3)"
+      fi
     done < <(table_column "$file" '^#+ .*Assumptions & Open Questions' 'BLOCKING')
   done < <(find "$dir/docs" -name '*.md' 2>/dev/null | sort)
   true
-}
-
-# assembled_version <file> <source-path>: the version at which <file> lists <source-path> in assembled_from (empty if absent).
-assembled_version() {
-  frontmatter_list "$1" assembled_from | awk -v p="$2@" 'index($0, p) == 1 { print substr($0, length(p) + 1); exit }'
-}
-
-# gate_version <file> <template-path>: the version <file> gates on (CONVENTIONS §3, one way to read a version gate):
-# its own template_version when set, otherwise the assembled_from version of <template-path> (a document written before
-# this field existed, or a fixture that only sets assembled_from).
-gate_version() {
-  local v; v="$(frontmatter_value "$1" template_version)"
-  [[ -n "$v" ]] && { printf '%s\n' "$v"; return; }
-  assembled_version "$1" "$2"
 }
 
 # first_header_table <file> <first-header-prefix> <column-prefix>: for the first table whose first header cell starts with
@@ -2008,7 +1952,10 @@ first_header_table() {
       for (i = 2; i < n; i++) { gsub(/^ +| +$/, "", c[i]); gsub(/\001/, "\\|", c[i]) }
       if (!intable) {
         intable = 1; header = 1; idx = 0
-        if (!found && index(c[2], a) == 1) for (i = 2; i < n; i++) if (!idx && index(c[i], b) == 1) idx = i
+        if (!found && index(c[2], a) == 1) {
+          for (i = 2; i < n; i++) if (!idx && c[i] == b) idx = i
+          for (i = 2; i < n; i++) if (!idx && index(c[i], b) == 1) idx = i
+        }
         want = (idx > 0); if (want) { found = 1; print "#HEADER" }
         next
       }
@@ -2018,14 +1965,15 @@ first_header_table() {
 }
 
 # srs_screen_rows <srs-file>: rows of the User Interfaces tables in SRS §3: every table of §3 (up to the next "#" or "##"
-# heading) with a header cell starting "Màn hình" and either a header cell starting "SCR ID" or one starting "Route" or
-# "Điểm vào". Another table whose header merely starts with "Màn hình" (for example "Màn hình tối thiểu" in a device
-# table) is not a User Interfaces table. Prints "ROW<US><Màn hình cell><US><SCR ID cell><US><FR cell>" per data row (US
+# heading) with a header cell starting with the `tpl_col_screen` label ("Screen") and either a header cell starting
+# "SCR ID" or one starting with the `tpl_col_entry_point` label ("Entry point") or "Route". Another table whose header
+# merely starts with "Screen" (for example "Minimum screen" in a device table) is not a User Interfaces table. Prints
+# "ROW<US><screen cell><US><SCR ID cell><US><FR cell>" per data row (US
 # is the unit separator \037, so an empty cell stays a field; the FR cell is the first column whose header starts with
 # "FR", empty when there is none), or "NOCOL<US><header line>" once for a screen table (screen and route columns) without
 # an "SCR ID" column. The screen-name column is found by its own header, so it is never read as the ID column.
 srs_screen_rows() {
-  awk -v US=$'\037' '
+  awk -v US=$'\037' -v col_screen="$L_tpl_col_screen" -v col_entry="$L_tpl_col_entry_point" '
     /^## 3\./ { on = 1; next }
     on && /^##? / { exit }
     !on { next }
@@ -2037,10 +1985,10 @@ srs_screen_rows() {
       if (!intable) {
         intable = 1; header = 1; iname = iscr = ifr = iroute = 0
         for (i = 2; i < n; i++) {
-          if (!iname && index(c[i], "Màn hình") == 1) iname = i
+          if (!iname && index(c[i], col_screen) == 1) iname = i
           if (!iscr && index(c[i], "SCR ID") == 1) iscr = i
           if (!ifr && index(c[i], "FR") == 1) ifr = i
-          if (!iroute && (index(c[i], "Route") == 1 || index(c[i], "Điểm vào") == 1)) iroute = i
+          if (!iroute && (index(c[i], "Route") == 1 || index(c[i], col_entry) == 1)) iroute = i
         }
         want = (iname > 0 && (iscr > 0 || iroute > 0))
         if (want && !iscr) { print "NOCOL" US $0; want = 0 }
@@ -2198,7 +2146,7 @@ check_ux_key_table() {
   return 0
 }
 
-# check_ux_index <index-file>: the UI/UX tables of a wireframe index built from index template 1.2.0 or later
+# check_ux_index <index-file>: the UI/UX tables of a wireframe index
 # (CONVENTIONS §10.3, §10.4; PLAYBOOK §2.2.1 Gate 1W). Keys, names, levels and results are read from CONVENTIONS.
 check_ux_index() {
   local index="$1" approved=0 key level result evidence levels blocking clean found
@@ -2209,9 +2157,9 @@ check_ux_index() {
   found="$(cat "$TMP/ux-dp-found")"
   # 1. Heuristic table: one row per key of §10.3 with its name; each level is one of §10.3; an approved index has no
   #    row at the level that Gate 1W blocks.
-  if check_ux_key_table "$index" "heuristic evaluation" 'Khóa heuristic' 'Heuristic' "$TMP/ux-heuristics" "CONVENTIONS §10.3"; then
-    [[ -n "$(ux_key_rows "$index" 'Khóa heuristic' 'Mức vấn đề')" ]] ||
-      err "$index" "heuristic evaluation: the table has no 'Mức vấn đề' column (CONVENTIONS §10.3)"
+  if check_ux_key_table "$index" "heuristic evaluation" "$L_tpl_col_heuristic_key" 'Heuristic' "$TMP/ux-heuristics" "CONVENTIONS §10.3"; then
+    [[ -n "$(ux_key_rows "$index" "$L_tpl_col_heuristic_key" "$L_tpl_col_problem_level")" ]] ||
+      err "$index" "heuristic evaluation: the table has no '$L_tpl_col_problem_level' column (CONVENTIONS §10.3)"
     while IFS=$'\t' read -r key level; do
       level="$(sed -E 's/^ +| +$//g' <<< "$level")"
       if ! grep -qxF -- "$level" "$TMP/ux-levels"; then
@@ -2219,152 +2167,152 @@ check_ux_index() {
       elif ((approved)) && [[ "$level" == "$blocking" ]]; then
         err "$index" "heuristic evaluation: row $key of an approved index has level '$blocking'; fix the problem before Gate 1W (PLAYBOOK §2.2.1)"
       fi
-    done < <(ux_key_rows "$index" 'Khóa heuristic' 'Mức vấn đề')
+    done < <(ux_key_rows "$index" "$L_tpl_col_heuristic_key" "$L_tpl_col_problem_level")
   fi
   # 2. Deceptive pattern table: one row per key of §10.4 with its name; each result is the clean value with evidence or
   #    the found value with a location; an approved index has no row with the found value.
-  if check_ux_key_table "$index" "deceptive patterns" 'Khóa mẫu lừa' 'Mẫu' "$TMP/ux-deceptive" "CONVENTIONS §10.4"; then
-    [[ -n "$(ux_key_rows "$index" 'Khóa mẫu lừa' 'Kết quả')" && -n "$(ux_key_rows "$index" 'Khóa mẫu lừa' 'Căn cứ')" ]] ||
-      err "$index" "deceptive patterns: the table needs a 'Kết quả' and a 'Căn cứ' column (CONVENTIONS §10.4)"
+  if check_ux_key_table "$index" "deceptive patterns" "$L_tpl_col_deceptive_key" "$L_tpl_col_pattern" "$TMP/ux-deceptive" "CONVENTIONS §10.4"; then
+    [[ -n "$(ux_key_rows "$index" "$L_tpl_col_deceptive_key" "$L_tpl_col_result")" && -n "$(ux_key_rows "$index" "$L_tpl_col_deceptive_key" "$L_tpl_col_evidence")" ]] ||
+      err "$index" "deceptive patterns: the table needs a '$L_tpl_col_result' and a '$L_tpl_col_evidence' column (CONVENTIONS §10.4)"
     while IFS=$'\t' read -r key result evidence; do
       result="$(sed -E 's/^ +| +$//g' <<< "$result")"
       if [[ "$result" != "$clean" && "$result" != "$found" ]]; then
         err "$index" "deceptive patterns: row $key reads '$result'; write '$clean' with evidence or '$found' with the location (CONVENTIONS §10.4)"
       elif [[ -z "${evidence//[[:space:][:punct:]]/}" ]]; then
-        err "$index" "deceptive patterns: row $key reads '$result' with an empty 'Căn cứ' cell; write the evidence or the location (CONVENTIONS §10.4)"
+        err "$index" "deceptive patterns: row $key reads '$result' with an empty '$L_tpl_col_evidence' cell; write the evidence or the location (CONVENTIONS §10.4)"
       elif ((approved)) && [[ "$result" == "$found" ]]; then
         err "$index" "deceptive patterns: row $key of an approved index reads '$found'; remove the pattern before Gate 1W (PLAYBOOK §2.2.1)"
       fi
-    done < <(paste <(ux_key_rows "$index" 'Khóa mẫu lừa' 'Kết quả') <(ux_key_rows "$index" 'Khóa mẫu lừa' 'Căn cứ' | cut -f2))
+    done < <(paste <(ux_key_rows "$index" "$L_tpl_col_deceptive_key" "$L_tpl_col_result") <(ux_key_rows "$index" "$L_tpl_col_deceptive_key" "$L_tpl_col_evidence" | cut -f2))
   fi
 }
 
-# wcag_level <example-dir>: the WCAG 2.2 level chosen by NFR-USAB, read from the "Trợ năng" row of the Technical
-# Constraints table in any SRS file's §2.5 (master or module; CONVENTIONS mục 10.2). Empty when it cannot be read.
+# wcag_level <example-dir>: the WCAG 2.2 level chosen by NFR-USAB, read from the `tpl_row_accessibility` row ("Accessibility") of the Technical
+# Constraints table in any SRS file's §2.5 (master or module; CONVENTIONS §10.2). Empty when it cannot be read.
 wcag_level() {
   local dir="$1" srs row
   for srs in "$dir"/docs/srs/*.md; do
     [[ -f "$srs" ]] || continue
-    row="$(section_rows "$srs" '^### 2\.5\.' | grep -m1 -E '^\| Trợ năng \|')"
+    row="$(section_rows "$srs" '^### 2\.5\.' | grep -m1 -E '^\| '"$L_tpl_row_accessibility"' \|')"
     [[ -n "$row" ]] || continue
-    grep -m1 -oE 'mức (AAA|AA|A)\b' <<< "$row" | awk '{ print $2 }'
+    grep -m1 -oE "$L_tpl_word_level (AAA|AA|A)\\b" <<< "$row" | awk '{ print $2 }'
     return
   done
 }
 
-# check_ux_page <page-file> [<wcag-level>]: a screen page built from page template 1.2.0 or later has the "Màn hình
-# xác thực: Có | Không" line; a page marked Có cites criterion 3.3.8 in its accessibility section (CONVENTIONS §10.2).
+# check_ux_page <page-file> [<wcag-level>]: a screen page has the "Authentication screen:
+# Yes | No" line (`tpl_label_auth_screen`); a page marked Yes cites criterion 3.3.8 in its accessibility section (CONVENTIONS §10.2).
 # At WCAG level A, marking 3.3.8 N/A satisfies the rule (accessible authentication is AA); the line must still be
 # present. At level AA, AAA or when the level cannot be read, a real citation is required as before.
 check_ux_page() {
   local page="$1" level="${2:-}" line value cite
-  line="$(unfenced "$page" | cut -f2- | grep -m1 -E '^(- )?Màn hình xác thực:')"
+  line="$(unfenced "$page" | cut -f2- | grep -m1 -E "^(- )?$L_tpl_label_auth_screen:")"
   if [[ -z "$line" ]]; then
-    err "$page" "authentication screen: wireframe page has no 'Màn hình xác thực: Có | Không' line (CONVENTIONS §10.2)"
+    err "$page" "authentication screen: wireframe page has no '$L_tpl_label_auth_screen: $L_tpl_val_yes | $L_tpl_val_no' line (CONVENTIONS §10.2)"
     return 0
   fi
   value="${line#*:}"
   value="$(tr -d '`' <<< "$value" | sed -E 's/^ +| +$//g')"
-  local value_re='^(Có|Không)([[:space:]]*([.,;(].*)?)$'
+  local value_re="^($L_tpl_val_yes|$L_tpl_val_no)([[:space:]]*([.,;(].*)?)\$"
   if [[ ! "$value" =~ $value_re ]]; then
-    err "$page" "authentication screen: the 'Màn hình xác thực' line reads '$value'; write Có or Không (CONVENTIONS §10.2)"
-  elif [[ "$value" == Có* ]]; then
-    cite="$(section_rows "$page" '^## [0-9]+\. .*\(Accessibility' | grep -E '(^|[^0-9.])3\.3\.8([^0-9]|$)')"
+    err "$page" "authentication screen: the '$L_tpl_label_auth_screen' line reads '$value'; write $L_tpl_val_yes or $L_tpl_val_no (CONVENTIONS §10.2)"
+  elif [[ "$value" == "$L_tpl_val_yes"* ]]; then
+    cite="$(section_rows "$page" '^## [0-9]+\. .*Accessibility' | grep -E '(^|[^0-9.])3\.3\.8([^0-9]|$)')"
     if [[ -z "$cite" ]]; then
-      err "$page" "authentication screen: the page reads 'Màn hình xác thực: Có' but its accessibility section does not cite criterion 3.3.8, or marks it N/A (CONVENTIONS §10.2)"
+      err "$page" "authentication screen: the page reads '$L_tpl_label_auth_screen: $L_tpl_val_yes' but its accessibility section does not cite criterion 3.3.8, or marks it N/A (CONVENTIONS §10.2)"
     elif [[ "$level" != A ]] && ! grep -v 'N/A' <<< "$cite" >/dev/null; then
-      err "$page" "authentication screen: the page reads 'Màn hình xác thực: Có' but its accessibility section does not cite criterion 3.3.8, or marks it N/A (CONVENTIONS §10.2)"
+      err "$page" "authentication screen: the page reads '$L_tpl_label_auth_screen: $L_tpl_val_yes' but its accessibility section does not cite criterion 3.3.8, or marks it N/A (CONVENTIONS §10.2)"
     fi
   fi
 }
 
-# xp_value <line>: the value after the first colon, without HTML comments, backticks around a bare Không, and outer spaces.
+# xp_value <line>: the value after the first colon, without HTML comments, backticks around a bare `tpl_val_none` word, and outer spaces.
 xp_value() {
   local v="${1#*:}"
   v="$(sed -E 's/<!--.*-->//g; s/^[[:space:]]+|[[:space:]]+$//g' <<< "$v")"
   printf '%s' "$v"
 }
 
-# xp_bare_none <value>: true when the value is Không (backticks allowed) with no reason after it.
+# xp_bare_none <value>: true when the value is the `tpl_val_none` word (backticks allowed) with no reason after it.
 xp_bare_none() {
   local v="${1//\`/}"
-  [[ "$v" == Không* ]] || return 1
-  v="${v#Không}"
+  [[ "$v" == "$L_tpl_val_none"* ]] || return 1
+  v="${v#"$L_tpl_val_none"}"
   v="$(sed -E 's/^[][[:space:],.:;()—–-]+//' <<< "$v")"
   [[ -z "$v" ]]
 }
 
-# check_experience_page <page-file>: a screen page built from page template 1.5.0 or later has the Thông tin ưu tiên,
-# Hành động chính and Nội dung biên lines, and numbers the zones of its low-fi block (CONVENTIONS §7, §10.7). The low-fi
-# block is the first `text` block of section 2; the components table is the first table whose first header is Thành phần.
+# check_experience_page <page-file>: a screen page has the Priority information,
+# Primary action and Edge content lines, and numbers the zones of its low-fi block (CONVENTIONS §7, §10.7). The low-fi
+# block is the first `text` block of section 2; the components table is the first table whose first header is the `tpl_col_component` label.
 check_experience_page() {
   local page="$1" suffix=" (CONVENTIONS §10.7)" lines n value label item count
   local body; body="$(unfenced "$page" | cut -f2-)"
 
-  # 1. Thông tin ưu tiên: one line, 1 to 3 items separated by ";".
-  lines="$(grep -E '^- Thông tin ưu tiên:' <<< "$body")"
+  # 1. Priority information (`tpl_label_priority_info`): one line, 1 to 3 items separated by ";".
+  lines="$(grep -E "^- $L_tpl_label_priority_info:" <<< "$body")"
   n="$(grep -c . <<< "$lines")"
   if ((n == 0)); then
-    err "$page" "priority information: no 'Thông tin ưu tiên:' line; name 1 to 3 items in priority order$suffix"
+    err "$page" "priority information: no '$L_tpl_label_priority_info:' line; name 1 to 3 items in priority order$suffix"
   elif ((n > 1)); then
-    err "$page" "priority information: has $n 'Thông tin ưu tiên:' lines; a page has one$suffix"
+    err "$page" "priority information: has $n '$L_tpl_label_priority_info:' lines; a page has one$suffix"
   else
     value="$(xp_value "$lines")"
-    if [[ -z "$value" || "${value//\`/}" == Không* ]]; then
-      err "$page" "priority information: the 'Thông tin ưu tiên' line has no item$suffix"
+    if [[ -z "$value" || "${value//\`/}" == "$L_tpl_val_none"* ]]; then
+      err "$page" "priority information: the '$L_tpl_label_priority_info' line has no item$suffix"
     else
       count=0
       while IFS= read -r item; do
         count=$((count + 1))
-        [[ -n "$(tr -d '[:space:]' <<< "$item")" ]] || { err "$page" "priority information: the 'Thông tin ưu tiên' line has an empty item$suffix"; count=-99; break; }
+        [[ -n "$(tr -d '[:space:]' <<< "$item")" ]] || { err "$page" "priority information: the '$L_tpl_label_priority_info' line has an empty item$suffix"; count=-99; break; }
       done < <(tr ';' '\n' <<< "$value")
-      ((count > 3)) && err "$page" "priority information: the 'Thông tin ưu tiên' line lists $count items; name 1 to 3$suffix"
+      ((count > 3)) && err "$page" "priority information: the '$L_tpl_label_priority_info' line lists $count items; name 1 to 3$suffix"
     fi
   fi
 
-  # 2. Hành động chính: one line naming a component of the components table in backticks, or Không with a reason.
-  lines="$(grep -E '^- Hành động chính:' <<< "$body")"
+  # 2. Primary action (`tpl_label_main_action`): one line naming a component of the components table in backticks, or None with a reason.
+  lines="$(grep -E "^- $L_tpl_label_main_action:" <<< "$body")"
   n="$(grep -c . <<< "$lines")"
   if ((n == 0)); then
-    err "$page" "main action: no 'Hành động chính:' line; name one component of the components table, or Không with a reason$suffix"
+    err "$page" "main action: no '$L_tpl_label_main_action:' line; name one component of the components table, or $L_tpl_val_none with a reason$suffix"
   elif ((n > 1)); then
-    err "$page" "main action: has $n 'Hành động chính:' lines; a page has one$suffix"
+    err "$page" "main action: has $n '$L_tpl_label_main_action:' lines; a page has one$suffix"
   else
     value="$(xp_value "$lines")"
-    if [[ "$value" == Không* ]] || [[ "$value" =~ ^\`Không\`[[:space:]]*$ ]]; then
-      xp_bare_none "$value" && err "$page" "main action: the 'Hành động chính' line reads 'Không' without a reason$suffix"
+    if [[ "$value" == "$L_tpl_val_none"* ]] || [[ "$value" =~ ^\`"$L_tpl_val_none"\`[[:space:]]*$ ]]; then
+      xp_bare_none "$value" && err "$page" "main action: the '$L_tpl_label_main_action' line reads '$L_tpl_val_none' without a reason$suffix"
     elif [[ ! "$value" =~ \`([^\`]+)\` ]]; then
-      err "$page" "main action: the 'Hành động chính' line has no label in backticks; write the label of a component of the components table between backticks$suffix"
+      err "$page" "main action: the '$L_tpl_label_main_action' line has no label in backticks; write the label of a component of the components table between backticks$suffix"
     else
       label="$(sed -E 's/^[[:space:]]*\[//; s/\][[:space:]]*$//; s/^[[:space:]]+|[[:space:]]+$//g' <<< "${BASH_REMATCH[1]}")"
-      first_header_table "$page" 'Thành phần' 'Thành phần' | grep -v '^#HEADER$' | cut -f1 |
+      first_header_table "$page" "$L_tpl_col_component" "$L_tpl_col_component" | grep -v '^#HEADER$' | cut -f1 |
         sed -E 's/`//g; s/^[[:space:]]+|[[:space:]]+$//g; s/^\[[[:space:]]*//; s/[[:space:]]*\]$//' > "$TMP/xp-components"
       if ! in_list "$label" "$TMP/xp-components"; then
-        err "$page" "main action: the 'Hành động chính' line names '$label', which is not in the Thành phần column of the components table$suffix"
+        err "$page" "main action: the '$L_tpl_label_main_action' line names '$label', which is not in the $L_tpl_col_component column of the components table$suffix"
       else
         # Exactly one action: no second backticked label of the line is also a component.
         while IFS= read -r item; do
           item="$(sed -E 's/^`|`$//g; s/^[[:space:]]*\[//; s/\][[:space:]]*$//; s/^[[:space:]]+|[[:space:]]+$//g' <<< "$item")"
           [[ -n "$item" && "$item" != "$label" ]] && in_list "$item" "$TMP/xp-components" &&
-            { err "$page" "main action: the 'Hành động chính' line names both '$label' and '$item'; name exactly one action$suffix"; break; }
+            { err "$page" "main action: the '$L_tpl_label_main_action' line names both '$label' and '$item'; name exactly one action$suffix"; break; }
         done < <(grep -oE '`[^`]+`' <<< "$value")
       fi
     fi
   fi
 
-  # 3. Nội dung biên: one line with the edge cases, or Không with a reason.
-  lines="$(grep -E '^(- )?Nội dung biên:' <<< "$body")"
+  # 3. Edge content (`tpl_label_edge_content`): one line with the edge cases, or None with a reason.
+  lines="$(grep -E "^(- )?$L_tpl_label_edge_content:" <<< "$body")"
   n="$(grep -c . <<< "$lines")"
   if ((n == 0)); then
-    err "$page" "edge content: no 'Nội dung biên:' line; write the edge cases from the constraints of SRS §4.2, or Không with a reason$suffix"
+    err "$page" "edge content: no '$L_tpl_label_edge_content:' line; write the edge cases from the constraints of SRS §4.2, or $L_tpl_val_none with a reason$suffix"
   elif ((n > 1)); then
-    err "$page" "edge content: has $n 'Nội dung biên:' lines; a page has one$suffix"
+    err "$page" "edge content: has $n '$L_tpl_label_edge_content:' lines; a page has one$suffix"
   else
     value="$(xp_value "$lines")"
     if [[ -z "$value" ]]; then
-      err "$page" "edge content: the 'Nội dung biên' line is empty$suffix"
+      err "$page" "edge content: the '$L_tpl_label_edge_content' line is empty$suffix"
     elif xp_bare_none "$value"; then
-      err "$page" "edge content: the 'Nội dung biên' line reads 'Không' without a reason$suffix"
+      err "$page" "edge content: the '$L_tpl_label_edge_content' line reads '$L_tpl_val_none' without a reason$suffix"
     fi
   fi
 
@@ -2386,9 +2334,9 @@ check_experience_page() {
     END { if (!zones) print "NONE\t-"; else if (!skip && bad) print "ORDER\t" nums }' "$page")"
   while IFS=$'\t' read -r kind value; do
     case "$kind" in
-      UNNUM) err "$page" "low-fi zone: zone line '$value' has no number; zones of a page from template 1.5.0 read '== N. Tên vùng ==' (CONVENTIONS §7)" ;;
+      UNNUM) err "$page" "low-fi zone: zone line '$value' has no number; zones read '== N. $L_tpl_label_zone_name ==' (CONVENTIONS §7)" ;;
       ORDER) err "$page" "low-fi zone: zone numbers read $value; number the zones 1 to n in reading order (CONVENTIONS §7)" ;;
-      NONE) err "$page" "low-fi zone: section 2 has no text block with zone lines '== N. Tên vùng ==' (CONVENTIONS §7)" ;;
+      NONE) err "$page" "low-fi zone: section 2 has no text block with zone lines '== N. $L_tpl_label_zone_name ==' (CONVENTIONS §7)" ;;
     esac
   done <<< "$out"
 }
@@ -2398,21 +2346,20 @@ check_experience_page() {
 check_wireframe_templates_ux() {
   local t=core/07_Wireframe_Template/00_Wireframe_Index_Template.md
   [[ -f "$t" ]] || return 0
-  check_ux_key_table "$t" "heuristic evaluation" 'Khóa heuristic' 'Heuristic' "$TMP/ux-heuristics" "CONVENTIONS §10.3"
-  check_ux_key_table "$t" "deceptive patterns" 'Khóa mẫu lừa' 'Mẫu' "$TMP/ux-deceptive" "CONVENTIONS §10.4"
+  check_ux_key_table "$t" "heuristic evaluation" "$L_tpl_col_heuristic_key" 'Heuristic' "$TMP/ux-heuristics" "CONVENTIONS §10.3"
+  check_ux_key_table "$t" "deceptive patterns" "$L_tpl_col_deceptive_key" "$L_tpl_col_pattern" "$TMP/ux-deceptive" "CONVENTIONS §10.4"
 }
 
 # check_wireframes <example-dir>: the Stage 1W rules (PLAYBOOK §2.2.1; CONVENTIONS §4 chain FR → SCR, §7 HTML safety).
-# Gated: they apply when the project's Intake lists core/00_Project_Intake_Template.md at 1.3.0 or later in assembled_from.
 # Table shapes read here: in docs/wireframes/00_WIREFRAME_INDEX.md, the screen catalog is the first table whose first
 # header cell is "SCR ID"; the traceability table is the first table whose first header cell is "FR ID" and that has an
-# "SCR ID" column. In SRS §3, a User Interfaces table is a table with a "Màn hình" column and an "SCR ID", "Route" or
-# "Điểm vào" column (srs_screen_rows); its IDs sit in the "SCR ID" column.
+# "SCR ID" column. In SRS §3, a User Interfaces table is a table with a "Screen" column and an "SCR ID", "Route" or
+# "Entry point" column (srs_screen_rows); its IDs sit in the "SCR ID" column.
 check_wireframes() {
   local dir="$1" intake="$1/docs/intake/PROJECT_INTAKE.md" wf="$1/docs/wireframes" index srs page id fr cell count
   local kind name state ref html surface ui=0 member frs brownfield=0 trace_re="^\`?$SCR_RE"
   index="$wf/00_WIREFRAME_INDEX.md"
-  [[ -f "$intake" ]] && version_at_least "$(gate_version "$intake" core/00_Project_Intake_Template.md)" 1.3.0 || return 0
+  [[ -f "$intake" ]] || return 0
   # 0. A project with a UI surface (PLAYBOOK §2: the overlays that have Stage 1W) has the wireframe index.
   while IFS= read -r surface; do
     grep -qxF -- "$surface" "$TMP/ui-overlays" && ui=1
@@ -2427,7 +2374,7 @@ check_wireframes() {
   grep -qE '^\| `mode` \| `?brownfield' "$intake" && brownfield=1
   for srs in "$dir"/docs/srs/*.md; do
     [[ -f "$srs" ]] || continue
-    table_pair "$srs" '^### 6\.1\.' 'FR ID' 'Ưu tiên' | grep -E "^$FR_RE"$'\t' >> "$TMP/wf-fr-prio"
+    table_pair "$srs" '^### 6\.1\.' 'FR ID' "$L_tpl_col_priority" | grep -E "^$FR_RE"$'\t' >> "$TMP/wf-fr-prio"
     table_pair "$srs" '^## 8\.' 'FR ID' 'AC ID' '^##? ' | grep -E "^$FR_RE"$'\t' >> "$TMP/wf-ac-fr"
     while IFS=$'\037' read -r kind name cell frs; do
       if [[ "$kind" == NOCOL ]]; then
@@ -2437,10 +2384,10 @@ check_wireframes() {
           printf '%s\n' "$id" >> "$TMP/wf-srs-scr"
           grep -oE "$FR_RE" <<< "$frs" | awk -v i="$id" '{ print i "\t" $0 }' >> "$TMP/wf-srs-scr-fr"
         done < <(grep -oE "$SCR_RE" <<< "$cell")
-      elif [[ "$cell" != Giữ\ nguyên* ]]; then
-        err "$srs" "screen set: screen '$name' in SRS §3 has no SCR ID; write SCR-{MOD}-NN, or 'Giữ nguyên' for an unchanged brownfield screen (CONVENTIONS §4)"
+      elif [[ "$cell" != "$L_tpl_val_keep"* ]]; then
+        err "$srs" "screen set: screen '$name' in SRS §3 has no SCR ID; write SCR-{MOD}-NN, or '$L_tpl_val_keep' for an unchanged brownfield screen (CONVENTIONS §4)"
       elif ((!brownfield)); then
-        err "$srs" "screen set: screen '$name' in SRS §3 reads 'Giữ nguyên' in the SCR ID column, which only a brownfield project may use (CONVENTIONS §4)"
+        err "$srs" "screen set: screen '$name' in SRS §3 reads '$L_tpl_val_keep' in the SCR ID column, which only a brownfield project may use (CONVENTIONS §4)"
       fi
     done < <(srs_screen_rows "$srs")
   done
@@ -2465,7 +2412,7 @@ check_wireframes() {
   grep -v '^#HEADER$' "$TMP/wf-trace" | cut -f2 | grep -oE "$SCR_RE" | sort -u > "$TMP/wf-trace-scr"
 
   # 1. The FR traceability table has exactly one row per FR of SRS §6.1 whose priority is not Won't, and no row for a
-  #    Won't FR. Each row names SCR-* IDs, "Không có giao diện" (with a reason) or "Giữ nguyên" (brownfield).
+  #    Won't FR. Each row names SCR-* IDs, "No UI" (with a reason) or "Unchanged" (brownfield).
   while IFS=$'\t' read -r fr cell; do
     count="$(grep -cxF -- "$fr" <(grep -v '^#HEADER$' "$TMP/wf-trace" | cut -f1))"
     cell="${cell//\`/}"
@@ -2480,12 +2427,12 @@ check_wireframes() {
   while IFS=$'\t' read -r fr cell; do
     [[ "$fr" == '#HEADER' ]] && continue
     grep -qxF -- "$fr" "$TMP/wf-srs-fr" || err "$index" "row '$fr' of the FR traceability table is not an FR of SRS §6.1 (CONVENTIONS §4)"
-    [[ "$cell" =~ $trace_re || "$cell" == Không\ có\ giao\ diện* || "$cell" == Giữ\ nguyên* ]] ||
-      err "$index" "row $fr of the FR traceability table reads '$cell'; write SCR-* IDs, 'Không có giao diện' with a reason, or 'Giữ nguyên' (CONVENTIONS §4)"
-    [[ "$cell" =~ ^Không\ có\ giao\ diện[[:space:][:punct:]]*$ ]] &&
-      err "$index" "row $fr of the FR traceability table reads 'Không có giao diện' without a reason (CONVENTIONS §4)"
-    [[ "$cell" == Giữ\ nguyên* ]] && ((!brownfield)) &&
-      err "$index" "row $fr of the FR traceability table reads 'Giữ nguyên', which only a brownfield project may use (CONVENTIONS §4)"
+    [[ "$cell" =~ $trace_re || "$cell" == "$L_tpl_val_no_ui"* || "$cell" == "$L_tpl_val_keep"* ]] ||
+      err "$index" "row $fr of the FR traceability table reads '$cell'; write SCR-* IDs, '$L_tpl_val_no_ui' with a reason, or '$L_tpl_val_keep' (CONVENTIONS §4)"
+    [[ "$cell" =~ ^"$L_tpl_val_no_ui"[[:space:][:punct:]]*$ ]] &&
+      err "$index" "row $fr of the FR traceability table reads '$L_tpl_val_no_ui' without a reason (CONVENTIONS §4)"
+    [[ "$cell" == "$L_tpl_val_keep"* ]] && ((!brownfield)) &&
+      err "$index" "row $fr of the FR traceability table reads '$L_tpl_val_keep', which only a brownfield project may use (CONVENTIONS §4)"
   done < "$TMP/wf-trace"
 
   # 2. The SCR IDs of SRS §3, of the screen catalog and of the traceability table are the same set, and each has a page.
@@ -2503,10 +2450,10 @@ check_wireframes() {
   done < <(comm -13 "$TMP/wf-srs-scr" "$TMP/wf-trace-scr")
   while IFS= read -r id; do
     [[ -f "$wf/$id.md" ]] && continue
-    # A screen that the catalog marks "Theo luồng" is drawn in the flow mockup of the index and needs no page of its
+    # A screen that the catalog marks "In flow" is drawn in the flow mockup of the index and needs no page of its
     # own (PLAYBOOK §2.2.1); a page is required for every other screen.
-    grep -E "^\| *$id *\|.*\| *Theo luồng *\|" "$index" >/dev/null && continue
-    err "$index" "screen set: $id has no page docs/wireframes/$id.md and its catalog row is not marked 'Theo luồng' (CONVENTIONS §4)"
+    grep -E "^\| *$id *\|.*\| *$L_tpl_val_by_flow *\|" "$index" >/dev/null && continue
+    err "$index" "screen set: $id has no page docs/wireframes/$id.md and its catalog row is not marked '$L_tpl_val_by_flow' (CONVENTIONS §4)"
   done < <(sort -u "$TMP/wf-srs-scr" "$TMP/wf-cat-scr")
   # 2b. For each screen, the FR column of its SRS §3 row lists exactly the FRs whose traceability row names its SCR ID.
   #     A screen that no traceability row names is already reported above.
@@ -2520,15 +2467,15 @@ check_wireframes() {
       err "$index" "FR set: SRS §3 lists FRs [$(cat "$TMP/wf-set-srs")] for $id, but the traceability rows that name $id are [$(cat "$TMP/wf-set-trace")]; the two sets are the same (CONVENTIONS §4)"
   done < <(comm -12 "$TMP/wf-srs-scr" "$TMP/wf-trace-scr")
 
-  # 2c. UI/UX standards (CONVENTIONS §10), gated per file: the index by its own template_version, each page by its own.
-  version_at_least "$(gate_version "$index" core/07_Wireframe_Template/00_Wireframe_Index_Template.md)" 1.2.0 && check_ux_index "$index"
+  # 2c. UI/UX standards (CONVENTIONS §10): the index, then each page.
+  check_ux_index "$index"
   local page_wcag_level; page_wcag_level="$(wcag_level "$dir")"
 
   for page in "$wf"/SCR-*.md; do
     [[ -f "$page" ]] || continue
     id="$(basename "$page" .md)"
-    version_at_least "$(gate_version "$page" core/07_Wireframe_Template/SCR_Screen_Template.md)" 1.2.0 && check_ux_page "$page" "$page_wcag_level"
-    version_at_least "$(gate_version "$page" core/07_Wireframe_Template/SCR_Screen_Template.md)" 1.5.0 && check_experience_page "$page"
+    check_ux_page "$page" "$page_wcag_level"
+    check_experience_page "$page"
     grep -oE "\b$FR_RE\b" "$page" | sort -u > "$TMP/wf-page-fr"
     # 3. A page cites at least one FR of the SRS and only FRs that exist; every AC it cites is in SRS §8 and belongs to
     #    an FR the page cites; the screen catalog lists the page.
@@ -2568,13 +2515,13 @@ check_wireframes() {
   true
 }
 
-# release_fr_table <example-dir>: "<FR ID>\t<Bản phát hành>" of every FR row in SRS §6.1 of the example (master and
+# release_fr_table <example-dir>: "<FR ID>\t<Release>" of every FR row in SRS §6.1 of the example (master and
 # modules pooled, backticks removed), written to $TMP/rp-fr-release.
 release_fr_table() {
   local srs
   : > "$TMP/rp-fr-release"
   for srs in "$1"/docs/srs/*.md; do
-    [[ -f "$srs" ]] && table_pair "$srs" '^### 6\.1\.' 'FR ID' 'Bản phát hành' | grep -E "^$FR_RE"$'\t' | tr -d '`' >> "$TMP/rp-fr-release"
+    [[ -f "$srs" ]] && table_pair "$srs" '^### 6\.1\.' 'FR ID' "$L_tpl_col_release" | grep -E "^$FR_RE"$'\t' | tr -d '`' >> "$TMP/rp-fr-release"
   done
   true
 }
@@ -2583,24 +2530,24 @@ release_fr_table() {
 spec_frs() { table_pair "$1" '^### 1\.5\.' 'FR ID' 'FR ID' | cut -f1 | grep -oE "\b$FR_RE\b" | sort -u; }
 
 # check_spec_releases <example-dir>: the SPEC release rule of CONVENTIONS §3, checked at Gate 3 without any plan
-# (PLAYBOOK §2.4). Gated: the project's Intake lists core/00_Project_Intake_Template.md at 1.3.0 or later in
-# assembled_from. A SPEC with a release key (SPEC template 1.2.0) names in §1.5 only FRs whose Bản phát hành in SRS §6.1
-# equals the key; an FR whose release SRS §6.1 of the example does not give is left to the SPEC §1.5 rule of
-# check_crossdoc. A superseded SPEC is skipped: its FRs may have moved to a SPEC of another release (PLAYBOOK §8). A SPEC
-# without the key stays valid when it comes from a SPEC template older than 1.2.0; one that gates at 1.2.0 or later
-# (gate_version, CONVENTIONS §3) MUST carry the key.
+# (PLAYBOOK §2.4). A SPEC carries a release key and names in §1.5 only FRs whose Release in SRS §6.1 equals the key;
+# an FR whose release SRS §6.1 of the example does not give is left to the SPEC §1.5 rule of check_crossdoc. A superseded
+# SPEC is skipped: its FRs may have moved to a SPEC of another release (PLAYBOOK §8).
 check_spec_releases() {
-  local dir="$1" spec release fr rel
-  [[ -f "$dir/docs/intake/PROJECT_INTAKE.md" ]] &&
-    version_at_least "$(gate_version "$dir/docs/intake/PROJECT_INTAKE.md" core/00_Project_Intake_Template.md)" 1.3.0 || return 0
+  local dir="$1" spec release fr rel srs
   release_fr_table "$dir"
+  # Without the Release column no FR has a release, and the rule below would find nothing to compare and say nothing.
+  for srs in "$dir"/docs/srs/*.md; do
+    [[ -f "$srs" ]] && grep -qE '^### 6\.1\.' "$srs" || continue
+    table_column "$srs" '^### 6\.1\.' "$L_tpl_col_release" | grep -x '#HEADER' >/dev/null ||
+      err "$srs" "SRS §6.1 has no '$L_tpl_col_release' column in the requirements catalog, so no FR has a release (CONVENTIONS §3)"
+  done
   for spec in "$dir"/docs/specs/*.md; do
     [[ -f "$spec" ]] || continue
     [[ "$(frontmatter_value "$spec" status)" == superseded ]] && continue
     release="$(frontmatter_value "$spec" release)"
     if [[ -z "$release" ]]; then
-      version_at_least "$(gate_version "$spec" core/04_Spec_Core_Template.md)" 1.2.0 &&
-        err "$spec" "SPEC made from SPEC template 1.2.0 or later has no release key; the Intake is 1.3.0 or later, so the SPEC should name its release (CONVENTIONS §3)"
+      err "$spec" "SPEC has no release key; the SPEC should name its release (CONVENTIONS §3)"
       continue
     fi
     while IFS= read -r fr; do
@@ -2612,31 +2559,23 @@ check_spec_releases() {
   true
 }
 
-# check_release_plans <example-dir>: the release plan rules of CONVENTIONS §9. Gated: they apply to a plan whose plan.md
-# lists core/05_Implementation_Plan_Template/plan.md at 1.2.0 or later in assembled_from. Whether every FR of the release
-# has a SPEC is left to the Gate 3 reviewer (PLAYBOOK §2.4). A project whose Intake predates template 1.3.0 keeps one plan
-# per SPEC and its SPECs are not scoped to a release, so the FR release-consistency rule (4) applies only from Intake 1.3.0.
+# check_release_plans <example-dir>: the release plan rules of CONVENTIONS §9. Whether every FR of the release has a SPEC
+# is left to the Gate 3 reviewer (PLAYBOOK §2.4).
 check_release_plans() {
-  local dir="$1" plan_dir plan release id spec phase fr rel line prev state srel by_release=0
-  [[ -f "$dir/docs/intake/PROJECT_INTAKE.md" ]] &&
-    version_at_least "$(gate_version "$dir/docs/intake/PROJECT_INTAKE.md" core/00_Project_Intake_Template.md)" 1.3.0 &&
-    by_release=1
+  local dir="$1" plan_dir plan release id spec phase fr rel line prev state srel
   release_fr_table "$dir"
   : > "$TMP/rp-specs"
   # One line per SPEC: spec_id, status, path, release key (last, since it may be empty).
   for spec in "$dir"/docs/specs/*.md; do
     [[ -f "$spec" ]] && printf '%s\t%s\t%s\t%s\n' "$(frontmatter_value "$spec" spec_id)" "$(frontmatter_value "$spec" status)" "$spec" "$(frontmatter_value "$spec" release)" >> "$TMP/rp-specs"
   done
-  local pv
   for plan_dir in ${PLAN_DIRS[@]+"${PLAN_DIRS[@]}"}; do
     plan="${plan_dir}plan.md"
     [[ -f "$plan" ]] || continue
-    pv="$(gate_version "$plan" core/05_Implementation_Plan_Template/plan.md)"
-    # Plan template 1.3.0 or later requires a Version History section (CONVENTIONS §9).
-    if version_at_least "$pv" 1.3.0 && ! grep -qE '^#+ .*Version History' "$plan"; then
-      err "$plan" "plan made from plan template 1.3.0 or later has no 'Version History' section (CONVENTIONS §9)"
+    # A plan has a Version History section (CONVENTIONS §9).
+    if ! grep -qE '^#+ .*Version History' "$plan"; then
+      err "$plan" "plan has no 'Version History' section (CONVENTIONS §9)"
     fi
-    version_at_least "$pv" 1.2.0 || continue
     release="$(frontmatter_value "$plan" release)"
     frontmatter_list "$plan" spec_ids > "$TMP/rp-ids"
     [[ -n "$release" ]] || err "$plan" "release plan has no release key (CONVENTIONS §9)"
@@ -2660,17 +2599,16 @@ check_release_plans() {
     while IFS= read -r id; do
       grep -qxF -- "$id" "$TMP/rp-phase-ids" || err "$plan" "spec_ids lists $id, but no phase has spec_id $id (CONVENTIONS §9)"
     done < "$TMP/rp-ids"
-    # 3. Every SPEC of spec_ids that has a release key (SPEC template 1.2.0) has the plan's release.
+    # 3. Every SPEC of spec_ids that has a release key has the plan's release.
     while IFS=$'\t' read -r id state spec srel; do
       grep -qxF -- "$id" "$TMP/rp-ids" || continue
       [[ -z "$srel" || -z "$release" || "$srel" == "$release" ]] ||
         err "$spec" "$id is in the spec_ids of ${plan#"$dir"/}, but its release key is '$srel', not '$release' (CONVENTIONS §9)"
     done < "$TMP/rp-specs"
-    # 4. From Intake 1.3.0: every FR that a SPEC of spec_ids names in §1.5 belongs to the plan's release; a SPEC outside
+    # 4. Every FR that a SPEC of spec_ids names in §1.5 belongs to the plan's release; a SPEC outside
     #    spec_ids that is not superseded names no FR of the release. FRs that SRS §6.1 of the example does not define are
     #    left to the SPEC §1.5 rule of check_crossdoc. A SPEC of spec_ids with a release key is skipped: rule 3 and
     #    check_spec_releases already cover its FRs, so one wrong FR is reported once.
-    ((by_release)) || continue
     while IFS=$'\t' read -r id state spec srel; do
       grep -qxF -- "$id" "$TMP/rp-ids" && [[ -n "$srel" ]] && continue
       while IFS= read -r fr; do
@@ -2686,6 +2624,39 @@ check_release_plans() {
     done < "$TMP/rp-specs"
   done
   true
+}
+
+# load_language_lists: the words of the language that was loaded (i18n_load) which a check compares a cell or a requirement
+# with: the vague terms, the problem levels, the level that blocks Gate 1W and the two results of the deceptive pattern table.
+# Call it after every i18n_load, because a project has its own language.
+load_language_lists() {
+  tr '|' '\n' <<< "$L_lang_vague_terms" > "$TMP/vague-terms"
+  tr '|' '\n' <<< "$L_lang_problem_levels" > "$TMP/ux-levels"
+  printf '%s\n' "$L_lang_problem_blocking" > "$TMP/ux-level-blocking"
+  printf '%s\n' "$L_lang_dp_clean" > "$TMP/ux-dp-clean"
+  printf '%s\n' "$L_lang_dp_found" > "$TMP/ux-dp-found"
+}
+
+# use_project_language <dir>: load the labels of the language of the project in <dir>, which the checks that read a label need.
+# Returns 1 after one error that says what is wrong with the Intake and what to write; the caller then skips those checks,
+# which could only report a wall of errors about labels.
+use_project_language() {
+  if i18n_for_project "$1"; then
+    load_language_lists
+    return 0
+  fi
+  err "$1/docs/intake/PROJECT_INTAKE.md" "$I18N_PROBLEM (CONVENTIONS §3)"
+  return 1
+}
+
+# check_language <dir>: every kit document of a project whose language is loaded states the language of its Intake
+# (CONVENTIONS §3).
+check_language() {
+  local dir="$1" file lang
+  while IFS= read -r file; do
+    lang="$(frontmatter_value "$file" language)"
+    [[ -z "$lang" || "$lang" == "$I18N_LANG" ]] || err "$file" "language '$lang' differs from the language of the project '$I18N_LANG' set in the Intake (CONVENTIONS §3)"
+  done < <(grep -rlE '^doc_type: ' --include='*.md' "$dir/docs" "$dir/plans" "$dir/CLAUDE.md" "$dir/.claude/rules" 2>/dev/null | sort)
 }
 
 run_examples() {
@@ -2717,6 +2688,8 @@ run_examples() {
     check_layout_block "$file"
   done < <(find examples -type f -name 'CLAUDE.md' | sort)
   for file in examples/*/*/; do
+    use_project_language "${file%/}" || continue
+    check_language "${file%/}"
     load_plan_dirs "${file%/}"
     [[ -d "$file/docs" ]] && check_example_consistency "${file%/}"
     [[ -d "$file/docs/srs" ]] && check_srs_requirements "${file%/}"
@@ -2742,7 +2715,7 @@ check_project_docs() {
   out="$(cd "$dir" && python3 "$ROOT/scripts/check-project-docs.py" . 2>&1)"
   status=$?
   if ((status != 0)); then
-    err "$dir" "project documents helper failed (exit $status)"
+    err "$dir" "project documents helper failed (exit $status): $(helper_last_line "$out")"
     return 0
   fi
   while IFS= read -r line; do
@@ -2791,6 +2764,8 @@ project_files() {
 # run_project: the checks of run_examples on one real project.
 run_project() {
   local files companions hit file doc_type
+  use_project_language "$PROJECT" || return 0
+  check_language "$PROJECT"
   load_plan_dirs "$PROJECT"
   ((SKIPPED_PLANS)) && warn "$PROJECT/plans" "$SKIPPED_PLANS folder(s) hold no kit plan or phase frontmatter and were not checked"
   mapfile -t files < <(project_files)
@@ -2834,7 +2809,7 @@ load_catalogs || { printf '\ncheck-templates (%s): %d error(s), %d warning(s)\n'
 case "$MODE" in
   examples) run_examples ;;
   project) run_project ;;
-  *) run_templates ;;
+  *) i18n_load en || exit 2; load_language_lists; run_templates ;;  # the templates of the kit are written in English
 esac
 
 printf '\ncheck-templates (%s): %d error(s), %d warning(s)\n' "$MODE" "$ERRORS" "$WARNINGS"

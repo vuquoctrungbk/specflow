@@ -3,22 +3,22 @@ doc_type: agent-rule
 status: draft
 version: 0.1.0
 template_version: 1.0.0
-language: vi-en
+language: en
 paths: ["{{SOURCE_GLOB}}"]
 parent: [docs/ARCHITECTURE.md]
 overlays: [backend-api]
 assembled_from: []
 ---
 
-# Quy tắc backend (Backend Golden Rules)
+# Backend Golden Rules
 
-<!-- fill: Chép thành .claude/rules/backend-golden-rules.md ở Giai đoạn 2. paths liệt kê thư mục mã nguồn backend theo ARCHITECTURE §4, mỗi glob một phần tử. assembled_from ghi "overlays/backend-api/agent-rules/backend-golden-rules.md@<template_version>" và stack profile đã dùng. -->
+<!-- fill: Copy to .claude/rules/backend-golden-rules.md at Stage 2. paths lists the backend source directories per ARCHITECTURE §4, one glob per element. assembled_from records "overlays/backend-api/agent-rules/backend-golden-rules.md@<template_version>" and the stack profile used. -->
 
-- Tách tầng: controller chỉ nhận request, validate bằng schema runtime, gọi service và map response; MUST NOT import ORM client hay repository vào controller.
-- Transaction mở ở service; repository nhận transaction client từ service, không tự mở transaction.
-- Bất biến chịu thao tác đồng thời giữ ở cơ sở dữ liệu bằng cập nhật nguyên tử có điều kiện, ràng buộc duy nhất, hoặc khóa lấy trong transaction trước bước kiểm tra; MUST NOT kiểm tra rồi ghi ở tầng ứng dụng khi chưa giữ khóa đó.
-- Mọi phản hồi theo envelope ARCHITECTURE §6.2; mọi lỗi mang mã có trong ARCHITECTURE §7.1 và HTTP status theo bảng ánh xạ ở ARCHITECTURE §7.
+- Separate the layers: the controller only receives the request, validates with a runtime schema, calls the service and maps the response; MUST NOT import the ORM client or a repository into a controller.
+- Open the transaction in the service; the repository receives the transaction client from the service and does not open a transaction itself.
+- Keep invariants under concurrent operations in the database with a conditional atomic update, a unique constraint, or a lock taken inside the transaction before the check step; MUST NOT check-then-write at the application layer without holding that lock.
+- Every response follows the ARCHITECTURE §6.2 envelope; every error carries a code present in ARCHITECTURE §7.1 and an HTTP status per the mapping table in ARCHITECTURE §7.
 - {{LANGUAGE_STRICT_MODE_RULE}}
-- Không tin giá trị tính toán từ client (giá, số tiền, quyền, trạng thái); service tính lại từ cơ sở dữ liệu.
-- Migration chỉ sinh bằng công cụ của stack; không sửa migration đã chạy; mọi thay đổi schema đi kèm migration trong File Diff.
-- Log qua logger có cấu trúc với correlation ID; không log secret, token, mật khẩu, dữ liệu cá nhân chưa che.
+- Do not trust computed values from the client (price, amount, permissions, status); the service recomputes them from the database.
+- Generate migrations only with the stack's tool; do not edit a migration that has already run; every schema change comes with a migration in the File Diff.
+- Log through a structured logger with a correlation ID; do not log secrets, tokens, passwords, unmasked personal data.

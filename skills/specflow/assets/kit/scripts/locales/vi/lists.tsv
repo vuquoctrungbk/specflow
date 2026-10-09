@@ -1,0 +1,7 @@
+# Lists that depend on the language of the project's documents: the words that a check compares a cell or a requirement with.
+# Values are separated by |. They replace what the checker used to read from CONVENTIONS, which holds no language-specific word any more.
+lang_vague_terms	thân thiện|dễ dùng|nhanh chóng|tối ưu|hiệu quả|linh hoạt|tốt hơn|nếu có thể|khi phù hợp|và/hoặc|v.v.|nhưng không giới hạn
+lang_problem_levels	Nghiêm trọng|Nhỏ|Không có
+lang_problem_blocking	Nghiêm trọng
+lang_dp_clean	Không có
+lang_dp_found	Có

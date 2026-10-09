@@ -3,36 +3,36 @@ doc_type: as-is-architecture
 status: draft
 version: 0.1.0
 template_version: 1.0.0
-language: vi-en
+language: en
 parent: [docs/intake/PROJECT_INTAKE.md, docs/brownfield/CODEBASE_SUMMARY.md]
 overlays: []
 assembled_from: []
 ---
 
-# Kiến trúc hiện trạng (As-Is Architecture): {{PROJECT_NAME}}
+# As-Is Architecture: {{PROJECT_NAME}}
 
-<!-- fill: Chép thành docs/brownfield/AS_IS_ARCHITECTURE.md ở bước 0b (brownfield/PLAYBOOK_BROWNFIELD.md). Tài liệu mô tả hệ thống đang chạy, không mô tả hệ thống mong muốn: mọi hàng ghi hiện trạng kèm bằng chứng (file:dòng trong inline code, file manifest, output lệnh). Không có bằng chứng thì ghi "Chưa xác định" và thêm câu hỏi ở §13. Tài liệu là ảnh chụp tại commit của Codebase Summary §1, cố định sau Gate 0R. Kiến trúc mong muốn viết sau, ở docs/ARCHITECTURE.md theo core/02. Frontmatter assembled_from ghi "brownfield/01_As_Is_Architecture_Recovery_Template.md@<template_version>". -->
+<!-- fill: Copy to docs/brownfield/AS_IS_ARCHITECTURE.md at step 0b (brownfield/PLAYBOOK_BROWNFIELD.md). The document describes the system that is running, not the desired system: every row records the current state with evidence (file:line in inline code, a manifest file, command output). Without evidence, record "Undetermined" and add a question in §13. The document is a snapshot at the commit of Codebase Summary §1, frozen after Gate 0R. The desired architecture is written later, in docs/ARCHITECTURE.md per core/02. The frontmatter assembled_from records "brownfield/01_As_Is_Architecture_Recovery_Template.md@<template_version>". -->
 
-## 1. Tóm tắt hiện trạng (As-Is Summary)
+## 1. As-Is Summary
 
-<!-- fill: 3 đến 5 câu: hệ thống làm gì, chạy ở đâu, kiểu kiến trúc thực tế, điểm yếu lớn nhất. -->
+<!-- fill: 3 to 5 sentences: what the system does, where it runs, the actual architecture style, the biggest weakness. -->
 
-| Hạng mục | Hiện trạng | Bằng chứng |
+| Item | Current state | Evidence |
 | --- | --- | --- |
-| Kiểu kiến trúc thực tế | <!-- fill: ví dụ một ứng dụng, nhiều dịch vụ, ứng dụng và job tách rời --> | <!-- fill --> |
-| Số bề mặt | <!-- fill: bề mặt ứng với overlay nào ở PLAYBOOK mục 3 --> | <!-- fill --> |
+| Actual architecture style | <!-- fill: for example a single application, several services, an application and separate jobs --> | <!-- fill --> |
+| Number of surfaces | <!-- fill: which overlay each surface matches in PLAYBOOK §3 --> | <!-- fill --> |
 
-## 2. Tech stack thực tế (Actual Tech Stack)
+## 2. Actual Tech Stack
 
-<!-- fill: Lấy từ file manifest và lockfile (ví dụ package.json kèm lockfile, pyproject.toml, go.mod, pom.xml), không lấy từ tài liệu cũ. Phiên bản ghi đúng như lockfile. -->
+<!-- fill: Taken from the manifest files and lockfiles (for example package.json with its lockfile, pyproject.toml, go.mod, pom.xml), not from old documents. Record versions exactly as in the lockfile. -->
 
-| Lớp (Layer) | Công nghệ | Phiên bản trong lockfile | Nguồn | Còn được hỗ trợ |
+| Layer | Technology | Version in the lockfile | Source | Still supported |
 | --- | --- | --- | --- | :---: |
-| <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: file manifest --> | <!-- fill: chọn một: Có \| Không \| Chưa xác định --> |
+| <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: manifest file --> | <!-- fill: choose one: Yes \| No \| Undetermined --> |
 
-## 3. Góc nhìn C4 phục dựng (Recovered C4 Views)
+## 3. Recovered C4 Views
 
-### 3.1. Bối cảnh hệ thống (System Context)
+### 3.1. System Context
 
 ```mermaid
 flowchart TD
@@ -43,9 +43,9 @@ flowchart TD
     SYS -->|"{{MESSAGE}}"| E1
 ```
 
-### 3.2. Vùng chứa (Container)
+### 3.2. Container
 
-<!-- fill: Mỗi đơn vị triển khai và kho dữ liệu đang chạy thật; cạnh ghi giao thức quan sát được trong mã hoặc cấu hình. -->
+<!-- fill: Every deployment unit and data store that is really running; an edge records the protocol that can be observed in the code or configuration. -->
 
 ```mermaid
 flowchart TD
@@ -54,106 +54,108 @@ flowchart TD
     C1 -->|"{{MESSAGE}}"| D1
 ```
 
-### 3.3. Thành phần của module phức tạp nhất (Component)
+### 3.3. Component
+
+<!-- fill: The components of the most complex module. -->
 
 ```mermaid
 flowchart LR
     X1["{{COMPONENT_NAME}}"] --> X2["{{COMPONENT_NAME}}"]
 ```
 
-## 4. Cấu trúc thư mục thực tế (Actual Repository Layout)
+## 4. Actual Repository Layout
 
-<!-- fill: Cây thư mục tới cấp đủ thấy ranh giới module; ghi chú lệch so với cách tách tầng giao tiếp, nghiệp vụ, truy cập dữ liệu (quy tắc 1 ở core/02 §1.2), ví dụ controller truy vấn thẳng cơ sở dữ liệu. -->
+<!-- fill: The directory tree down to the level where module boundaries are visible; note the deviations from the split into communication, business and data-access layers (rule 1 in core/02 §1.2), for example a controller that queries the database directly. -->
 
 ```text
 .
 ```
 
-| Module (Codebase Summary §3) | Tầng thực tế có | Vi phạm tách tầng quan sát được | Bằng chứng |
+| Module (Codebase Summary §3) | Layers it actually has | Layer-separation violations observed | Evidence |
 | --- | --- | --- | --- |
-| `{{MODULE_CODE}}` {{MODULE_NAME}} | <!-- fill --> | <!-- fill: hoặc Không có --> | <!-- fill --> |
+| `{{MODULE_CODE}}` {{MODULE_NAME}} | <!-- fill --> | <!-- fill: or None --> | <!-- fill --> |
 
-## 5. Dữ liệu hiện tại (Current Data)
+## 5. Current Data
 
-<!-- fill: Schema trích từ file migration hoặc file schema của ORM trong repo. Cấu trúc hay số bản ghi của cơ sở dữ liệu đang chạy chỉ lấy khi chủ dự án tự chạy truy vấn và gửi kết quả, hoặc cấp quyền chỉ đọc trên một bản sao không phải production; không đọc dữ liệu cá nhân. Bề mặt không lưu trữ ghi N/A kèm lý do. -->
+<!-- fill: The schema is extracted from the migration files or ORM schema files in the repo. The structure or record counts of the running database are taken only when the project owner runs the queries personally and sends the result, or grants read-only access to a copy that is not production; do not read personal data. A surface with no storage records N/A with a reason. -->
 
 ```mermaid
 erDiagram
     {{ENTITY_NAME}} {
-        string id PK "Khóa chính"
+        string id PK "Primary key"
     }
 ```
 
-| Bảng hoặc collection | Số bản ghi xấp xỉ | Nguồn schema | Vấn đề toàn vẹn quan sát được |
+| Table or collection | Approximate record count | Schema source | Integrity problems observed |
 | --- | --- | --- | --- |
-| <!-- fill --> | <!-- fill: số do chủ dự án cung cấp, hoặc Chưa xác định --> | <!-- fill: file migration hoặc file schema --> | <!-- fill: ví dụ thiếu khóa ngoại, thiếu ràng buộc duy nhất; hoặc Không có --> |
+| <!-- fill --> | <!-- fill: number supplied by the project owner, or Undetermined --> | <!-- fill: migration file or schema file --> | <!-- fill: for example a missing foreign key, a missing unique constraint; or None --> |
 
-## 6. Mối quan tâm xuyên suốt hiện trạng (As-Is Cross-cutting Concerns)
+## 6. As-Is Cross-cutting Concerns
 
-| Hạng mục | Hiện trạng | Bằng chứng | Rủi ro |
+| Item | Current state | Evidence | Risk |
 | --- | --- | --- | --- |
-| Xác thực và phân quyền | <!-- fill --> | <!-- fill --> | <!-- fill --> |
-| Xử lý lỗi và định dạng phản hồi lỗi | <!-- fill --> | <!-- fill --> | <!-- fill --> |
-| Ghi log | <!-- fill --> | <!-- fill --> | <!-- fill --> |
-| Cấu hình và secret | <!-- fill: tham chiếu Codebase Summary §6; secret có nằm trong mã không (chỉ ghi vị trí, không ghi giá trị) --> | <!-- fill --> | <!-- fill --> |
-| Quan sát (metric, trace, health check) | <!-- fill --> | <!-- fill --> | <!-- fill --> |
-| Quốc tế hóa | <!-- fill --> | <!-- fill --> | <!-- fill --> |
-| Tác vụ nền | <!-- fill --> | <!-- fill --> | <!-- fill --> |
+| Authentication and authorization | <!-- fill --> | <!-- fill --> | <!-- fill --> |
+| Error handling and error response format | <!-- fill --> | <!-- fill --> | <!-- fill --> |
+| Logging | <!-- fill --> | <!-- fill --> | <!-- fill --> |
+| Configuration and secrets | <!-- fill: refer to Codebase Summary §6; whether secrets are in the code (record only the location, not the value) --> | <!-- fill --> | <!-- fill --> |
+| Observability (metrics, traces, health checks) | <!-- fill --> | <!-- fill --> | <!-- fill --> |
+| Internationalization | <!-- fill --> | <!-- fill --> | <!-- fill --> |
+| Background jobs | <!-- fill --> | <!-- fill --> | <!-- fill --> |
 | Cache | <!-- fill --> | <!-- fill --> | <!-- fill --> |
 
-## 7. Quy ước giao tiếp hiện có (Current Interface Conventions)
+## 7. Current Interface Conventions
 
-<!-- fill: Kiểu API, định dạng phản hồi, phân trang, idempotency đang dùng; mã lỗi và thông báo lỗi tìm thấy trong mã. Contract hiện tại được chụp lại ở Regression Baseline §5. -->
+<!-- fill: The API style, response format, pagination and idempotency in use; the error codes and error messages found in the code. The current contract is captured again in Regression Baseline §5. -->
 
-| Hạng mục | Hiện trạng | Bằng chứng |
+| Item | Current state | Evidence |
 | --- | --- | --- |
-| Kiểu giao tiếp | <!-- fill --> | <!-- fill --> |
-| Định dạng phản hồi thành công và lỗi | <!-- fill --> | <!-- fill --> |
-| Mã lỗi đang dùng | <!-- fill: liệt kê, hoặc "không có mã, chỉ thông điệp" --> | <!-- fill --> |
+| Interface style | <!-- fill --> | <!-- fill --> |
+| Success and error response format | <!-- fill --> | <!-- fill --> |
+| Error codes in use | <!-- fill: list them, or "no codes, messages only" --> | <!-- fill --> |
 
-## 8. Triển khai hiện tại (Current Deployment)
+## 8. Current Deployment
 
-| Hạng mục | Hiện trạng | Bằng chứng |
+| Item | Current state | Evidence |
 | --- | --- | --- |
-| Nơi chạy và cách triển khai | <!-- fill --> | <!-- fill: file CI, script triển khai, cấu hình hạ tầng --> |
-| Migration khi triển khai | <!-- fill --> | <!-- fill --> |
-| Sao lưu và khôi phục | <!-- fill --> | <!-- fill --> |
-| Quay lui | <!-- fill --> | <!-- fill --> |
+| Where it runs and how it is deployed | <!-- fill --> | <!-- fill: CI file, deployment script, infrastructure configuration --> |
+| Migration at deployment | <!-- fill --> | <!-- fill --> |
+| Backup and restore | <!-- fill --> | <!-- fill --> |
+| Rollback | <!-- fill --> | <!-- fill --> |
 
-## 9. Bảo mật hiện trạng (As-Is Security)
+## 9. As-Is Security
 
-| Kiểm soát | Hiện trạng | Bằng chứng | Mức rủi ro |
+| Control | Current state | Evidence | Risk level |
 | --- | --- | --- | --- |
-| <!-- fill: mỗi kiểm soát một hàng: CORS, CSRF, security headers, quản lý secret, mã hóa khi truyền, lưu mật khẩu, chống injection, mã hóa đầu ra, dữ liệu cá nhân khi lưu, nhật ký kiểm toán, giới hạn tần suất, quét dependency --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Cao \| Trung bình \| Thấp --> |
+| <!-- fill: one row for each control: CORS, CSRF, security headers, secret management, encryption in transit, password storage, injection protection, output encoding, personal data at rest, audit log, rate limiting, dependency scanning --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: High \| Medium \| Low --> |
 
-## 10. Kiểm thử hiện có (Current Tests)
+## 10. Current Tests
 
-| Loại test | Số lượng | Công cụ | Lệnh chạy | Kết quả lần chạy gần nhất |
+| Test type | Count | Tool | Run command | Result of the latest run |
 | --- | --- | --- | --- | --- |
-| <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: lấy từ Codebase Summary §7 --> | <!-- fill: pass, fail, skip --> |
+| <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: taken from Codebase Summary §7 --> | <!-- fill: passed, failed, skipped --> |
 
-## 11. Nợ kỹ thuật (Technical Debt)
+## 11. Technical Debt
 
-| Vấn đề | Bằng chứng | Mức độ | Ảnh hưởng tới to-be |
+| Problem | Evidence | Severity | Impact on the to-be |
 | --- | --- | --- | --- |
-| <!-- fill --> | <!-- fill: file:dòng hoặc output lệnh --> | <!-- fill: chọn một: Cao \| Trung bình \| Thấp --> | <!-- fill: yêu cầu hoặc NFR nào bị cản --> |
+| <!-- fill --> | <!-- fill: file:line or command output --> | <!-- fill: choose one: High \| Medium \| Low --> | <!-- fill: which requirement or NFR is blocked --> |
 
-## 12. Phạm vi tối thiểu cho repo nhỏ (Minimal Scope)
+## 12. Minimal Scope
 
-<!-- fill: Repo dưới 5.000 dòng mã (Codebase Summary §1) được phép ghi N/A kèm lý do ở §3.3 và §7, và gộp các hàng không có cơ chế ở §6 thành một hàng "Không có". §2, §4, §5, §11 luôn đầy đủ. Ghi quyết định vào bảng; repo lớn hơn ghi Không. -->
+<!-- fill: A repo under 5,000 lines of code (Codebase Summary §1) is allowed to record N/A with a reason in §3.3 and §7, and to merge the rows with no mechanism in §6 into one row "None". §2, §4, §5 and §11 are always complete. Record the decision in the table; a larger repo records No. -->
 
-| Áp dụng phạm vi tối thiểu | Căn cứ |
+| Minimal scope applies | Basis |
 | --- | --- |
-| <!-- fill: chọn một: Có \| Không --> | <!-- fill: số dòng mã ở Codebase Summary §1 --> |
+| <!-- fill: choose one: Yes \| No --> | <!-- fill: line count of code in Codebase Summary §1 --> |
 
-## 13. Giả định và câu hỏi mở (Assumptions & Open Questions)
+## 13. Assumptions & Open Questions
 
-| ID | Loại | Nội dung | Lý do hoặc ảnh hưởng | BLOCKING | Người trả lời |
+| ID | Type | Content | Reason or impact | BLOCKING | Respondent |
 | --- | --- | --- | --- | :---: | --- |
-| AQ-01 | <!-- fill: chọn một: Giả định \| Câu hỏi --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Có \| Không --> | <!-- fill --> |
+| AQ-01 | <!-- fill: choose one: Assumption \| Question --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Yes \| No --> | <!-- fill --> |
 
-## 14. Lịch sử phiên bản (Version History)
+## 14. Version History
 
-| Phiên bản | Ngày | Người sửa | Nội dung thay đổi | Lý do và người yêu cầu | Người duyệt |
+| Version | Date | Author | Change | Reason and requester | Approver |
 | --- | --- | --- | --- | --- | --- |
-| 0.1.0 | {{DATE}} | {{AUTHOR}} | Bản khởi tạo | Khởi tạo theo pipeline brownfield | Chưa duyệt |
+| 0.1.0 | {{DATE}} | {{AUTHOR}} | Initial version | Created by the brownfield pipeline | Not approved |

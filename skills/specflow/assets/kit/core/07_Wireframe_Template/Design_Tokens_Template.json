@@ -13,7 +13,7 @@
             ],
             "hex": "#FFFFFF"
           },
-          "$description": "fill: giá trị thô của màu nền sáng nhất; thay bằng thang màu của hướng thị giác đã chọn"
+          "$description": "fill: raw value of the lightest background color; replace with the color scale of the chosen visual direction"
         },
         "100": {
           "$type": "color",
@@ -26,7 +26,7 @@
             ],
             "hex": "#F2F2F2"
           },
-          "$description": "fill: giá trị thô của màu nền phụ"
+          "$description": "fill: raw value of the secondary background color"
         },
         "300": {
           "$type": "color",
@@ -39,7 +39,7 @@
             ],
             "hex": "#BFBFBF"
           },
-          "$description": "fill: giá trị thô của màu đường viền"
+          "$description": "fill: raw value of the border color"
         },
         "600": {
           "$type": "color",
@@ -52,7 +52,7 @@
             ],
             "hex": "#595959"
           },
-          "$description": "fill: giá trị thô của màu chữ phụ"
+          "$description": "fill: raw value of the secondary text color"
         },
         "900": {
           "$type": "color",
@@ -65,7 +65,7 @@
             ],
             "hex": "#1A1A1A"
           },
-          "$description": "fill: giá trị thô của màu chữ chính"
+          "$description": "fill: raw value of the primary text color"
         }
       },
       "accent": {
@@ -80,7 +80,7 @@
             ],
             "hex": "#404040"
           },
-          "$description": "fill: giá trị thô của màu nhấn; thay bằng màu của hướng thị giác đã chọn"
+          "$description": "fill: raw value of the accent color; replace with the color of the chosen visual direction"
         }
       }
     },
@@ -91,7 +91,7 @@
           "value": 0,
           "unit": "px"
         },
-        "$description": "fill: khoảng cách bằng không"
+        "$description": "fill: zero spacing"
       },
       "1": {
         "$type": "dimension",
@@ -99,7 +99,7 @@
           "value": 4,
           "unit": "px"
         },
-        "$description": "fill: bậc spacing nhỏ nhất"
+        "$description": "fill: smallest spacing step"
       },
       "2": {
         "$type": "dimension",
@@ -107,7 +107,7 @@
           "value": 8,
           "unit": "px"
         },
-        "$description": "fill: bậc spacing nhỏ"
+        "$description": "fill: small spacing step"
       },
       "3": {
         "$type": "dimension",
@@ -115,7 +115,7 @@
           "value": 16,
           "unit": "px"
         },
-        "$description": "fill: bậc spacing vừa"
+        "$description": "fill: medium spacing step"
       },
       "4": {
         "$type": "dimension",
@@ -123,7 +123,7 @@
           "value": 24,
           "unit": "px"
         },
-        "$description": "fill: bậc spacing lớn"
+        "$description": "fill: large spacing step"
       }
     },
     "radius": {
@@ -133,7 +133,7 @@
           "value": 4,
           "unit": "px"
         },
-        "$description": "fill: bo góc nhỏ"
+        "$description": "fill: small corner radius"
       },
       "md": {
         "$type": "dimension",
@@ -141,7 +141,7 @@
           "value": 8,
           "unit": "px"
         },
-        "$description": "fill: bo góc vừa"
+        "$description": "fill: medium corner radius"
       }
     },
     "font": {
@@ -152,19 +152,19 @@
             "system-ui",
             "sans-serif"
           ],
-          "$description": "fill: họ chữ chính của hướng thị giác đã chọn"
+          "$description": "fill: primary font family of the chosen visual direction"
         }
       },
       "weight": {
         "regular": {
           "$type": "fontWeight",
           "$value": 400,
-          "$description": "fill: độ đậm thường"
+          "$description": "fill: regular font weight"
         },
         "bold": {
           "$type": "fontWeight",
           "$value": 700,
-          "$description": "fill: độ đậm cao"
+          "$description": "fill: bold font weight"
         }
       },
       "size": {
@@ -174,7 +174,7 @@
             "value": 0.875,
             "unit": "rem"
           },
-          "$description": "fill: cỡ chữ nhỏ"
+          "$description": "fill: small font size"
         },
         "md": {
           "$type": "dimension",
@@ -182,7 +182,7 @@
             "value": 1,
             "unit": "rem"
           },
-          "$description": "fill: cỡ chữ nền, 1rem bằng 16px"
+          "$description": "fill: base font size, 1rem equals 16px"
         },
         "lg": {
           "$type": "dimension",
@@ -190,14 +190,14 @@
             "value": 1.5,
             "unit": "rem"
           },
-          "$description": "fill: cỡ chữ tiêu đề"
+          "$description": "fill: heading font size"
         }
       },
       "line-height": {
         "base": {
           "$type": "number",
           "$value": 1.5,
-          "$description": "fill: hệ số chiều cao dòng của chữ nội dung"
+          "$description": "fill: line-height ratio of body text"
         }
       }
     },
@@ -208,7 +208,7 @@
           "value": 150,
           "unit": "ms"
         },
-        "$description": "fill: thời lượng chuyển động ngắn; giảm hoặc bỏ khi người dùng bật reduced motion"
+        "$description": "fill: short motion duration; reduce or remove when the user turns on reduced motion"
       }
     },
     "easing": {
@@ -220,7 +220,7 @@
           0,
           1
         ],
-        "$description": "fill: đường cong chuyển động chuẩn"
+        "$description": "fill: standard motion easing curve"
       }
     }
   },
@@ -230,50 +230,50 @@
         "default": {
           "$type": "color",
           "$value": "{primitive.color.neutral.0}",
-          "$description": "fill: nền chính của trang"
+          "$description": "fill: main background of the page"
         },
         "subtle": {
           "$type": "color",
           "$value": "{primitive.color.neutral.100}",
-          "$description": "fill: nền phụ, vùng nhóm nội dung"
+          "$description": "fill: secondary background, for areas that group content"
         }
       },
       "text": {
         "default": {
           "$type": "color",
           "$value": "{primitive.color.neutral.900}",
-          "$description": "fill: chữ chính"
+          "$description": "fill: primary text"
         },
         "muted": {
           "$type": "color",
           "$value": "{primitive.color.neutral.600}",
-          "$description": "fill: chữ phụ"
+          "$description": "fill: secondary text"
         },
         "on-action": {
           "$type": "color",
           "$value": "{primitive.color.neutral.0}",
-          "$description": "fill: chữ trên nền của hành động chính"
+          "$description": "fill: text on the background of the primary action"
         }
       },
       "action": {
         "primary": {
           "$type": "color",
           "$value": "{primitive.color.accent.600}",
-          "$description": "fill: nền của hành động chính"
+          "$description": "fill: background of the primary action"
         }
       },
       "border": {
         "default": {
           "$type": "color",
           "$value": "{primitive.color.neutral.300}",
-          "$description": "fill: đường viền mặc định"
+          "$description": "fill: default border"
         }
       },
       "focus": {
         "ring": {
           "$type": "color",
           "$value": "{primitive.color.accent.600}",
-          "$description": "fill: viền hiển thị focus"
+          "$description": "fill: border that shows focus"
         }
       }
     },
@@ -282,14 +282,14 @@
         "default": {
           "$type": "dimension",
           "$value": "{primitive.space.2}",
-          "$description": "fill: khoảng cách giữa các phần tử cạnh nhau"
+          "$description": "fill: gap between adjacent elements"
         }
       },
       "inset": {
         "default": {
           "$type": "dimension",
           "$value": "{primitive.space.3}",
-          "$description": "fill: đệm trong của container"
+          "$description": "fill: inner padding of a container"
         }
       }
     },
@@ -297,12 +297,12 @@
       "control": {
         "$type": "dimension",
         "$value": "{primitive.radius.sm}",
-        "$description": "fill: bo góc của control"
+        "$description": "fill: corner radius of a control"
       },
       "container": {
         "$type": "dimension",
         "$value": "{primitive.radius.md}",
-        "$description": "fill: bo góc của container"
+        "$description": "fill: corner radius of a container"
       }
     },
     "typography": {
@@ -314,7 +314,7 @@
           "fontWeight": "{primitive.font.weight.regular}",
           "lineHeight": "{primitive.font.line-height.base}"
         },
-        "$description": "fill: kiểu chữ của nội dung"
+        "$description": "fill: text style of body content"
       },
       "heading": {
         "$type": "typography",
@@ -324,7 +324,7 @@
           "fontWeight": "{primitive.font.weight.bold}",
           "lineHeight": "{primitive.font.line-height.base}"
         },
-        "$description": "fill: kiểu chữ của tiêu đề"
+        "$description": "fill: text style of headings"
       }
     },
     "shadow": {
@@ -337,7 +337,7 @@
           "blur": "{primitive.space.2}",
           "spread": "{primitive.space.0}"
         },
-        "$description": "fill: bóng của phần tử nổi lên khỏi nền"
+        "$description": "fill: shadow of an element raised above the background"
       }
     },
     "motion": {
@@ -345,14 +345,14 @@
         "default": {
           "$type": "duration",
           "$value": "{primitive.duration.fast}",
-          "$description": "fill: thời lượng chuyển động mặc định"
+          "$description": "fill: default motion duration"
         }
       },
       "easing": {
         "default": {
           "$type": "cubicBezier",
           "$value": "{primitive.easing.standard}",
-          "$description": "fill: đường cong chuyển động mặc định"
+          "$description": "fill: default motion easing curve"
         }
       }
     }
@@ -362,34 +362,34 @@
       "background": {
         "$type": "color",
         "$value": "{semantic.color.action.primary}",
-        "$description": "fill: nền của nút"
+        "$description": "fill: background of the button"
       },
       "text": {
         "$type": "color",
         "$value": "{semantic.color.text.on-action}",
-        "$description": "fill: chữ của nút"
+        "$description": "fill: text of the button"
       },
       "radius": {
         "$type": "dimension",
         "$value": "{semantic.radius.control}",
-        "$description": "fill: bo góc của nút"
+        "$description": "fill: corner radius of the button"
       },
       "padding": {
         "$type": "dimension",
         "$value": "{semantic.space.inset.default}",
-        "$description": "fill: đệm trong của nút"
+        "$description": "fill: inner padding of the button"
       }
     },
     "field": {
       "background": {
         "$type": "color",
         "$value": "{semantic.color.background.default}",
-        "$description": "fill: nền của trường nhập"
+        "$description": "fill: background of the input field"
       },
       "border": {
         "$type": "color",
         "$value": "{semantic.color.border.default}",
-        "$description": "fill: viền của trường nhập"
+        "$description": "fill: border of the input field"
       }
     }
   }

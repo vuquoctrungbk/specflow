@@ -3,83 +3,83 @@ doc_type: migration-plan
 status: draft
 version: 0.1.0
 template_version: 1.0.0
-language: vi-en
+language: en
 parent: [docs/ARCHITECTURE.md, docs/brownfield/GAP_ANALYSIS.md, docs/brownfield/REGRESSION_BASELINE.md]
 overlays: []
 assembled_from: []
 ---
 
-# Kế hoạch chuyển đổi (Migration Plan): {{PROJECT_NAME}}
+# Migration Plan: {{PROJECT_NAME}}
 
-<!-- fill: Chép thành docs/brownfield/MIGRATION_PLAN.md ở bước 0e, cùng Giai đoạn 2 (brownfield/PLAYBOOK_BROWNFIELD.md). Kế hoạch đưa hệ thống từ hiện trạng tới ARCHITECTURE to-be qua các bước nhỏ; mỗi bước chạy lại toàn bộ test REG và test bảo vệ, giữ mọi RB chưa được duyệt đổi ở Gap Analysis §5. Mỗi bước thành một hoặc vài SPEC ở Giai đoạn 3. Tài liệu được cập nhật suốt quá trình chuyển đổi: bước Sync Docs của mỗi SPEC cập nhật cột Trạng thái ở §2. Frontmatter assembled_from ghi "brownfield/04_Migration_Plan_Template.md@<template_version>". -->
+<!-- fill: Copy to docs/brownfield/MIGRATION_PLAN.md at step 0e, together with Stage 2 (brownfield/PLAYBOOK_BROWNFIELD.md). The plan takes the system from the current state to the to-be ARCHITECTURE in small steps; each step reruns all REG tests and protecting tests, and keeps every RB not yet approved for change in Gap Analysis §5. Each step becomes one or a few SPECs in Stage 3. The document is updated throughout the migration: the Sync Docs step of every SPEC updates the Status column in §2. The frontmatter assembled_from records "brownfield/04_Migration_Plan_Template.md@<template_version>". -->
 
-## 1. Chiến lược (Strategy)
+## 1. Strategy
 
-| Hạng mục | Quyết định |
+| Item | Decision |
 | --- | --- |
-| Chiến lược chuyển đổi | <!-- fill: chọn một, có ADR: strangler fig (thay dần từng phần sau một lớp định tuyến) \| big-bang (thay toàn bộ một lần) \| chạy song song (hệ cũ và mới cùng chạy, so kết quả); nêu lý do --> |
-| ADR | <!-- fill: ADR ID; ADR MUST accepted trước Gate 2 --> |
-| Điều kiện hoàn tất | <!-- fill: hệ cũ tắt được khi nào, đo bằng gì --> |
+| Migration strategy | <!-- fill: choose one, with an ADR: strangler fig (replace piece by piece behind a routing layer) \| big-bang (replace everything at once) \| parallel run (old and new systems run together and results are compared); give the reason --> |
+| ADR | <!-- fill: ADR ID; the ADR MUST be accepted before Gate 2 --> |
+| Completion condition | <!-- fill: when the old system can be switched off, and how that is measured --> |
 
-## 2. Các bước theo thứ tự (Ordered Steps)
+## 2. Ordered Steps
 
-<!-- fill: Cột RB phải pass gồm mọi RB có bằng chứng nằm trong phạm vi của bước (Regression Baseline §3) và mọi RB mà bước đổi hoặc bỏ theo Gap Analysis §5. SPEC của bước chép danh sách này vào §9.2 theo brownfield/Spec_Brownfield_Addendum.md. -->
+<!-- fill: The "RB that must pass" column holds every RB whose evidence lies within the scope of the step (Regression Baseline §3) and every RB that the step changes or removes per Gap Analysis §5. The SPEC of the step copies this list into §9.2 per brownfield/Spec_Brownfield_Addendum.md. -->
 
-| Bước | Mã phân hệ | Việc làm (Gap Analysis §6) | Điều kiện bắt đầu | Điều kiện xong | RB phải pass | SPEC dự kiến | Trạng thái |
+| Step | Module code | Work (Gap Analysis §6) | Start condition | Done condition | RB that must pass | Planned SPEC | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | `{{MODULE_CODE}}` | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: RB ID --> | SPEC-{{MODULE_CODE}}-001 | <!-- fill: chọn một: chưa làm \| đang làm \| xong --> |
+| 1 | `{{MODULE_CODE}}` | <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: RB ID --> | SPEC-{{MODULE_CODE}}-001 | <!-- fill: choose one: not started \| in progress \| done --> |
 
-## 3. Công tắc ngắt và cờ tính năng (Kill Switch & Feature Flags)
+## 3. Kill Switch & Feature Flags
 
-| Bước | Cơ chế chuyển về hệ cũ | Ai được bật tắt | Thời gian có hiệu lực |
+| Step | Mechanism to switch back to the old system | Who may toggle it | Time to take effect |
 | --- | --- | --- | --- |
-| 1 | <!-- fill: cờ tính năng, định tuyến, cấu hình --> | <!-- fill --> | <!-- fill --> |
+| 1 | <!-- fill: feature flag, routing, configuration --> | <!-- fill --> | <!-- fill --> |
 
-## 4. Quay lui theo bước (Rollback per Step)
+## 4. Rollback per Step
 
-| Bước | Cách quay lui | Dữ liệu có mất không | Thời gian dự kiến |
+| Step | How to roll back | Whether data is lost | Estimated time |
 | --- | --- | --- | --- |
 | 1 | <!-- fill --> | <!-- fill --> | <!-- fill --> |
 
-## 5. Di chuyển dữ liệu (Data Migration)
+## 5. Data Migration
 
-<!-- fill: Ghi N/A kèm lý do nếu Gap Analysis §4 không có thực thể cần di chuyển. Chạy thử trên bản sao không phải production dùng dữ liệu tổng hợp hoặc đã ẩn danh không đảo ngược trước khi chạy thật. -->
+<!-- fill: Record N/A with a reason if Gap Analysis §4 has no entity that needs migration. Do a trial run on a copy that is not production, using synthetic or irreversibly anonymised data, before the real run. -->
 
-| Dữ liệu | Nguồn | Đích | Cách chuyển | Đối soát sau chuyển | Chạy lại an toàn |
+| Data | Source | Target | How it is moved | Reconciliation after the move | Safe to rerun |
 | --- | --- | --- | --- | --- | :---: |
-| <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: migration, script, đồng bộ hai chiều --> | <!-- fill: số bản ghi, tổng kiểm tra --> | <!-- fill: chọn một: Có \| Không --> |
+| <!-- fill --> | <!-- fill --> | <!-- fill --> | <!-- fill: migration, script, two-way sync --> | <!-- fill: record count, checksum --> | <!-- fill: choose one: Yes \| No --> |
 
-## 6. Mốc kiểm tra hồi quy (Regression Checkpoints)
+## 6. Regression Checkpoints
 
-- Trước và sau mỗi bước ở §2: chạy toàn bộ test bảo vệ ở Regression Baseline §6.1; mọi RB chưa được đổi hoặc bỏ ở bước này hay bước trước MUST pass, kể cả RB đã duyệt đổi nhưng thuộc bước sau. RB chỉ có thủ tục thủ công chạy theo Regression Baseline §6.2.
-- So contract bên ngoài với ảnh chụp ở Regression Baseline §5; khác biệt ngoài Gap Analysis §5 là lỗi.
+- Before and after every step in §2: run all the protecting tests in Regression Baseline §6.1; every RB that is not changed or removed at this step or an earlier step MUST pass, including an RB approved for change that belongs to a later step. An RB that has only a manual procedure runs per Regression Baseline §6.2.
+- Compare the external contract with the snapshot in Regression Baseline §5; a difference outside Gap Analysis §5 is a defect.
 
-| Bước | Lệnh kiểm tra | Người xác nhận |
+| Step | Check command | Confirmed by |
 | --- | --- | --- |
 | 1 | <!-- fill --> | <!-- fill --> |
 
-## 7. Giao tiếp và cửa sổ bảo trì (Communication & Maintenance Windows)
+## 7. Communication & Maintenance Windows
 
-| Bước | Ai cần biết | Thời điểm thông báo | Cửa sổ bảo trì |
+| Step | Who needs to know | When to notify | Maintenance window |
 | --- | --- | --- | --- |
-| 1 | <!-- fill --> | <!-- fill --> | <!-- fill: hoặc Không cần --> |
+| 1 | <!-- fill --> | <!-- fill --> | <!-- fill: or Not needed --> |
 
-## 8. Phạm vi tối thiểu cho repo nhỏ (Minimal Scope)
+## 8. Minimal Scope
 
-<!-- fill: Repo dưới 5.000 dòng mã (Codebase Summary §1) được phép: §2 chỉ một bước; §3 và §7 ghi N/A kèm lý do khi thay đổi phát hành một lần ngoài giờ sử dụng. §1, §4, §6 luôn đầy đủ. Ghi quyết định vào bảng; repo lớn hơn ghi Không. -->
+<!-- fill: A repo under 5,000 lines of code (Codebase Summary §1) is allowed: §2 with a single step; §3 and §7 record N/A with a reason when the change is released once outside usage hours. §1, §4 and §6 are always complete. Record the decision in the table; a larger repo records No. -->
 
-| Áp dụng phạm vi tối thiểu | Căn cứ |
+| Minimal scope applies | Basis |
 | --- | --- |
-| <!-- fill: chọn một: Có \| Không --> | <!-- fill: số dòng mã ở Codebase Summary §1 --> |
+| <!-- fill: choose one: Yes \| No --> | <!-- fill: line count of code in Codebase Summary §1 --> |
 
-## 9. Giả định và câu hỏi mở (Assumptions & Open Questions)
+## 9. Assumptions & Open Questions
 
-| ID | Loại | Nội dung | Lý do hoặc ảnh hưởng | BLOCKING | Người trả lời |
+| ID | Type | Content | Reason or impact | BLOCKING | Respondent |
 | --- | --- | --- | --- | :---: | --- |
-| AQ-01 | <!-- fill: chọn một: Giả định \| Câu hỏi --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Có \| Không --> | <!-- fill --> |
+| AQ-01 | <!-- fill: choose one: Assumption \| Question --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Yes \| No --> | <!-- fill --> |
 
-## 10. Lịch sử phiên bản (Version History)
+## 10. Version History
 
-| Phiên bản | Ngày | Người sửa | Nội dung thay đổi | Lý do và người yêu cầu | Người duyệt |
+| Version | Date | Author | Change | Reason and requester | Approver |
 | --- | --- | --- | --- | --- | --- |
-| 0.1.0 | {{DATE}} | {{AUTHOR}} | Bản khởi tạo | Khởi tạo theo pipeline brownfield | Chưa duyệt |
+| 0.1.0 | {{DATE}} | {{AUTHOR}} | Initial version | Created by the brownfield pipeline | Not approved |

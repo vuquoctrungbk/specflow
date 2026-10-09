@@ -2,76 +2,76 @@
 doc_type: overlay-section
 status: stable
 version: 1.0.1
-language: vi-en
+language: en
 surface: ai-llm-app
 ---
 
-# Overlay ai-llm-app: khối cho SPEC
+# Overlay ai-llm-app: blocks for the SPEC
 
 <!-- SLOT-CONTENT: spec.contract -->
-### Prompt dùng (Prompts Used)
+### Prompts Used
 
-<!-- fill: Mỗi prompt mà tính năng gọi một hàng; Prompt Spec phải ở status approved trước Gate 3. Nội dung prompt, schema đầu ra, chế độ lỗi và ngưỡng đánh giá nằm trong Prompt Spec, không chép lại ở đây. -->
+<!-- fill: One row per prompt that the feature calls; the Prompt Spec has to be at status approved before Gate 3. The prompt text, output schema, failure modes and eval thresholds live in the Prompt Spec, do not copy them here. -->
 
-| Prompt ID | Phiên bản | File | Mô hình | Mục đích |
+| Prompt ID | Version | File | Model | Purpose |
 | --- | --- | --- | --- | --- |
-| `PROMPT-{{MODULE_CODE}}-001` | <!-- fill: version của Prompt Spec --> | <!-- fill: đường dẫn Prompt Spec trong inline code --> | <!-- fill: ID mô hình theo ARCHITECTURE §2.1 --> | <!-- fill --> |
+| `PROMPT-{{MODULE_CODE}}-001` | <!-- fill: version of the Prompt Spec --> | <!-- fill: path of the Prompt Spec in inline code --> | <!-- fill: model ID per ARCHITECTURE §2.1 --> | <!-- fill --> |
 
-### Luồng xử lý với mô hình (Model Processing Flow)
+### Model Processing Flow
 
-| Bước | Đầu vào | Xử lý | Đầu ra |
+| Step | Input | Processing | Output |
 | --- | --- | --- | --- |
-| Lấy đầu vào | <!-- fill: nguồn và trường --> | <!-- fill: guard đầu vào --> | <!-- fill --> |
-| Gọi mô hình | <!-- fill --> | Client mô hình với tham số của Prompt Spec | Kết quả đã qua schema, hoặc mã lỗi |
-| Quyết định | <!-- fill --> | <!-- fill: quy tắc nghiệp vụ, ngưỡng độ tin cậy --> | <!-- fill: dùng kết quả hoặc phương án dự phòng --> |
-| Ghi kết quả | <!-- fill --> | <!-- fill: ghi có điều kiện để không ghi lặp --> | <!-- fill --> |
+| Get input | <!-- fill: source and fields --> | <!-- fill: input guard --> | <!-- fill --> |
+| Call the model | <!-- fill --> | Model client with the parameters of the Prompt Spec | A schema-checked result, or an error code |
+| Decide | <!-- fill --> | <!-- fill: business rules, confidence threshold --> | <!-- fill: use the result or the fallback --> |
+| Write the result | <!-- fill --> | <!-- fill: conditional write so nothing is written twice --> | <!-- fill --> |
 
-### Bảng quyết định (Decision Table)
+### Decision Table
 
-| Điều kiện | Hành động | Ghi vào nhật ký | AC |
+| Condition | Action | Written to the log | AC |
 | --- | --- | --- | --- |
-| Đầu ra hợp lệ, độ tin cậy từ ngưỡng trở lên | <!-- fill --> | Kết quả, phiên bản prompt, token | AC-{{MODULE_CODE}}-01 |
-| Đầu ra hợp lệ, độ tin cậy dưới ngưỡng | <!-- fill: chuyển người xem lại --> | Như trên, kèm `LOW_CONFIDENCE` | AC-{{MODULE_CODE}}-01 |
-| Đầu ra không hợp lệ | <!-- fill: phương án dự phòng --> | `OUTPUT_INVALID` | AC-{{MODULE_CODE}}-01 |
-| Mô hình không sẵn sàng sau khi thử lại | <!-- fill: phương án dự phòng --> | `MODEL_UNAVAILABLE` | AC-{{MODULE_CODE}}-01 |
+| Valid output, confidence at or above the threshold | <!-- fill --> | Result, prompt version, tokens | AC-{{MODULE_CODE}}-01 |
+| Valid output, confidence below the threshold | <!-- fill: send to a reviewer --> | As above, plus `LOW_CONFIDENCE` | AC-{{MODULE_CODE}}-01 |
+| Invalid output | <!-- fill: fallback --> | `OUTPUT_INVALID` | AC-{{MODULE_CODE}}-01 |
+| Model unavailable after retries | <!-- fill: fallback --> | `MODEL_UNAVAILABLE` | AC-{{MODULE_CODE}}-01 |
 
-### Ngân sách và giới hạn (Budget & Limits)
+### Budget & Limits
 
-| Hạng mục | Giá trị |
+| Item | Value |
 | --- | --- |
-| Token tối đa mỗi lời gọi | <!-- fill: max_tokens của Prompt Spec; token vào tối đa sau guard đầu vào --> |
-| Thời gian chờ, số lần thử lại và hạn chót của lời gọi | <!-- fill: thời gian chờ mỗi lần, số lần thử lại tối đa, hạn chót cho toàn bộ lời gọi kể cả thử lại --> |
-| Token trung bình mỗi lời gọi trên bộ dữ liệu | <!-- fill: ngưỡng của test COST --> |
+| Maximum tokens per call | <!-- fill: max_tokens of the Prompt Spec; maximum input tokens after the input guard --> |
+| Timeout, retry count and call deadline | <!-- fill: timeout per attempt, maximum retry count, deadline for the whole call including retries --> |
+| Average tokens per call on the dataset | <!-- fill: threshold of the COST test --> |
 
 <!-- PROFILE-SLOT: spec.contract -->
 
-### Ánh xạ lỗi (Error Mapping)
+### Error Mapping
 
-<!-- fill: Mọi mã lỗi mà tính năng tạo ra hoặc nhận từ hệ thống ngoài; mã có trong ARCHITECTURE §7.1. -->
+<!-- fill: Every error code that the feature produces or receives from external systems; the code is in ARCHITECTURE §7.1. -->
 
-| Mã | Nguồn | Hành vi | Người dùng thấy gì |
+| Code | Source | Behavior | What the user sees |
 | --- | --- | --- | --- |
-| <!-- fill --> | <!-- fill: chọn một: mô hình \| guard \| hệ thống ngoài --> | <!-- fill --> | <!-- fill --> |
+| <!-- fill --> | <!-- fill: choose one: model \| guard \| external system --> | <!-- fill --> | <!-- fill --> |
 <!-- /SLOT-CONTENT -->
 
 <!-- SLOT-CONTENT: spec.test-types -->
-### Loại test của bề mặt (Surface Test Types)
+### Surface Test Types
 
-| Loại | TYPE trong TC ID | Phạm vi | Dữ liệu | Bắt buộc |
+| Type | TYPE in TC ID | Scope | Data | Required |
 | --- | --- | --- | --- | :---: |
-| Unit | `UNIT` | Guard đầu vào và đầu ra, ghép prompt, quy tắc quyết định | Trong bộ nhớ | Có |
-| Integration | `INT` | Client mô hình thật với nhà cung cấp giả lập ở tầng `fetch`: đầu ra hợp lệ, không hợp lệ, quá tải, lỗi mạng | Phản hồi giả lập khớp API của nhà cung cấp | Có |
-| Đánh giá | `EVAL` | Prompt và mô hình thật trên bộ dữ liệu có nhãn, lặp theo Prompt Spec | Bộ dữ liệu đánh giá | Có, mỗi prompt |
-| Tấn công prompt | `INJ` | Đầu vào cố đổi chỉ dẫn, lộ prompt hệ thống hoặc gọi công cụ ngoài quyền | Bộ dữ liệu tấn công | Có khi prompt nhận nội dung không tin cậy |
-| Chi phí | `COST` | Token trung bình mỗi lời gọi trên bộ dữ liệu so với ngân sách | Như `EVAL` | Có, mỗi prompt |
-| Concurrency | `CONC` | Bất biến ở §1.2 khi cùng đầu vào được xử lý song song hoặc nhiều lời gọi dùng chung ngân sách | Nhà cung cấp và hệ thống đích giả lập | Có, mỗi bất biến ở §1.2 một test |
+| Unit | `UNIT` | Input and output guards, prompt assembly, decision rules | In memory | Yes |
+| Integration | `INT` | The real model client with a provider simulated at the `fetch` layer: valid output, invalid output, overload, network error | Simulated responses matching the provider API | Yes |
+| Evaluation | `EVAL` | The real prompt and model on a labeled dataset, repeated per the Prompt Spec | Eval dataset | Yes, per prompt |
+| Prompt attack | `INJ` | Input that tries to change instructions, leak the system prompt or call tools beyond permissions | Attack dataset | Yes when the prompt receives untrusted content |
+| Cost | `COST` | Average tokens per call on the dataset against the budget | Same as `EVAL` | Yes, per prompt |
+| Concurrency | `CONC` | The invariant in §1.2 when the same input is processed in parallel or several calls share a budget | Simulated provider and target system | Yes, one test per invariant in §1.2 |
 
-### Dạng test CONC của bề mặt (Concurrency Test Pattern)
+### Concurrency Test Pattern
 
-1. Giả lập nhà cung cấp mô hình ở tầng `fetch` và giả lập hệ thống đích có ghi có điều kiện (phiên bản hoặc khóa idempotency).
-2. Cho hai worker, hoặc hai lần kích hoạt của cùng worker, xử lý cùng tập đầu vào cùng lúc; hệ thống đích có độ trễ đủ để hai lần xử lý chồng nhau.
-3. Khẳng định mỗi đầu vào chỉ có một kết quả được ghi, số lời gọi mô hình không vượt số đầu vào nhân số worker, và tổng token không vượt ngân sách của lần chạy.
-4. Không dùng sleep để sắp thứ tự; thứ tự do độ trễ của giả lập điều khiển.
+1. Simulate the model provider at the `fetch` layer and simulate a target system with a conditional write (version or idempotency key).
+2. Have two workers, or two triggers of the same worker, process the same set of inputs at the same time; the target system has enough latency for the two runs to overlap.
+3. Assert that each input has only one result written, that the number of model calls does not exceed the number of inputs times the number of workers, and that total tokens do not exceed the budget of the run.
+4. Do not use sleep to order events; the order is driven by the latency of the simulation.
 
 <!-- PROFILE-SLOT: spec.test-types -->
 <!-- /SLOT-CONTENT -->

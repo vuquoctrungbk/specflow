@@ -1,0 +1,44 @@
+# English labels for templates.tsv (language: en). Same keys as locales/vi/templates.tsv.
+tpl_col_component	Component
+tpl_col_component_uses	Components used
+tpl_col_pattern_uses	Patterns used
+tpl_col_direction	Direction
+tpl_col_chosen	Chosen
+tpl_col_token_before	Foreground token
+tpl_col_requirement_statement	Requirement statement
+tpl_col_requirement	Requirement
+tpl_col_threshold	Threshold
+tpl_col_ac_or_inv	AC or INV
+tpl_col_verification	Verification method
+tpl_col_priority	Priority
+tpl_col_source	Source
+tpl_col_screen	Screen
+tpl_col_entry_point	Entry point
+tpl_col_heuristic_key	Heuristic key
+tpl_col_problem_level	Problem level
+tpl_col_deceptive_key	Deceptive pattern key
+tpl_col_pattern	Pattern
+tpl_col_result	Result
+tpl_col_evidence	Evidence
+tpl_col_release	Release
+tpl_row_accessibility	Accessibility
+tpl_row_method_path	Method and path
+tpl_word_level	level
+tpl_heading_appendix	Appendix
+tpl_table_placeholder_values	Placeholder values
+tpl_label_choice_reason	Reason for choice
+tpl_label_library_theme	Library default theme
+tpl_label_auth_screen	Authentication screen
+tpl_label_priority_info	Priority information
+tpl_label_main_action	Primary action
+tpl_label_edge_content	Edge content
+tpl_label_zone_name	Zone name
+tpl_val_yes	Yes
+tpl_val_no	No
+tpl_val_none	None
+tpl_val_keep	Unchanged
+tpl_val_no_ui	No UI
+tpl_val_by_flow	In flow
+tpl_val_not_used	Not used
+tpl_val_used_on_purpose	Used on purpose
+tpl_val_like	Same as

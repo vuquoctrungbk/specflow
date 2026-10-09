@@ -11,7 +11,7 @@ paths:
             schema: {}
       responses:
         "201":
-          description: "Tạo thành công"
+          description: "Created successfully"
           content:
             application/json:
               schema: {}

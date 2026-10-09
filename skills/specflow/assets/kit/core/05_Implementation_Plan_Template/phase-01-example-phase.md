@@ -8,7 +8,7 @@ dependencies: []
 doc_type: implementation-phase
 version: 0.1.0
 template_version: 1.3.0
-language: vi-en
+language: en
 spec_id: "{{SPEC_ID}}"
 parent: ["docs/specs/SPEC_{{FEATURE_KEY}}.md"]
 overlays: []
@@ -17,70 +17,70 @@ assembled_from: []
 
 # Phase 1: {{PHASE_TITLE}}
 
-<!-- fill: Chép thành phase-NN-<slug>.md, NN tăng dần, sửa phase, title và dependencies (danh sách số pha phải xong trước). spec_id là SPEC mà pha thực hiện, một phần tử của spec_ids ở plan.md; một pha chỉ thuộc một SPEC, pha của cùng một SPEC đứng liền nhau; parent là file của SPEC đó. Một pha là một đơn vị commit được: sau pha, mọi test của pha xanh và lệnh verify đạt. -->
+<!-- fill: Copy to phase-NN-<slug>.md, NN increasing, and edit phase, title and dependencies (the list of phase numbers that must be done first). spec_id is the SPEC that the phase implements, one element of spec_ids in plan.md; a phase belongs to one SPEC only, the phases of the same SPEC are adjacent; parent is the file of that SPEC. A phase is one committable unit: after the phase, every test of the phase is green and the verify commands pass. The document language: set the language key of the phase to the language of the project (the language key of the Intake). -->
 
-## Tổng quan (Overview)
+## Overview
 
-- SPEC: `{{SPEC_ID}}` tại `docs/specs/SPEC_{{FEATURE_KEY}}.md`, một phần tử của `spec_ids` ở `plan.md`.
-- Mục tiêu của pha: <!-- fill: 1 đến 2 câu, nêu AC hoặc INV mà pha này làm cho đạt -->
+- SPEC: `{{SPEC_ID}}` at `docs/specs/SPEC_{{FEATURE_KEY}}.md`, one element of `spec_ids` in `plan.md`.
+- Goal of the phase: <!-- fill: 1 to 2 sentences, naming the AC or INV that this phase makes pass -->
 
-## Đọc trước (Read First)
+## Read First
 
-<!-- fill: Mỗi dòng một tài liệu và các mục agent phải đọc để làm pha này, dạng `đường dẫn` §mục, §mục. Lấy số mục bằng `python3 <thư mục kit>/scripts/project-index.py . --outline <tệp>`. Giữ ba dòng dưới nếu đúng, thêm mục SPEC hay ARCHITECTURE khác mà pha cần; pha dựng một màn hình dẫn thêm trang wireframe của màn và, khi dự án có HTML, file `docs/wireframes/html/SCR-<MOD>-NN.html` (đọc cả file, không ghi §mục), vì pha dựng lại đúng màn đã duyệt (PLAYBOOK mục 2.5) (ví dụ §3 cho pha DTO, §5 cho pha migration), và xóa chú thích này. Tệp đi kèm chỉ ghi khi pha cần nội dung của nó -->
+<!-- fill: One line per document and the sections the agent must read to do this phase, in the form path §section, §section. Get the section numbers with: python3 <kit directory>/scripts/project-index.py . --outline <file>. Keep the three lines below if they are correct, add other SPEC or ARCHITECTURE sections that the phase needs; a phase that builds a screen also cites the wireframe page of the screen and, when the project has HTML, the file `docs/wireframes/html/SCR-<MOD>-NN.html` (read the whole file, no §section), because the phase rebuilds exactly the approved screen (PLAYBOOK §2.5) (for example §3 for a DTO phase, §5 for a migration phase), and delete this note. Companion files are listed only when the phase needs their content -->
 
 - `docs/specs/SPEC_{{FEATURE_KEY}}.md` §1.5, §2, §9
 - `docs/ARCHITECTURE.md` §4
 
-## Yêu cầu (Requirements)
+## Requirements
 
-- [ ] <!-- fill: kết quả kiểm chứng được của pha -->
+- [ ] <!-- fill: verifiable result of the phase -->
 
-## File của pha (Files)
+## Files
 
-Tập con của File Diff trong §2 của SPEC `{{SPEC_ID}}`; MUST NOT chạm file ngoài bảng này.
+A subset of the File Diff in §2 of SPEC `{{SPEC_ID}}`; MUST NOT touch files outside this table.
 
-| Đường dẫn | Thao tác | Nội dung |
-|-----------|----------|----------|
-| <!-- fill: đường dẫn trong inline code --> | <!-- fill: chọn một: tạo \| sửa --> | <!-- fill --> |
+| Path | Action | Content |
+|------|--------|---------|
+| <!-- fill: path in inline code --> | <!-- fill: choose one: create \| edit --> | <!-- fill --> |
 
-## Test phải pass (Tests)
+## Tests
 
-| TC ID | Loại | File test |
+| TC ID | Type | Test file |
 |-------|------|-----------|
 | TC-{{MODULE_CODE}}-UNIT-01 | <!-- fill --> | <!-- fill --> |
 
-## Các bước thực hiện (Implementation Steps)
+## Implementation Steps
 
-1. Viết hoặc cập nhật test của pha theo bảng trên; chạy và xác nhận test đỏ vì đúng lý do.
-2. <!-- fill: bước triển khai cụ thể, theo thứ tự -->
-3. Chạy test tới khi xanh, refactor khi test vẫn xanh.
-4. Chạy lệnh verify trong `CLAUDE.md`.
-5. Commit theo quy ước ở mục dưới.
+1. Write or update the tests of the phase per the table above; run them and confirm they are red for the right reason.
+2. <!-- fill: concrete implementation step, in order -->
+3. Run the tests until green, refactor while the tests stay green.
+4. Run the verify commands in `CLAUDE.md`.
+5. Commit per the convention in the section below.
 
-## Việc cần làm (Todo)
+## Todo
 
-- [ ] Test của pha viết xong và đỏ đúng lý do
-- [ ] <!-- fill: việc triển khai -->
-- [ ] Test của pha xanh, lệnh verify đạt
+- [ ] Tests of the phase written and red for the right reason
+- [ ] <!-- fill: implementation work -->
+- [ ] Tests of the phase green, verify commands pass
 - [ ] Commit
 
-## Kiểm chứng (Verification)
+## Verification
 
-<!-- fill: liệt kê lệnh verify áp dụng cho pha (lấy từ CLAUDE.md) và kết quả mong đợi, ví dụ số test pass, exit code 0. -->
+<!-- fill: list the verify commands that apply to the phase (taken from CLAUDE.md) and the expected result, for example the number of passing tests, exit code 0. -->
 
 ## Commit
 
-Conventional Commits bằng tiếng Anh, một commit cho pha, dạng `type(scope): summary` với type là `feat`, `fix`, `test`, `refactor`, `build` (migration, dependency, cấu hình build) hoặc `chore` (thay đổi khác không chạm hành vi). Message mô tả hành vi thay đổi, không chứa ID quy trình (SPEC, TC, số pha) và không chứa secret.
+Conventional Commits in English, one commit for the phase, in the form `type(scope): summary` where type is `feat`, `fix`, `test`, `refactor`, `build` (migration, dependency, build configuration) or `chore` (other changes that do not touch behavior). The message describes the behavior change, contains no process ID (SPEC, TC, phase number) and no secret.
 
-## Tiêu chí thành công (Success Criteria)
+## Success Criteria
 
-- [ ] Mọi TC ở mục Test phải pass đều xanh.
-- [ ] Không file nào ngoài mục File của pha bị sửa.
+- [ ] Every TC in the Tests section is green.
+- [ ] No file outside the Files section of the phase is edited.
 
-## Quay lui (Rollback)
+## Rollback
 
-<!-- fill: cách hoàn tác pha nếu pha sau phát hiện lỗi thiết kế: revert commit, migration đảo ngược, dữ liệu cần dọn. -->
+<!-- fill: how to undo the phase if a later phase finds a design error: revert the commit, reverse the migration, data that needs cleaning. -->
 
-## Rủi ro (Risk Assessment)
+## Risk Assessment
 
-<!-- fill: rủi ro riêng của pha và cách giảm thiểu; ghi "Không có rủi ro đáng kể" nếu đúng. -->
+<!-- fill: risks specific to the phase and how to mitigate them; write "No significant risk" if that is the case. -->

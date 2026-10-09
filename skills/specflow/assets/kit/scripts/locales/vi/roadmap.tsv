@@ -1,0 +1,23 @@
+# Labels of the roadmap (docs/ROADMAP.md) that check-roadmap.py reads, in Vietnamese.
+roadmap_todo	Chưa làm
+roadmap_doing	Đang làm
+roadmap_done	Xong
+roadmap_confirmed	Đã xác nhận
+roadmap_dropped	Bỏ
+roadmap_none	Không có
+roadmap_not_yet	Chưa có
+roadmap_none_word	Không
+roadmap_kept	Giữ nguyên
+roadmap_tag_format	Định dạng tag
+roadmap_decision_wait	Chờ
+roadmap_decision_cr	Đưa vào change request
+roadmap_sec_progress	Tiến độ
+roadmap_sec_queue	Hàng việc
+roadmap_sec_new	Yêu cầu mới
+roadmap_sec_done	Đã hoàn thành
+roadmap_sec_milestones	Mốc version
+roadmap_sub_fr	Yêu cầu chức năng
+roadmap_sub_nfr	Yêu cầu phi chức năng mức Must
+roadmap_doing_line	- Đang làm:
+roadmap_to	đến
+roadmap_group	Nhóm

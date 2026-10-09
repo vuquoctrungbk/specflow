@@ -4,10 +4,9 @@
 Usage:
   check-roadmap.py PROJECT_DIR
 
-PROJECT_DIR holds docs/ (Intake, SRS, SPECs, ROADMAP.md) and plans/. The caller runs this only for a project whose Intake
-comes from template 1.4.0 or later. The roadmap is compared with its sources: the FR catalog of SRS section 6.1, the
+PROJECT_DIR holds docs/ (Intake, SRS, SPECs, ROADMAP.md) and plans/. The roadmap is compared with its sources: the FR catalog of SRS section 6.1, the
 Must NFRs of SRS section 7, section 1.5 and 9 of every SPEC that is not superseded, the phases of every plan, and, for a
-brownfield project, the "Giữ nguyên" rows of Gap Analysis section 2. Whether a commit or tag exists in git is not
+brownfield project, the rows of Gap Analysis section 2 that keep the code ("Unchanged" in English, the `roadmap_kept` label). Whether a commit or tag exists in git is not
 checked: the worked examples have no history, so that part stays with the agent's reconciliation (PLAYBOOK 2.6).
 
 Error contract: one line per finding, "ERROR <file>: <message>", each message ending with "(CONVENTIONS §11)". The exit
@@ -18,17 +17,20 @@ import pathlib
 import re
 import sys
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from i18n import T  # noqa: E402
+
 SUFFIX = " (CONVENTIONS §11)"
 FR_RE = re.compile(r"^FR-[A-Z0-9]+(?:-[A-Z0-9]+)*-\d+$")
 NFR_RE = re.compile(r"^NFR-[A-Z0-9]+(?:-[A-Z0-9]+)*-\d+$")
 NFR_ANY = re.compile(r"NFR-[A-Z0-9]+(?:-[A-Z0-9]+)*-\d+")
 TC_RE = re.compile(r"TC-[A-Z0-9]+(?:-[A-Z0-9]+)*-\d+")
 COMMIT_RE = re.compile(r"^[0-9a-f]{7,40}$")
-STATUSES = ("Chưa làm", "Đang làm", "Xong", "Đã xác nhận", "Bỏ")
-DONE = ("Xong", "Đã xác nhận")
+STATUSES = (T.roadmap_todo, T.roadmap_doing, T.roadmap_done, T.roadmap_confirmed, T.roadmap_dropped)
+DONE = (T.roadmap_done, T.roadmap_confirmed)
 MOSCOW = {"Must": 0, "Should": 1, "Could": 2}
-NONE = "Không có"
-NOT_YET = "Chưa có"
+NONE = T.roadmap_none
+NOT_YET = T.roadmap_not_yet
 
 findings = []
 
@@ -95,14 +97,14 @@ def passed_gate(text):
 
 
 def phase_label(nums):
-    """'3', '3 đến 6', or ranges joined by commas when the numbers are not consecutive."""
+    """'3', '3 to 6' (the `roadmap_to` label), or ranges joined by commas when the numbers are not consecutive."""
     nums, parts = sorted(set(nums)), []
     for n in nums:
         if parts and n == parts[-1][1] + 1:
             parts[-1][1] = n
         else:
             parts.append([n, n])
-    return ", ".join(str(a) if a == b else f"{a} đến {b}" for a, b in parts)
+    return ", ".join(str(a) if a == b else f"{a} {T.roadmap_to} {b}" for a, b in parts)
 
 
 def srs_files(root):
@@ -125,12 +127,12 @@ def main():
 
     intake = unfenced(intake_path.read_text(encoding="utf-8"))
     routing = section(intake, r"^## 14\.", r"^## ") or ""
-    tag_lines = [l for l in routing.splitlines() if re.match(r"^\|\s*Định dạng tag\s*\|", l)]
-    if len(tag_lines) != 1 or not re.match(r"^\|\s*Định dạng tag\s*\|\s*`[^`]+`", tag_lines[0]):
-        err(intake_path, "Intake from template 1.4.0 or later needs one 'Định dạng tag' row in section 14 with the tag pattern in backticks")
+    tag_lines = [l for l in routing.splitlines() if re.match(rf"^\|\s*{re.escape(T.roadmap_tag_format)}\s*\|", l)]
+    if len(tag_lines) != 1 or not re.match(rf"^\|\s*{re.escape(T.roadmap_tag_format)}\s*\|\s*`[^`]+`", tag_lines[0]):
+        err(intake_path, f"Intake needs one '{T.roadmap_tag_format}' row in section 14 with the tag pattern in backticks")
 
     if not rm_path.is_file():
-        err(root, "project with Intake 1.4.0 or later has no docs/ROADMAP.md")
+        err(root, "project has no docs/ROADMAP.md")
         return
 
     # Sources: SRS (one file, or master plus modules), SPECs, plans, Gap Analysis.
@@ -150,7 +152,7 @@ def main():
     gap = root / "docs/brownfield/GAP_ANALYSIS.md"
     if gap.is_file():
         g = unfenced(gap.read_text(encoding="utf-8"))
-        kept = {c[0] for c in rows(section(g, r"^## 2\.", r"^## "), FR_RE, 4) if c[3].startswith("Giữ nguyên")}
+        kept = {c[0] for c in rows(section(g, r"^## 2\.", r"^## "), FR_RE, 4) if c[3].startswith(T.roadmap_kept)}
     want_fr = [r for r in frs if r[5] != "Won't" and r[0] not in kept]
     want_nfr = [r for r in nfrs if r[7] == "Must"]
     want_fr_ids = {r[0] for r in want_fr}
@@ -194,13 +196,13 @@ def main():
     # The roadmap itself.
     text = unfenced(rm_path.read_text(encoding="utf-8"))
     sec = {n: section(text, rf"^## {n}\.", r"^## ") for n in (1, 2, 3, 4, 5)}
-    for n, name in ((1, "Tiến độ"), (2, "Hàng việc"), (3, "Yêu cầu mới"), (4, "Đã hoàn thành"), (5, "Mốc version")):
+    for n, name in ((1, T.roadmap_sec_progress), (2, T.roadmap_sec_queue), (3, T.roadmap_sec_new), (4, T.roadmap_sec_done), (5, T.roadmap_sec_milestones)):
         if sec[n] is None:
             err(rm_path, f"roadmap has no section {n} ({name})")
     if any(sec[n] is None for n in (1, 2, 4, 5)):
         return
     sub = {k: section(sec[2], rf"^### 2\.{k}\.", r"^###? ") for k in (1, 2)}
-    for k, name in ((1, "Yêu cầu chức năng"), (2, "Yêu cầu phi chức năng mức Must")):
+    for k, name in ((1, T.roadmap_sub_fr), (2, T.roadmap_sub_nfr)):
         if sub[k] is None:
             err(rm_path, f"section 2 has no subsection 2.{k} ({name})")
     fr_rows = rows(sub[1], None, 8)
@@ -233,15 +235,15 @@ def main():
                 err(rm_path, f"{rid} has a row in section 2 more than once")
         for c in have:
             if c[1] in want_ids:
-                if c[st_col] == "Bỏ":
-                    err(rm_path, f"row {c[1]} is Bỏ, but SRS still has it as {why}; Bỏ is only for a requirement the SRS dropped or moved out")
-            elif c[st_col] != "Bỏ":
+                if c[st_col] == T.roadmap_dropped:
+                    err(rm_path, f"row {c[1]} is {T.roadmap_dropped}, but SRS still has it as {why}; {T.roadmap_dropped} is only for a requirement the SRS dropped or moved out")
+            elif c[st_col] != T.roadmap_dropped:
                 detail = why_not(kind, c[1])
                 err(rm_path, f"row {c[1]} is not {why}: {detail}")
 
     def why_not(kind, rid):
         if kind == "FR" and rid in srs_fr:
-            return f"SRS §6.1 gives priority {srs_fr[rid][5]}" + (", and Gap Analysis says Giữ nguyên" if rid in kept else "")
+            return f"SRS §6.1 gives priority {srs_fr[rid][5]}" + (f", and Gap Analysis says {T.roadmap_kept}" if rid in kept else "")
         if kind != "FR" and rid in srs_nfr:
             return f"SRS §7 gives priority {srs_nfr[rid][7]}"
         return "SRS has no such ID"
@@ -272,7 +274,7 @@ def main():
         sids = fr_specs.get(rid, [])
         want_spec = ", ".join(sids) or NOT_YET
         if c[5] != want_spec:
-            err(rm_path, f"row {rid} has SPEC '{c[5]}', but " + (f"{want_spec} names it in §1.5" if sids else "no SPEC names it in §1.5, so 'Chưa có'"))
+            err(rm_path, f"row {rid} has SPEC '{c[5]}', but " + (f"{want_spec} names it in §1.5" if sids else f"no SPEC names it in §1.5, so '{NOT_YET}'"))
         nums = [n for s in sids for n in specs[s]["phases"]]
         want_phase = phase_label(nums) if nums else NOT_YET
         if c[6] != want_phase:
@@ -282,11 +284,11 @@ def main():
         open_ph = [n for s_ in sids for n in specs[s_]["open_phases"]]
         if st in DONE and open_ph:
             err(rm_path, f"row {rid} is {st}, but phase {phase_label(open_ph)} of its SPECs is not done")
-        if st != "Bỏ" and c[4] in planned and (not sids or not nums):
+        if st != T.roadmap_dropped and c[4] in planned and (not sids or not nums):
             err(rm_path, f"row {rid} belongs to release {c[4]}, which has a plan, but has no SPEC or no phase")
 
     # Order of section 2.1: release (section 1 order), then rows with phases by first phase of their release plan, then
-    # rows without phases by priority and SRS order. Rows marked Bỏ are left out of the order.
+    # rows without phases by priority and SRS order. Rows marked as dropped are left out of the order.
     def order_key(rid):
         src = srs_fr.get(rid)
         rel = releases.index(src[6]) if src and src[6] in releases else len(releases)
@@ -295,20 +297,20 @@ def main():
         if nums:
             return (rel, 0, min(nums), specs[sids[0]]["frs"].index(rid), 0)
         return (rel, 1, MOSCOW.get(src[5], 3) if src else 3, frs.index(src) if src else 0, 0)
-    live = [c[1] for c in fr_rows if c[7] != "Bỏ"]
+    live = [c[1] for c in fr_rows if c[7] != T.roadmap_dropped]
     expect = sorted(live, key=order_key)
     if live != expect:
         k = next(i for i, (a, b) in enumerate(zip(live, expect)) if a != b)
         err(rm_path, f"section 2.1 is out of order at row {live[k]}: {expect[k]} comes first (release, then first phase, then priority and SRS order)")
 
-    # Work goes in roadmap order: a done row never follows a row of the same release that is still Chưa làm.
+    # Work goes in roadmap order: a done row never follows a row of the same release that is still to do.
     open_row = {}
     for rid in expect:
         rel = srs_fr[rid][6] if rid in srs_fr else ""
-        if status.get(rid) == "Chưa làm":
+        if status.get(rid) == T.roadmap_todo:
             open_row.setdefault(rel, rid)
         elif status.get(rid) in DONE and rel in open_row:
-            err(rm_path, f"row {rid} is {status[rid]}, but the earlier row {open_row[rel]} of release {rel} is still Chưa làm")
+            err(rm_path, f"row {rid} is {status[rid]}, but the earlier row {open_row[rel]} of release {rel} is still {T.roadmap_todo}")
 
     spec_order = []
     for rid in expect:
@@ -316,7 +318,7 @@ def main():
             if sid not in spec_order:
                 spec_order.append(sid)
     spec_order += [s for s in specs if s not in spec_order]
-    live_nfr = [c[1] for c in nfr_rows if c[6] != "Bỏ"]
+    live_nfr = [c[1] for c in nfr_rows if c[6] != T.roadmap_dropped]
     nfr_expect = sorted(live_nfr, key=lambda x: list(srs_nfr).index(x) if x in srs_nfr else len(srs_nfr))
     if live_nfr != nfr_expect:
         k = next(i for i, (a, b) in enumerate(zip(live_nfr, nfr_expect)) if a != b)
@@ -329,7 +331,7 @@ def main():
         src = srs_nfr.get(rid)
         if src:
             if c[2] != src[1]:
-                err(rm_path, f"row {rid} has name '{c[2]}', but the Nhóm of SRS §7 is '{src[1]}'")
+                err(rm_path, f"row {rid} has name '{c[2]}', but the {T.roadmap_group} of SRS §7 is '{src[1]}'")
             if c[4] != src[6]:
                 err(rm_path, f"row {rid} has verification '{c[4]}', but SRS §7 has '{src[6]}'")
         named = ", ".join(s for s in spec_order if rid in specs[s]["nfrs"]) or NONE
@@ -337,10 +339,10 @@ def main():
             err(rm_path, f"row {rid} lists SPEC '{c[3]}', but the SPECs naming it in §1.5 are '{named}'")
         if c[5] not in releases:
             err(rm_path, f"row {rid} has closing release '{c[5]}', which is not a release of section 1")
-        if st == "Đã xác nhận":
-            open_frs = [f[1] for f in fr_rows if f[4] == c[5] and f[7] not in ("Đã xác nhận", "Bỏ")]
+        if st == T.roadmap_confirmed:
+            open_frs = [f[1] for f in fr_rows if f[4] == c[5] and f[7] not in (T.roadmap_confirmed, T.roadmap_dropped)]
             if open_frs:
-                err(rm_path, f"row {rid} is Đã xác nhận, but FR rows of its closing release {c[5]} are not all Đã xác nhận ({open_frs[0]})")
+                err(rm_path, f"row {rid} is {T.roadmap_confirmed}, but FR rows of its closing release {c[5]} are not all {T.roadmap_confirmed} ({open_frs[0]})")
 
     def status_of(rid):
         return status.get(rid)
@@ -359,7 +361,7 @@ def main():
         if not COMMIT_RE.match(c[2]):
             err(rm_path, f"section 5 tag {c[0]} has commit '{c[2]}', not a 7 to 40 character hex commit hash")
     for sid, tag in latest.items():
-        reworked = sid in specs and specs[sid]["frs"] and all(status_of(fr) in ("Chưa làm", "Đang làm") for fr in specs[sid]["frs"])
+        reworked = sid in specs and specs[sid]["frs"] and all(status_of(fr) in (T.roadmap_todo, T.roadmap_doing) for fr in specs[sid]["frs"])
         if not any(d[3] == tag for d in done_rows) and not reworked:
             err(rm_path, f"section 5 tag {tag} is the latest milestone of {sid}, but the tag of no row in section 4")
     by_id = {}
@@ -368,7 +370,7 @@ def main():
             err(rm_path, f"section 4 has more than one row for {c[0]}")
         by_id[c[0]] = c
         if status.get(c[0]) not in DONE:
-            err(rm_path, f"section 4 has a row for {c[0]}, but its row in section 2 is not Xong or Đã xác nhận")
+            err(rm_path, f"section 4 has a row for {c[0]}, but its row in section 2 is not {T.roadmap_done} or {T.roadmap_confirmed}")
     for rid, st in status.items():
         if st not in DONE:
             continue
@@ -387,11 +389,11 @@ def main():
                 err(rm_path, f"section 4 row {rid} has no evidence of TCs from §9 of {', '.join(sids) or 'its SPEC'}")
         elif d[1] in ("", NONE, NOT_YET) or (srs_nfr.get(rid, [""] * 9)[6] == "Test" and not TC_RE.search(d[1])):
             err(rm_path, f"section 4 row {rid} has no evidence from SRS §8" + (" (a Test NFR needs TC IDs)" if srs_nfr.get(rid, [""] * 9)[6] == "Test" else ""))
-        if st == "Xong" and d[3] != NOT_YET:
-            err(rm_path, f"row {rid} is Xong, but section 4 gives it tag '{d[3]}'; the tag is 'Chưa có' until Đã xác nhận")
-        if st == "Đã xác nhận":
+        if st == T.roadmap_done and d[3] != NOT_YET:
+            err(rm_path, f"row {rid} is {T.roadmap_done}, but section 4 gives it tag '{d[3]}'; the tag is '{NOT_YET}' until {T.roadmap_confirmed}")
+        if st == T.roadmap_confirmed:
             if d[3] in ("", NONE, NOT_YET):
-                err(rm_path, f"row {rid} is Đã xác nhận, but section 4 gives it no tag")
+                err(rm_path, f"row {rid} is {T.roadmap_confirmed}, but section 4 gives it no tag")
             elif d[3] not in milestones:
                 err(rm_path, f"section 4 tag '{d[3]}' of {rid} has no row in section 5")
             elif is_fr and milestones[d[3]][1] not in fr_specs.get(rid, []):
@@ -399,42 +401,42 @@ def main():
             if is_fr:
                 for sid in fr_specs.get(rid, []):
                     if specs[sid]["status"] != "implemented":
-                        err(rm_path, f"row {rid} is Đã xác nhận, but {sid} is not implemented")
+                        err(rm_path, f"row {rid} is {T.roadmap_confirmed}, but {sid} is not implemented")
 
     # Section 3: decisions.
     for c in rows(sec[3], None, 4):
         if c[0] == NONE:
             continue
         dec = c[3]
-        if dec == "Chờ":
+        if dec == T.roadmap_decision_wait:
             continue
-        for word in ("Đưa vào change request", "Bỏ"):
+        for word in (T.roadmap_decision_cr, T.roadmap_dropped):
             if dec.startswith(word):
                 if len(dec[len(word):].strip(" :,;.-")) < 3:
-                    err(rm_path, f"section 3 decision '{dec}' needs " + ("the document it changes" if word != "Bỏ" else "a reason"))
+                    err(rm_path, f"section 3 decision '{dec}' needs " + ("the document it changes" if word != T.roadmap_dropped else "a reason"))
                 break
         else:
-            err(rm_path, f"section 3 decision '{dec}' is not Chờ, Đưa vào change request or Bỏ")
+            err(rm_path, f"section 3 decision '{dec}' is not {T.roadmap_decision_wait}, {T.roadmap_decision_cr} or {T.roadmap_dropped}")
 
     # Section 1: counts per release and the line of work in progress.
     prog = {c[0]: c for c in prog_rows}
     for rel in releases:
-        ids = [c[1] for c in fr_rows if c[4] == rel and c[7] != "Bỏ"] + [c[1] for c in nfr_rows if c[5] == rel and c[6] != "Bỏ"]
+        ids = [c[1] for c in fr_rows if c[4] == rel and c[7] != T.roadmap_dropped] + [c[1] for c in nfr_rows if c[5] == rel and c[6] != T.roadmap_dropped]
         tot = len(ids)
         x = sum(status.get(i) in DONE for i in ids)
-        y = sum(status.get(i) == "Đã xác nhận" for i in ids)
+        y = sum(status.get(i) == T.roadmap_confirmed for i in ids)
         want = [str(tot), str(x), str(y), f"{y * 100 // tot if tot else 0}%"]
         have = prog.get(rel)
         if have and have[1:5] != want:
             err(rm_path, f"section 1 row {rel} gives {' | '.join(have[1:5])}, but section 2 gives {' | '.join(want)}")
-    m = re.search(r"^- Đang làm: *(.*)$", sec[1], re.M)
-    doing = [rid for rid, st in status.items() if st == "Đang làm"]
+    m = re.search(rf"^{re.escape(T.roadmap_doing_line)} *(.*)$", sec[1], re.M)
+    doing = [rid for rid, st in status.items() if st == T.roadmap_doing]
     if not m:
-        err(rm_path, "section 1 has no '- Đang làm:' line")
-    elif not doing and m.group(1).strip() != "Không":
-        err(rm_path, f"section 1 says Đang làm '{m.group(1).strip()}', but no row of section 2 is Đang làm; write 'Không'")
+        err(rm_path, f"section 1 has no '{T.roadmap_doing_line}' line")
+    elif not doing and m.group(1).strip() != T.roadmap_none_word:
+        err(rm_path, f"section 1 says {T.roadmap_doing} '{m.group(1).strip()}', but no row of section 2 is {T.roadmap_doing}; write '{T.roadmap_none_word}'")
     elif doing and not all(rid in m.group(1) for rid in doing):
-        err(rm_path, f"section 1 says Đang làm '{m.group(1).strip()}', but {', '.join(doing)} is Đang làm in section 2")
+        err(rm_path, f"section 1 says {T.roadmap_doing} '{m.group(1).strip()}', but {', '.join(doing)} is {T.roadmap_doing} in section 2")
 
 if __name__ == "__main__":
     main()

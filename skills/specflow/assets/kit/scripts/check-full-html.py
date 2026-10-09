@@ -3,7 +3,10 @@
 
 Usage: check-full-html.py PROJECT_DIR
 
-Applies only when the Intake records stage 1W as "Có, kèm HTML đầy đủ". Then every wireframe page
+Applies when the Intake records stage 1W with the label `html_full` of the language of the project ("Yes, with full HTML"
+in English, see scripts/locales). The Intake must have the Stage 1W row, and its value must start with one of the three values
+of the Intake template (full HTML, Markdown only, No): a row that is missing, or reads otherwise, is an ERROR, because the
+checks below would silently not run. Then every wireframe page
 docs/wireframes/SCR-*.md needs docs/wireframes/html/<same name>.html that
   - has a viewport meta tag, and at least one @media query on a frontend-web page;
   - is not titled as a low-fi draft;
@@ -18,8 +21,13 @@ import pathlib
 import re
 import sys
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from i18n import T  # noqa: E402
+
 STATES = ("Initial", "Loading", "Empty", "Success", "Error")
-FULL = "Có, kèm HTML đầy đủ"
+FULL = T.html_full
+MARKDOWN_ONLY = T.html_markdown_only
+NO_STAGE = T.html_no
 
 
 def cells(line):
@@ -45,9 +53,19 @@ def main():
     intake = root / "docs/intake/PROJECT_INTAKE.md"
     if not intake.is_file():
         return
-    value = next((cells(l)[1] for l in intake.read_text(encoding="utf-8").splitlines()
-                  if l.startswith("| Giai đoạn 1W") and len(cells(l)) > 1), "")
+    irel = intake.relative_to(root).as_posix()
+    values = [cells(l)[1] for l in intake.read_text(encoding="utf-8").splitlines()
+              if l.startswith("| " + T.html_stage_1w) and len(cells(l)) > 1]
+    choices = f"'{FULL}', '{MARKDOWN_ONLY}: <reason>' or '{NO_STAGE}: <reason>'"
+    if not values:
+        print(f"ERROR {irel}: no '{T.html_stage_1w}' row in section 14, so the full HTML of the wireframe pages cannot be checked; "
+              f"add the row with {choices} (CONVENTIONS §7)")
+        return
+    value = values[0]
+    if value.startswith(MARKDOWN_ONLY) or re.match(rf"{re.escape(NO_STAGE)}(?!\w)", value):
+        return
     if not value.startswith(FULL):
+        print(f"ERROR {irel}: the '{T.html_stage_1w}' row reads '{value}'; write {choices} (CONVENTIONS §7)")
         return
     wf = root / "docs/wireframes"
     for page in sorted(wf.glob("SCR-*.md")):

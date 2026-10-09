@@ -1,290 +1,288 @@
 ---
 doc_type: playbook
 status: stable
-version: 3.2.0
-language: vi-en
+version: 4.0.0
+language: en
 ---
 
-# Playbook điều phối AI Coding (AI Coding Playbook)
+# AI Coding Playbook
 
-## 1. Mục đích và nguyên tắc (Purpose & Principles)
+## 1. Purpose & Principles
 
-### 1.1. Mục đích
+### 1.1. Purpose
 
-Quy trình bắt buộc cho coding agent (mặc định là Claude Code) và kỹ sư khi xây dựng phần mềm bằng bộ mẫu specflow: từ ý tưởng tới mã nguồn đã kiểm chứng, qua một chuỗi tài liệu thu hẹp dần ngữ cảnh và tăng dần độ chi tiết (Top-Down Specification). Chuỗi đó là quy trình 3 bước rồi tới thực thi: bước 1 Yêu cầu (Intake, SRS, wireframe đối chiếu với SRS khi có giao diện), bước 2 Thiết kế (Architecture và ADR, SPEC của đợt), bước 3 Kế hoạch (plan triển khai của đợt); thực thi gồm coding TDD, verify và đồng bộ tài liệu (mục 2). Playbook này định nghĩa quy trình; hợp đồng định dạng (placeholder, slot, frontmatter, ID, bố cục tài liệu) nằm trong [CONVENTIONS.md](CONVENTIONS.md).
+The mandatory process for the coding agent (Claude Code by default) and for engineers building software with the specflow templates: from idea to verified code, through a chain of documents that narrows the context and raises the level of detail step by step (Top-Down Specification). The chain is a 3-step process followed by execution: step 1 Requirements (Intake, SRS, and a wireframe checked against the SRS when there is a UI), step 2 Design (Architecture and ADR, the release's SPECs), step 3 Plan (the release's implementation plan); execution is TDD coding, verify, and docs sync (§2). This playbook defines the process; the format contract (placeholders, slots, frontmatter, IDs, document layout) is in [CONVENTIONS.md](CONVENTIONS.md).
 
-### 1.2. Nguyên tắc bất di bất dịch
+### 1.2. Non-negotiable principles
 
-1. Không sinh mã nguồn khi chuỗi tài liệu `PROJECT_INTAKE → SRS → WIREFRAME → ARCHITECTURE + ADR → SPEC → Implementation Plan` chưa hoàn thiện và chưa được duyệt theo Definition of Ready (mục 10.1). WIREFRAME chỉ có ở dự án có Giai đoạn 1W (mục 2.2.1). Ngoại lệ duy nhất: test `REG` của dự án brownfield ở Giai đoạn 0R ([brownfield/PLAYBOOK_BROWNFIELD.md](brownfield/PLAYBOOK_BROWNFIELD.md) mục 5.1).
-2. Mỗi giai đoạn kết thúc ở một exit gate có người duyệt; agent dừng ở gate, không tự chuyển giai đoạn.
-3. Tài liệu là nguồn chân lý (Single Source of Truth). Khi code và tài liệu lệch nhau, sửa một trong hai qua quy trình mục 8, không để lệch.
-4. Mọi mơ hồ được ghi lại trong mục `Assumptions & Open Questions`, không được giải quyết ngầm.
-5. TDD: test viết từ kịch bản trong SPEC trước khi viết logic.
+1. Do not generate source code until the document chain `PROJECT_INTAKE → SRS → WIREFRAME → ARCHITECTURE + ADR → SPEC → Implementation Plan` is complete and approved per the Definition of Ready (§10.1). WIREFRAME exists only in projects that have Stage 1W (§2.2.1). The only exception: the `REG` tests of a brownfield project at Stage 0R ([brownfield/PLAYBOOK_BROWNFIELD.md](brownfield/PLAYBOOK_BROWNFIELD.md) §5.1).
+2. Every stage ends at an exit gate that has an approver; the agent stops at the gate and does not move to the next stage on its own.
+3. Documents are the Single Source of Truth. When code and documents differ, fix one of the two through the §8 process; never leave them out of sync.
+4. Every ambiguity is recorded in the `Assumptions & Open Questions` section, never resolved silently.
+5. TDD: tests are written from the scenarios in the SPEC before the logic.
 
-### 1.3. Ngôn ngữ
+### 1.3. Language
 
-Theo [CONVENTIONS.md](CONVENTIONS.md) mục 5: diễn giải tiếng Việt có dấu, thuật ngữ kỹ thuật giữ tiếng Anh, định danh luôn tiếng Anh. Agent MUST NOT đổi ngôn ngữ giữa chừng.
+Per [CONVENTIONS.md](CONVENTIONS.md) §5: prose in the language of the project's documents, technical terms kept in English, identifiers always in English. Agent MUST NOT switch language midway.
 
-### 1.4. Cài đặt và đường dẫn
+### 1.4. Installation and paths
 
-Bộ mẫu được chép vào thư mục `specflow/` ở gốc dự án: `PLAYBOOK.md`, `PROMPTS.md`, `COMPATIBILITY.md`, `CONVENTIONS.md`, `CHANGELOG.md`, `core/`, `overlays/`, `starters/`, `brownfield/`, `scripts/`; khi nâng cấp, xóa `specflow/` cũ trước khi chép. Không chép `examples/`. Đường dẫn template trong tài liệu này tính từ gốc bộ mẫu (ví dụ `core/01_SRS_Template.md`); trong dự án, thêm tiền tố `specflow/`. Prompt ở `PROMPTS.md` đã viết sẵn theo đường dẫn dự án.
+The template set is copied into the `specflow/` folder at the project root: `PLAYBOOK.md`, `PROMPTS.md`, `CONVENTIONS.md`, `CHANGELOG.md`, `core/`, `overlays/`, `starters/`, `brownfield/`, `scripts/`; when upgrading, delete the old `specflow/` before copying. Do not copy `examples/`. Template paths in this document are counted from the root of the template set (for example `core/01_SRS_Template.md`); in a project, add the prefix `specflow/`. The prompts in `PROMPTS.md` are already written with project paths.
 
-## 2. Pipeline tài liệu (Document Pipeline)
+## 2. Document Pipeline
 
-Quy trình gồm 3 bước và giai đoạn thực thi. Mỗi bước gom một hoặc nhiều giai đoạn và khép lại bằng gate của giai đoạn cuối; số và tên giai đoạn, gate giữ như cũ.
+The process has 3 steps plus the execution stages. Each step groups one or more stages and closes with the gate of its last stage; the numbers and names of the stages and gates stay as they were.
 
-Cột `Prompt` dưới là bảng đối chiếu duy nhất của bước, giai đoạn, gate và prompt; nơi khác dẫn về bảng này thay vì lặp lại.
+The `Prompt` column below is the single table that maps step, stage, gate, and prompt; other places point to this table instead of repeating it.
 
-| Bước | Giai đoạn | Gate | Prompt | Kết quả khi đạt |
+| Step | Stage | Gate | Prompt | Result when passed |
 | --- | --- | --- | --- | --- |
-| 1. Yêu cầu | 0 Intake; 0R khi brownfield; 1 SRS; 1W Wireframe khi có giao diện | Gate 0; Gate 0R; Gate 1; Gate 1W | Prompt 0; Prompt B0 đến B2 (brownfield); Prompt 1; Prompt 1W | SRS, wireframe và tài liệu hệ thống thiết kế `approved`, bảng đối chiếu FR ↔ SCR khớp |
-| 2. Thiết kế | 2 Architecture và ADR; 3 SPEC của đợt | Gate 2; Gate 3 theo đợt | Prompt 2; Prompt 3 (mỗi lượt một SPEC) | ARCHITECTURE, ADR và mọi SPEC của đợt `approved` |
-| 3. Kế hoạch | 4a plan của đợt | Gate 4 | Prompt 4 phần A | Plan của đợt phủ mọi SPEC của đợt, DoR đạt |
-| Thực thi | 4b Coding TDD; 5 Verify và Sync Docs | Gate 5 theo SPEC | Prompt 4 phần B, 5, 6 | Mỗi SPEC `implemented`; plan `completed` khi SPEC cuối của đợt xong |
-| Phiên mới | Giai đoạn đang dở khi mở phiên mới | Theo giai đoạn đang dở | Prompt Resume | Tiếp tục đúng bước còn dở, không lặp lại gate đã qua |
+| 1. Requirements | 0 Intake; 0R when brownfield; 1 SRS; 1W Wireframe when there is a UI | Gate 0; Gate 0R; Gate 1; Gate 1W | Prompt 0; Prompt B0 to B2 (brownfield); Prompt 1; Prompt 1W | SRS, wireframe, and design system document `approved`, the FR ↔ SCR mapping table matches |
+| 2. Design | 2 Architecture and ADR; 3 the release's SPECs | Gate 2; Gate 3 per release | Prompt 2; Prompt 3 (one SPEC per turn) | ARCHITECTURE, ADR, and every SPEC of the release `approved` |
+| 3. Plan | 4a the release's plan | Gate 4 | Prompt 4 part A | The release's plan covers every SPEC of the release, DoR passed |
+| Execution | 4b TDD Coding; 5 Verify and Sync Docs | Gate 5 per SPEC | Prompt 4 part B, 5, 6 | Each SPEC `implemented`; plan `completed` when the last SPEC of the release is done |
+| New session | The stage in progress when a new session opens | Per the stage in progress | Prompt Resume | Continue exactly the step left unfinished, without repeating gates already passed |
 
-- Giai đoạn 1W có khi dự án có bề mặt giao diện: overlay `frontend-web` hoặc `mobile-app`, hoặc bề mặt khác có màn hình. Intake mục 14 ghi Giai đoạn 1W có hay không; dự án không có giao diện (chỉ `backend-api`, `ai-llm-app`) ghi Không và Gate 1W ghi N/A ở Intake mục 9.
-- Đợt phát hành (release) là nhãn ở cột Bản phát hành của SRS §6.1, ví dụ `R1`; tên các đợt dự kiến ghi ở Intake. Bước 2 và bước 3 chạy cho từng đợt theo thứ tự: Giai đoạn 2 chạy một lần ở đợt đầu, đợt sau chỉ cập nhật ARCHITECTURE và ADR theo mục 8 khi cần; Giai đoạn 3 viết mọi SPEC của đợt; Giai đoạn 4a lập một plan cho cả đợt. Thực thi đi theo từng SPEC trong plan; đợt xong thì lặp lại từ Giai đoạn 3 cho đợt tiếp theo.
-- Mỗi đợt là một lát cắt dọc, để có mã chạy được sớm. Đợt đầu gồm nền tảng dùng chung và một luồng đầu cuối; mỗi đợt có 1 đến 3 SPEC, không quá 5. SRS §6.1 chia FR vào các đợt theo cách đó ngay từ Giai đoạn 1; FR của đợt sau chỉ cần phát biểu và AC, chưa cần SPEC. Dự án có Intake tạo từ template Intake `1.5.0` trở lên: không viết SPEC của đợt sau khi đợt trước còn SPEC chưa `implemented` (`scripts/check-templates.sh` báo lỗi, và cảnh báo khi một đợt có hơn 5 SPEC).
-- Roadmap (dự án có Intake tạo từ template Intake `1.4.0` trở lên): `docs/ROADMAP.md` theo `core/08_Roadmap_Template.md` và CONVENTIONS mục 11 là danh sách việc phải làm mà coding agent bám theo. Agent dựng nó khi nhận "Duyệt Gate 1", điền dần ở Gate 3 và Gate 4, cập nhật sau mỗi pha, đối soát ở mục 2.6 và đánh dấu `Đã xác nhận` khi nhận "Duyệt Gate 5" (mục 2.7). Roadmap dẫn xuất từ SRS: lệch thì SRS thắng.
-- Dự án brownfield: Giai đoạn 1W chạy sau Gap Analysis và vẽ giao diện to-be ([brownfield/PLAYBOOK_BROWNFIELD.md](brownfield/PLAYBOOK_BROWNFIELD.md) mục 2).
+- Stage 1W applies when the project has a UI surface: overlay `frontend-web` or `mobile-app`, or another surface that has screens. Intake §14 records whether Stage 1W applies; a project without a UI (only `backend-api`, `ai-llm-app`) records No, and Gate 1W records N/A at Intake §9.
+- A release is the label in the Release column of SRS §6.1, for example `R1`; the names of the planned releases are recorded in the Intake. Step 2 and step 3 run per release, in order: Stage 2 runs once at the first release, and later releases only update ARCHITECTURE and ADR per §8 when needed; Stage 3 writes every SPEC of the release; Stage 4a produces one plan for the whole release. Execution goes SPEC by SPEC in the plan; when the release is done, repeat from Stage 3 for the next release.
+- Each release is a vertical slice, so that running code arrives early. The first release holds the shared foundation and one end-to-end flow; each release has 1 to 3 SPECs, never more than 5. SRS §6.1 splits the FRs across releases that way from Stage 1; the FRs of later releases only need a statement and AC, no SPEC yet. Do not write the SPEC of a later release while an earlier release still has a SPEC that is not `implemented` (`scripts/check-templates.sh` reports an error, and warns when a release has more than 5 SPECs).
+- Roadmap: `docs/ROADMAP.md`, following `core/08_Roadmap_Template.md` and CONVENTIONS §11, is the to-do list that the coding agent follows. The agent builds it on receiving "Approved at Gate 1", fills it in progressively at Gate 3 and Gate 4, updates it after every phase, reconciles it in §2.6, and marks `Confirmed` on receiving "Approved at Gate 5" (§2.7). The roadmap is derived from the SRS: when they differ, the SRS wins.
+- Brownfield project: Stage 1W runs after the Gap Analysis and draws the to-be UI ([brownfield/PLAYBOOK_BROWNFIELD.md](brownfield/PLAYBOOK_BROWNFIELD.md) §2).
 
-Quy tắc trong file này viết cho tài liệu tạo từ template hiện hành. Dự án có tài liệu (Intake, SRS, SPEC hoặc wireframe) tạo từ template cũ hơn đọc `COMPATIBILITY.md` để biết phần khác đi, kể cả cách nâng lên template hiện hành.
+The Verification column of the exit gate tables states where the approver checks. A row that says "checker on the examples" is a rule that `scripts/check-templates.sh --examples` checks on the template set's examples; in a project, `bash specflow/scripts/check-templates.sh --project .` checks the same rules on the project's documents (it needs `python3` for the index, companion files, and roadmap), and the approver checks the rows the checker does not; the parenthesis after it, if any, states the part the checker checks when it does not check the whole row.
 
-Cột Kiểm chứng của các bảng exit gate nêu nơi người duyệt đối chiếu. Hàng ghi "checker trên ví dụ" là quy tắc mà `scripts/check-templates.sh --examples` kiểm trên ví dụ của bộ mẫu; trong dự án, `bash specflow/scripts/check-templates.sh --project .` kiểm cùng các quy tắc đó trên tài liệu của dự án (cần `python3` cho chỉ mục, tệp đi kèm và roadmap), và người duyệt đối chiếu những hàng checker không kiểm; ngoặc sau đó, nếu có, nêu phần checker kiểm khi nó không kiểm hết hàng.
-
-| Giai đoạn | Trả lời câu hỏi | Template | Đầu ra trong dự án | Người duyệt gate |
+| Stage | Question answered | Template | Output in the project | Gate approver |
 | --- | --- | --- | --- | --- |
-| 0. Intake | Dự án gì, bề mặt nào, quy mô, ràng buộc | `core/00_Project_Intake_Template.md`; Agent Context của giai đoạn | `docs/intake/PROJECT_INTAKE.md`, `CLAUDE.md` khởi tạo | Chủ dự án |
-| 1. SRS | WHAT: nghiệp vụ, tác nhân, dữ liệu logic, use case, NFR, danh sách màn hình | SRS của giai đoạn; `core/08_Roadmap_Template.md` khi nhận "Duyệt Gate 1" | `docs/srs/`; `docs/ROADMAP.md` (Intake `1.4.0` trở lên, mục 2.7) | Theo Intake |
-| 1W. Wireframe | Mỗi màn hình trông và điều hướng thế nào, FR nào hiện thực ở màn hình nào, hệ thống thiết kế dùng chung | `core/07_Wireframe_Template/` | `docs/wireframes/`, `docs/design-system/` | Theo Intake (Gate 1W) |
-| 2. Architecture + ADR | WHERE và HOW: stack, C4, layout, schema, cross-cutting | Architecture của giai đoạn, `core/03_ADR_Template.md`, Agent Context của giai đoạn | `docs/ARCHITECTURE.md`, `docs/adr/`, `CLAUDE.md`, `.claude/rules/` | Theo Intake |
-| 3. Spec | Hợp đồng thực thi của một phần việc của đợt; mọi SPEC của đợt được duyệt ở Gate 3 | Spec của giai đoạn | `docs/specs/SPEC_<FEATURE_KEY>.md` | Theo Intake |
-| 4a. Implementation Plan | Chia việc của mọi SPEC trong đợt thành pha commit được | `core/05_Implementation_Plan_Template/` | `plans/{YYMMDD-HHmm}-{slug}/` | Theo Intake |
-| 4b. Coding TDD | Mã nguồn và test | Không có | Mã nguồn trong File Diff | Không có gate riêng |
-| 5. Verify và Sync Docs | Code của một SPEC khớp SPEC chưa, tài liệu còn đúng không | Không có | SPEC `implemented`; plan `completed` khi mọi SPEC của đợt xong; ADR cho deviation | Theo Intake |
+| 0. Intake | What project, which surfaces, scale, constraints | `core/00_Project_Intake_Template.md`; the stage's Agent Context | `docs/intake/PROJECT_INTAKE.md`, initial `CLAUDE.md` | Project owner |
+| 1. SRS | WHAT: business, actors, logical data, use cases, NFRs, screen list | The stage's SRS; `core/08_Roadmap_Template.md` on receiving "Approved at Gate 1" | `docs/srs/`; `docs/ROADMAP.md` (§2.7) | Per Intake |
+| 1W. Wireframe | How each screen looks and navigates, which FR is realized on which screen, the shared design system | `core/07_Wireframe_Template/` | `docs/wireframes/`, `docs/design-system/` | Per Intake (Gate 1W) |
+| 2. Architecture + ADR | WHERE and HOW: stack, C4, layout, schema, cross-cutting | The stage's Architecture, `core/03_ADR_Template.md`, the stage's Agent Context | `docs/ARCHITECTURE.md`, `docs/adr/`, `CLAUDE.md`, `.claude/rules/` | Per Intake |
+| 3. Spec | The execution contract for one piece of the release's work; every SPEC of the release is approved at Gate 3 | The stage's Spec | `docs/specs/SPEC_<FEATURE_KEY>.md` | Per Intake |
+| 4a. Implementation Plan | Split the work of every SPEC in the release into committable phases | `core/05_Implementation_Plan_Template/` | `plans/{YYMMDD-HHmm}-{slug}/` | Per Intake |
+| 4b. TDD Coding | Source code and tests | None | Source code in the File Diff | No gate of its own |
+| 5. Verify and Sync Docs | Does the code of one SPEC match the SPEC, and are the documents still correct | None | SPEC `implemented`; plan `completed` when every SPEC of the release is done; ADR for deviations | Per Intake |
 
-Dự án brownfield (Intake `mode: brownfield`) đi thêm các bước ở [brownfield/PLAYBOOK_BROWNFIELD.md](brownfield/PLAYBOOK_BROWNFIELD.md): phục hồi hiện trạng và Gate 0R trước Giai đoạn 1, Gap Analysis sau SRS và trước Giai đoạn 1W, Migration Plan cùng Giai đoạn 2, phụ lục SPEC ở Giai đoạn 3, và phần bổ sung cho prompt, Definition of Ready, Definition of Done ở mọi giai đoạn sau.
+A brownfield project (Intake `mode: brownfield`) takes the extra steps in [brownfield/PLAYBOOK_BROWNFIELD.md](brownfield/PLAYBOOK_BROWNFIELD.md): recovery of the current state and Gate 0R before Stage 1, Gap Analysis after the SRS and before Stage 1W, the Migration Plan together with Stage 2, the SPEC appendix at Stage 3, and the additions to the prompts, Definition of Ready, and Definition of Done at every later stage.
 
-"Template của giai đoạn" định nghĩa ở mục 4. Chuẩn tham chiếu: SRS theo ISO/IEC/IEEE 29148:2018, nhóm NFR theo ISO/IEC 25010:2023; Architecture tham khảo ISO/IEC/IEEE 42010:2022 (khái niệm view và rationale ghi bằng ADR; không tuyên bố tuân thủ) và dùng mô hình C4; ADR theo MADR 4.0.0 có điều chỉnh (giữ khóa `deciders`, bố cục mục gọn hơn); Spec dùng từ khóa RFC 2119 và RFC 8174.
+"The stage's template" is defined in §4. Reference standards: SRS follows ISO/IEC/IEEE 29148:2018, NFR groups follow ISO/IEC 25010:2023; Architecture references ISO/IEC/IEEE 42010:2022 (the view and rationale concepts are recorded through ADRs; no compliance is claimed) and uses the C4 model; ADR follows MADR 4.0.0 with adjustments (keeps the `deciders` key, a more compact section layout); Spec uses the RFC 2119 and RFC 8174 keywords.
 
-### 2.1. Giai đoạn 0: Intake
+### 2.1. Stage 0: Intake
 
-- Thu thập: định danh dự án; bài toán và mục tiêu đo được; bề mặt (surface) và overlay; greenfield hay brownfield; ước lượng quy mô; ràng buộc (stack bắt buộc, hosting, ngân sách, mốc thời gian và các đợt phát hành dự kiến); tuân thủ (tại Việt Nam: Luật Bảo vệ dữ liệu cá nhân số 91/2025/QH15 và Nghị định 356/2025/NĐ-CP; GDPR; PCI DSS; khác); tích hợp ngoài; đội ngũ và người duyệt từng gate; chỉ số thành công.
-- Chốt khối `Routing Decision`: `overlays` theo thứ tự, stack profile cho từng overlay, starter, `mode`, `docs_mode`, người duyệt, Giai đoạn 1W có hay không (mục 2).
-- Tạo `CLAUDE.md` khởi tạo từ Agent Context của giai đoạn: mục `Documentation Layout` chép nguyên văn; mục chưa đủ dữ liệu (ví dụ Golden Rules tóm tắt) thay bằng dòng `Hoàn thiện ở Giai đoạn 2.`; không chép Phụ lục A (dùng ở Giai đoạn 2); không để lại dòng đánh dấu, placeholder hay `fill`. Mục đích: bố cục specflow có hiệu lực trước khi sinh tài liệu đầu tiên.
-- Dự án brownfield: mục lệnh verify của `CLAUDE.md` khởi tạo không ghi `Hoàn thiện ở Giai đoạn 2.` mà ghi `Hoàn thiện ở Giai đoạn 0R (Prompt B1).`, kể cả khi có profile khớp; không chép lệnh của profile vào mục này. Prompt B1 điền lệnh từ Codebase Summary §7 theo `brownfield/PLAYBOOK_BROWNFIELD.md`, vì lệnh đã chạy được trên repo thắng lệnh của profile.
-- Exit gate: Routing Decision đủ mọi trường, không còn câu hỏi `BLOCKING`, chủ dự án duyệt. Câu hỏi chạm hợp đồng chưa có câu trả lời nhưng không chặn routing được ghi `BLOCKING: Không` kèm "trả lời trước Gate 1" (mục 7 quy tắc 3); chúng không chặn Gate 0 và được Prompt 1 chép sang SRS §9.
+- Collect: project identity; the problem and measurable goals; surfaces and overlays; greenfield or brownfield; scale estimate; constraints (mandatory stack, hosting, budget, deadlines, and the planned releases); compliance (the data protection law of the project's country; GDPR; PCI DSS; others); external integrations; the team and the approver of each gate; success metrics.
+- Settle the `Routing Decision` block: `overlays` in order, the stack profile for each overlay, starter, `mode`, `docs_mode`, approvers, whether Stage 1W applies (§2).
+- Create the initial `CLAUDE.md` from the stage's Agent Context: copy the `Documentation Layout` section verbatim; a section without enough data yet (for example the summarized Golden Rules) is replaced with the line `Complete at Stage 2.`; do not copy Appendix A (used at Stage 2); leave no marker line, placeholder, or `fill`. Purpose: the specflow layout is in force before the first document is generated.
+- Brownfield project: the verify-commands section of the initial `CLAUDE.md` does not say `Complete at Stage 2.` but `Complete at Stage 0R (Prompt B1).`, even when a profile matches; do not copy the profile's commands into this section. Prompt B1 fills the commands from Codebase Summary §7 following `brownfield/PLAYBOOK_BROWNFIELD.md`, because a command that already runs on the repo beats the profile's command.
+- Exit gate: the Routing Decision has every field, the project owner confirmed `language` (Intake §10), no `BLOCKING` question remains, the project owner approves. A question that touches the contract, has no answer yet, but does not block routing is recorded as `BLOCKING: No` with "answer before Gate 1" (§7 rule 3); such questions do not block Gate 0 and are copied by Prompt 1 into SRS §9.
 
-### 2.2. Giai đoạn 1: SRS
+### 2.2. Stage 1: SRS
 
-- Làm rõ bài toán, ranh giới In-scope và Out-of-scope, danh sách phân hệ `MOD-NN`.
-- Vẽ sơ đồ bối cảnh (`flowchart`), lập ma trận tác nhân `ACT_*`, stakeholders.
-- Điền ràng buộc kỹ thuật, giao diện ngoài và mô hình dữ liệu logic theo overlay. Bề mặt có lưu trữ quan hệ MUST có `erDiagram` Crow's foot và Data Dictionary.
-- Bề mặt có giao diện: bảng Giao diện người dùng ở §3 liệt kê mọi màn hình, mỗi màn hình một `SCR ID` dạng `SCR-{MOD}-NN` theo CONVENTIONS mục 4. SRS §3 là nguồn duy nhất của danh sách màn hình; Giai đoạn 1W chi tiết hóa, không đặt thêm ID.
-- Điền ràng buộc vận hành, bộ nhớ và thích ứng nơi triển khai (§2.4) và chuẩn phải tuân thủ (§2.7).
-- Lập Business Rules `BR-NNN`. Mỗi FR có một phát biểu yêu cầu theo mẫu EARS ở CONVENTIONS mục 8, kèm ưu tiên, bản phát hành (nhãn đợt ở Intake), cách kiểm chứng và rủi ro. FR mức Must có use case đủ Pre-conditions, Main flow, Alternative flow, Exception flow kèm mã lỗi cụ thể, Post-conditions.
-- NFR có chỉ số, cách đo, ngưỡng và cách kiểm chứng; ma trận Given-When-Then nối `FR → AC`, bảng NFR ghi cách kiểm chứng và bằng chứng của mỗi NFR; TC không ghi ở SRS (CONVENTIONS mục 4).
-- Exit gate: mọi tiêu chí ở bảng dưới đạt. Tiêu chí 1 đến 3 lấy từ ISO/IEC/IEEE 29148 §5.2.5 đến 5.2.7 và CONVENTIONS mục 8; người duyệt đọc từng FR và NFR, không chỉ dựa vào checker.
+- Clarify the problem, the In-scope and Out-of-scope boundary, the list of modules `MOD-NN`.
+- Draw the context diagram (`flowchart`), build the actor matrix `ACT_*`, the stakeholders.
+- Fill in the technical constraints, external interfaces, and the logical data model per overlay. A surface with relational storage MUST have a Crow's foot `erDiagram` and a Data Dictionary.
+- A surface with a UI: the User Interfaces table in §3 lists every screen, one `SCR ID` per screen in the form `SCR-{MOD}-NN` per CONVENTIONS §4. SRS §3 is the only source of the screen list; Stage 1W details it and does not add IDs.
+- Fill in the operating, memory, and deployment-adaptation constraints (§2.4) and the standards to comply with (§2.7).
+- Write the Business Rules `BR-NNN`. Each FR has a requirement statement following the EARS pattern in CONVENTIONS §8, with priority, release (the release label from the Intake), verification method, and risk. A Must-level FR has a use case with full Pre-conditions, Main flow, Alternative flow, Exception flow with concrete error codes, and Post-conditions.
+- NFRs have a metric, a measurement method, a threshold, and a verification method; the Given-When-Then matrix links `FR → AC`, the NFR table records the verification method and the evidence of each NFR; TCs are not recorded in the SRS (CONVENTIONS §4).
+- Exit gate: every criterion in the table below is met. Criteria 1 to 3 come from ISO/IEC/IEEE 29148 §5.2.5 to 5.2.7 and CONVENTIONS §8; the approver reads each FR and NFR and does not rely only on the checker.
 
-| Tiêu chí | Kiểm chứng |
+| Criterion | Verification |
 | --- | --- |
-| Mỗi yêu cầu cần thiết (necessary), phù hợp mức SRS (appropriate), không mơ hồ (unambiguous), đầy đủ (complete), nêu một hành vi (singular), khả thi (feasible), kiểm chứng được (verifiable), đúng với nhu cầu (correct), theo đúng mẫu của CONVENTIONS mục 8 (conforming) | Người duyệt đọc §5, §6.1, §7 |
-| Tập yêu cầu đầy đủ, nhất quán, khả thi, dễ hiểu và kiểm định được với stakeholder; không còn TBD | §9 không còn câu hỏi `BLOCKING`; §1.2 và §6.1 khớp nhau |
-| Phát biểu FR và ô Yêu cầu, Ngưỡng của NFR không dùng từ mơ hồ ở CONVENTIONS mục 8, kể cả từ phụ thuộc ngữ cảnh như "hỗ trợ" không kèm hành vi | Người duyệt; checker trên ví dụ |
-| Mỗi FR, BR và NFR có cách kiểm chứng; mỗi NFR áp dụng có dòng ở bảng NFR của §8 | §5, §6.1, §7, §8 |
-| Mọi mục áp dụng của §2.4, §2.7 và §3 đã điền, mục không áp dụng ghi N/A kèm lý do | §2, §3; đối chiếu §10.3 |
-| Có giao diện: mọi màn hình ở bảng Giao diện người dùng §3 có `SCR ID` không trùng, FR ở cột FR có ở §6.1 | §3, §6.1 |
-| SRS `approved`, version `1.0.0` | Frontmatter và Version History |
+| Each requirement is necessary, appropriate to the SRS level, unambiguous, complete, singular, feasible, verifiable, correct, and conforming to the pattern in CONVENTIONS §8 | The approver reads §5, §6.1, §7 |
+| The set of requirements is complete, consistent, feasible, comprehensible, and validatable with the stakeholders; no TBD remains | §9 has no `BLOCKING` question; §1.2 and §6.1 match |
+| The FR statement and the Requirement, Threshold cells of the NFR use no vague term from CONVENTIONS §8, including context-dependent words such as "supports" without a behavior | The approver; checker on the examples |
+| Each FR, BR, and NFR has a verification method; each applicable NFR has a row in the NFR table of §8 | §5, §6.1, §7, §8 |
+| Every applicable item of §2.4, §2.7, and §3 is filled in; a non-applicable item is marked N/A with a reason | §2, §3; cross-check §10.3 |
+| With a UI: every screen in the User Interfaces table of §3 has a unique `SCR ID`, and the FRs in the FR column exist in §6.1 | §3, §6.1 |
+| SRS `approved`, version `1.0.0` | Frontmatter and Version History |
 
-### 2.2.1. Giai đoạn 1W: Wireframe
+### 2.2.1. Stage 1W: Wireframe
 
-Áp cho dự án mà Intake mục 14 ghi Giai đoạn 1W có (mục 2). Chạy sau Gate 1; dự án brownfield chạy sau khi Gate 1 duyệt cả SRS to-be và Gap Analysis, và vẽ giao diện to-be.
+Applies to a project whose Intake §14 records Stage 1W as applicable (§2). Runs after Gate 1; a brownfield project runs it after Gate 1 has approved both the to-be SRS and the Gap Analysis, and draws the to-be UI.
 
-- Hệ thống thiết kế trước tiên, theo CONVENTIONS mục 10.7: agent đề xuất 2 đến 3 hướng thị giác, chủ dự án chọn đúng một (một lượt dừng giữa giai đoạn, ngoại lệ của mục 7 quy tắc 3; các hướng ghi vào `DESIGN_SYSTEM.md` `draft` trước khi dừng); rồi viết foundations, token (`tokens.json` và file mode), primitive và danh mục component, pattern, template vào `docs/design-system/` từ `core/07_Wireframe_Template/`, trước khi dựng trang màn hình.
-- Nhiệm vụ: vẽ mọi màn hình có ở SRS §3, không thêm hay bớt màn hình, với độ chi tiết theo rủi ro của màn. Màn có thao tác ghi, hiển thị phụ thuộc quyền, hoặc dữ liệu cá nhân có một trang riêng. Màn còn lại được vẽ trong mockup của luồng nó thuộc về ở chỉ mục (một khối low-fi cho mỗi luồng), và danh mục màn hình ghi `Theo luồng` ở cột File HTML; người duyệt Gate 1W đổi được một màn sang trang riêng. Trang riêng `docs/wireframes/SCR-<MOD>-NN.md` từ `core/07_Wireframe_Template/` gồm: mục đích, FR và AC, bố cục low-fi (khối `text` theo CONVENTIONS mục 7), trang chọn đúng một Template và dẫn Pattern, Component đã có trong danh mục hệ thống thiết kế, bảng thành phần, năm trạng thái UI kèm AC, điều hướng vào và ra, ghi chú trợ năng.
-- Chỉ mục `docs/wireframes/00_WIREFRAME_INDEX.md`: danh mục màn hình lặp đúng tập `SCR ID` của SRS §3, sơ đồ điều hướng (`flowchart`), bảng đối chiếu có đúng một hàng cho mỗi FR ở SRS §6.1 có ưu tiên khác `Won't` (gộp master và module khi `docs_mode` là `modular`) theo chuỗi `FR → SCR` ở CONVENTIONS mục 4.
-- Tiêu chuẩn UI/UX theo CONVENTIONS mục 10: trang có dòng `Màn hình xác thực` và ghi chú trợ năng theo các tiêu chí WCAG 2.2 ở CONVENTIONS mục 10.2 với con số của nền tảng ở `OVERLAY.md`; chỉ mục có bảng đánh giá heuristic (CONVENTIONS mục 10.3) và bảng kiểm mẫu thiết kế lừa người dùng (CONVENTIONS mục 10.4). Người lập wireframe tự đánh giá, sửa vấn đề `Nghiêm trọng` và bỏ mẫu lừa người dùng trước khi trình Gate 1W; câu hỏi tự vấn ở CONVENTIONS mục 10.5 không chặn gate.
-- HTML ở `docs/wireframes/html/`: mỗi trang màn hình có một file khi Intake mục 14 ghi Giai đoạn 1W là `Có, kèm HTML đầy đủ` (mặc định); `Có, chỉ Markdown` kèm lý do thì không tạo HTML; màn `Theo luồng` không có HTML. Nội dung và quy tắc ở CONVENTIONS mục 7 và 10.7. Đổi lựa chọn sau Gate 0 thì sửa Intake mục 14 theo mục 8 trước. Trang Markdown sở hữu cấu trúc, thành phần, trạng thái, AC và điều hướng; HTML sở hữu quyết định thị giác, thứ trang Markdown không ghi được.
-- Chỉ mục và từng trang dùng cùng tập trạng thái với SRS (CONVENTIONS mục 3); version và thay đổi sau khi duyệt theo mục 8.
-- Lệch giữa wireframe và SRS (màn hình thêm, bớt hay đổi; FR thiếu; AC không khớp với trạng thái của màn hình) có hai trường hợp:
-  - Wireframe vẽ sai hoặc sót so với SRS đã duyệt (trang quên một trạng thái có AC, thiếu thành phần mà FR cần, điều hướng sai): sửa wireframe cho khớp SRS; SRS không đổi.
-  - Lập wireframe cho thấy SRS thiếu hoặc sai (cần màn hình mới, FR thiếu, AC không thực hiện được trên màn hình): không sửa wireframe để che chỗ lệch. SRS được sửa theo mục 8 (thêm màn hình mới là MINOR, kèm `SCR ID` mới), người duyệt Gate 1 duyệt lại, rồi mới xét Gate 1W. Dự án brownfield sửa cả Gap Analysis theo mục 8.
-- Exit gate Gate 1W: mọi tiêu chí ở bảng dưới đạt. Người duyệt ghi ở Intake mục 9.
+- The design system comes first, per CONVENTIONS §10.7: the agent proposes 2 to 3 visual directions, and the project owner picks exactly one (a stop in the middle of the stage, an exception to §7 rule 3; the directions are recorded in `DESIGN_SYSTEM.md` `draft` before stopping); then write the foundations, tokens (`tokens.json` and the mode files), primitives, and the catalog of components, patterns, and templates into `docs/design-system/` from `core/07_Wireframe_Template/`, before building the screen pages.
+- Task: draw every screen in SRS §3, with no screen added or removed, at a level of detail based on the risk of the screen. A screen with a write action, permission-dependent display, or personal data gets its own page. The other screens are drawn in the mockup of the flow they belong to in the index (one low-fi block per flow), and the screen catalog records `In flow` in the HTML File column; the Gate 1W approver can switch a screen to its own page. A dedicated page `docs/wireframes/SCR-<MOD>-NN.md` from `core/07_Wireframe_Template/` contains: purpose, FR and AC, the low-fi layout (a `text` block per CONVENTIONS §7), the page picks exactly one Template and cites the Patterns and Components that exist in the design system catalog, the component table, the five UI states with AC, navigation in and out, accessibility notes.
+- The index `docs/wireframes/00_WIREFRAME_INDEX.md`: the screen catalog repeats exactly the set of `SCR ID`s in SRS §3, the navigation diagram (`flowchart`), and the mapping table has exactly one row for each FR in SRS §6.1 whose priority is not `Won't` (merging master and modules when `docs_mode` is `modular`) following the `FR → SCR` chain in CONVENTIONS §4.
+- UI/UX standards per CONVENTIONS §10: a page has an `Authentication screen` line and accessibility notes following the WCAG 2.2 criteria in CONVENTIONS §10.2 with the platform's figures in `OVERLAY.md`; the index has a heuristic evaluation table (CONVENTIONS §10.3) and a deceptive design pattern checklist (CONVENTIONS §10.4). The wireframe author self-assesses, fixes `Critical` problems and removes deceptive patterns before submitting to Gate 1W; the self-check questions in CONVENTIONS §10.5 do not block the gate.
+- HTML in `docs/wireframes/html/`: each screen page has one file when Intake §14 records Stage 1W as `Yes, with full HTML` (the default); `Yes, Markdown only` with a reason means no HTML is created; a screen marked `In flow` has no HTML. The content and rules are in CONVENTIONS §7 and §10.7. Changing the choice after Gate 0 means editing Intake §14 per §8 first. The Markdown page owns the structure, components, states, AC, and navigation; the HTML owns the visual decisions, the things a Markdown page cannot record.
+- The index and each page use the same status set as the SRS (CONVENTIONS §3); version and changes after approval follow §8.
+- A mismatch between the wireframe and the SRS (a screen added, removed, or changed; a missing FR; an AC that does not match the screen's states) has two cases:
+  - The wireframe is drawn wrongly or incompletely against the approved SRS (a page forgot a state that has an AC, lacks a component the FR needs, wrong navigation): fix the wireframe to match the SRS; the SRS does not change.
+  - Building the wireframe shows that the SRS is missing or wrong (a new screen is needed, an FR is missing, an AC cannot be carried out on the screen): do not edit the wireframe to cover the mismatch. The SRS is fixed per §8 (adding a new screen is MINOR, with a new `SCR ID`), the Gate 1 approver re-approves, and only then is Gate 1W considered. A brownfield project also fixes the Gap Analysis per §8.
+- Gate 1W exit gate: every criterion in the table below is met. The approver is recorded at Intake §9.
 
-| Tiêu chí | Kiểm chứng |
+| Criterion | Verification |
 | --- | --- |
-| Chỉ mục, mọi trang wireframe và tài liệu hệ thống thiết kế `approved`, version từ `1.0.0` | Frontmatter và Version History; checker trên ví dụ (tài liệu `approved` có version từ `1.0.0`) |
-| Tập `SCR ID` ở SRS §3, danh mục màn hình của chỉ mục và bảng đối chiếu trùng nhau; mỗi `SCR ID` có trang hoặc ghi `Theo luồng`; không màn nào có thao tác ghi, quyền hay dữ liệu cá nhân ghi `Theo luồng`, và mỗi màn `Theo luồng` có trong một mockup của luồng | SRS §3, chỉ mục, `docs/wireframes/`; checker trên ví dụ (màn `Theo luồng` có trong mockup, tên và điểm vào không mang từ khóa rủi ro, không SPEC `risk: high` nào dùng nó; người duyệt xét phần còn lại) |
-| Bảng đối chiếu phủ mọi FR ở SRS §6.1 có ưu tiên khác `Won't`, mỗi FR đúng một hàng ghi `SCR-*`, `Không có giao diện` kèm lý do, hoặc (brownfield) `Giữ nguyên` kèm dẫn Regression Baseline §5 | Chỉ mục, SRS §6.1; checker trên ví dụ (trừ việc dẫn Regression Baseline §5) |
-| Mọi trang dẫn ít nhất một FR có thật; AC mà trang dẫn có ở SRS §8 và thuộc FR của trang | Trang, SRS §6.1, §8; checker trên ví dụ |
-| Mỗi trang có đủ năm trạng thái UI; trạng thái không áp dụng ghi N/A kèm lý do | Trang; checker trên ví dụ (có hàng cho đủ năm trạng thái) |
-| Khi Intake ghi `Có, kèm HTML đầy đủ`, mỗi trang có file HTML theo CONVENTIONS mục 7 (an toàn, token, `data-cmp`, trạng thái, responsive) | `docs/wireframes/html/`; checker trên ví dụ |
-| Mọi lệch đã phát hiện đã xử lý: lỗi vẽ đã sửa ở wireframe; SRS thiếu hoặc sai đã sửa (brownfield: cả Gap Analysis) theo mục 8 và đã duyệt lại | Trang wireframe; Version History của SRS và Gap Analysis |
-| Không còn câu hỏi `BLOCKING` ở chỉ mục và các trang | Mục Giả định và câu hỏi mở; checker trên ví dụ (tài liệu `approved`) |
-| Chỉ mục: bảng đánh giá heuristic có đúng một hàng cho mỗi khóa `H1` đến `H10` ở CONVENTIONS mục 10.3, không hàng nào có mức `Nghiêm trọng`; vấn đề `Nhỏ` có cách xử lý | Chỉ mục, các trang; checker trên ví dụ (đủ hàng, mức hợp lệ, không còn `Nghiêm trọng` ở chỉ mục `approved`) |
-| Chỉ mục: không còn mẫu thiết kế lừa người dùng; bảng kiểm có đúng một hàng cho mỗi khóa `DP1` đến `DP5` ở CONVENTIONS mục 10.4, mọi hàng `Không có` kèm căn cứ | Chỉ mục, các trang, sơ đồ điều hướng; checker trên ví dụ (đủ hàng, mọi hàng `Không có` ở chỉ mục `approved`) |
-| Trang: có dòng Màn hình xác thực; mục trợ năng ghi từng tiêu chí ở CONVENTIONS mục 10.2 hoặc N/A kèm lý do | Trang; checker trên ví dụ (dòng Màn hình xác thực, `3.3.8` khi Có) |
-| Hướng thị giác: 2 đến 3 hướng có căn cứ, chủ dự án chọn một, lý do ghi ở tài liệu; theme mặc định của thư viện chỉ khi được chọn có chủ đích | Tài liệu hệ thống thiết kế; checker trên ví dụ (hình dạng bảng hướng) |
-| Token: `tokens.json` và file mode theo DTCG ở CONVENTIONS mục 10.7, ba tầng; mọi cặp ở bảng tương phản đạt `1.4.3`, `1.4.11` ở mọi mode | `docs/design-system/`; tính lại từng hàng bảng tương phản theo CONVENTIONS mục 10.7 (không tính nhẩm); checker trên ví dụ |
-| Danh mục: mỗi trang có đúng một Template, mọi Template, Pattern, Component mà trang dẫn có trong danh mục, danh mục không có component, pattern hay template không dùng | Trang, tài liệu hệ thống thiết kế; checker trên ví dụ |
-| HTML của trang: biến CSS trong `:root` khớp token của mode áp cho bề mặt của trang; ngoài `:root`, màu, spacing, radius và `font-size` chỉ dùng `var(--…)` hoặc từ khóa được phép ở CONVENTIONS mục 10.7 | `docs/wireframes/html/`; checker trên ví dụ |
+| The index, every wireframe page, and the design system document `approved`, version from `1.0.0` | Frontmatter and Version History; checker on the examples (an `approved` document has a version from `1.0.0`) |
+| The set of `SCR ID`s in SRS §3, the index's screen catalog, and the mapping table are identical; each `SCR ID` has a page or is marked `In flow`; no screen with a write action, permission, or personal data is marked `In flow`, and each `In flow` screen appears in a flow mockup | SRS §3, index, `docs/wireframes/`; checker on the examples (an `In flow` screen appears in a mockup, its name and entry point carry no risk keyword, no `risk: high` SPEC uses it; the approver judges the rest) |
+| The mapping table covers every FR in SRS §6.1 whose priority is not `Won't`, each FR has exactly one row that records `SCR-*`, `No UI` with a reason, or (brownfield) `Unchanged` with a reference to Regression Baseline §5 | Index, SRS §6.1; checker on the examples (except the reference to Regression Baseline §5) |
+| Every page cites at least one real FR; the AC the page cites exist in SRS §8 and belong to an FR of the page | Page, SRS §6.1, §8; checker on the examples |
+| Each page has all five UI states; a non-applicable state is marked N/A with a reason | Page; checker on the examples (has a row for all five states) |
+| When the Intake records `Yes, with full HTML`, each page has an HTML file per CONVENTIONS §7 (safe, tokens, `data-cmp`, states, responsive) | `docs/wireframes/html/`; checker on the examples |
+| Every mismatch found is handled: a drawing error is fixed in the wireframe; a missing or wrong SRS is fixed (brownfield: also the Gap Analysis) per §8 and re-approved | Wireframe page; Version History of the SRS and Gap Analysis |
+| No `BLOCKING` question remains in the index and the pages | Assumptions & Open Questions section; checker on the examples (`approved` documents) |
+| Index: the heuristic evaluation table has exactly one row for each key `H1` to `H10` in CONVENTIONS §10.3, no row has the level `Critical`; a `Minor` problem has a resolution | Index, pages; checker on the examples (all rows present, valid levels, no `Critical` left in an `approved` index) |
+| Index: no deceptive design pattern remains; the checklist has exactly one row for each key `DP1` to `DP5` in CONVENTIONS §10.4, every `None` row has evidence | Index, pages, navigation diagram; checker on the examples (all rows present, every `None` row in an `approved` index) |
+| Page: has an Authentication screen line; the accessibility section records each criterion in CONVENTIONS §10.2 or N/A with a reason | Page; checker on the examples (the Authentication screen line, `3.3.8` when Yes) |
+| Visual direction: 2 to 3 directions with rationale, the project owner picked one, the reason is recorded in the document; the library default theme only when chosen on purpose | Design system document; checker on the examples (shape of the direction table) |
+| Tokens: `tokens.json` and the mode files follow DTCG per CONVENTIONS §10.7, three tiers; every pair in the contrast table meets `1.4.3`, `1.4.11` in every mode | `docs/design-system/`; recompute each row of the contrast table per CONVENTIONS §10.7 (not by mental arithmetic); checker on the examples |
+| Catalog: each page has exactly one Template, every Template, Pattern, and Component the page cites is in the catalog, the catalog has no unused component, pattern, or template | Page, design system document; checker on the examples |
+| Page HTML: the CSS variables in `:root` match the tokens of the mode applied to the page's surface; outside `:root`, color, spacing, radius, and `font-size` use only `var(--…)` or the keywords allowed in CONVENTIONS §10.7 | `docs/wireframes/html/`; checker on the examples |
 
-### 2.3. Giai đoạn 2: Architecture + ADR
+### 2.3. Stage 2: Architecture + ADR
 
-- Chốt tech stack với phiên bản chính xác: chép bảng ở mục `(Tech Stack)` của stack profile vào ARCHITECTURE §2.1; mọi lệch profile ghi ADR.
-- Vẽ C4 Level 1, Level 2, Level 3 hoặc sơ đồ tương đương của bề mặt, và deployment view; cố định layout thư mục kèm bảng `MOD → thành phần → thư mục`.
-- Viết schema vật lý đầy đủ (kiểu cụ thể, khóa, index, ràng buộc xóa) nếu bề mặt có lưu trữ.
-- Chốt cross-cutting: auth, error envelope, logging, config và env, observability, i18n, cache, job; quy ước giao tiếp và Error Code Registry. Registry nhận toàn bộ mã lỗi ở SRS §6.3.
-- Lập bảng `NFR → tactic → ADR`, security architecture, test strategy, CI/CD.
-- ADR: kiểu kiến trúc (ARCHITECTURE §1.3) có ADR riêng; mỗi lựa chọn đánh dấu `có ADR` (CONVENTIONS mục 1) và mỗi lệch stack profile được một ADR bao phủ, một ADR có thể gom nhiều lựa chọn cùng chủ đề (ví dụ mô hình token). Lựa chọn không đánh dấu chỉ cần ghi giá trị.
-- Hoàn thiện `CLAUDE.md` (lệnh verify, Golden Rules tóm tắt) và `.claude/rules/`; ô Điều kiện pass của hàng Coverage trong bảng lệnh verify ghi con số ngưỡng của `NFR-MAINT` (SRS §7) thay cho câu chung "≥ ngưỡng của `NFR-MAINT`".
-- Có Giai đoạn 1W: ghi cách sinh token vào code ở ARCHITECTURE theo overlay và profile; theme của thư viện đặt qua token.
-- Exit gate: mọi tiêu chí ở bảng dưới đạt. Người duyệt đối chiếu từng hàng (cột Kiểm chứng theo mục 2).
+- Settle the tech stack with exact versions: copy the table in the `(Tech Stack)` section of the stack profile into ARCHITECTURE §2.1; every deviation from the profile gets an ADR.
+- Draw C4 Level 1, Level 2, Level 3 or an equivalent diagram of the surface, and the deployment view; fix the folder layout with a `MOD → component → folder` table.
+- Write the complete physical schema (concrete types, keys, indexes, delete constraints) if the surface has storage.
+- Settle the cross-cutting concerns: auth, error envelope, logging, config and env, observability, i18n, cache, jobs; communication conventions and the Error Code Registry. The registry receives every error code in SRS §6.3.
+- Build the `NFR → tactic → ADR` table, security architecture, test strategy, CI/CD.
+- ADR: the architecture style (ARCHITECTURE §1.3) has its own ADR; each choice marked `has ADR` (CONVENTIONS §1) and each deviation from the stack profile is covered by an ADR, and one ADR may group several choices of the same topic (for example the token model). A choice not marked only needs its value recorded.
+- Complete `CLAUDE.md` (verify commands, summarized Golden Rules) and `.claude/rules/`; the Pass condition cell of the Coverage row in the verify-commands table records the threshold figure of `NFR-MAINT` (SRS §7) in place of the generic phrase "≥ threshold of `NFR-MAINT`".
+- With Stage 1W: record in ARCHITECTURE how tokens are generated into code per overlay and profile; the library theme is set through tokens.
+- Exit gate: every criterion in the table below is met. The approver checks each row (the Verification column per §2).
 
-| Tiêu chí | Kiểm chứng |
+| Criterion | Verification |
 | --- | --- |
-| Mỗi NFR áp dụng ở SRS §7 có hàng ở ARCHITECTURE §8.1, hoặc một hàng ghi "không cần tactic" kèm lý do | ARCHITECTURE §8.1 đối chiếu SRS §7 |
-| Mọi mã lỗi ở SRS §6.3 có trong Error Code Registry kèm HTTP status và ánh xạ theo bề mặt | ARCHITECTURE §7.1; checker trên ví dụ |
-| Kiểu kiến trúc, mỗi lựa chọn đánh dấu `có ADR` và mỗi lệch stack profile có ADR `accepted`; mọi ADR được dẫn có file | ARCHITECTURE §1.3, §12, `docs/adr/`; checker trên ví dụ (ADR được dẫn có file) |
-| Tech stack ở §2.1 khớp mục `(Tech Stack)` của stack profile, hoặc lệch có ADR | ARCHITECTURE §2.1 |
-| Mỗi phân hệ ở SRS §1.2 có thành phần và thư mục ở bảng `MOD → thành phần → thư mục` | ARCHITECTURE §4 |
-| Schema khớp mô hình dữ liệu logic; tập giá trị của enum khớp state machine của SRS | ARCHITECTURE §5, SRS §4, §10.1; checker trên ví dụ (enum khớp state machine) |
-| Có Giai đoạn 1W: mỗi `SCR-*` của chỉ mục wireframe có hàng ở bảng route (web) hoặc bảng điều hướng (mobile) của ARCHITECTURE, cột `SCR ID` | ARCHITECTURE §3, chỉ mục wireframe |
-| Không còn câu hỏi `BLOCKING`; ARCHITECTURE `approved`, mọi ADR liên quan `accepted` | Frontmatter; mục Giả định và câu hỏi mở; checker trên ví dụ (câu hỏi `BLOCKING` trong tài liệu `approved`) |
-| Có `docs/design-system/` (trang từ template `1.4.0`, COMPATIBILITY mục 1): ARCHITECTURE ghi nguồn token `docs/design-system/tokens.json` và file ánh xạ token trong code | ARCHITECTURE, mục quy ước giao diện |
+| Each applicable NFR in SRS §7 has a row in ARCHITECTURE §8.1, or one row that says "no tactic needed" with a reason | ARCHITECTURE §8.1 checked against SRS §7 |
+| Every error code in SRS §6.3 is in the Error Code Registry with its HTTP status and per-surface mapping | ARCHITECTURE §7.1; checker on the examples |
+| The architecture style, each choice marked `has ADR`, and each deviation from the stack profile have an `accepted` ADR; every cited ADR has a file | ARCHITECTURE §1.3, §12, `docs/adr/`; checker on the examples (a cited ADR has a file) |
+| The tech stack in §2.1 matches the `(Tech Stack)` section of the stack profile, or the deviation has an ADR | ARCHITECTURE §2.1 |
+| Each module in SRS §1.2 has a component and folder in the `MOD → component → folder` table | ARCHITECTURE §4 |
+| The schema matches the logical data model; the enum value sets match the SRS state machine | ARCHITECTURE §5, SRS §4, §10.1; checker on the examples (enum matches state machine) |
+| With Stage 1W: each `SCR-*` of the wireframe index has a row in the route table (web) or the navigation table (mobile) of ARCHITECTURE, in the `SCR ID` column | ARCHITECTURE §3, wireframe index |
+| No `BLOCKING` question remains; ARCHITECTURE `approved`, every related ADR `accepted` | Frontmatter; Assumptions & Open Questions section; checker on the examples (`BLOCKING` question in an `approved` document) |
+| With `docs/design-system/`: ARCHITECTURE records the token source `docs/design-system/tokens.json` and the token mapping file in code | ARCHITECTURE, the UI conventions section |
 
-### 2.4. Giai đoạn 3: Spec
+### 2.4. Stage 3: Spec
 
-- Mỗi tính năng một SPEC: mục tiêu, Core Invariant, out-of-scope, bảng FR, AC, BR được đáp ứng.
-- Theo đợt: Giai đoạn 3 viết mọi SPEC của một đợt, mỗi lượt một SPEC (Prompt 3). SPEC ghi đợt ở khóa frontmatter `release` (CONVENTIONS mục 3); mọi FR ở SPEC §1.5 có Bản phát hành bằng đợt đó. Dự án nhiều bề mặt có SPEC riêng cho mỗi bề mặt mà FR của đợt cần. SPEC của bề mặt có giao diện dẫn `SCR-*` và trang wireframe ở bảng Màn hình của §3, không định nghĩa lại màn hình.
-- Đọc mã nguồn hiện có của phân hệ (theo ARCHITECTURE §4) để khóa File Diff (sửa, tạo mới, migration) và bảng MUST NOT touch.
-- Câu hỏi chỉ trả lời được bằng cách chạy mã (câu SQL chưa chạy trên cơ sở dữ liệu thật, hành vi của thư viện, thời gian chờ chưa đo) không được giữ lại qua nhiều lượt: nó thành một spike, là pha đầu của SPEC trong plan, có hạn thời gian và một câu hỏi cụ thể. Kết quả spike ghi ở `plans/reports/`, rồi SPEC sửa theo mục 8 và câu hỏi được đóng. Câu hỏi như vậy ghi `BLOCKING: Không` kèm "trả lời bằng spike" nên không chặn Gate 3.
-- Nền tảng dùng chung của đợt: mỗi bề mặt có nền tảng dùng chung riêng (khung dự án, cấu hình, thư viện dùng chung và hạ tầng test của bề mặt đó). Nền tảng của một bề mặt nằm trong File Diff §2 của SPEC đầu tiên của bề mặt đó trong đợt; dự án một bề mặt có đúng một SPEC như vậy. SPEC đầu tiên của cả đợt là SPEC không tiêu thụ contract của SPEC khác cùng đợt, nên không trái quy tắc thứ tự contract ở mục 2.5. Pha của SPEC mang nền tảng đứng trước pha của SPEC khác cùng bề mặt trong plan của đợt (mục 2.5). SPEC viết sau của cùng bề mặt không lặp lại các file đó, và cần sửa file nào trong số đó thì ghi file ấy ở §2.1 (File sửa) của mình.
-- Điền contract theo overlay, migration, thuật toán có sơ đồ tuần tự (`sequenceDiagram`), ranh giới transaction, cập nhật nguyên tử và idempotency, authorization matrix, event contract, observability, rollout.
-- Bảng test gắn `AC-*`, `INV-*`, `NFR-*` với `TC-*`; mỗi Core Invariant có một test `CONC` theo dạng overlay định nghĩa. TC lấy số kế tiếp ở `docs/INDEX.md` mục 3 (CONVENTIONS mục 4).
-- Tính năng gọi mô hình ngôn ngữ (overlay `ai-llm-app`): mỗi prompt mới hoặc đổi nội dung có Prompt Spec `docs/prompts/PROMPT_<NAME>.md` từ `overlays/ai-llm-app/Prompt_Spec_Template.md` và bộ dữ liệu đánh giá trong `evals/`, viết trước SPEC; ID của prompt đã đặt ở SRS §4.1. SPEC tham chiếu Prompt Spec, không chép lại nội dung prompt.
-- Exit gate của mỗi SPEC: mọi tiêu chí ở bảng dưới đạt.
+- One SPEC per feature: goal, Core Invariant, out-of-scope, FR table, AC, the BRs satisfied.
+- Per release: Stage 3 writes every SPEC of one release, one SPEC per turn (Prompt 3). The SPEC records its release in the frontmatter key `release` (CONVENTIONS §3); every FR in SPEC §1.5 has a Release equal to that release. A multi-surface project has a separate SPEC for each surface the release's FRs need. The SPEC of a surface with a UI cites `SCR-*` and the wireframe page in the Screens table of §3 and does not redefine screens.
+- Read the module's existing source code (per ARCHITECTURE §4) to lock the File Diff (modify, create, migration) and the MUST NOT touch table.
+- A question that can only be answered by running code (an SQL statement not yet run on the real database, library behavior, a timeout not yet measured) is not kept across several turns: it becomes a spike, which is the first phase of the SPEC in the plan, with a time limit and one concrete question. The spike result is recorded in `plans/reports/`, then the SPEC is fixed per §8 and the question is closed. Such a question is recorded as `BLOCKING: No` with "answer by spike", so it does not block Gate 3.
+- The release's shared foundation: each surface has its own shared foundation (the project skeleton, config, shared libraries, and test infrastructure of that surface). A surface's foundation sits in File Diff §2 of the first SPEC of that surface in the release; a single-surface project has exactly one such SPEC. The first SPEC of the whole release is one that consumes no contract of another SPEC in the same release, so it does not violate the contract order rule in §2.5. The phase of the SPEC that carries the foundation comes before the phases of other SPECs of the same surface in the release's plan (§2.5). A SPEC written later for the same surface does not repeat those files, and when it needs to modify one of them it records that file in its own §2.1 (Modified files).
+- Fill in the contract per overlay, migration, the algorithm with a sequence diagram (`sequenceDiagram`), transaction boundaries, atomic updates and idempotency, authorization matrix, event contract, observability, rollout.
+- The test table links `AC-*`, `INV-*`, `NFR-*` to `TC-*`; each Core Invariant has a `CONC` test in the form the overlay defines. TCs take the next number in `docs/INDEX.md` §3 (CONVENTIONS §4).
+- A feature that calls a language model (overlay `ai-llm-app`): each new or content-changed prompt has a Prompt Spec `docs/prompts/PROMPT_<NAME>.md` from `overlays/ai-llm-app/Prompt_Spec_Template.md` and an evaluation dataset in `evals/`, written before the SPEC; the prompt's ID was set in SRS §4.1. The SPEC references the Prompt Spec and does not copy the prompt content.
+- Exit gate of each SPEC: every criterion in the table below is met.
 
-| Tiêu chí | Kiểm chứng |
+| Criterion | Verification |
 | --- | --- |
-| Mọi FR, AC, BR, NFR ở §1.5 tồn tại ở SRS | SPEC §1.5; checker trên ví dụ |
-| Mỗi AC ở §1.5 có TC ở §9; mỗi Core Invariant có test `CONC` | SPEC §9; checker trên ví dụ |
-| Mỗi NFR ở §1.5 kiểm bằng Test có TC ghi tên NFR ở §9 của SPEC này hoặc của một SPEC khác của dự án; NFR kiểm bằng cách khác có bằng chứng ghi ở SRS §8 | SPEC §9, SRS §8; checker trên ví dụ |
-| Mỗi file test ở §9 nằm trong File Diff | SPEC §2, §9; checker trên ví dụ |
-| TC không trùng với SPEC khác; mọi mã lỗi của SPEC có trong Error Code Registry | SPEC §9, ARCHITECTURE §7.1; checker trên ví dụ |
-| Prompt Spec của mọi prompt mà SPEC dùng `approved`; không còn câu hỏi `BLOCKING`; SPEC `approved` | Frontmatter; mục Giả định và câu hỏi mở |
-| Có Giai đoạn 1W: mỗi màn hình ở bảng Màn hình của §3 dẫn `SCR-*` có ở chỉ mục wireframe | SPEC §3, chỉ mục wireframe |
+| Every FR, AC, BR, NFR in §1.5 exists in the SRS | SPEC §1.5; checker on the examples |
+| Each AC in §1.5 has a TC in §9; each Core Invariant has a `CONC` test | SPEC §9; checker on the examples |
+| Each NFR in §1.5 verified by Test has a TC that names the NFR in §9 of this SPEC or of another SPEC of the project; an NFR verified another way has its evidence recorded in SRS §8 | SPEC §9, SRS §8; checker on the examples |
+| Each test file in §9 is in the File Diff | SPEC §2, §9; checker on the examples |
+| TCs do not collide with another SPEC; every error code of the SPEC is in the Error Code Registry | SPEC §9, ARCHITECTURE §7.1; checker on the examples |
+| The Prompt Spec of every prompt the SPEC uses is `approved`; no `BLOCKING` question remains; SPEC `approved` | Frontmatter; Assumptions & Open Questions section |
+| With Stage 1W: each screen in the Screens table of §3 cites an `SCR-*` that exists in the wireframe index | SPEC §3, wireframe index |
 
-Gate 3 theo đợt đạt khi mọi SPEC của đợt đạt bảng trên và mọi tiêu chí ở bảng dưới đạt. Người duyệt kiểm mọi hàng; checker trên ví dụ chỉ kiểm hàng cuối, qua khóa `release` của SPEC, nên không cần plan.
+Gate 3 per release is met when every SPEC of the release meets the table above and every criterion in the table below is met. The approver checks every row; the checker on the examples checks only the last row, through the SPEC's `release` key, so it does not need a plan.
 
-| Tiêu chí | Kiểm chứng |
+| Criterion | Verification |
 | --- | --- |
-| Mọi FR có Bản phát hành bằng đợt nằm trong SPEC §1.5 của ít nhất một SPEC `approved` của đợt | Người duyệt đối chiếu SRS §6.1 với SPEC §1.5 |
-| Dự án nhiều bề mặt: mỗi bề mặt mà FR của đợt cần có SPEC của đợt; mỗi `SCR-*` mà FR của đợt dẫn có SPEC của bề mặt giao diện dẫn nó | Người duyệt; SPEC §3, chỉ mục wireframe |
-| Mọi SPEC của đợt có `release` bằng đợt; mọi FR mà SPEC của đợt dẫn ở §1.5 có Bản phát hành bằng đợt | Frontmatter và §1.5 của SPEC, SRS §6.1; checker trên ví dụ (SPEC có khóa `release`) |
+| Every FR whose Release equals the release is in SPEC §1.5 of at least one `approved` SPEC of the release | The approver checks SRS §6.1 against SPEC §1.5 |
+| Multi-surface project: each surface that the release's FRs need has a SPEC for the release; each `SCR-*` that the release's FRs cite has a SPEC of the UI surface that cites it | The approver; SPEC §3, wireframe index |
+| Every SPEC of the release has `release` equal to the release; every FR that a SPEC of the release cites in §1.5 has a Release equal to the release | Frontmatter and §1.5 of the SPEC, SRS §6.1; checker on the examples (the SPEC has the `release` key) |
 
-### 2.5. Giai đoạn 4: Implementation Plan và Coding TDD
+### 2.5. Stage 4: Implementation Plan and TDD Coding
 
-- 4a. Lập plan trong `plans/{YYMMDD-HHmm}-{slug}/` theo `core/05_Implementation_Plan_Template/`. Mỗi pha nêu: tập con File Diff, TC phải pass, lệnh verify, commit message; mỗi pha kết thúc xanh và commit được. Thứ tự mặc định (overlay có thể thay): migration, kiểu dùng chung và contract; logic nghiệp vụ (test đỏ rồi xanh trong cùng pha); lớp giao tiếp (controller, màn hình) và e2e. Dừng ở Gate 4.
-- Plan theo đợt: một plan cho mọi SPEC của đợt, định dạng ở CONVENTIONS mục 9 (`release`, `spec_ids`, `spec_id` ở mỗi pha). Pha nhóm theo SPEC, pha của một SPEC đứng liền nhau; SPEC cung cấp contract đứng trước SPEC tiêu thụ contract đó. Mỗi SPEC trong `spec_ids` có khóa `release` thì khóa đó bằng `release` của plan. Ở mỗi bề mặt, pha của SPEC mang nền tảng của bề mặt đó (mục 2.4) đứng trước pha của SPEC khác cùng bề mặt; SPEC đầu tiên của đợt đứng được ở đầu plan (mục 2.4). SPEC sau được sửa file thuộc File Diff của SPEC trước cùng đợt: file đó ghi ở SPEC §2.1 (File sửa) của SPEC sau, và pha của SPEC sau đứng sau pha tạo file.
-- Nhánh: mỗi pha hoặc nhóm pha một nhánh từ nhánh chính, merge xong mới mở nhánh phụ thuộc; không xếp chồng nhánh, vì mỗi lần sửa nhánh dưới phải gộp và verify lại mọi nhánh trên. Pha độc lập chạy song song ở worktree riêng.
-- Exit gate Gate 4: mọi tiêu chí ở bảng dưới đạt.
+- 4a. Build the plan in `plans/{YYMMDD-HHmm}-{slug}/` following `core/05_Implementation_Plan_Template/`. Each phase states: the File Diff subset, the TCs that must pass, the verify command, the commit message; each phase ends green and committable. Default order (an overlay may change it): migration, shared types and contract; business logic (red then green test in the same phase); the interface layer (controller, screen) and e2e. Stop at Gate 4.
+- Per-release plan: one plan for every SPEC of the release, in the format in CONVENTIONS §9 (`release`, `spec_ids`, `spec_id` on each phase). Phases are grouped by SPEC, the phases of one SPEC sit together; the SPEC that provides a contract comes before the SPEC that consumes it. The `release` key of each SPEC in `spec_ids` equals the plan's `release`. On each surface, the phase of the SPEC that carries that surface's foundation (§2.4) comes before the phases of other SPECs of the same surface; the first SPEC of the release can stand at the head of the plan (§2.4). A later SPEC that modifies a file belonging to the File Diff of an earlier SPEC in the same release records that file in its own SPEC §2.1 (Modified files), and the later SPEC's phase comes after the phase that creates the file.
+- Branches: one branch per phase or group of phases, from the main branch, and merge before opening a dependent branch; do not stack branches, because each fix to a lower branch requires merging and re-verifying every branch above it. Independent phases run in parallel in separate worktrees.
+- Gate 4 exit gate: every criterion in the table below is met.
 
-| Tiêu chí | Kiểm chứng |
+| Criterion | Verification |
 | --- | --- |
-| Plan đúng định dạng ở CONVENTIONS mục 9 | `plans/`; checker trên ví dụ |
-| Plan của đợt phủ mọi SPEC của đợt: `spec_ids` gồm mọi SPEC `approved` của đợt, mỗi SPEC trong đó có ít nhất một pha và khóa `release` (nếu có) khớp quy tắc ở mục 2.5 | `plan.md`, file pha, `docs/specs/`; checker trên ví dụ (mỗi phần tử của `spec_ids` có file SPEC, `release` bằng của plan và có pha; SPEC dẫn FR của đợt có trong `spec_ids`) |
-| Pha của mỗi SPEC phủ hết File Diff và mọi TC ở §9 của SPEC đó | File pha, SPEC §2, §9 |
-| Definition of Ready (mục 10.1) đạt | Bảng DoR |
+| The plan has the correct format in CONVENTIONS §9 | `plans/`; checker on the examples |
+| The release's plan covers every SPEC of the release: `spec_ids` contains every `approved` SPEC of the release, each SPEC in it has at least one phase, and the `release` key matches the rule in §2.5 | `plan.md`, phase files, `docs/specs/`; checker on the examples (each element of `spec_ids` has a SPEC file, a `release` equal to the plan's, and a phase; a SPEC that cites FRs of the release is in `spec_ids`) |
+| The phases of each SPEC cover the whole File Diff and every TC in §9 of that SPEC | Phase files, SPEC §2, §9 |
+| Definition of Ready (§10.1) met | DoR table |
 
-- 4b. Thực thi từng pha theo thứ tự, lần lượt từng SPEC của plan: chạy test đỏ trước, viết code tới khi xanh, refactor, chạy verify, cập nhật checkbox của pha, commit một lần mỗi pha theo Conventional Commits bằng tiếng Anh.
-- Chỉ sửa file trong File Diff của SPEC mà pha thuộc về (`spec_id` của pha). Cần file khác thì dừng và đề xuất sửa SPEC.
-- Pha dựng một màn hình: mở file HTML của màn ở `docs/wireframes/html/` và dựng lại đúng màn đó (vùng, thành phần, trạng thái, token), không thiết kế lần nữa. Muốn khác thì dừng và sửa wireframe theo mục 8 trước.
-- Có roadmap (mục 2): thứ tự pha do plan quyết; roadmap kiểm không việc nào bị bỏ qua. Trước mỗi pha, agent đọc `docs/ROADMAP.md`: pha kế tiếp của plan không được nhảy qua dòng, tức không có dòng `Chưa làm` nào đứng trước các dòng mà pha đó hiện thực; dòng đầu tiên còn `Chưa làm` hay `Đang làm` mà chưa có Pha thì dừng và báo (FR chưa có SPEC hay pha). Khi bắt đầu pha, mọi dòng mà pha hiện thực chuyển `Đang làm` và mục 1 ghi chúng cùng SPEC, pha. Một dòng chuyển `Xong` khi mọi pha của mọi SPEC ở cột SPEC của nó đã xong và verify đạt; mục 4 có hàng bằng chứng (TC đã pass, commit pha cuối) và mục 1 cập nhật số đếm. Sửa roadmap sau commit pha cuối được commit cùng tài liệu ở Prompt 6. Ý tưởng hay yêu cầu phát sinh ghi vào mục 3 của roadmap, không làm. Giới hạn số lần sửa theo mục 7 quy tắc 11.
+- 4b. Execute the phases in order, SPEC by SPEC in the plan: run the red test first, write code until green, refactor, run verify, update the phase's checkbox, commit once per phase following Conventional Commits in English.
+- Only modify files in the File Diff of the SPEC the phase belongs to (the phase's `spec_id`). When another file is needed, stop and propose a SPEC change.
+- A phase that builds a screen: open the screen's HTML file in `docs/wireframes/html/` and rebuild exactly that screen (regions, components, states, tokens), without designing it again. To differ, stop and fix the wireframe per §8 first.
+- With a roadmap (§2): the phase order is decided by the plan; the roadmap checks that no item is skipped. Before each phase, the agent reads `docs/ROADMAP.md`: the plan's next phase must not jump over a line, meaning no `Not started` line stands before the lines the phase implements; if the first line that is still `Not started` or `In progress` has no Phase yet, stop and report (an FR has no SPEC or phase). When a phase starts, every line the phase implements moves to `In progress` and §1 records them together with the SPEC and phase. A line moves to `Done` when every phase of every SPEC in its SPEC column is done and verify passes; §4 gets an evidence row (the TCs that passed, the commit of the last phase) and §1 updates the counts. Roadmap edits after the last phase's commit are committed together with the docs at Prompt 6. An idea or new requirement that arises is recorded in roadmap §3, not worked on. The limit on the number of fix attempts follows §7 rule 11.
 
-### 2.6. Giai đoạn 5: Verify và Sync Docs
+### 2.6. Stage 5: Verify and Sync Docs
 
-- Giai đoạn 5 chạy cho từng SPEC khi mọi pha có `spec_id` của SPEC đó xong; Gate 5 xét theo SPEC. Khoảng commit của SPEC đi từ cha của commit pha đầu tiên tới commit pha cuối cùng có `spec_id` đó.
-- Chạy đủ cổng verify ở mục 11; đối chiếu code với SPEC (contract, thuật toán, mã lỗi) và `git diff` trên khoảng commit của SPEC với File Diff của SPEC đó.
-- Cập nhật: SPEC `implemented`, các pha của SPEC sang `done`, plan `completed` khi mọi SPEC trong `spec_ids` đã `implemented` (nếu không, `in-progress`), bảng test trong SPEC §9 ghi đúng file test và tên test, version tài liệu tăng theo mục 8. Tính năng gọi mô hình ngôn ngữ: kết quả của job đánh giá ghi vào Prompt Spec §9.1; việc ghi này không đổi prompt nên không tăng version của Prompt Spec.
-- Mọi khác biệt so với SPEC hoặc ARCHITECTURE phải có ADR.
-- Đối soát roadmap (có roadmap, mục 2): chạy `specflow/scripts/check-templates.sh --project .` ở đây và ở Prompt Resume; nó so roadmap với SRS, SPEC và plan theo CONVENTIONS mục 11. Agent chỉ tự kiểm hai điều script không thấy: commit ở mục 4 có trong `git log`, tag ở mục 4 và 5 có trong `git tag`. Dán kết quả vào báo cáo dừng. Lệch thì báo vị trí, không tự sửa SRS hay SPEC; roadmap sai so với SRS thì sửa roadmap. Đợt đã đóng (plan `completed`): dòng chưa `Đã xác nhận` được báo kèm lý do.
-- Thứ tự đóng một SPEC theo `risk` của nó (CONVENTIONS mục 3; SPEC không ghi `risk` là `high`). `high`: Prompt 5 là review độc lập bằng agent ngữ cảnh mới, kèm thử đột biến cho mọi điều kiện phân quyền và phạm vi, rồi Prompt 6 riêng cho SPEC đó. `normal`: verify theo checklist (lệnh verify, File Diff, TC ở §9) và đồng bộ tài liệu trong cùng một lượt, gộp được cho các SPEC `normal` cùng đợt; review ở cấp pull request. Sau đó dừng chờ "Duyệt Gate 5"; Gate 5 xét sau Prompt 6 vì một phần Definition of Done hoàn tất ở Prompt 6.
-- Exit gate: Definition of Done (mục 10.2) đạt.
+- Stage 5 runs for each SPEC when every phase with that SPEC's `spec_id` is done; Gate 5 is judged per SPEC. The SPEC's commit range goes from the parent of the first phase commit to the last phase commit that has that `spec_id`.
+- Run the full verify gate in §11; check the code against the SPEC (contract, algorithm, error codes) and check `git diff` over the SPEC's commit range against that SPEC's File Diff.
+- Update: SPEC `implemented`, the SPEC's phases to `done`, plan `completed` when every SPEC in `spec_ids` is `implemented` (otherwise `in-progress`), the test table in SPEC §9 records the correct test file and test name, the document version is raised per §8. A feature that calls a language model: the result of the evaluation job is recorded in Prompt Spec §9.1; this record does not change the prompt, so it does not raise the Prompt Spec's version.
+- Every difference from the SPEC or ARCHITECTURE needs an ADR.
+- Roadmap reconciliation (with a roadmap, §2): run `specflow/scripts/check-templates.sh --project .` here and at Prompt Resume; it compares the roadmap with the SRS, SPECs, and plans per CONVENTIONS §11. The agent only checks by itself the two things the script cannot see: the commits in §4 exist in `git log`, the tags in §4 and 5 exist in `git tag`. Paste the result into the stop report. On a mismatch, report the location and do not fix the SRS or SPEC yourself; when the roadmap is wrong against the SRS, fix the roadmap. A closed release (plan `completed`): a line not yet `Confirmed` is reported together with the reason.
+- The order for closing a SPEC follows its `risk` (CONVENTIONS §3). `high`: Prompt 5 is an independent review by an agent with fresh context, with mutation testing for every authorization and scope condition, then a separate Prompt 6 for that SPEC. `normal`: verify by checklist (verify commands, File Diff, TCs in §9) and sync docs in the same turn, which can be batched across `normal` SPECs of the same release; review happens at the pull request level. Then stop and wait for "Approved at Gate 5"; Gate 5 is judged after Prompt 6 because part of the Definition of Done is completed at Prompt 6.
+- Exit gate: Definition of Done (§10.2) met.
 
-### 2.7. Cách duyệt gate (Gate Approval)
+### 2.7. Gate Approval
 
-Người duyệt của mỗi gate ghi ở bảng Gate của Intake mục 9. Agent dừng ở gate, gửi danh sách file đã tạo hoặc sửa cùng checklist exit gate đã tự kiểm (mục 7 quy tắc 9). Một lượt được trình nhiều gate khi một thay đổi chạm nhiều tài liệu (mục 8); lời trình nêu từng gate. Người duyệt đối chiếu bảng exit gate; đạt thì gửi "Duyệt Gate N" kèm tên mình, chưa đạt thì gửi lại các hàng chưa đạt. Khi nhận lời duyệt, agent chạy `python3 specflow/scripts/gate.py . approve --gate N --approver "tên người duyệt"` kèm đường dẫn các tài liệu của gate (thêm `--bump` và `--note` khi duyệt thay đổi của tài liệu đã duyệt, mục 8) và không sửa tay các chỗ script ghi. Script đặt `approved` (ADR liên quan ở Gate 2: `accepted`; plan ở Gate 4 giữ `pending` vì bảng trạng thái của plan ở CONVENTIONS mục 3 không có `approved`), đặt `version: 1.0.0` ở lần duyệt đầu, ghi một dòng lịch sử, ghi `docs/gates/GATE-N.md` và dựng lại `docs/INDEX.md`; nó từ chối cả lượt khi một tài liệu được trình còn câu hỏi `BLOCKING`, sai trạng thái, hoặc bị checker báo lỗi (pha tính theo plan). Việc ở roadmap, ở pha của plan và tag của Gate 5 vẫn do agent làm. Agent MUST NOT tự đặt `approved` hay `accepted` khi chưa nhận lời duyệt (nguyên tắc 2, mục 1.2).
+The approver of each gate is recorded in the Gate table of Intake §9. The agent stops at the gate and sends the list of files created or modified together with the exit gate checklist it has self-checked (§7 rule 9). One turn may be submitted to several gates when one change touches several documents (§8); the submission names each gate. The approver checks against the exit gate table; if it passes, they send "Approved at Gate N" with their name, if it does not, they send back the rows that did not pass. On receiving the approval, the agent runs `python3 specflow/scripts/gate.py . approve --gate N --approver "approver name"` with the paths of the gate's documents (adding `--bump` and `--note` when approving a change to an already approved document, §8) and does not hand-edit the places the script writes. The script sets `approved` (the related ADRs at Gate 2: `accepted`; the plan at Gate 4 stays `pending` because the plan status table in CONVENTIONS §3 has no `approved`), sets `version: 1.0.0` at the first approval, writes one history line, writes `docs/gates/GATE-N.md`, and rebuilds `docs/INDEX.md`; it rejects the whole batch when a submitted document still has a `BLOCKING` question, has a wrong status, or is reported as an error by the checker (phases are counted per the plan). The work in the roadmap, in the plan's phases, and the Gate 5 tag is still done by the agent. Agent MUST NOT set `approved` or `accepted` by itself before receiving the approval (principle 2, §1.2).
 
-Có roadmap (mục 2), lời duyệt gate còn kéo theo việc ở `docs/ROADMAP.md` (CONVENTIONS mục 11):
+With a roadmap (§2), a gate approval also triggers work in `docs/ROADMAP.md` (CONVENTIONS §11):
 
-| Nhận | Việc ở roadmap |
+| Received | Roadmap work |
 | --- | --- |
-| "Duyệt Gate 1" | Dựng roadmap từ `core/08_Roadmap_Template.md`: mục 1 một hàng cho mỗi đợt theo thứ tự ở Intake, mục 2.1 một dòng cho mỗi FR có Ưu tiên khác `Won't`, mục 2.2 một dòng cho mỗi NFR mức Must với Đợt đóng là đợt đầu, cột SPEC và Pha ghi `Chưa có`, mọi dòng `Chưa làm`. Thứ tự lúc này đã định sẵn bởi SRS (đợt, ưu tiên, thứ tự ở §6.1), nên không cần duyệt riêng |
-| "Duyệt Gate 3" | Điền cột SPEC theo §1.5 của các SPEC vừa duyệt, cả cột SPEC của mục 2.2 |
-| "Duyệt Gate 4" | Điền cột Pha theo plan, xếp lại mục 2.1 theo thứ tự pha và sắp lại cột SPEC của mục 2.2 theo thứ tự mới |
-| "Duyệt Gate 5" của một SPEC | Chỉ làm khi SPEC đã `implemented` (Prompt 6 đã chạy); chưa thì báo và chờ. Tạo annotated tag trên commit pha cuối của SPEC theo dòng Định dạng tag ở Intake mục 14 (lần qua Gate 5 thứ hai trở đi của cùng SPEC thêm hậu tố `-2`, `-3`), chỉ push khi người duyệt cho phép; thêm một hàng ở mục 5. Mỗi dòng `Xong` mà mọi SPEC ở cột SPEC của nó đã `implemented` chuyển `Đã xác nhận`, Tag ở mục 4 ghi tag vừa tạo. Dòng NFR `Xong` có Đợt đóng là đợt của SPEC và mọi dòng FR của đợt đó đã `Đã xác nhận`: chuyển `Đã xác nhận` cùng tag đó. Commit các sửa này thành một commit tài liệu riêng sau tag |
+| "Approved at Gate 1" | Build the roadmap from `core/08_Roadmap_Template.md`: §1 one row for each release in the order in the Intake, §2.1 one line for each FR whose Priority is not `Won't`, §2.2 one line for each Must-level NFR with the closing release set to the first release, the SPEC and Phase columns record `Not yet`, every line `Not started`. The order is already fixed by the SRS at this point (release, priority, order in §6.1), so it needs no separate approval |
+| "Approved at Gate 3" | Fill in the SPEC column per §1.5 of the SPECs just approved, including the SPEC column of §2.2 |
+| "Approved at Gate 4" | Fill in the Phase column per the plan, reorder §2.1 by phase order and reorder the SPEC column of §2.2 by the new order |
+| "Approved at Gate 5" for a SPEC | Only do this when the SPEC is `implemented` (Prompt 6 has run); otherwise report and wait. Create an annotated tag on the SPEC's last phase commit following the Tag format line in Intake §14 (from the second pass through Gate 5 of the same SPEC onward add the suffix `-2`, `-3`), push only when the approver allows it; add a row in §5. Each `Done` line whose every SPEC in its SPEC column is `implemented` moves to `Confirmed`, and the Tag in §4 records the tag just created. A `Done` NFR line whose closing release is the SPEC's release and for which every FR line of that release is `Confirmed`: moves to `Confirmed` with the same tag. Commit these fixes as a separate docs commit after the tag |
 
-Agent MUST NOT đặt `Đã xác nhận` khi chưa nhận "Duyệt Gate 5" của SPEC chứa dòng đó.
+Agent MUST NOT set `Confirmed` before receiving "Approved at Gate 5" for the SPEC that contains that line.
 
-## 3. Định tuyến overlay (Overlay Routing)
+## 3. Overlay Routing
 
-Intake khai báo bề mặt của dự án; mỗi bề mặt ánh xạ tới một overlay và một stack profile khớp, hoặc `none` khi không profile nào khớp. Một dự án có thể có nhiều bề mặt.
+The Intake declares the project's surfaces; each surface maps to one overlay and one matching stack profile, or `none` when no profile matches. A project may have several surfaces.
 
-Profile khớp. Một stack profile khớp với bề mặt khi mọi thành phần nền mà mục `(Tech Stack)` của profile chốt đều trùng với lựa chọn của dự án (greenfield: ràng buộc ở Intake mục 6; brownfield: mã đang chạy):
+Profile match. A stack profile matches a surface when every foundation component that the profile's `(Tech Stack)` section fixes agrees with the project's choice (greenfield: the constraints in Intake §6; brownfield: the running code):
 
-- cùng ngôn ngữ;
-- cùng major version của framework chính;
-- cùng major version của lớp truy cập dữ liệu, tức ORM, SDK hay kho lưu trữ mà mục Tech Stack của profile nêu;
-- cùng engine lưu trữ, khi bề mặt có lưu trữ;
-- cùng bộ chạy test.
+- the same language;
+- the same major version of the main framework;
+- the same major version of the data access layer, meaning the ORM, SDK, or store that the profile's Tech Stack section names;
+- the same storage engine, when the surface has storage;
+- the same test runner.
 
-Major version theo SemVer; thành phần còn ở `0.x` thì minor đứng vị trí major (FastAPI `0.139` và `0.141` khác major). Engine lưu trữ và bộ chạy test chỉ xét tên, khác version thì là lệch như dưới. Thành phần nền mà mục Tech Stack của profile không nêu thì không xét. Khác biệt còn lại (cây thư mục, minor hay patch version, cách xác thực, envelope lỗi, thư viện phụ) không làm mất khớp: dự án greenfield giữ khác biệt nào thì ghi lệch có ADR ở Giai đoạn 2 (mục 2.3); dự án brownfield xử lý theo `brownfield/PLAYBOOK_BROWNFIELD.md` mục 5.5. Không profile nào khớp thì ô Stack profile ở Intake mục 14 ghi `none`, cột Lý do chọn nêu thành phần nền không khớp, và áp quy tắc 5. Để quyết điều này ở Giai đoạn 0, agent đọc mục `(Tech Stack)` của các profile thuộc overlay đang cân nhắc (mục 6).
+Major version follows SemVer; a component still at `0.x` has the minor in the major position (FastAPI `0.139` and `0.141` are different majors). The storage engine and test runner are compared by name only, and a different version is a deviation as described below. A foundation component that the profile's Tech Stack section does not name is not considered. The remaining differences (folder tree, minor or patch version, authentication method, error envelope, auxiliary libraries) do not break the match: a greenfield project that keeps any difference records the deviation with an ADR at Stage 2 (§2.3); a brownfield project handles it per `brownfield/PLAYBOOK_BROWNFIELD.md` §5.5. When no profile matches, the Stack profile cell in Intake §14 records `none`, the Reason for choice column names the foundation component that does not match, and rule 5 applies. To decide this at Stage 0, the agent reads the `(Tech Stack)` section of the profiles belonging to the overlay under consideration (§6).
 
-| Bề mặt | Chọn khi dự án có | Overlay | Stack profile có sẵn | Trạng thái |
+| Surface | Choose when the project has | Overlay | Available stack profiles | Status |
 | --- | --- | --- | --- | --- |
-| `backend-api` | API HTTP hoặc RPC, cơ sở dữ liệu, background job | [overlays/backend-api/](overlays/backend-api/OVERLAY.md) | [node-nestjs-prisma](overlays/backend-api/stack-profiles/node-nestjs-prisma.md), [python-fastapi-sqlalchemy](overlays/backend-api/stack-profiles/python-fastapi-sqlalchemy.md) | Có |
-| `frontend-web` | Giao diện web chạy trên trình duyệt | [overlays/frontend-web/](overlays/frontend-web/OVERLAY.md) | [nextjs-app-router](overlays/frontend-web/stack-profiles/nextjs-app-router.md) | Có |
-| `mobile-app` | Ứng dụng cài trên điện thoại hoặc máy tính bảng, làm việc khi mất mạng | [overlays/mobile-app/](overlays/mobile-app/OVERLAY.md) | [react-native-expo](overlays/mobile-app/stack-profiles/react-native-expo.md) | Có |
-| `ai-llm-app` | Tính năng gọi mô hình ngôn ngữ lớn: phân loại, trích xuất, tóm tắt, trả lời theo tài liệu, agent gọi công cụ | [overlays/ai-llm-app/](overlays/ai-llm-app/OVERLAY.md) | [typescript-anthropic-sdk](overlays/ai-llm-app/stack-profiles/typescript-anthropic-sdk.md) | Có |
-| Bề mặt khác | Bề mặt chưa có overlay | Không có | Không có | Ghép thủ công, xem quy tắc 4 |
+| `backend-api` | HTTP or RPC API, database, background jobs | [overlays/backend-api/](overlays/backend-api/OVERLAY.md) | [node-nestjs-prisma](overlays/backend-api/stack-profiles/node-nestjs-prisma.md), [python-fastapi-sqlalchemy](overlays/backend-api/stack-profiles/python-fastapi-sqlalchemy.md) | Yes |
+| `frontend-web` | A web UI running in the browser | [overlays/frontend-web/](overlays/frontend-web/OVERLAY.md) | [nextjs-app-router](overlays/frontend-web/stack-profiles/nextjs-app-router.md) | Yes |
+| `mobile-app` | An app installed on a phone or tablet, working offline | [overlays/mobile-app/](overlays/mobile-app/OVERLAY.md) | [react-native-expo](overlays/mobile-app/stack-profiles/react-native-expo.md) | Yes |
+| `ai-llm-app` | A feature that calls a large language model: classification, extraction, summarization, document-grounded answers, an agent that calls tools | [overlays/ai-llm-app/](overlays/ai-llm-app/OVERLAY.md) | [typescript-anthropic-sdk](overlays/ai-llm-app/stack-profiles/typescript-anthropic-sdk.md) | Yes |
+| Other surface | A surface without an overlay yet | None | None | Assemble manually, see rule 4 |
 
-| Tổ hợp `overlays` | Starter | Trạng thái |
+| `overlays` combination | Starter | Status |
 | --- | --- | --- |
-| `[backend-api]` | [starters/backend-api/](starters/backend-api/README.md) | Có |
-| `[backend-api, frontend-web]` | [starters/fullstack-web/](starters/fullstack-web/README.md) | Có |
-| Tổ hợp khác | Không có, ghép thủ công theo mục 4 | Không áp dụng |
+| `[backend-api]` | [starters/backend-api/](starters/backend-api/README.md) | Yes |
+| `[backend-api, frontend-web]` | [starters/fullstack-web/](starters/fullstack-web/README.md) | Yes |
+| Other combination | None, assemble manually per §4 | Not applicable |
 
-Quy tắc định tuyến:
+Routing rules:
 
-1. Đọc khối `Routing Decision` của Intake: `overlays` (có thứ tự), stack profile của từng overlay, `starter`, `mode`, `docs_mode`.
-2. Có starter cho đúng tổ hợp thì dùng file của starter (đã ghép core với overlay, chưa gắn profile). Template dùng chung (Intake, Wireframe, ADR, Implementation Plan) lấy thẳng từ `core/`.
-3. Không có starter thì ghép thủ công theo mục 4.
-4. Bề mặt chưa có overlay: agent ghi đề xuất nội dung cho 11 slot vào `Assumptions & Open Questions` của Intake, chủ dự án duyệt ở Gate 0; từ đó ghép như overlay bình thường.
-5. Overlay có nhưng không có stack profile khớp (Intake ghi `none`): agent đề xuất giá trị placeholder và nội dung profile trong ARCHITECTURE §2 kèm ADR; duyệt ở Gate 2. Dự án brownfield lấy đề xuất từ Codebase Summary §7 và As-Is Architecture §2. Cách ghép tài liệu khi không có profile theo CONVENTIONS mục 2.
+1. Read the Intake's `Routing Decision` block: `overlays` (ordered), the stack profile of each overlay, `starter`, `mode`, `docs_mode`.
+2. When there is a starter for the exact combination, use the starter's files (already merged core with overlay, no profile attached yet). Shared templates (Intake, Wireframe, ADR, Implementation Plan) are taken directly from `core/`.
+3. When there is no starter, assemble manually per §4.
+4. A surface without an overlay yet: the agent records a proposal for the content of the 11 slots in the Intake's `Assumptions & Open Questions`, the project owner approves at Gate 0; from then on assemble as with a normal overlay.
+5. An overlay exists but there is no matching stack profile (Intake records `none`): the agent proposes the placeholder values and the profile content in ARCHITECTURE §2 together with an ADR; approved at Gate 2. A brownfield project takes the proposal from Codebase Summary §7 and As-Is Architecture §2. How to assemble documents without a profile follows CONVENTIONS §2.
 
-## 4. Quy tắc ghép và checklist "Overlay đã áp" (Assembly)
+## 4. Assembly
 
-Template của giai đoạn là file tương ứng trong `starters/<starter>/` nếu Routing Decision có starter (SRS, ARCHITECTURE, SPEC theo bề mặt, `CLAUDE.md.template`); nếu không có starter, là file core ghép với overlay. Agent Context không có starter thì dùng `core/06_Agent_Context_Template.md` cộng `agent-rules/` của từng overlay. Ghép theo [CONVENTIONS.md](CONVENTIONS.md) mục 2:
+The stage's template is the corresponding file in `starters/<starter>/` if the Routing Decision has a starter (SRS, ARCHITECTURE, SPEC per surface, `CLAUDE.md.template`); if there is no starter, it is the core file merged with the overlay. Without a starter, the Agent Context uses `core/06_Agent_Context_Template.md` plus the `agent-rules/` of each overlay. Assemble per [CONVENTIONS.md](CONVENTIONS.md) §2:
 
-1. Chép template (file starter, hoặc file core) sang đường dẫn đích.
-2. Không có starter: với mỗi dòng `<!-- SLOT: ... -->`, đọc `OVERLAY.md` rồi lấy khối SLOT-CONTENT cùng ID của từng overlay theo thứ tự `overlays`; một overlay thì chèn nguyên văn, nhiều overlay thì mỗi bề mặt có heading tên bề mặt và hạ cấp heading bên trong.
-3. Áp stack profile của từng bề mặt: thay mỗi dòng `<!-- PROFILE-SLOT: ... -->` bằng khối PROFILE-CONTENT cùng ID (hạ cấp heading nếu bề mặt đã bị hạ cấp ở bước 2, thay phần mẫu có chú thích `fill` bằng nội dung thật); thay placeholder nguồn `Profile` bằng bảng "Giá trị placeholder" của profile. Bề mặt có stack profile `none`: theo CONVENTIONS mục 2.
-4. Thay placeholder còn lại, điền nội dung theo `<!-- fill: ... -->`.
-5. Frontmatter: `status: draft`, `version: 0.1.0`, `parent`, `overlays`, `assembled_from` (nguồn của starter hoặc core và overlay, cộng stack profile); bề mặt không có profile thì ghi tên bề mặt vào `stack_profile_none` (CONVENTIONS mục 3).
-6. Chạy lệnh kiểm tra sót, kết quả MUST rỗng:
+1. Copy the template (the starter file, or the core file) to the target path.
+2. Without a starter: for each line `<!-- SLOT: ... -->`, read `OVERLAY.md` and take the SLOT-CONTENT block with the same ID from each overlay in `overlays` order; with one overlay insert it verbatim, with several overlays each surface gets a heading with the surface name and the headings inside are demoted.
+3. Apply the stack profile of each surface: replace each line `<!-- PROFILE-SLOT: ... -->` with the PROFILE-CONTENT block of the same ID (demote headings if the surface was demoted in step 2, replace the sample part that has a `fill` note with real content); replace the placeholders whose source is `Profile` with the profile's "Placeholder values" table. A surface with stack profile `none`: follow CONVENTIONS §2.
+4. Replace the remaining placeholders, fill in content following `<!-- fill: ... -->`.
+5. Frontmatter: `status: draft`, `version: 0.1.0`, `parent`, `overlays`, `assembled_from` (the source of the starter or core and the overlay, plus the stack profile); a surface without a profile records the surface name in `stack_profile_none` (CONVENTIONS §3).
+6. Run the leftover check command, the result MUST be empty:
 
 ```bash
 grep -rnE '<!-- (SLOT|PROFILE-SLOT|slot-hint|fill)[ :-]|\{\{[A-Z][A-Z0-9_]*\}\}|"\$description": *"fill:' docs/ plans/ CLAUDE.md .claude/ 2>/dev/null
 ```
 
-Checklist "Overlay đã áp", tự kiểm ở exit gate của giai đoạn tương ứng; một ô chỉ tick khi cả nội dung overlay và nội dung profile đã vào tài liệu:
+The "Overlay applied" checklist, self-checked at the exit gate of the corresponding stage; a box is ticked only when both the overlay content and the profile content are in the document:
 
-| Slot | Tài liệu đích | Giai đoạn | Đã áp |
+| Slot | Target document | Stage | Applied |
 | --- | --- | --- | --- |
 | `srs.constraints.technical` | SRS §2.5 | 1 | [ ] |
-| Mục `(Tech Stack)` của stack profile | ARCHITECTURE §2.1 | 2 | [ ] |
+| `(Tech Stack)` section of the stack profile | ARCHITECTURE §2.1 | 2 | [ ] |
 | `srs.external-interfaces` | SRS §3 | 1 | [ ] |
 | `srs.data-model` | SRS §4.1 | 1 | [ ] |
 | `arch.views` | ARCHITECTURE §3 | 2 | [ ] |
@@ -292,175 +290,175 @@ Checklist "Overlay đã áp", tự kiểm ở exit gate của giai đoạn tươ
 | `arch.schema` | ARCHITECTURE §5 | 2 | [ ] |
 | `arch.conventions` | ARCHITECTURE §7 | 2 | [ ] |
 | `arch.deployment` | ARCHITECTURE §8 | 2 | [ ] |
-| `playbook.verify-commands` | `CLAUDE.md` mục lệnh verify | 0 hoặc 2; brownfield 0R (Prompt B1) | [ ] |
+| `playbook.verify-commands` | `CLAUDE.md` verify-commands section | 0 or 2; brownfield 0R (Prompt B1) | [ ] |
 | `spec.contract` | SPEC §3 | 3 | [ ] |
 | `spec.test-types` | SPEC §9 | 3 | [ ] |
 
-## 5. Lưu trữ tài liệu theo quy mô (Docs by Scale)
+## 5. Docs by Scale
 
-Chọn ở Intake (`docs_mode`), đường dẫn theo [CONVENTIONS.md](CONVENTIONS.md) mục 6.
+Chosen at the Intake (`docs_mode`), paths per [CONVENTIONS.md](CONVENTIONS.md) §6.
 
-| Chế độ | Khi nào | Cấu trúc SRS |
+| Mode | When | SRS structure |
 | --- | --- | --- |
-| `modular` | Từ 5 phân hệ, hoặc trên 20 đơn vị giao tiếp (endpoint, màn hình, lệnh), hoặc SRS dự kiến vượt 800 dòng | `docs/srs/00_SRS_MASTER.md` giữ §1 đến §5, §7, mô hình dữ liệu chung; mỗi `docs/srs/SRS_MODULE_<NAME>.md` giữ FR, use case và ma trận §8 của một phân hệ, `parent` trỏ về master |
-| `monolithic` | Không thỏa điều kiện nào của `modular` | Một file `docs/srs/SRS.md` |
+| `modular` | From 5 modules, or more than 20 interface units (endpoints, screens, commands), or an SRS expected to exceed 800 lines | `docs/srs/00_SRS_MASTER.md` holds §1 to §5, §7, the shared data model; each `docs/srs/SRS_MODULE_<NAME>.md` holds the FRs, use cases, and §8 matrix of one module, `parent` points to the master |
+| `monolithic` | Meets none of the `modular` conditions | A single file `docs/srs/SRS.md` |
 
-Đếm phân hệ: phần cross-cutting (xác thực, giới hạn tần suất, logging) và thư viện dùng chung không tính là phân hệ, trừ khi có dữ liệu riêng hoặc API riêng. Dự án brownfield chốt `docs_mode` ở Gate 0 theo ước lượng ở Intake mục 5, rồi xét lại ở Gate 0R khi Codebase Summary §3 đã chốt mã phân hệ. Kết quả đổi thì Intake mục 5 và mục 14 được cập nhật như một thay đổi MINOR theo mục 8; người duyệt Gate 0 ghi ở Intake mục 9 duyệt lại Intake cùng lúc duyệt Gate 0R.
+Counting modules: cross-cutting parts (authentication, rate limiting, logging) and shared libraries do not count as modules, unless they have their own data or their own API. A brownfield project settles `docs_mode` at Gate 0 from the estimate in Intake §5, then reconsiders it at Gate 0R when Codebase Summary §3 has fixed the module codes. If the result changes, Intake §5 and §14 are updated as a MINOR change per §8; the Gate 0 approver recorded at Intake §9 re-approves the Intake at the same time as approving Gate 0R.
 
-Quy mô `small` (Intake mục 14, template Intake `1.5.0` trở lên; tối đa 15 FR, một người duyệt mọi gate, không có ràng buộc tuân thủ): bộ tài liệu giữ nguyên, số lần dừng giảm. Intake và SRS được soạn trong một lượt và trình gộp Gate 0 với Gate 1; ARCHITECTURE, các SPEC `risk: normal` của đợt đầu và plan được soạn trong một lượt và trình gộp Gate 2, 3, 4. ADR chỉ viết cho quyết định khó đảo ngược (đổi stack, mô hình dữ liệu, cách xác thực); quyết định khác ghi một dòng ở ARCHITECTURE §2. SPEC `risk: high` vẫn dừng ở Gate 3 riêng. Dự án vượt ngưỡng trong lúc làm thì sửa Quy mô về `standard` theo mục 8.
+Project size `small` (Intake §14; at most 15 FRs, one approver for every gate, no compliance constraints): the document set stays the same, the number of stops is reduced. The Intake and SRS are drafted in one turn and submitted together for Gate 0 and Gate 1; ARCHITECTURE, the `risk: normal` SPECs of the first release, and the plan are drafted in one turn and submitted together for Gates 2, 3, 4. ADRs are written only for hard-to-reverse decisions (changing the stack, the data model, the authentication method); other decisions get one line in ARCHITECTURE §2. A `risk: high` SPEC still stops at its own Gate 3. If the project exceeds the thresholds during the work, change the Scale to `standard` per §8.
 
-ARCHITECTURE luôn là một file. SPEC luôn là một file cho mỗi tính năng. Hai loại tài liệu này có trần kích thước ở CONVENTIONS mục 7 (SPEC 500 dòng, ARCHITECTURE 800 dòng); khối máy đọc dài nằm ở tệp đi kèm theo cùng mục đó. Mục tiêu của chế độ `modular` và của trần kích thước: agent chỉ nạp phần liên quan, tránh tràn context và suy diễn sai.
+ARCHITECTURE is always one file. A SPEC is always one file per feature. These two document types have size ceilings in CONVENTIONS §7 (SPEC 500 lines, ARCHITECTURE 800 lines); long machine-readable blocks go in the companion file per the same section. The goal of the `modular` mode and of the size ceilings: the agent loads only the relevant part, avoiding context overflow and wrong inference.
 
-## 6. Danh mục nạp ngữ cảnh (Context Loading Manifest)
+## 6. Context Loading Manifest
 
-Agent nạp đúng những gì giai đoạn cần. "Của giai đoạn" theo định nghĩa ở mục 4; "profile" là stack profile của các bề mặt đã chọn.
+The agent loads exactly what the stage needs. "The stage's" is as defined in §4; "profile" is the stack profile of the chosen surfaces.
 
-| Giai đoạn | MUST đọc | MUST NOT đọc |
+| Stage | MUST read | MUST NOT read |
 | --- | --- | --- |
-| 0. Intake | Brief, `specflow/PLAYBOOK.md` mục 1 đến 7, `specflow/CONVENTIONS.md` mục 1 đến 7, `specflow/core/00_Project_Intake_Template.md`; trước khi chốt routing: mục `(Tech Stack)` của mọi stack profile thuộc overlay đang cân nhắc, để xét profile khớp (mục 3); sau khi chốt routing: Agent Context của giai đoạn, `OVERLAY.md` và profile đã chọn | File section của overlay và phần còn lại của profile khi chưa chốt routing, template SRS, Architecture, Spec |
-| 1. SRS | `CLAUDE.md`, `specflow/PLAYBOOK.md` mục 2.2 và 4 đến 7, `specflow/CONVENTIONS.md` mục 1 đến 8, Intake, SRS của giai đoạn, `OVERLAY.md` | Overlay và profile không được chọn, profile (SRS không dùng placeholder nguồn `Profile`), template Architecture và Spec, mã nguồn |
-| 1W. Wireframe | `CLAUDE.md`, `specflow/PLAYBOOK.md` mục 2.2.1 và 4 đến 8, `specflow/CONVENTIONS.md` mục 1, 3, 4, 6, 7, 10, Intake, SRS (§1.2, §2.2, §2.4, §2.5, §3, §4, §5, §6, §7, §8, §9, §10.2; master và mọi module nếu `modular`), `specflow/core/07_Wireframe_Template/`, `OVERLAY.md` của bề mặt có giao diện, `docs/design-system/` khi sửa lại | Stack profile, file section của overlay, template Architecture và Spec, mã nguồn |
-| 2. Architecture + ADR | `CLAUDE.md`, `specflow/PLAYBOOK.md` mục 2.3 và 4 đến 7, `specflow/CONVENTIONS.md` mục 1 đến 7 (thêm mục 10.7 khi có `docs/design-system/`), Intake, SRS (master và mô hình dữ liệu chung nếu `modular`; khi đó thêm §6.3 của mọi file module), chỉ mục wireframe `docs/wireframes/00_WIREFRAME_INDEX.md` khi có Giai đoạn 1W, `docs/design-system/tokens.json`, file mode và mục Token của `DESIGN_SYSTEM.md` khi có `docs/design-system/`, Architecture và Agent Context của giai đoạn, `OVERLAY.md`, profile, `specflow/core/03_ADR_Template.md`, `specflow/overlays/<surface>/agent-rules/` khi không có starter | Overlay và profile không được chọn, template Spec, mã nguồn |
-| 3. Spec | `CLAUDE.md`, `specflow/PLAYBOOK.md` mục 2.4 và 4 đến 7, `specflow/CONVENTIONS.md` mục 1, 3, 4, `docs/ARCHITECTURE.md`, phần SRS chứa FR của SPEC đang viết, cột FR ID và Bản phát hành ở SRS §6.1 (master và mọi module khi `modular`), frontmatter của mọi SPEC trong `docs/specs/` và §1.5 của SPEC thuộc đợt (khóa `release`; SPEC không có khóa thì đọc §1.5 của nó, đợt theo Bản phát hành của FR, mục 2.4), `docs/INDEX.md` mục 3 (số TC kế tiếp, CONVENTIONS mục 4), chỉ mục wireframe và trang wireframe của các `SCR-*` mà FR đang viết dẫn, mục danh mục hệ thống thiết kế (`CMP-*`, `PAT-*`, `TPL-*`) mà các trang đó dẫn, ADR được tham chiếu, Spec của giai đoạn, profile, mã nguồn hiện có của phân hệ theo ARCHITECTURE §4; overlay `ai-llm-app`: Prompt Spec của các prompt tính năng dùng, hoặc `specflow/overlays/ai-llm-app/Prompt_Spec_Template.md` khi viết Prompt Spec mới | Phần còn lại của SRS module khác, nội dung SPEC khác ngoài frontmatter, §1.5 và cột TC ID ở §9 (trừ SPEC phụ thuộc ghi trong §1), trang wireframe khác, mã nguồn của phân hệ khác |
-| 4a. Plan | `CLAUDE.md`, `specflow/PLAYBOOK.md` mục 2.4, 2.5, 4, 6, 7, 10.1, `specflow/CONVENTIONS.md` mục 3, 4, 9, mọi SPEC trong `spec_ids` của đợt, hàng SRS §6.1 của FR có Bản phát hành bằng đợt và hàng SRS §8 của AC mà SPEC của đợt dẫn; có Giai đoạn 1W: chỉ mục wireframe và trang của các `SCR-*` mà SPEC của đợt dẫn ở §3; ARCHITECTURE §1, §4, §5, §7, `specflow/core/05_Implementation_Plan_Template/` | SRS toàn văn (chỉ đọc các hàng đã nêu), trang wireframe không được SPEC của đợt dẫn, SPEC ngoài đợt |
-| 4b. Coding | `CLAUDE.md`, `specflow/PLAYBOOK.md` mục 7, plan và pha đang làm, các mục ghi ở `Đọc trước` của pha (pha từ template pha `1.3.0` trở lên; pha cũ hơn đọc SPEC theo `spec_id` của pha và ARCHITECTURE §1, §4 đến §7), file trong File Diff, file phụ thuộc ghi ở SPEC §1, trang wireframe và file HTML của màn mà pha dựng, mục danh mục hệ thống thiết kế mà trang đó dẫn, `docs/design-system/tokens.json` khi pha có file token trong File Diff; overlay `ai-llm-app`: Prompt Spec của các prompt SPEC dùng | File ngoài File Diff và ngoài danh sách phụ thuộc; file trong `specflow/` ngoài PLAYBOOK và CONVENTIONS |
-| 5. Verify và Sync | `CLAUDE.md`, `specflow/PLAYBOOK.md` mục 2.6, 2.7, 4, 8, 10.2, 11, `specflow/CONVENTIONS.md` mục 9, SPEC đang đóng, plan, `git diff` trên khoảng commit của SPEC, kết quả verify, ARCHITECTURE §2.1, §12, ADR liên quan, hàng `NFR-MAINT` của SRS §8 (ngưỡng coverage); khi Sync Docs: Prompt Spec của các prompt SPEC dùng (overlay `ai-llm-app`: §9.1 để ghi kết quả đánh giá), tài liệu gốc cần sửa theo mục 8 và `specflow/core/03_ADR_Template.md` khi tạo ADR; brownfield: `specflow/brownfield/PLAYBOOK_BROWNFIELD.md` mục 7 | Không giới hạn thêm |
-| Resume | `CLAUDE.md`, trang ở `docs/gates/` có hàng mang ngày mới nhất và bản ghi trạng thái phiên trước ở `plans/reports/` khi có, `specflow/PLAYBOOK.md` mục 2 (phần mở đầu và tiểu mục của giai đoạn đang dở), 2.7, 7, mục của giai đoạn đang dở ở `specflow/PROMPTS.md`, tài liệu hoặc plan đang dở; pha đang dở thì thêm các mục ở `Đọc trước` của pha | Tài liệu thượng nguồn toàn văn (đọc theo mục, qua `docs/INDEX.md`), tài liệu của giai đoạn đã đóng |
+| 0. Intake | Brief, `specflow/PLAYBOOK.md` §1 to 7, `specflow/CONVENTIONS.md` §1 to 7, `specflow/core/00_Project_Intake_Template.md`; before settling routing: the `(Tech Stack)` section of every stack profile belonging to the overlays under consideration, to judge the profile match (§3); after settling routing: the stage's Agent Context, `OVERLAY.md`, and the chosen profile | The overlay's section files and the rest of the profile before routing is settled, the SRS, Architecture, Spec templates |
+| 1. SRS | `CLAUDE.md`, `specflow/PLAYBOOK.md` §2.2 and 4 to 7, `specflow/CONVENTIONS.md` §1 to 8, Intake, the stage's SRS, `OVERLAY.md` | Overlays and profiles not chosen, the profile (the SRS does not use the `Profile`-source placeholders), the Architecture and Spec templates, source code |
+| 1W. Wireframe | `CLAUDE.md`, `specflow/PLAYBOOK.md` §2.2.1 and 4 to 8, `specflow/CONVENTIONS.md` §1, 3, 4, 6, 7, 10, Intake, SRS (§1.2, §2.2, §2.4, §2.5, §3, §4, §5, §6, §7, §8, §9, §10.2; master and every module if `modular`), `specflow/core/07_Wireframe_Template/`, the `OVERLAY.md` of the surface with a UI, `docs/design-system/` when revising | Stack profile, the overlay's section files, the Architecture and Spec templates, source code |
+| 2. Architecture + ADR | `CLAUDE.md`, `specflow/PLAYBOOK.md` §2.3 and 4 to 7, `specflow/CONVENTIONS.md` §1 to 7 (add §10.7 when there is `docs/design-system/`), Intake, SRS (master and the shared data model if `modular`; then add §6.3 of every module file), the wireframe index `docs/wireframes/00_WIREFRAME_INDEX.md` when there is Stage 1W, `docs/design-system/tokens.json`, the mode files and the Tokens section of `DESIGN_SYSTEM.md` when there is `docs/design-system/`, the stage's Architecture and Agent Context, `OVERLAY.md`, profile, `specflow/core/03_ADR_Template.md`, `specflow/overlays/<surface>/agent-rules/` when there is no starter | Overlays and profiles not chosen, the Spec template, source code |
+| 3. Spec | `CLAUDE.md`, `specflow/PLAYBOOK.md` §2.4 and 4 to 7, `specflow/CONVENTIONS.md` §1, 3, 4, `docs/ARCHITECTURE.md`, the part of the SRS that holds the FRs of the SPEC being written, the FR ID and Release columns in SRS §6.1 (master and every module when `modular`), the frontmatter of every SPEC in `docs/specs/` and §1.5 of the SPECs of the release (the `release` key), `docs/INDEX.md` §3 (the next TC number, CONVENTIONS §4), the wireframe index and the wireframe pages of the `SCR-*` that the FRs being written cite, the design system catalog entries (`CMP-*`, `PAT-*`, `TPL-*`) that those pages cite, the referenced ADRs, the stage's Spec, profile, the module's existing source code per ARCHITECTURE §4; overlay `ai-llm-app`: the Prompt Specs of the prompts the feature uses, or `specflow/overlays/ai-llm-app/Prompt_Spec_Template.md` when writing a new Prompt Spec | The rest of the SRS of other modules, the content of other SPECs beyond the frontmatter, §1.5 and the TC ID column in §9 (except the dependent SPECs listed in §1), other wireframe pages, source code of other modules |
+| 4a. Plan | `CLAUDE.md`, `specflow/PLAYBOOK.md` §2.4, 2.5, 4, 6, 7, 10.1, `specflow/CONVENTIONS.md` §3, 4, 9, every SPEC in the release's `spec_ids`, the SRS §6.1 rows of the FRs whose Release equals the release and the SRS §8 rows of the AC that the release's SPECs cite; with Stage 1W: the wireframe index and the pages of the `SCR-*` that the release's SPECs cite in §3; ARCHITECTURE §1, §4, §5, §7, `specflow/core/05_Implementation_Plan_Template/` | The SRS in full (read only the rows named), wireframe pages not cited by the release's SPECs, SPECs outside the release |
+| 4b. Coding | `CLAUDE.md`, `specflow/PLAYBOOK.md` §7, the plan and the phase being worked, the sections listed in the phase's `Read First`, files in the File Diff, dependency files listed in SPEC §1, the wireframe page and HTML file of the screen the phase builds, the design system catalog entries that page cites, `docs/design-system/tokens.json` when the phase has a token file in the File Diff; overlay `ai-llm-app`: the Prompt Specs of the prompts the SPEC uses | Files outside the File Diff and outside the dependency list; files in `specflow/` other than PLAYBOOK and CONVENTIONS |
+| 5. Verify and Sync | `CLAUDE.md`, `specflow/PLAYBOOK.md` §2.6, 2.7, 4, 8, 10.2, 11, `specflow/CONVENTIONS.md` §9, the SPEC being closed, the plan, `git diff` over the SPEC's commit range, the verify results, ARCHITECTURE §2.1, §12, the related ADRs, the `NFR-MAINT` row of SRS §8 (coverage threshold); when Sync Docs: the Prompt Specs of the prompts the SPEC uses (overlay `ai-llm-app`: §9.1 to record evaluation results), the source documents to fix per §8 and `specflow/core/03_ADR_Template.md` when creating an ADR; brownfield: `specflow/brownfield/PLAYBOOK_BROWNFIELD.md` §7 | No further limit |
+| Resume | `CLAUDE.md`, the page in `docs/gates/` that has the row with the latest date and the previous session's state record in `plans/reports/` when there is one, `specflow/PLAYBOOK.md` §2 (the opening part and the subsection of the stage in progress), 2.7, 7, the section of the stage in progress in `specflow/PROMPTS.md`, the document or plan in progress; for a phase in progress also the sections in the phase's `Read First` | Upstream documents in full (read by section, through `docs/INDEX.md`), documents of closed stages |
 
-Dự án có Intake tạo từ template Intake cũ hơn `1.4.0`, hoặc có wireframe từ template chỉ mục cũ hơn `1.3.0` hay template trang cũ hơn `1.4.0`: mọi hàng nạp thêm `specflow/COMPATIBILITY.md`.
+A combined submission (§5 scale `small`, §8 step 8) loads the rows of the stages it covers; when the MUST NOT column of one row forbids something that another row requires reading, the row that requires reading wins, and it is still read by section through `docs/INDEX.md`.
 
-Lượt trình gộp (mục 5 quy mô `small`, mục 8 bước 8) nạp các hàng của những giai đoạn nó làm; khi cột MUST NOT của một hàng cấm thứ mà hàng khác đòi đọc thì hàng đòi đọc thắng, và vẫn đọc theo mục qua `docs/INDEX.md`.
+A project whose `language` is not `en` also loads `specflow/scripts/locales/<language>/` in every row, including 4b, whose MUST NOT file ban does not apply to it (CONVENTIONS §5).
 
-Mọi hàng kết thúc ở một gate: khi dừng ở gate hoặc nhận "Duyệt Gate N", agent nạp thêm `specflow/PLAYBOOK.md` mục 2.7 và mục 8.
+Every row ends at a gate: when stopping at a gate or receiving "Approved at Gate N", the agent additionally loads `specflow/PLAYBOOK.md` §2.7 and §8.
 
-Có roadmap (mục 2): hàng 4b, 5, Resume và lúc nhận "Duyệt Gate 1", "Duyệt Gate 3", "Duyệt Gate 4", "Duyệt Gate 5" nạp thêm `docs/ROADMAP.md`, `specflow/CONVENTIONS.md` mục 11 và `specflow/PLAYBOOK.md` mục 2.5, 2.6; khi nhận "Duyệt Gate 5" nạp thêm dòng Định dạng tag ở Intake mục 14.
+With a roadmap (§2): rows 4b, 5, Resume and the moments of receiving "Approved at Gate 1", "Approved at Gate 3", "Approved at Gate 4", "Approved at Gate 5" additionally load `docs/ROADMAP.md`, `specflow/CONVENTIONS.md` §11 and `specflow/PLAYBOOK.md` §2.5, 2.6; on receiving "Approved at Gate 5" also load the Tag format line in Intake §14.
 
-Chỉ mục và tệp đi kèm: khi dự án có `docs/INDEX.md`, mọi hàng đọc file đó trước các tài liệu khác và tra ID bằng `specflow/scripts/project-index.py` (lệnh ghi ở đầu chỉ mục) thay cho việc dò cả thư mục `docs/`. Hàng nào nạp một mục của SPEC hay ARCHITECTURE thì chỉ nạp tệp đi kèm mà mục đó dẫn (CONVENTIONS mục 7) khi việc đang làm cần nội dung của tệp: viết hoặc sửa chính khối đó, hiện thực nó, hoặc đối chiếu với nó.
+Index and companion files: when the project has `docs/INDEX.md`, every row reads that file before other documents and looks up IDs with `specflow/scripts/project-index.py` (the command is at the top of the index) instead of scanning the whole `docs/` folder. A row that loads a section of a SPEC or ARCHITECTURE loads only the companion file that the section cites (CONVENTIONS §7) when the work in progress needs the file's content: writing or editing that block itself, implementing it, or checking against it.
 
-Mọi giai đoạn: MUST NOT đọc `examples/` hoặc bộ mẫu cũ khi sinh tài liệu dự án, để không rò rỉ nội dung ví dụ. Dự án brownfield dùng thêm bảng ở mục 4 của `brownfield/PLAYBOOK_BROWNFIELD.md`.
+Every stage: MUST NOT read `examples/` or the old template set when generating project documents, to avoid leaking example content. A brownfield project additionally uses the table in §4 of `brownfield/PLAYBOOK_BROWNFIELD.md`.
 
-## 7. Quy tắc cho agent (Agent Rules)
+## 7. Agent Rules
 
-1. Mọi tài liệu có mục `Assumptions & Open Questions`. Mỗi giả định ghi lý do và ảnh hưởng; câu hỏi chặn đánh dấu `BLOCKING`.
-2. Agent MUST NOT tự giải quyết mơ hồ mà không ghi lại. Mơ hồ chạm hợp đồng (phạm vi, API, schema, bảo mật, dữ liệu cá nhân) thì dừng và hỏi; ở Giai đoạn 0 theo quy tắc 3. Mơ hồ nhỏ thì chọn giả định an toàn nhất, ghi lại, tiếp tục.
-3. Gộp câu hỏi vào một lượt ở cuối giai đoạn, tối đa 5 câu, mỗi câu kèm phương án đề xuất. Ở Giai đoạn 0, 5 câu được chọn theo thứ tự: câu chặn Routing Decision trước, rồi câu chạm hợp đồng theo quy tắc 2, xếp theo rủi ro. Câu chạm hợp đồng mà không chặn routing, kể cả câu vượt quá 5 câu, ghi `BLOCKING: Không` và thêm "trả lời trước Gate 1" ở cột Lý do hoặc ảnh hưởng. Câu không chạm hợp đồng ghi thành giả định an toàn nhất. Gate 0 vẫn không cho còn câu hỏi `BLOCKING`. Prompt 1 chép mọi câu "trả lời trước Gate 1" chưa có câu trả lời vào SRS §9 với `BLOCKING: Có`, nên người duyệt Gate 1 chặn chúng như câu hỏi chặn khác (trên ví dụ của bộ mẫu, `scripts/check-templates.sh` báo câu hỏi `BLOCKING` còn trong tài liệu `approved`).
-4. Agent MUST NOT thêm dependency ngoài bảng tech stack đã duyệt. Cần thêm thì đề xuất ADR `proposed` và chờ duyệt.
-5. Khi code: chỉ sửa và tạo file trong File Diff của SPEC đang thực thi.
-6. Khi SPEC mâu thuẫn với code hiện có hoặc với ARCHITECTURE: dừng, báo vị trí (`file:line`, mục tài liệu) và các phương án; không tự chọn.
-7. Không sinh code trước khi Definition of Ready đạt.
-8. Không sửa file trong `specflow/`. Không đánh số lại ID đã duyệt; ID bỏ đi ghi `deprecated`, không tái sử dụng.
-9. Dự án mới và đợt mới: mỗi lượt sinh tài liệu của một giai đoạn, trừ các lần soạn gộp của quy mô `small` (mục 5). Thay đổi trên dự án đã có baseline: một lượt được sửa và tạo mọi tài liệu thay đổi cần, rồi trình gộp (mục 8). Kết thúc lượt bằng: danh sách file đã tạo hoặc sửa, checklist exit gate đã tự kiểm, Open Questions còn lại. Agent tự kiểm đúng các hàng exit gate (kể cả DoR ở mục 10.1) mà nó đọc được theo danh mục nạp ngữ cảnh của mục 6; hàng cần tài liệu mà manifest của giai đoạn đó không nạp (ví dụ SRS toàn văn ở Giai đoạn 4a) để người duyệt kiểm.
-10. Nhận "Duyệt Gate N": làm theo mục 2.7.
-11. Cùng một lệnh test hoặc verify hỏng cùng một lỗi sau 3 lần sửa liên tiếp trong một pha (kể cả vòng đỏ sang xanh của TDD): dừng, báo lệnh, lỗi, các cách đã thử và các phương án; không sửa tiếp khi chưa có hướng từ người dùng. Bộ đếm chỉ về 0 khi người dùng đã cho hướng.
-12. Có roadmap (mục 2): chỉ làm việc có dòng trong roadmap, theo thứ tự ở mục 2.5; yêu cầu mới ghi vào mục 3 của roadmap rồi chờ quyết định, không làm ngay. Yêu cầu do chính người quyết phạm vi (Intake mục 9) đưa ra kèm lời bảo làm thì đã là quyết định: ghi `Đưa vào change request` và làm tiếp theo mục 8. Dự án có Intake tạo từ template Intake `1.4.0` trở lên đã qua Gate 1 mà thiếu `docs/ROADMAP.md`: báo, rồi dựng theo mục 2.7 trước khi làm tiếp.
-13. Giao việc cho agent con (khi runtime có): mỗi lần giao viết một work packet theo `specflow/PROMPTS.md` mục Work packet, gồm mục tiêu, lát đọc là các `tệp §mục` lấy từ `docs/INDEX.md` hoặc mục Đọc trước của pha, tệp được sửa, điều kiện dừng, ngân sách lượt gọi công cụ và dạng báo cáo cuối. Agent con không nhận lịch sử hội thoại. Agent điều phối giữ việc gộp kết quả, chạy `specflow/scripts/check-templates.sh --project .` và mọi lời duyệt của người dùng; agent con MUST NOT sửa file ngoài danh sách được giao và MUST NOT tự đặt `approved` hay `accepted`.
-14. Giữ ngữ cảnh của phiên điều phối gọn, vì mỗi lượt gọi đọc lại cả ngữ cảnh: không dán báo cáo dài vào hội thoại, chỉ đọc phần cần; sau mỗi gate, hoặc khi đã dùng quá nửa cửa sổ ngữ cảnh, ghi trạng thái (việc đang dở, quyết định chưa có trong tài liệu) vào `plans/reports/` rồi mở phiên mới bằng Prompt Resume. Việc cơ học (đồng bộ tài liệu, rà nhất quán, thao tác git) được giao cho mô hình nhỏ hơn. Trong vòng làm việc của một pha chỉ chạy lint, typecheck và test của phần đang sửa; bộ verify đầy đủ chạy một lần ở cuối pha.
+1. Every document has an `Assumptions & Open Questions` section. Each assumption records the reason and the impact; a blocking question is marked `BLOCKING`. The `BLOCKING` cell holds exactly the yes or no word of the project language (`Yes`/`No`, `Có`/`Không`); another value is an error.
+2. Agent MUST NOT resolve an ambiguity without recording it. An ambiguity that touches the contract (scope, API, schema, security, personal data) means stop and ask; at Stage 0 follow rule 3. A minor ambiguity: choose the safest assumption, record it, continue.
+3. Batch questions into one turn at the end of a stage, at most 5 questions, each with a proposed option. At Stage 0, the 5 questions are chosen in this order: questions that block the Routing Decision first, then questions that touch the contract per rule 2, ranked by risk. A question that touches the contract but does not block routing, including any beyond the 5, is recorded as `BLOCKING: No` and adds "answer before Gate 1" in the Reason or impact column. A question that does not touch the contract is recorded as the safest assumption. Gate 0 still does not allow a `BLOCKING` question to remain. Prompt 1 copies every unanswered "answer before Gate 1" question into SRS §9 with `BLOCKING: Yes`, so the Gate 1 approver blocks them like any other blocking question (on the template set's examples, `scripts/check-templates.sh` reports a `BLOCKING` question left in an `approved` document).
+4. Agent MUST NOT add a dependency outside the approved tech stack table. When one is needed, propose a `proposed` ADR and wait for approval.
+5. When coding: only modify and create files in the File Diff of the SPEC being executed.
+6. When a SPEC conflicts with existing code or with ARCHITECTURE: stop, report the location (`file:line`, document section) and the options; do not choose on your own.
+7. Do not generate code before the Definition of Ready is met.
+8. Do not modify files in `specflow/`. Do not renumber an approved ID; a retired ID is marked `deprecated` and never reused.
+9. New project and new release: each turn generates the documents of one stage, except the combined drafting of scale `small` (§5). A change on a project that already has a baseline: one turn may modify and create every changed document needed, then submit them together (§8). End the turn with: the list of files created or modified, the exit gate checklist self-checked, the remaining Open Questions. The agent self-checks exactly the exit gate rows (including the DoR in §10.1) that it can read under the context loading manifest of §6; a row that needs a document the stage's manifest does not load (for example the full SRS at Stage 4a) is left for the approver to check.
+10. On receiving "Approved at Gate N": follow §2.7.
+11. The same test or verify command fails with the same error after 3 consecutive fix attempts in one phase (including the red-to-green loop of TDD): stop, report the command, the error, the approaches tried, and the options; do not keep fixing until the user gives direction. The counter returns to 0 only after the user has given direction.
+12. With a roadmap (§2): only work on items that have a line in the roadmap, in the order in §2.5; a new requirement is recorded in roadmap §3 and then wait for a decision, do not act on it right away. A requirement made by the person who decides scope (Intake §9) together with an instruction to proceed is already a decision: record `Raise change request` and continue per §8. A project that has passed Gate 1 but lacks `docs/ROADMAP.md`: report, then build it per §2.7 before continuing.
+13. Delegating to a subagent (when the runtime has them): for each delegation write a work packet following the Work packet section of `specflow/PROMPTS.md`, containing the goal, the read slice (the `file §section` entries taken from `docs/INDEX.md` or the phase's Read First section), the files allowed to be modified, the stop conditions, the tool-call budget, and the format of the final report. A subagent does not receive the conversation history. The orchestrating agent keeps merging results, running `specflow/scripts/check-templates.sh --project .`, and every user approval; a subagent MUST NOT modify files outside the assigned list and MUST NOT set `approved` or `accepted` by itself.
+14. Keep the orchestrating session's context lean, because every call re-reads the whole context: do not paste long reports into the conversation, read only the part needed; after each gate, or when more than half the context window has been used, record the state (work in progress, decisions not yet in the documents) in `plans/reports/` and open a new session with Prompt Resume. Mechanical work (docs sync, consistency review, git operations) is delegated to a smaller model. Within the working loop of a phase run only lint, typecheck, and tests of the part being modified; the full verify suite runs once at the end of the phase.
 
-## 8. Quản trị thay đổi (Change Management)
+## 8. Change Management
 
-Nghi thức của một thay đổi tỉ lệ với cái nó chạm, không với số tài liệu nó sửa. Version theo SemVer:
+The ritual of a change is proportional to what it touches, not to the number of documents it edits. Versions follow SemVer:
 
-| Mức | Khi nào | Dừng chờ duyệt |
+| Level | When | Stop for approval |
 | --- | --- | --- |
-| MAJOR | Đổi phạm vi hoặc hợp đồng làm tài liệu hạ nguồn đã duyệt không còn đúng (xóa FR, đổi schema có dữ liệu, đổi contract công khai) | Có; kèm ADR nếu là quyết định kiến trúc |
-| MINOR | Thêm FR, NFR, mục, endpoint mà không phá hợp đồng đã duyệt | Có khi thay đổi chạm hợp đồng công khai, schema, bảo mật, phạm vi, hoặc thuộc SPEC `risk: high`. Còn lại không dừng: tài liệu sửa cùng nhánh với code và được duyệt một lần khi merge pull request của pha |
-| PATCH | Sửa lỗi chữ, làm rõ, không đổi nghĩa | Không |
+| MAJOR | Changes scope or a contract so that approved downstream documents are no longer correct (deleting an FR, changing a schema that holds data, changing a public contract) | Yes; with an ADR if it is an architecture decision |
+| MINOR | Adds an FR, NFR, section, endpoint without breaking an approved contract | Yes when the change touches a public contract, schema, security, scope, or belongs to a `risk: high` SPEC. Otherwise no stop: the document is edited on the same branch as the code and approved once when the phase's pull request is merged |
+| PATCH | Fixes a typo, clarifies, does not change the meaning | No |
 
-Tài liệu mới luôn qua gate của giai đoạn nó (mục 2). Quy trình cho thay đổi:
+A new document always goes through the gate of its stage (§2). The process for a change:
 
-1. Đang sửa: đặt `status: draft` (tài liệu chưa từng duyệt) hoặc `in-review` (tài liệu đã duyệt) và sửa tự do. Không tăng version và không ghi lịch sử cho từng lần sửa; lịch sử chi tiết là git.
-2. Khi trình: chạy `specflow/scripts/check-templates.sh --project .`, rồi khi nhận lời duyệt `gate.py approve --bump <patch|minor|major> --note "nội dung chính của thay đổi"` (mục 2.7) tăng version một lần và ghi một dòng lịch sử có nội dung đó. Một thay đổi chạm nhiều tài liệu được làm trong một lượt và trình gộp; lời trình nêu từng gate đang xin duyệt và checklist exit của từng gate.
-3. Tài liệu hạ nguồn: chỉ sửa tài liệu mà bảng dưới nêu cho thay đổi đó và chỉ khi nội dung của nó thật sự đổi; tài liệu không đổi nội dung giữ nguyên `status` và version.
-4. Khác biệt phát hiện khi code: SPEC `risk: normal` thì sửa SPEC cùng nhánh với code, không dừng và không đổi `status`; thay đổi được ghi khi đóng SPEC bằng `gate.py implemented --bump minor --note "..."` (PATCH khi không đổi nghĩa), và người duyệt Gate 5 là người duyệt nó. Đổi kiến trúc, hoặc SPEC `risk: high`, thì ghi ADR trước khi merge và trình lại gate của tài liệu bị đổi.
-5. ADR đã `accepted` không sửa nội dung quyết định: tạo ADR mới, đặt ADR cũ `superseded` với `superseded_by`.
-6. Sửa sau review một SPEC đã `implemented`: khi thay đổi nằm trong khoảng commit của SPEC và có TC phủ, SPEC đi `implemented → in-review → implemented` (`gate.py implemented --after-review --note "..."`), không thêm pha mới và không qua lại Gate 4; lời duyệt Gate 5 kế tiếp ghi tên người duyệt cho version đó.
-7. Đổi hành vi của một SPEC đã `implemented`: SPEC tăng MINOR và nhận một pha mới trong plan của đợt còn dở, chèn liền sau các pha của SPEC đó (CONVENTIONS mục 9); Gate 5 của lần đổi xét khoảng commit của pha mới. Đợt đã xong (plan `completed`): thay đổi đi qua một SPEC mới của đợt sau. Không mở lại SRS hay ARCHITECTURE khi thay đổi không chạm nội dung của chúng.
-8. Đường thay đổi nhỏ, cho một yêu cầu trên dự án đã có baseline mà SPEC của nó là `risk: normal`: trong một lượt, agent thêm FR và AC vào SRS (khi yêu cầu là hành vi mới), viết hoặc sửa SPEC, thêm pha vào plan, rồi trình gộp các gate tương ứng một lần. Sau lời duyệt, agent code các pha, verify theo checklist và đồng bộ tài liệu trong một lượt, rồi dừng chờ "Duyệt Gate 5". Thay đổi chạm kiến trúc, hoặc SPEC `risk: high`, không đi đường này: nó dừng ở từng gate như một đợt mới.
+1. While editing: set `status: draft` (a never-approved document) or `in-review` (an approved document) and edit freely. Do not raise the version and do not write history for each edit; the detailed history is git.
+2. On submission: run `specflow/scripts/check-templates.sh --project .`, then on receiving the approval `gate.py approve --bump <patch|minor|major> --note "main content of the change"` (§2.7) raises the version once and writes one history line with that content. A change that touches several documents is done in one turn and submitted together; the submission names each gate being requested and the exit checklist of each gate.
+3. Downstream documents: only edit the documents that the table below names for that change and only when their content really changes; a document whose content does not change keeps its `status` and version.
+4. A difference discovered while coding: a `risk: normal` SPEC is fixed on the same branch as the code, without stopping and without changing `status`; the change is recorded when closing the SPEC with `gate.py implemented --bump minor --note "..."` (PATCH when the meaning does not change), and the Gate 5 approver is the one who approves it. An architecture change, or a `risk: high` SPEC, records an ADR before merge and resubmits the gate of the changed document.
+5. An `accepted` ADR does not have its decision content edited: create a new ADR, set the old ADR to `superseded` with `superseded_by`.
+6. A fix after review of an `implemented` SPEC: when the change lies within the SPEC's commit range and has TCs covering it, the SPEC goes `implemented → in-review → implemented` (`gate.py implemented --after-review --note "..."`), with no new phase and no return to Gate 4; the next Gate 5 approval records the approver's name for that version.
+7. Changing the behavior of an `implemented` SPEC: the SPEC is raised MINOR and receives a new phase in the plan of the release still in progress, inserted right after that SPEC's phases (CONVENTIONS §9); Gate 5 for the change judges the commit range of the new phase. A finished release (plan `completed`): the change goes through a new SPEC of a later release. Do not reopen the SRS or ARCHITECTURE when the change does not touch their content.
+8. Small-change path, for one requirement on a project that already has a baseline whose SPEC is `risk: normal`: in one turn, the agent adds the FR and AC to the SRS (when the requirement is a new behavior), writes or fixes the SPEC, adds phases to the plan, then submits the corresponding gates together once. After approval, the agent codes the phases, verifies by checklist and syncs docs in one turn, then stops and waits for "Approved at Gate 5". A change that touches architecture, or a `risk: high` SPEC, does not take this path: it stops at each gate like a new release.
 
-| Thay đổi ở | Tài liệu phải rà | Hành động |
+| Change in | Documents to review | Action |
 | --- | --- | --- |
-| SRS: FR, AC, use case | SPEC chứa FR đó, trang wireframe và hàng đối chiếu dẫn FR đó, plan, test | Cập nhật SPEC §1, §3, §9 và wireframe; thêm pha vào plan nếu cần |
-| SRS §3: thêm, bớt hay đổi màn hình (`SCR ID`) | Chỉ mục wireframe, trang của màn hình, bảng route hoặc điều hướng ở ARCHITECTURE §3, SPEC dẫn `SCR-*` đó | Cập nhật chỉ mục và trang; ID bỏ đi không dùng lại |
-| Wireframe: bố cục, thành phần, trạng thái, điều hướng, sau khi SPEC dẫn `SCR-*` đó đã `approved` | SPEC dẫn `SCR-*` đó (§3, §9), plan, test giao diện và e2e | Wireframe tăng MINOR (PATCH khi chỉ làm rõ, không đổi nghĩa). SPEC được cập nhật theo mục này và plan đã qua Gate 4 thêm hoặc sửa pha; có dừng chờ duyệt lại hay không theo bảng mức ở đầu mục. SPEC đã `implemented` thì theo bước 7 ở trên |
-| SRS §6.1: đổi Bản phát hành của FR | SPEC dẫn FR đó ở §1.5 (khóa `release`), plan của đợt cũ và đợt mới | Bỏ FR khỏi §1.5 của SPEC đợt cũ, hoặc đặt SPEC đó `superseded` khi mọi FR của nó chuyển đi; đưa FR vào §1.5 của SPEC có `release` bằng đợt mới. Cập nhật `spec_ids` và pha ở plan của hai đợt; đổi đợt là đổi phạm vi, nên người duyệt Gate 3 và Gate 4 của từng đợt duyệt lại. FR mà SPEC `implemented` đã thực hiện thì không đổi đợt; thay đổi theo bước 7 ở trên |
-| Hệ thống thiết kế: token, file mode, danh mục component, pattern, template, sau Gate 1W | Trang dẫn mục đổi, HTML, file ánh xạ token trong code, ARCHITECTURE hàng Design token, SPEC dẫn trang | `DESIGN_SYSTEM.md` tăng version và ghi Version History cho mọi đổi của nó và của `tokens.json` (file JSON không có frontmatter, không thêm trường lạ vào token); đổi token thì tính lại bảng tương phản ở mọi mode; trang bị ảnh hưởng theo dòng Wireframe ở trên; đổi hướng thị giác thì duyệt lại Gate 1W |
-| SRS: NFR | ARCHITECTURE §8 (`NFR → tactic`), ADR | Cập nhật tactic, ghi ADR nếu đổi quyết định |
-| SRS §6.1 hoặc §7 (có roadmap): thêm, bỏ FR hay NFR Must, đổi Ưu tiên, Bản phát hành hay Cách kiểm chứng | `docs/ROADMAP.md` | Thêm dòng `Chưa làm` (NFR Must thêm sau Gate 1 có Đợt đóng là đợt đang làm), đặt dòng của yêu cầu bỏ đi hay chuyển `Won't` sang `Bỏ` (giữ dòng để còn thấy lịch sử), sửa ô chép từ SRS, xếp lại thứ tự và cập nhật mục 1 |
-| SPEC đã `implemented` đổi theo bước 7 ở trên (có roadmap) | `docs/ROADMAP.md` | Dòng FR của SPEC về `Chưa làm`, bỏ hàng của chúng ở mục 4; giữ hàng cũ ở mục 5. Lần qua Gate 5 sau đó đánh tag có hậu tố `-2`, `-3` (mục 2.7) |
-| Roadmap mục 3: người duyệt quyết "Đưa vào change request" | Tài liệu ghi ở cột Quyết định | Đi theo quy trình change request ở trên, bắt đầu từ tài liệu đó; roadmap đổi theo dòng trên khi SRS đổi |
-| SRS: mô hình dữ liệu | ARCHITECTURE §5, SPEC §4 (migration) | Cập nhật schema, thêm migration |
-| ARCHITECTURE: schema, conventions, Error Code Registry | Mọi SPEC tham chiếu | Cập nhật contract và bảng lỗi |
-| ARCHITECTURE: tech stack | ADR, `CLAUDE.md`, `.claude/rules/` | Ghi ADR, cập nhật lệnh verify |
-| SPEC: contract | SPEC của bề mặt tiêu thụ contract đó, plan | Cập nhật SPEC phía tiêu thụ và plan |
-| Prompt Spec (overlay `ai-llm-app`): prompt, ví dụ mẫu, schema đầu ra, tham số, guardrail, ngưỡng | SPEC dùng prompt, module prompt trong mã, bộ dữ liệu đánh giá | Tăng version của Prompt Spec và hằng phiên bản trong mã, chạy lại cổng đánh giá, cập nhật SPEC §3 nếu schema hay ngân sách đổi |
+| SRS: FR, AC, use case | The SPEC that holds that FR, the wireframe page and mapping row that cite that FR, the plan, tests | Update SPEC §1, §3, §9 and the wireframe; add phases to the plan if needed |
+| SRS §3: add, remove, or change a screen (`SCR ID`) | The wireframe index, the screen's page, the route or navigation table in ARCHITECTURE §3, the SPECs that cite that `SCR-*` | Update the index and pages; a retired ID is not reused |
+| Wireframe: layout, components, states, navigation, after the SPEC that cites that `SCR-*` is `approved` | The SPEC that cites that `SCR-*` (§3, §9), the plan, UI tests and e2e | The wireframe is raised MINOR (PATCH when only clarifying, no change of meaning). The SPEC is updated per this section and a plan that has passed Gate 4 gets phases added or fixed; whether to stop for re-approval follows the level table at the start of this section. An `implemented` SPEC follows step 7 above |
+| SRS §6.1: change the Release of an FR | The SPEC that cites the FR in §1.5 (the `release` key), the plan of the old release and of the new release | Remove the FR from §1.5 of the old release's SPEC, or set that SPEC to `superseded` when all its FRs move away; add the FR to §1.5 of the SPEC whose `release` equals the new release. Update `spec_ids` and the phases in the plans of both releases; changing release is changing scope, so the Gate 3 and Gate 4 approvers of each release re-approve. An FR that an `implemented` SPEC has already realized does not change release; the change follows step 7 above |
+| Design system: tokens, mode files, component, pattern, template catalog, after Gate 1W | The pages that cite the changed item, the HTML, the token mapping file in code, the ARCHITECTURE Design token row, the SPECs that cite the pages | `DESIGN_SYSTEM.md` raises its version and records Version History for every change of itself and of `tokens.json` (the JSON file has no frontmatter, and no extra field is added to a token); changing a token means recomputing the contrast table in every mode; the affected pages follow the Wireframe row above; changing the visual direction means re-approving Gate 1W |
+| SRS: NFR | ARCHITECTURE §8 (`NFR → tactic`), ADR | Update the tactic, record an ADR if the decision changes |
+| SRS §6.1 or §7 (with a roadmap): add or remove an FR or Must NFR, change Priority, Release, or Verification method | `docs/ROADMAP.md` | Add a `Not started` line (a Must NFR added after Gate 1 gets the release in progress as its closing release), set the line of a removed requirement or one moved to `Won't` to `Dropped` (keep the line so history stays visible), fix the cells copied from the SRS, reorder, and update §1 |
+| An `implemented` SPEC changed per step 7 above (with a roadmap) | `docs/ROADMAP.md` | The SPEC's FR lines go back to `Not started`, remove their rows from §4; keep the old rows in §5. The next pass through Gate 5 tags with the suffix `-2`, `-3` (§2.7) |
+| Roadmap §3: the approver decides "Raise change request" | The document recorded in the Decision column | Follow the change request process above, starting from that document; the roadmap changes per the row above when the SRS changes |
+| SRS: data model | ARCHITECTURE §5, SPEC §4 (migration) | Update the schema, add a migration |
+| ARCHITECTURE: schema, conventions, Error Code Registry | Every SPEC that references it | Update the contract and the error table |
+| ARCHITECTURE: tech stack | ADR, `CLAUDE.md`, `.claude/rules/` | Record an ADR, update the verify commands |
+| SPEC: contract | The SPEC of the surface that consumes that contract, the plan | Update the consuming SPEC and the plan |
+| Prompt Spec (overlay `ai-llm-app`): prompt, examples, output schema, parameters, guardrails, thresholds | The SPEC that uses the prompt, the prompt module in code, the evaluation dataset | Raise the Prompt Spec's version and the version constant in code, rerun the evaluation gate, update SPEC §3 if the schema or budget changes |
 
-## 9. Prompt mẫu cho Claude Code (Prompts)
+## 9. Prompts
 
-Prompt nằm ở [PROMPTS.md](PROMPTS.md).
+The prompts are in [PROMPTS.md](PROMPTS.md).
 
-## 10. Điều kiện sẵn sàng và hoàn tất (Definition of Ready, Definition of Done)
+## 10. Definition of Ready, Definition of Done
 
 ### 10.1. Definition of Ready (DoR)
 
-Đối chiếu ở Gate 4, trước khi cho phép viết dòng code đầu tiên của plan: plan của đợt. Hàng SPEC áp cho mọi SPEC mà plan thực hiện.
+Checked at Gate 4, before allowing the first line of code of the plan to be written: the release's plan. The SPEC rows apply to every SPEC the plan implements.
 
-| Hạng mục | Tiêu chí | Đạt? |
+| Item | Criterion | Passed? |
 | --- | --- | :---: |
-| Intake | Routing Decision đủ trường (overlays, stack profile, starter, mode, docs_mode, người duyệt, Giai đoạn 1W), status `approved` | [ ] |
-| Overlay | Checklist "Overlay đã áp" ở mục 4 đủ cho SRS, ARCHITECTURE và mọi SPEC của plan; lệnh kiểm tra sót trả về rỗng | [ ] |
-| SRS | Mô hình dữ liệu logic theo bề mặt; bề mặt có lưu trữ quan hệ có `erDiagram` Crow's foot | [ ] |
-| SRS | Mọi use case có Exception flow kèm mã lỗi có trong Error Code Registry | [ ] |
-| SRS | Ma trận Given-When-Then nối `FR → AC`; NFR có chỉ số, cách đo, ngưỡng; status `approved` | [ ] |
-| Wireframe | Không có Giai đoạn 1W (không có giao diện) ghi N/A. Gate 1W đạt: mọi tiêu chí ở bảng exit gate mục 2.2.1, kể cả hàng Màn hình xác thực, mục trợ năng của trang và tài liệu hệ thống thiết kế (khi wireframe từ chỉ mục `1.3.0`, trang `1.4.0`) | [ ] |
-| ARCHITECTURE | Tech stack ghi phiên bản chính xác, không còn "A hoặc B" | [ ] |
-| ARCHITECTURE | Schema vật lý hoàn chỉnh, migrate được ngay (nếu có lưu trữ) | [ ] |
-| ARCHITECTURE | Layout phân tầng rõ, có bảng `MOD → thành phần → thư mục`; có Error Code Registry và bảng `NFR → tactic`; status `approved` | [ ] |
-| ADR | Kiểu kiến trúc, mỗi lựa chọn đánh dấu `có ADR` và mỗi lệch stack profile được một ADR `accepted` bao phủ, liệt kê ở ARCHITECTURE §12 | [ ] |
-| Agent Context | `CLAUDE.md` có `## Documentation Layout` là mục đầu tiên, có lệnh verify, không còn dòng "Hoàn thiện ở Giai đoạn 2." hay "Hoàn thiện ở Giai đoạn 0R (Prompt B1)."; `.claude/rules/` đã tạo | [ ] |
-| SPEC | File Diff đã khóa, có bảng MUST NOT touch, không có file thừa | [ ] |
-| SPEC | Bảng test SPEC §9 đủ AC và INV; NFR ở §1.5 mà SRS §8 kiểm bằng Test có TC theo CONVENTIONS mục 4; mỗi Core Invariant có test `CONC`; status `approved` | [ ] |
-| SPEC | Có Giai đoạn 1W: SPEC của FR có giao diện dẫn `SCR-*` của FR đó ở bảng Màn hình §3; không có thì ghi N/A | [ ] |
-| Prompt Spec | Bề mặt không gọi mô hình ngôn ngữ ghi N/A. Mỗi prompt mà SPEC dùng có Prompt Spec `approved` với ID đặt ở SRS §4.1 và bộ dữ liệu đủ mẫu trong `evals/` | [ ] |
-| Roadmap | Dự án có Intake cũ hơn `1.4.0` ghi N/A. `docs/ROADMAP.md` có; mọi dòng FR của đợt có SPEC, và mỗi SPEC đó có pha trong plan (cột Pha điền khi nhận "Duyệt Gate 4"); đối soát ở mục 2.6 không lệch | [ ] |
-| Plan | Plan trong `plans/` đúng định dạng ở CONVENTIONS mục 9, pha phủ hết File Diff, đã duyệt. Plan theo đợt: `release` và `spec_ids` gồm mọi SPEC của đợt, khóa `release` của SPEC (nếu có) khớp quy tắc ở mục 2.5, mỗi SPEC có pha, pha của mỗi SPEC phủ File Diff của SPEC đó | [ ] |
-| Brownfield | Greenfield ghi N/A. Tiêu chí DoR ở `brownfield/PLAYBOOK_BROWNFIELD.md` mục 7 đạt: Gate 0R, Gap Analysis và Migration Plan `approved`, SPEC áp phụ lục brownfield | [ ] |
-| Open Questions | Không còn câu hỏi `BLOCKING` trong mọi tài liệu thượng nguồn | [ ] |
+| Intake | The Routing Decision has every field (overlays, stack profile, starter, mode, docs_mode, approvers, Stage 1W), status `approved` | [ ] |
+| Overlay | The "Overlay applied" checklist in §4 is complete for the SRS, ARCHITECTURE, and every SPEC of the plan; the leftover check command returns empty | [ ] |
+| SRS | Logical data model per surface; a surface with relational storage has a Crow's foot `erDiagram` | [ ] |
+| SRS | Every use case has an Exception flow with an error code that exists in the Error Code Registry | [ ] |
+| SRS | The Given-When-Then matrix links `FR → AC`; NFRs have a metric, measurement method, threshold; status `approved` | [ ] |
+| Wireframe | Without Stage 1W (no UI) record N/A. Gate 1W met: every criterion in the exit gate table of §2.2.1, including the Authentication screen row, the page accessibility section, and the design system document | [ ] |
+| ARCHITECTURE | The tech stack records exact versions, no "A or B" remains | [ ] |
+| ARCHITECTURE | The physical schema is complete, migratable immediately (if there is storage) | [ ] |
+| ARCHITECTURE | A clearly layered layout, with the `MOD → component → folder` table; has the Error Code Registry and the `NFR → tactic` table; status `approved` | [ ] |
+| ADR | The architecture style, each choice marked `has ADR`, and each deviation from the stack profile is covered by an `accepted` ADR, listed in ARCHITECTURE §12 | [ ] |
+| Agent Context | `CLAUDE.md` has `## Documentation Layout` as the first section, has the verify commands, no longer has the line "Complete at Stage 2." or "Complete at Stage 0R (Prompt B1)."; `.claude/rules/` is created | [ ] |
+| SPEC | The File Diff is locked, has the MUST NOT touch table, no extra files | [ ] |
+| SPEC | The SPEC §9 test table covers every AC and INV; an NFR in §1.5 that SRS §8 verifies by Test has a TC per CONVENTIONS §4; each Core Invariant has a `CONC` test; status `approved` | [ ] |
+| SPEC | With Stage 1W: the SPEC of an FR with a UI cites that FR's `SCR-*` in the Screens table of §3; otherwise record N/A | [ ] |
+| Prompt Spec | A surface that does not call a language model records N/A. Each prompt the SPEC uses has an `approved` Prompt Spec with the ID set in SRS §4.1 and a dataset with enough samples in `evals/` | [ ] |
+| Roadmap | `docs/ROADMAP.md` exists; every FR line of the release has a SPEC, and each such SPEC has a phase in the plan (the Phase column is filled on receiving "Approved at Gate 4"); the reconciliation in §2.6 shows no mismatch | [ ] |
+| Plan | The plan in `plans/` has the correct format in CONVENTIONS §9, the phases cover the whole File Diff, approved. Per-release plan: `release` and `spec_ids` contain every SPEC of the release, the `release` key of the SPECs matches the rule in §2.5, each SPEC has phases, the phases of each SPEC cover that SPEC's File Diff | [ ] |
+| Brownfield | Greenfield records N/A. The DoR criteria in `brownfield/PLAYBOOK_BROWNFIELD.md` §7 are met: Gate 0R, Gap Analysis, and Migration Plan `approved`, the SPEC applies the brownfield appendix | [ ] |
+| Open Questions | No `BLOCKING` question remains in any upstream document | [ ] |
 
 ### 10.2. Definition of Done (DoD)
 
-DoD xét cho từng SPEC ở Gate 5, trên khoảng commit của SPEC (mục 2.6). Plan `completed` khi mọi SPEC của đợt đạt DoD.
+DoD is judged per SPEC at Gate 5, over the SPEC's commit range (§2.6). The plan is `completed` when every SPEC of the release meets DoD.
 
-| Tiêu chí | Đạt? |
-| --- | :---: |
-| Mọi lệnh ở cổng verify (mục 11) đạt điều kiện pass, cục bộ và trên CI; lệnh mà bảng lệnh verify ghi chỉ chạy trong CI (e2e trên máy ảo, đánh giá prompt) đạt trên CI | [ ] |
-| Tính năng gọi mô hình ngôn ngữ (bề mặt khác ghi N/A): Prompt Spec §9.1 ghi kết quả đánh giá đạt cho phiên bản prompt phát hành | [ ] |
-| Mọi TC trong SPEC §9 có test đúng file và tên ghi trong bảng, và pass | [ ] |
-| Coverage đạt ngưỡng của `NFR-MAINT` | [ ] |
-| Mã nguồn trong `git diff` trên khoảng commit của SPEC chỉ nằm trong File Diff của SPEC đó; ngoài ra chỉ có tài liệu và plan được cập nhật | [ ] |
-| Không có dependency mới ngoài tech stack đã duyệt hoặc ADR `accepted` | [ ] |
-| SPEC `implemented`, các pha của SPEC `done`; plan `completed` khi mọi SPEC trong `spec_ids` đã `implemented` (plan một SPEC: plan hoàn tất); ADR cho mọi deviation, version tài liệu đã tăng (hoàn tất ở Prompt 6) | [ ] |
-| Bề mặt có giao diện và có HTML đã duyệt (còn lại ghi N/A): màn đã dựng khớp HTML của màn ở `docs/wireframes/html/` về vùng, thành phần, trạng thái và token; khác biệt có ADR, hoặc wireframe đã sửa và duyệt lại theo mục 8 | [ ] |
-| Lệnh kiểm tra sót ở mục 4 trả về rỗng | [ ] |
-| Có roadmap (dự án có Intake cũ hơn `1.4.0` ghi N/A): dòng của SPEC `Xong` với bằng chứng ở mục 4; đối soát ở mục 2.6 không còn lệch; plan chỉ `completed` khi không còn dòng `Chưa làm` của đợt | [ ] |
-| Brownfield (greenfield ghi N/A): tiêu chí DoD ở `brownfield/PLAYBOOK_BROWNFIELD.md` mục 7 đạt | [ ] |
-| Open Questions đã giải quyết hoặc được hoãn có người chịu trách nhiệm | [ ] |
-
-## 11. Cổng verify (Verify Gate)
-
-Danh mục tối thiểu mọi dự án phải có; overlay cung cấp lệnh cụ thể theo stack profile.
-
-| Hạng mục | Điều kiện pass |
+| Criterion | Passed? |
 | --- | --- |
-| Sinh mã (khi stack có client sinh tự động) | Exit code 0; chạy trước mọi hạng mục khác |
-| Lint | 0 lỗi, 0 cảnh báo |
-| Typecheck (ngôn ngữ có kiểm tra kiểu) | 0 lỗi |
+| Every command in the verify gate (§11) meets its pass condition, locally and on CI; a command that the verify-commands table marks as CI-only (e2e on a virtual machine, prompt evaluation) passes on CI | [ ] |
+| A feature that calls a language model (other surfaces record N/A): Prompt Spec §9.1 records a passing evaluation result for the released prompt version | [ ] |
+| Every TC in SPEC §9 has a test in the exact file and name recorded in the table, and passes | [ ] |
+| Coverage meets the threshold of `NFR-MAINT` | [ ] |
+| Source code in `git diff` over the SPEC's commit range lies only in that SPEC's File Diff; otherwise only documents and the plan are updated | [ ] |
+| No new dependency outside the approved tech stack or an `accepted` ADR | [ ] |
+| SPEC `implemented`, the SPEC's phases `done`; plan `completed` when every SPEC in `spec_ids` is `implemented` (a single-SPEC plan: the plan is complete); an ADR for every deviation, the document versions raised (completed at Prompt 6) | [ ] |
+| A surface with a UI and an approved HTML (otherwise record N/A): the built screen matches the screen's HTML in `docs/wireframes/html/` in regions, components, states, and tokens; a difference has an ADR, or the wireframe was fixed and re-approved per §8 | [ ] |
+| The leftover check command in §4 returns empty | [ ] |
+| Roadmap: the SPEC's lines are `Done` with evidence in §4; the reconciliation in §2.6 shows no mismatch; the plan is `completed` only when no `Not started` line of the release remains | [ ] |
+| Brownfield (greenfield records N/A): the DoD criteria in `brownfield/PLAYBOOK_BROWNFIELD.md` §7 are met | [ ] |
+| Open Questions resolved or deferred with an owner | [ ] |
+
+## 11. Verify Gate
+
+The minimum list every project must have; the overlay provides the concrete commands per stack profile.
+
+| Item | Pass condition |
+| --- | --- |
+| Code generation (when the stack has an auto-generated client) | Exit code 0; runs before every other item |
+| Lint | 0 errors, 0 warnings |
+| Typecheck (languages with type checking) | 0 errors |
 | Unit test | 100% pass |
 | Integration test | 100% pass |
-| E2E test | 100% pass; bề mặt không có giao diện hay API riêng ghi N/A kèm lý do |
-| Đánh giá prompt (khi dự án gọi mô hình ngôn ngữ) | Mọi lần chạy đạt ngưỡng của Prompt Spec; chạy trong job đánh giá của CI |
-| Coverage | ≥ ngưỡng của `NFR-MAINT` |
+| E2E test | 100% pass; a surface without a UI or its own API records N/A with a reason |
+| Prompt evaluation (when the project calls a language model) | Every run meets the Prompt Spec's threshold; runs in the CI evaluation job |
+| Coverage | ≥ threshold of `NFR-MAINT` |
 | Build | Exit code 0 |
-| Dependency audit | Không còn lỗ hổng mức high hoặc critical chưa có ADR chấp nhận rủi ro |
+| Dependency audit | No high or critical vulnerability remains without an ADR accepting the risk |
 
 <!-- SLOT: playbook.verify-commands -->
-<!-- slot-hint: Overlay cung cấp bảng lệnh cho từng hạng mục trên theo stack profile. Trong dự án, lệnh đã ghép nằm ở mục lệnh verify của CLAUDE.md. -->
+<!-- slot-hint: The overlay provides the command table for each item above per stack profile. In a project, the assembled commands are in the verify-commands section of CLAUDE.md. -->

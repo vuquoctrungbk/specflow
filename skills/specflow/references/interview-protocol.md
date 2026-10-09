@@ -38,18 +38,19 @@ Each question is about one decision and carries:
 Illustrative only, for an SRS of an ordering app:
 
 ```text
-1. Khách có cần tài khoản để đặt hàng không? (quyết định phạm vi FR xác thực và dữ liệu cá nhân)
-   a. Bắt buộc đăng nhập (đề xuất: brief nói khách xem lại đơn cũ, cần gắn đơn với người)
-   b. Cho đặt hàng khách vãng lai, tài khoản tùy chọn
-   c. Chỉ khách vãng lai, tra đơn bằng mã đơn và email
-   Hoặc trả lời theo cách khác.
+1. Does the customer need an account to place an order? (decides the scope of the authentication FRs and of personal data)
+   a. Sign-in required (recommended: the brief says customers look at past orders, so orders must belong to a person)
+   b. Guest orders allowed, account optional
+   c. Guests only, orders looked up by order number and e-mail
+   Or answer another way.
 ```
 
 At most five questions go in one round, blocking and contract questions first,
 the rest by risk (rule 3). What happens to the rest follows the same rule. At
 stage 0, a contract question that does not block routing, including one beyond
-the five, is recorded as `BLOCKING: Không` with "trả lời trước Gate 1" in its
-reason or impact column; Prompt 1 later turns the unanswered ones into blocking
+the five, is recorded as `BLOCKING: No` with "answer before Gate 1" in its
+reason or impact column (written in the project language, `Không` and
+"trả lời trước Gate 1" in a Vietnamese project); Prompt 1 later turns the unanswered ones into blocking
 questions of the SRS. In later stages, a contract question you could not ask
 stays in `Assumptions & Open Questions` as `BLOCKING`. A question that does
 not touch the contract becomes the safest assumption, recorded.
@@ -74,8 +75,8 @@ as they are.
 ## After the answers
 
 - Put each decision where the template expects it (a scope line, an FR, an
-  NFR target, a Routing Decision field) and note the source ("chủ dự án chọn
-  ở vòng hỏi ngày …") where the template has a source or reason column.
+  NFR target, a Routing Decision field) and note the source ("chosen by the
+  project owner in the question round of …", in the project language) where the template has a source or reason column.
 - Close the answered items in `Assumptions & Open Questions`; keep what is
   still open, with `BLOCKING` where it blocks the gate.
 - If an answer changes an approved upstream document, stop and follow change

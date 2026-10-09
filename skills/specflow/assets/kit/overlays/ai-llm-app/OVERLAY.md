@@ -2,84 +2,84 @@
 doc_type: overlay
 status: stable
 version: 1.0.0
-language: vi-en
+language: en
 surface: ai-llm-app
 ---
 
 # Overlay ai-llm-app
 
-## 1. Bề mặt (Surface)
+## 1. Surface
 
-Tính năng dựa trên mô hình ngôn ngữ lớn (LLM): phân loại, trích xuất, tóm tắt, trả lời theo tài liệu, agent gọi công cụ. Đầu ra của mô hình không tất định, có thể sai hoặc bị dữ liệu đầu vào dẫn dắt (prompt injection), và mỗi lời gọi tốn tiền. Vì vậy prompt được coi là contract: mỗi prompt có một Prompt Spec (`docs/prompts/PROMPT_<NAME>.md` theo [Prompt_Spec_Template.md](Prompt_Spec_Template.md)) với schema đầu ra, chế độ lỗi, guardrail và ngưỡng đánh giá trên bộ dữ liệu. Tính năng AI thường chạy trong một dịch vụ hoặc worker phía server; màn hình hay API đưa kết quả tới người dùng thuộc overlay của bề mặt đó.
+Features built on a large language model (LLM): classification, extraction, summarization, answering from documents, agents that call tools. The model output is non-deterministic, can be wrong, or can be steered by the input data (prompt injection), and every call costs money. So a prompt is treated as a contract: each prompt has a Prompt Spec (`docs/prompts/PROMPT_<NAME>.md` following [Prompt_Spec_Template.md](Prompt_Spec_Template.md)) with the output schema, failure modes, guardrails and the eval thresholds on a dataset. An AI feature usually runs in a server-side service or worker; the screen or API that delivers the result to the user belongs to the overlay of that surface.
 
-| Chọn overlay này khi | Không chọn khi |
+| Choose this overlay when | Do not choose when |
 | --- | --- |
-| Dự án gọi mô hình ngôn ngữ lớn để tạo hoặc đánh giá nội dung, và kết quả ảnh hưởng tới người dùng hay dữ liệu | Chỉ dùng AI lúc lập trình (coding agent) mà sản phẩm không gọi mô hình; mô hình học máy truyền thống tự huấn luyện (chưa có overlay, xử lý theo PLAYBOOK mục 3 quy tắc 4) |
+| The project calls a large language model to create or evaluate content, and the result affects users or data | AI is used only while coding (coding agent) and the product does not call a model; a self-trained traditional machine-learning model (no overlay yet, handle it per PLAYBOOK §3 rule 4) |
 
-Dạng test `CONC` của bề mặt này chạy ở mức integration với nhà cung cấp mô hình giả lập ở tầng `fetch`: cùng một đầu vào được hai worker hoặc hai lần kích hoạt xử lý cùng lúc, và kết quả chỉ được ghi một lần; hoặc nhiều lời gọi song song cùng dùng một ngân sách token và ngân sách không bị vượt. Không dùng sleep để sắp thứ tự.
+The `CONC` test pattern of this surface runs at integration level with a model provider simulated at the `fetch` layer: the same input is processed at the same time by two workers or two triggers, and the result is written only once; or several parallel calls share one token budget and the budget is not exceeded. Do not use sleep to order events.
 
-Ba loại test riêng của bề mặt: `EVAL` chạy prompt thật trên bộ dữ liệu có nhãn và so với ngưỡng; `INJ` chạy bộ dữ liệu tấn công (prompt injection, yêu cầu vượt quyền); `COST` đo token mỗi lời gọi trên bộ dữ liệu. Ba loại này gọi mô hình thật nên chạy trong job riêng của CI khi đổi prompt, guard đầu vào, client mô hình, mô hình hoặc tham số, và theo lịch, không chạy ở mỗi commit.
+Three test types are specific to this surface: `EVAL` runs the real prompt on a labeled dataset and compares with a threshold; `INJ` runs an attack dataset (prompt injection, requests that exceed permissions); `COST` measures tokens per call on the dataset. These three call a real model, so they run in a separate CI job when the prompt, input guard, model client, model or parameters change, and on a schedule, not on every commit.
 
-## 2. Slot được cung cấp (Provided Slots)
+## 2. Provided Slots
 
-| Slot | File | Nội dung | Có `PROFILE-SLOT` |
+| Slot | File | Content | Has `PROFILE-SLOT` |
 | --- | --- | --- | :---: |
-| `srs.constraints.technical` | [srs-sections.md](srs-sections.md) | Nhà cung cấp và họ mô hình, đầu ra có cấu trúc, tính không tất định, độ trễ, ngân sách, dữ liệu gửi tới nhà cung cấp, con người kiểm soát | Không |
-| `srs.external-interfaces` | [srs-sections.md](srs-sections.md) | API của nhà cung cấp mô hình, kho vector, công cụ mà mô hình được gọi, cách kết quả AI tới người dùng | Không |
-| `srs.data-model` | [srs-sections.md](srs-sections.md) | Dữ liệu vào và ra của mô hình, nhật ký lời gọi, bộ dữ liệu đánh giá | Không |
-| `arch.views` | [architecture-sections.md](architecture-sections.md) | Pipeline từ guard đầu vào tới hậu xử lý, C4 Level 2, luồng một lời gọi có thử lại và phương án dự phòng, góc nhìn triển khai | Không |
-| `arch.layout` | [architecture-sections.md](architecture-sections.md) | Quy tắc tầng: prompt, client mô hình, guard, bộ dữ liệu đánh giá | Có |
-| `arch.schema` | [architecture-sections.md](architecture-sections.md) | Schema đầu ra có cấu trúc, bản ghi nhật ký lời gọi, định dạng bộ dữ liệu | Có |
-| `arch.conventions` | [architecture-sections.md](architecture-sections.md) | Quy ước prompt và tham số mô hình, guardrail, xử lý lỗi và dự phòng, ngân sách, cổng đánh giá | Có |
-| `arch.deployment` | [architecture-sections.md](architecture-sections.md) | Khóa API và hạn mức theo môi trường, giám sát token và chi phí, nâng mô hình, công tắc tắt AI | Không |
-| `spec.contract` | [spec-contract-sections.md](spec-contract-sections.md) | Prompt dùng, luồng xử lý và bảng quyết định, ngân sách, ánh xạ lỗi | Có |
-| `spec.test-types` | [spec-contract-sections.md](spec-contract-sections.md) | Unit, integration với nhà cung cấp giả lập, `EVAL`, `INJ`, `COST`, `CONC` | Có |
-| `playbook.verify-commands` | [verify-commands.md](verify-commands.md) | Bảng lệnh verify | Không |
+| `srs.constraints.technical` | [srs-sections.md](srs-sections.md) | Provider and model family, structured output, non-determinism, latency, budget, data sent to the provider, human control | No |
+| `srs.external-interfaces` | [srs-sections.md](srs-sections.md) | Model provider API, vector store, tools the model may call, how AI results reach the user | No |
+| `srs.data-model` | [srs-sections.md](srs-sections.md) | Model input and output data, call log, eval datasets | No |
+| `arch.views` | [architecture-sections.md](architecture-sections.md) | Pipeline from input guard to post-processing, C4 Level 2, flow of one call with retry and fallback, deployment view | No |
+| `arch.layout` | [architecture-sections.md](architecture-sections.md) | Layering rules: prompt, model client, guard, eval dataset | Yes |
+| `arch.schema` | [architecture-sections.md](architecture-sections.md) | Structured output schema, call log record, dataset format | Yes |
+| `arch.conventions` | [architecture-sections.md](architecture-sections.md) | Prompt and model parameter conventions, guardrails, error handling and fallback, budget, eval gate | Yes |
+| `arch.deployment` | [architecture-sections.md](architecture-sections.md) | API keys and limits per environment, token and cost monitoring, model upgrade, AI kill switch | No |
+| `spec.contract` | [spec-contract-sections.md](spec-contract-sections.md) | Prompts used, processing flow and decision table, budget, error mapping | Yes |
+| `spec.test-types` | [spec-contract-sections.md](spec-contract-sections.md) | Unit, integration with a simulated provider, `EVAL`, `INJ`, `COST`, `CONC` | Yes |
+| `playbook.verify-commands` | [verify-commands.md](verify-commands.md) | Verify command table | No |
 
-## 3. Thứ tự đọc khi ghép (Assembly Order)
+## 3. Assembly Order
 
-1. File core của giai đoạn (`core/01`, `core/02`, `core/04`, `core/06`).
-2. File này.
-3. File section chứa khối SLOT-CONTENT tương ứng ở bảng mục 2.
-4. Stack profile đã chọn trong Intake: bảng "Giá trị placeholder", mục `(Tech Stack)` và các khối PROFILE-CONTENT.
-5. Rule của bề mặt ở `agent-rules/` khi tạo `.claude/rules/` (Giai đoạn 2).
-6. Giai đoạn 1: ID `PROMPT-{MOD}-NNN` của mỗi prompt đặt ở bảng bộ dữ liệu đánh giá của SRS §4.1. Giai đoạn 3: mỗi prompt mới hoặc prompt đổi nội dung có một Prompt Spec từ [Prompt_Spec_Template.md](Prompt_Spec_Template.md), được duyệt trước khi viết SPEC dùng nó (PLAYBOOK mục 2.4).
+1. The stage's core files (`core/01`, `core/02`, `core/04`, `core/06`).
+2. This file.
+3. The section file that holds the matching SLOT-CONTENT block in the table in §2.
+4. The stack profile chosen in the Intake: the "Placeholder values" table, the `(Tech Stack)` section and the PROFILE-CONTENT blocks.
+5. The surface rules in `agent-rules/` when creating `.claude/rules/` (Stage 2).
+6. Stage 1: the `PROMPT-{MOD}-NNN` ID of each prompt is set in the eval dataset table of SRS §4.1. Stage 3: each new prompt or prompt with changed content has a Prompt Spec from [Prompt_Spec_Template.md](Prompt_Spec_Template.md), approved before the SPEC that uses it is written (PLAYBOOK §2.4).
 
-Quy tắc ghép chi tiết ở CONVENTIONS mục 2 và PLAYBOOK mục 4.
+Detailed assembly rules are in CONVENTIONS §2 and PLAYBOOK §4.
 
-## 4. Stack profile (Stack Profiles)
+## 4. Stack Profiles
 
 | Profile | Stack | File |
 | --- | --- | --- |
-| `typescript-anthropic-sdk` | TypeScript trên Node.js, Anthropic TypeScript SDK với đầu ra có cấu trúc qua Zod, Vitest | [stack-profiles/typescript-anthropic-sdk.md](stack-profiles/typescript-anthropic-sdk.md) |
+| `typescript-anthropic-sdk` | TypeScript on Node.js, Anthropic TypeScript SDK with structured output via Zod, Vitest | [stack-profiles/typescript-anthropic-sdk.md](stack-profiles/typescript-anthropic-sdk.md) |
 
-Stack khác chưa có profile (ví dụ Python, nhà cung cấp mô hình khác): đề xuất giá trị placeholder và nội dung profile trong ARCHITECTURE §2 kèm ADR (PLAYBOOK mục 3, quy tắc 5).
+Other stacks have no profile yet (for example Python, another model provider): propose the placeholder values and the profile content in ARCHITECTURE §2 together with an ADR (PLAYBOOK §3, rule 5).
 
-## 5. Ghép với backend-api (Combining with backend-api)
+## 5. Combining with backend-api
 
-Tính năng AI thường nằm trong một backend. Khi dự án chọn cả `backend-api` và `ai-llm-app` trong cùng một repo:
+An AI feature usually lives inside a backend. When the project chooses both `backend-api` and `ai-llm-app` in the same repo:
 
-- Cây thư mục, cấu hình Vitest và oxlint, lệnh verify lấy theo profile của backend; client mô hình, module prompt, guard và schema đầu ra đặt trong thư mục phân hệ của backend theo quy tắc tầng của cả hai overlay.
-- Khối PROFILE-SLOT `arch.layout` của `ai-llm-app` ghi N/A kèm lý do "dùng cây thư mục của profile backend"; `arch.schema`, `arch.conventions`, `spec.contract`, `spec.test-types` của profile AI vẫn chèn, với đường dẫn đổi theo cây của backend.
-- Thêm một project `eval` vào cấu hình Vitest của backend cho test `EVAL`, `INJ`, `COST`, và thêm dòng đánh giá prompt vào bảng lệnh verify; bảng lệnh verify của dự án chỉ có một bản.
-- Mã lỗi của hai bề mặt nằm chung một Error Code Registry; mã của tác vụ AI trả cho client qua envelope của backend khi tác vụ chạy trong request.
+- The directory tree, the Vitest and oxlint configuration, and the verify commands come from the backend profile; the model client, prompt modules, guards and output schemas go in the backend's module directory according to the layering rules of both overlays.
+- The `arch.layout` PROFILE-SLOT block of `ai-llm-app` is N/A with the reason "use the directory tree of the backend profile"; `arch.schema`, `arch.conventions`, `spec.contract`, `spec.test-types` of the AI profile are still inserted, with paths changed to follow the backend's tree.
+- Add an `eval` project to the backend's Vitest configuration for the `EVAL`, `INJ`, `COST` tests, and add a prompt eval row to the verify command table; the project has only one verify command table.
+- Error codes of both surfaces share one Error Code Registry; the code of an AI task is returned to the client through the backend's envelope when the task runs inside a request.
 
-## 6. Rule cho agent (Agent Rules)
+## 6. Agent Rules
 
-| File | Chép thành | Áp dụng cho |
+| File | Copy as | Applies to |
 | --- | --- | --- |
-| [agent-rules/ai-golden-rules.md](agent-rules/ai-golden-rules.md) | `.claude/rules/ai-golden-rules.md` | Mã gọi mô hình, prompt, guard và bộ dữ liệu đánh giá (`paths` theo cây thư mục ở ARCHITECTURE §4) |
+| [agent-rules/ai-golden-rules.md](agent-rules/ai-golden-rules.md) | `.claude/rules/ai-golden-rules.md` | Model-calling code, prompts, guards and eval datasets (`paths` follow the directory tree in ARCHITECTURE §4) |
 
-## 7. Checklist riêng của bề mặt (Surface Checklist)
+## 7. Surface Checklist
 
-Tự kiểm cùng checklist "Overlay đã áp" ở PLAYBOOK mục 4.
+Self-check together with the "Overlay applied" checklist in PLAYBOOK §4.
 
-| Kiểm tra | Tài liệu | Đạt |
+| Check | Document | Passed |
 | --- | --- | :---: |
-| Mỗi tính năng AI có ngưỡng chất lượng đo được trên bộ dữ liệu, ngân sách token và độ trễ, và hành vi khi mô hình sai hoặc không sẵn sàng | SRS §2.5, §7 | [ ] |
-| Dữ liệu gửi tới nhà cung cấp mô hình đã liệt kê; dữ liệu cá nhân được che hoặc có căn cứ pháp lý; chính sách lưu dữ liệu của nhà cung cấp đã ghi | SRS §3, §4; ARCHITECTURE §9 | [ ] |
-| ID mô hình chính xác trong ARCHITECTURE §2.1 và được một ADR bao phủ; nâng mô hình đi qua cổng đánh giá | ARCHITECTURE §2, §8, §12 | [ ] |
-| Mỗi prompt có Prompt Spec với schema đầu ra, chế độ lỗi, guardrail, chỉ số đánh giá và ngưỡng | `docs/prompts/` | [ ] |
-| Đầu ra của mô hình luôn qua schema và quy tắc nghiệp vụ trước khi dùng; đầu ra không hợp lệ có đường dự phòng | ARCHITECTURE §7; SPEC §3 | [ ] |
-| Bộ dữ liệu đánh giá có ít nhất 20 mẫu, không chứa dữ liệu cá nhân thật; có bộ dữ liệu tấn công cho prompt nhận nội dung không tin cậy | SRS §4; Prompt Spec | [ ] |
-| SPEC có test `EVAL`, `INJ`, `COST` theo Prompt Spec và test `CONC` cho mỗi bất biến | SPEC §9 | [ ] |
+| Each AI feature has a measurable quality threshold on a dataset, a token budget and latency, and a behavior for when the model is wrong or unavailable | SRS §2.5, §7 | [ ] |
+| Data sent to the model provider is listed; personal data is masked or has a legal basis; the provider's data retention policy is recorded | SRS §3, §4; ARCHITECTURE §9 | [ ] |
+| The exact model ID is in ARCHITECTURE §2.1 and covered by an ADR; a model upgrade goes through the eval gate | ARCHITECTURE §2, §8, §12 | [ ] |
+| Each prompt has a Prompt Spec with output schema, failure modes, guardrails, eval metric and threshold | `docs/prompts/` | [ ] |
+| Model output always passes the schema and business rules before use; invalid output has a fallback path | ARCHITECTURE §7; SPEC §3 | [ ] |
+| The eval dataset has at least 20 samples and contains no real personal data; there is an attack dataset for prompts that receive untrusted content | SRS §4; Prompt Spec | [ ] |
+| The SPEC has `EVAL`, `INJ`, `COST` tests per the Prompt Spec and a `CONC` test for each invariant | SPEC §9 | [ ] |

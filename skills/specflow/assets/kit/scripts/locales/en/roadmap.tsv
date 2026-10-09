@@ -1,0 +1,23 @@
+# English labels for roadmap.tsv (language: en). Same keys as locales/vi/roadmap.tsv.
+roadmap_todo	Not started
+roadmap_doing	In progress
+roadmap_done	Done
+roadmap_confirmed	Confirmed
+roadmap_dropped	Dropped
+roadmap_none	None
+roadmap_not_yet	Not yet
+roadmap_none_word	None
+roadmap_kept	Unchanged
+roadmap_tag_format	Tag format
+roadmap_decision_wait	Pending
+roadmap_decision_cr	Raise change request
+roadmap_sec_progress	Progress
+roadmap_sec_queue	Work Queue
+roadmap_sec_new	New Requests
+roadmap_sec_done	Done
+roadmap_sec_milestones	Milestones
+roadmap_sub_fr	Functional Requirements
+roadmap_sub_nfr	Must NFRs
+roadmap_doing_line	- In progress:
+roadmap_to	to
+roadmap_group	Group

@@ -1,0 +1,16 @@
+# English labels for docs.tsv (language: en). Same keys as locales/vi/docs.tsv.
+docs_risk_reason_label	Risk level:
+docs_high_risk_area	High-risk areas
+docs_none_word	None
+docs_col_release	Release
+docs_wave	Release
+docs_by_flow	In flow
+docs_read_first	Read First
+docs_must_not_touch	MUST NOT Touch
+docs_new_files	New Files
+docs_col_method_path	Method and path
+docs_destroy_verbs	delete|remove|drop
+docs_destroy_objects	column|table|constraint|index|model|field|enum|key|endpoint|path
+docs_destroy_phrases	change type|change the type|rename|migrate data
+docs_high_names	signin|signup|login|logout|password|authentication|authorization|permission|role|payment|billing|invoice|refund|profile|account|log in|log out|sign in|sign up
+docs_high_names_match	word

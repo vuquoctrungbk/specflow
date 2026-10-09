@@ -1,27 +1,27 @@
 # Starter fullstack-web
 
-Bộ template đã ghép sẵn cho dự án có hai bề mặt `backend-api` và `frontend-web` trong cùng một bộ tài liệu (Routing Decision: `overlays: [backend-api, frontend-web]`, `starter: fullstack-web`). Mỗi file là template lõi trong `core/` với các slot đã thay bằng nội dung của overlay [`backend-api`](../../overlays/backend-api/OVERLAY.md) và [`frontend-web`](../../overlays/frontend-web/OVERLAY.md) theo quy tắc nhiều overlay ở CONVENTIONS mục 2: slot có khối của cả hai bề mặt được tách bằng heading `Backend API` và `Frontend Web` ở cấp khối của slot, heading bên trong hạ một cấp. Starter không gắn stack profile: dòng `PROFILE-SLOT` và placeholder nguồn `Profile` được giữ lại để agent điền bằng profile của từng bề mặt chọn trong Intake.
+Pre-assembled templates for a project with two surfaces, `backend-api` and `frontend-web`, in one set of documents (Routing Decision: `overlays: [backend-api, frontend-web]`, `starter: fullstack-web`). Each file is a core template in `core/` with its slots replaced by the content of the [`backend-api`](../../overlays/backend-api/OVERLAY.md) and [`frontend-web`](../../overlays/frontend-web/OVERLAY.md) overlays per the multiple-overlay rule in CONVENTIONS §2: a slot that has blocks from both surfaces separates them with the headings `Backend API` and `Frontend Web` at the block level of the slot, and the headings inside are lowered by one level. The starter is not tied to a stack profile: the `PROFILE-SLOT` lines and the `Profile`-sourced placeholders are kept so that the agent fills them with the profile of each surface chosen in the Intake.
 
-## File trong starter
+## Files in the starter
 
-| File | Ghép từ | Đầu ra trong dự án | Giai đoạn |
+| File | Assembled from | Output in the project | Stage |
 | --- | --- | --- | --- |
-| [SRS_Template.md](SRS_Template.md) | `core/01_SRS_Template.md` + `srs-sections.md` của hai overlay | `docs/srs/SRS.md` hoặc SRS modular | 1 |
-| [ARCHITECTURE_Template.md](ARCHITECTURE_Template.md) | `core/02_Architecture_Core_Template.md` + `architecture-sections.md` của hai overlay | `docs/ARCHITECTURE.md` | 2 |
-| [SPEC_Backend_Template.md](SPEC_Backend_Template.md) | `core/04_Spec_Core_Template.md` + `overlays/backend-api/spec-contract-sections.md` | `docs/specs/SPEC_<FEATURE_KEY>.md` cho tính năng của API | 3 |
-| [SPEC_Frontend_Template.md](SPEC_Frontend_Template.md) | `core/04_Spec_Core_Template.md` + `overlays/frontend-web/spec-contract-sections.md` | `docs/specs/SPEC_<FEATURE_KEY>.md` cho màn hình | 3 |
-| [CLAUDE.md.template](CLAUDE.md.template) | `core/06_Agent_Context_Template.md` + `verify-commands.md` của hai overlay + rule của hai overlay (Phụ lục A.3, A.4) | `CLAUDE.md`, `.claude/rules/` | 0 và 2 |
+| [SRS_Template.md](SRS_Template.md) | `core/01_SRS_Template.md` + `srs-sections.md` of the two overlays | `docs/srs/SRS.md` or a modular SRS | 1 |
+| [ARCHITECTURE_Template.md](ARCHITECTURE_Template.md) | `core/02_Architecture_Core_Template.md` + `architecture-sections.md` of the two overlays | `docs/ARCHITECTURE.md` | 2 |
+| [SPEC_Backend_Template.md](SPEC_Backend_Template.md) | `core/04_Spec_Core_Template.md` + `overlays/backend-api/spec-contract-sections.md` | `docs/specs/SPEC_<FEATURE_KEY>.md` for an API feature | 3 |
+| [SPEC_Frontend_Template.md](SPEC_Frontend_Template.md) | `core/04_Spec_Core_Template.md` + `overlays/frontend-web/spec-contract-sections.md` | `docs/specs/SPEC_<FEATURE_KEY>.md` for a screen | 3 |
+| [CLAUDE.md.template](CLAUDE.md.template) | `core/06_Agent_Context_Template.md` + `verify-commands.md` of the two overlays + the rules of the two overlays (Appendix A.3, A.4) | `CLAUDE.md`, `.claude/rules/` | 0 and 2 |
 
-Template dùng thẳng từ core, không qua starter: [Intake](../../core/00_Project_Intake_Template.md), [Wireframe](../../core/07_Wireframe_Template/00_Wireframe_Index_Template.md) (Giai đoạn 1W, cho bề mặt `frontend-web`), [Hệ thống thiết kế](../../core/07_Wireframe_Template/Design_System_Template.md) và [token](../../core/07_Wireframe_Template/Design_Tokens_Template.json) (cùng Giai đoạn 1W), [ADR](../../core/03_ADR_Template.md), [Implementation Plan](../../core/05_Implementation_Plan_Template/plan.md).
+Templates used straight from core, not through the starter: [Intake](../../core/00_Project_Intake_Template.md), [Wireframe](../../core/07_Wireframe_Template/00_Wireframe_Index_Template.md) (Stage 1W, for the `frontend-web` surface), [Design system](../../core/07_Wireframe_Template/Design_System_Template.md) and [tokens](../../core/07_Wireframe_Template/Design_Tokens_Template.json) (also Stage 1W), [ADR](../../core/03_ADR_Template.md), [Roadmap](../../core/08_Roadmap_Template.md), [Implementation Plan](../../core/05_Implementation_Plan_Template/plan.md).
 
-## Cách dùng
+## Usage
 
-1. Cài bộ mẫu vào `specflow/` theo README gốc; starter nằm ở `specflow/starters/fullstack-web/`.
-2. Chạy prompt của `PROMPTS.md`; prompt tự chọn file của starter khi Routing Decision có `starter: fullstack-web`. SPEC của tính năng API dùng `SPEC_Backend_Template.md`; SPEC của màn hình dùng `SPEC_Frontend_Template.md`. Một tính năng chạm cả hai bề mặt có hai SPEC, SPEC giao diện ghi SPEC API trong `parent` và ở mục Phụ thuộc.
-3. Khi chép một file starter sang dự án, áp stack profile của từng bề mặt (PLAYBOOK mục 4, bước 3): mỗi dòng `PROFILE-SLOT` nằm dưới heading của một bề mặt được thay bằng khối `PROFILE-CONTENT` cùng ID trong profile của bề mặt đó, hạ heading của khối một cấp; placeholder nguồn `Profile` lấy giá trị từ profile của bề mặt chứa nó, nên cùng một placeholder như `{{LINT_CMD}}` có giá trị khác nhau dưới `Backend API` và `Frontend Web`.
-4. Hai bề mặt trong một repo đặt mã nguồn ở hai thư mục riêng, ghi ở ARCHITECTURE §4; lệnh verify của mỗi bề mặt chạy trong thư mục của bề mặt đó, và `paths` của rule trong `.claude/rules/` trỏ đúng thư mục ấy. Bề mặt web sinh kiểu API từ `openapi/openapi.yaml` của bề mặt API; nếu profile của bề mặt web đọc một đường dẫn khác, bước sinh mã chép file này sang đường dẫn đó và ARCHITECTURE §5 ghi cách làm.
+1. Install the kit into `specflow/` per PLAYBOOK §1.4; the starter is at `specflow/starters/fullstack-web/`.
+2. Run the prompts of `PROMPTS.md`; the prompts pick the starter files by themselves when the Routing Decision has `starter: fullstack-web`. The SPEC of an API feature uses `SPEC_Backend_Template.md`; the SPEC of a screen uses `SPEC_Frontend_Template.md`. A feature that touches both surfaces has two SPECs; the UI SPEC records the API SPEC in `parent` and in Dependencies (§1.4).
+3. When copying a starter file into the project, apply the stack profile of each surface (PLAYBOOK §4, step 3): each `PROFILE-SLOT` line under the heading of a surface is replaced by the `PROFILE-CONTENT` block of the same ID in the profile of that surface, with the heading of the block lowered by one level; the `Profile`-sourced placeholders take their values from the profile of the surface that contains them, so the same placeholder such as `{{LINT_CMD}}` has different values under `Backend API` and under `Frontend Web`.
+4. Two surfaces in one repo put their source code in two separate directories, recorded in ARCHITECTURE §4; the verify commands of each surface run in the directory of that surface, and the `paths` of the rules in `.claude/rules/` point to that directory. The web surface generates its API types from `openapi/openapi.yaml` of the API surface; if the profile of the web surface reads another path, the generation step copies this file to that path and ARCHITECTURE §5 records how.
 
-## Bảo trì
+## Maintenance
 
-- Không sửa file trong starter. Sửa `core/` hoặc overlay, rồi ghép lại starter theo CONVENTIONS mục 2; frontmatter của starter (`overlays`, `assembled_from`, `template_version`) cũng là kết quả của phép ghép.
-- `scripts/check-templates.sh` tự ghép lại từng file starter từ nguồn khai báo trong `assembled_from` và `overlays`, rồi báo lỗi khi file trong starter khác kết quả ghép dù một ký tự.
+- Do not edit the files in the starter. Edit `core/` or the overlays, then re-assemble the starter per CONVENTIONS §2; the frontmatter of the starter (`overlays`, `assembled_from`, `template_version`) is also a result of the assembly.
+- `scripts/check-templates.sh` re-assembles each starter file from the sources declared in `assembled_from` and `overlays`, and reports an error when a file in the starter differs from the assembly result by even one character.

@@ -3,81 +3,81 @@ doc_type: gap-analysis
 status: draft
 version: 0.1.0
 template_version: 1.0.0
-language: vi-en
+language: en
 parent: [docs/srs/SRS.md, docs/brownfield/CODEBASE_SUMMARY.md, docs/brownfield/AS_IS_ARCHITECTURE.md, docs/brownfield/REGRESSION_BASELINE.md]
 overlays: []
 assembled_from: []
 ---
 
-# Phân tích khoảng cách (Gap Analysis): {{PROJECT_NAME}}
+# Gap Analysis: {{PROJECT_NAME}}
 
-<!-- fill: Chép thành docs/brownfield/GAP_ANALYSIS.md ở bước 0d, sau khi SRS to-be đã viết (brownfield/PLAYBOOK_BROWNFIELD.md). SRS modular thì parent thay docs/srs/SRS.md bằng docs/srs/00_SRS_MASTER.md và các SRS module. SRS to-be mô tả toàn bộ hệ thống đích, kể cả phần giữ nguyên, nên mọi FR và NFR của SRS to-be có một hàng ở §2 hoặc §3. Mỗi hàng so một yêu cầu to-be với hiện trạng có bằng chứng; kết luận của tài liệu là danh sách việc cần làm ở §6 cho Architecture to-be và Migration Plan. Sau Gate 1, tài liệu chỉ đổi qua quy trình thay đổi ở PLAYBOOK mục 8. Frontmatter assembled_from ghi "brownfield/03_Gap_Analysis_Template.md@<template_version>". -->
+<!-- fill: Copy to docs/brownfield/GAP_ANALYSIS.md at step 0d, after the to-be SRS has been written (brownfield/PLAYBOOK_BROWNFIELD.md). For a modular SRS, parent replaces docs/srs/SRS.md with docs/srs/00_SRS_MASTER.md and the module SRS files. The to-be SRS describes the whole target system, including the parts that stay unchanged, so every FR and NFR of the to-be SRS gets one row in §2 or §3. Each row compares one to-be requirement with the current state, with evidence; the conclusion of the document is the list of work in §6 for the to-be Architecture and the Migration Plan. After Gate 1, the document changes only through the change process in PLAYBOOK §8. The frontmatter assembled_from records "brownfield/03_Gap_Analysis_Template.md@<template_version>". -->
 
-## 1. Phạm vi so sánh (Comparison Scope)
+## 1. Comparison Scope
 
-### 1.1. Nguồn so sánh (Sources)
+### 1.1. Sources
 
-| Hạng mục | Giá trị |
+| Item | Value |
 | --- | --- |
-| SRS to-be | <!-- fill: đường dẫn và version --> |
-| Hiện trạng | <!-- fill: Codebase Summary, As-Is Architecture và Regression Baseline, version của từng tài liệu và commit đo --> |
+| To-be SRS | <!-- fill: path and version --> |
+| Current state | <!-- fill: Codebase Summary, As-Is Architecture and Regression Baseline, the version of each document and the measured commit --> |
 
-### 1.2. Ánh xạ phân hệ (Module Mapping)
+### 1.2. Module Mapping
 
-<!-- fill: Mỗi mã phân hệ ở Codebase Summary §3 và mỗi phân hệ ở SRS to-be §1.2 có mặt ít nhất một lần. Phân hệ giữ nguyên dùng lại đúng mã as-is; phân hệ mới có mã mới; phân hệ tách hoặc gộp ghi một hàng cho mỗi cặp mã. Test REG giữ mã as-is trong TC ID, không đánh số lại; cột cuối cho biết test REG của mã as-is nay thuộc phân hệ to-be nào. -->
+<!-- fill: Every module code in Codebase Summary §3 and every module in to-be SRS §1.2 appears at least once. A module that stays unchanged reuses its exact as-is code; a new module has a new code; a module that is split or merged gets one row for each pair of codes. A REG test keeps its as-is code in the TC ID and is not renumbered; the last column says which to-be module the REG tests of the as-is code now belong to. -->
 
-| Mã as-is (Codebase Summary §3) | Mã to-be (SRS §1.2) | Quan hệ | Test REG thuộc phân hệ to-be |
+| As-is code (Codebase Summary §3) | To-be code (SRS §1.2) | Relation | To-be module of the REG tests |
 | --- | --- | --- | --- |
-| `{{MODULE_CODE}}` | `{{MODULE_CODE}}` | <!-- fill: chọn một: giữ nguyên \| tách \| gộp \| mới \| bỏ --> | <!-- fill: mã to-be, hoặc N/A khi không có test REG --> |
+| `{{MODULE_CODE}}` | `{{MODULE_CODE}}` | <!-- fill: choose one: unchanged \| split \| merged \| new \| removed --> | <!-- fill: to-be code, or N/A when there are no REG tests --> |
 
-## 2. Yêu cầu chức năng (Functional Gaps)
+## 2. Functional Gaps
 
-| FR ID | Hiện trạng | Bằng chứng | Việc cần làm | Rủi ro | RB bị ảnh hưởng |
+| FR ID | Current state | Evidence | Work needed | Risk | Affected RB |
 | --- | --- | --- | --- | --- | --- |
-| FR-{{MODULE_CODE}}-001 | <!-- fill: chọn một: Có \| Một phần \| Không --> | <!-- fill: file:dòng hoặc RB ID --> | <!-- fill: chọn một: Giữ nguyên \| Sửa \| Viết mới \| Bỏ; kèm mô tả ngắn --> | <!-- fill --> | <!-- fill: RB ID, hoặc Không có --> |
+| FR-{{MODULE_CODE}}-001 | <!-- fill: choose one: Yes \| Partial \| No --> | <!-- fill: file:line or RB ID --> | <!-- fill: choose one: Unchanged \| Modify \| Write new \| Remove; with a short description --> | <!-- fill --> | <!-- fill: RB ID, or None --> |
 
-## 3. Yêu cầu phi chức năng (Non-functional Gaps)
+## 3. Non-functional Gaps
 
-| NFR ID | Ngưỡng to-be | Đo hiện tại | Cách đo | Khoảng cách | Việc cần làm |
+| NFR ID | To-be threshold | Current measurement | How measured | Gap | Work needed |
 | --- | --- | --- | --- | --- | --- |
-| NFR-PERF-01 | <!-- fill: lấy từ SRS §7 --> | <!-- fill: số đo thật, hoặc Chưa đo --> | <!-- fill --> | <!-- fill --> | <!-- fill --> |
+| NFR-PERF-01 | <!-- fill: taken from SRS §7 --> | <!-- fill: the real measurement, or Not measured --> | <!-- fill --> | <!-- fill --> | <!-- fill --> |
 
-## 4. Dữ liệu (Data Gaps)
+## 4. Data Gaps
 
-| Thực thể to-be (SRS §4) | Hiện trạng (As-Is Architecture §5) | Khác biệt | Cần di chuyển dữ liệu |
+| To-be entity (SRS §4) | Current state (As-Is Architecture §5) | Difference | Data migration needed |
 | --- | --- | --- | :---: |
-| {{ENTITY_NAME}} | <!-- fill --> | <!-- fill: bảng, cột, kiểu, ràng buộc khác nhau --> | <!-- fill: chọn một: Có \| Không --> |
+| {{ENTITY_NAME}} | <!-- fill --> | <!-- fill: differences in table, column, type, constraint --> | <!-- fill: choose one: Yes \| No --> |
 
-## 5. Hành vi hiện có sẽ thay đổi (Behavior Changes)
+## 5. Behavior Changes
 
-<!-- fill: Mỗi RB mà SRS to-be đổi hoặc bỏ một hàng. Hàng ở đây cần chủ dự án duyệt ở Gate 1; RB không có mặt ở bảng này MUST giữ nguyên. Sau khi Gate 1 duyệt, bước đầu của Giai đoạn 2 ghi trạng thái Đổi đã duyệt hoặc Bỏ đã duyệt cho các RB này ở Regression Baseline §3. RB bị đổi mà SRS to-be không nêu lý do: ghi câu hỏi BLOCKING ở §8. -->
+<!-- fill: Every RB that the to-be SRS changes or removes gets one row. A row here needs the project owner's approval at Gate 1; an RB that does not appear in this table MUST stay unchanged. After Gate 1 approves, the first step of Stage 2 records the status Change approved or Removal approved for these RB in Regression Baseline §3. For an RB that is changed without a reason in the to-be SRS: record a BLOCKING question in §8. -->
 
-| RB ID | Loại | Hành vi hiện tại | Hành vi to-be | Lý do | Người dùng hay hệ thống bị ảnh hưởng |
+| RB ID | Kind | Current behavior | To-be behavior | Reason | Users or systems affected |
 | --- | --- | --- | --- | --- | --- |
-| RB-001 | <!-- fill: chọn một: Đổi \| Bỏ --> | <!-- fill --> | <!-- fill: hoặc Không còn --> | <!-- fill: FR, NFR hoặc BR liên quan --> | <!-- fill --> |
+| RB-001 | <!-- fill: choose one: Change \| Removal --> | <!-- fill --> | <!-- fill: or Gone --> | <!-- fill: related FR, NFR or BR --> | <!-- fill --> |
 
-## 6. Tổng hợp ưu tiên (Prioritized Summary)
+## 6. Prioritized Summary
 
-| # | Việc cần làm | Nguồn (FR, NFR, dữ liệu, RB) | Ưu tiên | Phụ thuộc |
+| # | Work needed | Source (FR, NFR, data, RB) | Priority | Dependencies |
 | --- | --- | --- | --- | --- |
-| 1 | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: P1 \| P2 \| P3 --> | <!-- fill --> |
+| 1 | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: P1 \| P2 \| P3 --> | <!-- fill --> |
 
-## 7. Phạm vi tối thiểu cho repo nhỏ (Minimal Scope)
+## 7. Minimal Scope
 
-<!-- fill: Repo dưới 5.000 dòng mã (Codebase Summary §1) được phép: §3 chỉ gồm NFR có ngưỡng khác hiện trạng; §4 ghi N/A kèm lý do khi schema không đổi. §1, §2, §5, §6 luôn đầy đủ. Ghi quyết định vào bảng; repo lớn hơn ghi Không. -->
+<!-- fill: A repo under 5,000 lines of code (Codebase Summary §1) is allowed: §3 holds only the NFR whose threshold differs from the current state; §4 records N/A with a reason when the schema does not change. §1, §2, §5 and §6 are always complete. Record the decision in the table; a larger repo records No. -->
 
-| Áp dụng phạm vi tối thiểu | Căn cứ |
+| Minimal scope applies | Basis |
 | --- | --- |
-| <!-- fill: chọn một: Có \| Không --> | <!-- fill: số dòng mã ở Codebase Summary §1 --> |
+| <!-- fill: choose one: Yes \| No --> | <!-- fill: line count of code in Codebase Summary §1 --> |
 
-## 8. Giả định và câu hỏi mở (Assumptions & Open Questions)
+## 8. Assumptions & Open Questions
 
-| ID | Loại | Nội dung | Lý do hoặc ảnh hưởng | BLOCKING | Người trả lời |
+| ID | Type | Content | Reason or impact | BLOCKING | Respondent |
 | --- | --- | --- | --- | :---: | --- |
-| AQ-01 | <!-- fill: chọn một: Giả định \| Câu hỏi --> | <!-- fill --> | <!-- fill --> | <!-- fill: chọn một: Có \| Không --> | <!-- fill --> |
+| AQ-01 | <!-- fill: choose one: Assumption \| Question --> | <!-- fill --> | <!-- fill --> | <!-- fill: choose one: Yes \| No --> | <!-- fill --> |
 
-## 9. Lịch sử phiên bản (Version History)
+## 9. Version History
 
-| Phiên bản | Ngày | Người sửa | Nội dung thay đổi | Lý do và người yêu cầu | Người duyệt |
+| Version | Date | Author | Change | Reason and requester | Approver |
 | --- | --- | --- | --- | --- | --- |
-| 0.1.0 | {{DATE}} | {{AUTHOR}} | Bản khởi tạo | Khởi tạo theo pipeline brownfield | Chưa duyệt |
+| 0.1.0 | {{DATE}} | {{AUTHOR}} | Initial version | Created by the brownfield pipeline | Not approved |

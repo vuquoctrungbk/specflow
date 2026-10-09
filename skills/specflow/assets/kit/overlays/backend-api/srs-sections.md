@@ -2,62 +2,62 @@
 doc_type: overlay-section
 status: stable
 version: 1.0.0
-language: vi-en
+language: en
 surface: backend-api
 ---
 
-# Overlay backend-api: khối cho SRS
+# Overlay backend-api: blocks for the SRS
 
 <!-- SLOT-CONTENT: srs.constraints.technical -->
-| Ràng buộc | Nội dung |
+| Constraint | Content |
 | --- | --- |
-| Stack | Theo stack profile `{{STACK_PROFILE}}` đã chốt ở Intake mục 14; phiên bản cụ thể ở ARCHITECTURE §2 |
-| Kiểu dữ liệu nghiêm ngặt | Ngôn ngữ có kiểm tra kiểu tĩnh, bật chế độ nghiêm ngặt; quy tắc cụ thể ở ARCHITECTURE và `.claude/rules/` |
-| Toàn vẹn giao dịch | Mọi thao tác nghiệp vụ thay đổi trạng thái từ hai bản ghi liên quan trở lên chạy trong một database transaction; mức isolation mặc định chốt ở ARCHITECTURE §7; SPEC nêu rõ khi cần mức cao hơn hoặc khóa dòng |
-| Giao thức | API chỉ phục vụ qua HTTPS; <!-- fill: phiên bản TLS tối thiểu, ví dụ TLS 1.2 --> |
-| Thời gian | Lưu và truyền theo UTC, định dạng ISO 8601 |
-| Tiền tệ | <!-- fill: đơn vị tiền tệ và biểu diễn chính xác; ghi N/A nếu hệ thống không xử lý tiền --> |
+| Stack | Per the stack profile `{{STACK_PROFILE}}` chosen at Intake §14; specific versions in ARCHITECTURE §2 |
+| Strict typing | A language with static type checking, strict mode on; specific rules in ARCHITECTURE and `.claude/rules/` |
+| Transaction integrity | Every business operation that changes the state of two or more related records runs in one database transaction; the default isolation level is fixed in ARCHITECTURE §7; the SPEC states it explicitly when a higher level or a row lock is needed |
+| Protocol | The API is served over HTTPS only; <!-- fill: minimum TLS version, for example TLS 1.2 --> |
+| Time | Stored and transmitted in UTC, ISO 8601 format |
+| Currency | <!-- fill: currency unit and exact representation; write N/A if the system does not handle money --> |
 <!-- /SLOT-CONTENT -->
 
 <!-- SLOT-CONTENT: srs.external-interfaces -->
-### Giao diện phần mềm (Software Interfaces)
+### Software Interfaces
 
-<!-- fill: Giữ hàng áp dụng, ghi "Không" ở cột Áp dụng cho hàng còn lại thay vì xóa. -->
+<!-- fill: Keep the rows that apply, write "No" in the Applies column of the remaining rows instead of deleting them. -->
 
-| Hệ thống | Mục đích | Giao thức và định dạng | Xác thực và an toàn | Áp dụng |
+| System | Purpose | Protocol and format | Authentication and safety | Applies |
 | --- | --- | --- | --- | :---: |
-| Client của API (ứng dụng web, mobile, hệ thống khác) | Gọi nghiệp vụ của hệ thống | REST, JSON, HTTPS | Bearer token theo ARCHITECTURE §6.1 | <!-- fill: chọn một: Có \| Không --> |
-| API của bên thứ ba (ngoài email, SMS và định danh ở các hàng dưới) | <!-- fill: dịch vụ nào, làm gì --> | <!-- fill --> | <!-- fill: API key, OAuth client credentials --> | <!-- fill: chọn một: Có \| Không --> |
-| Webhook nhận vào | <!-- fill: bên gửi, sự kiện --> | HTTPS POST, JSON | Xác thực chữ ký (ví dụ HMAC-SHA256 trên raw body), chống phát lại bằng timestamp, xử lý idempotent theo ID sự kiện của bên gửi | <!-- fill: chọn một: Có \| Không --> |
-| Object storage | <!-- fill: file nào được lưu --> | API tương thích S3, pre-signed URL có thời hạn | Bucket riêng tư, URL ký có thời hạn ngắn | <!-- fill: chọn một: Có \| Không --> |
-| Email hoặc SMS | <!-- fill: thông báo nào --> | API của nhà cung cấp | API key trong secret manager | <!-- fill: chọn một: Có \| Không --> |
-| Nhà cung cấp định danh (identity provider) | Đăng nhập liên kết | OpenID Connect trên OAuth 2.0, Authorization Code kèm PKCE | Kiểm tra `state`, `nonce`, audience | <!-- fill: chọn một: Có \| Không --> |
+| API client (web app, mobile app, other system) | Calls the business functions of the system | REST, JSON, HTTPS | Bearer token per ARCHITECTURE §6.1 | <!-- fill: choose one: Yes \| No --> |
+| Third-party API (other than the email, SMS and identity in the rows below) | <!-- fill: which service, doing what --> | <!-- fill --> | <!-- fill: API key, OAuth client credentials --> | <!-- fill: choose one: Yes \| No --> |
+| Incoming webhook | <!-- fill: sender, event --> | HTTPS POST, JSON | Signature verification (for example HMAC-SHA256 over the raw body), replay protection by timestamp, idempotent handling by the sender's event ID | <!-- fill: choose one: Yes \| No --> |
+| Object storage | <!-- fill: which files are stored --> | S3-compatible API, pre-signed URL with an expiry | Private bucket, signed URL with a short expiry | <!-- fill: choose one: Yes \| No --> |
+| Email or SMS | <!-- fill: which notifications --> | Provider API | API key in a secret manager | <!-- fill: choose one: Yes \| No --> |
+| Identity provider | Federated sign-in | OpenID Connect over OAuth 2.0, Authorization Code with PKCE | Check `state`, `nonce`, audience | <!-- fill: choose one: Yes \| No --> |
 
-### Giao diện truyền thông (Communications Interfaces)
+### Communications Interfaces
 
-| Kênh | Quy ước | Áp dụng |
+| Channel | Convention | Applies |
 | --- | --- | :---: |
-| REST API | JSON UTF-8, URI chữ thường `kebab-case`, phiên bản major trong path; chi tiết ở ARCHITECTURE §7 | Có |
-| Thời gian thực | WebSocket trên TLS (WSS) có heartbeat ping/pong và client tự kết nối lại với backoff lũy thừa | <!-- fill: chọn một: Có \| Không --> |
-| Hàng đợi hoặc event bus | <!-- fill: dùng cho sự kiện nội bộ hay tích hợp; ghi Không nếu không dùng --> | <!-- fill: chọn một: Có \| Không --> |
+| REST API | JSON UTF-8, lowercase `kebab-case` URIs, major version in the path; details in ARCHITECTURE §7 | Yes |
+| Real time | WebSocket over TLS (WSS) with heartbeat ping/pong and client auto-reconnect with exponential backoff | <!-- fill: choose one: Yes \| No --> |
+| Queue or event bus | <!-- fill: used for internal events or for integration; write No if not used --> | <!-- fill: choose one: Yes \| No --> |
 
-Giao diện người dùng (User Interfaces) và giao diện phần cứng (Hardware Interfaces): N/A cho bề mặt `backend-api`; giao diện người dùng thuộc overlay của bề mặt client nếu dự án có.
+User Interfaces and Hardware Interfaces: N/A for the `backend-api` surface; user interfaces belong to the overlay of the client surface if the project has one.
 <!-- /SLOT-CONTENT -->
 
 <!-- SLOT-CONTENT: srs.data-model -->
-#### Sơ đồ thực thể liên kết logic (Logical ERD)
+#### Logical ERD
 
-<!-- fill: Mọi thực thể nghiệp vụ và quan hệ, ký hiệu Crow's foot; tên thực thể UPPER_SNAKE số ít, thuộc tính snake_case. Chỉ ghi thuộc tính cốt lõi, kiểu logic (uuid, string, decimal, int, timestamp, enum) và vai trò khóa (PK, FK, UK). Tên và tập giá trị enum MUST khớp §4.2 và §10.1. -->
+<!-- fill: Every business entity and relationship, Crow's foot notation; entity names UPPER_SNAKE singular, attributes snake_case. Record only the core attributes, the logical type (uuid, string, decimal, int, timestamp, enum) and the key role (PK, FK, UK). Enum names and value sets MUST match §4.2 and §10.1. -->
 
 ```mermaid
 erDiagram
     {{ENTITY_NAME}} ||--o{ {{ENTITY_NAME}} : "{{MESSAGE}}"
     {{ENTITY_NAME}} {
-        uuid id PK "Khóa chính"
-        timestamp created_at "Thời điểm tạo, UTC"
-        timestamp updated_at "Thời điểm cập nhật cuối, UTC"
+        uuid id PK "Primary key"
+        timestamp created_at "Creation time, UTC"
+        timestamp updated_at "Last update time, UTC"
     }
 ```
 
-<!-- fill: Khi điền §4.2 và §4.3, xét đủ và ghi quyết định vào đúng mục: bảng lịch sử, tài chính, nhật ký kiểm toán là append-only; thực thể có dữ liệu con mang ràng buộc tài chính hoặc pháp lý xóa mềm bằng cột deleted_at, cấm xóa cứng, nêu hành vi truy vấn mặc định với bản ghi đã xóa mềm; giá trị phụ thuộc thời điểm (giá, tỉ lệ, cấu hình) được chụp lại vào bản ghi giao dịch; quy tắc số học viết trong inline code, khớp tên cột; khóa tự nhiên duy nhất và khóa duy nhất ghép; miền giá trị hữu hạn liệt kê đủ, thực thể có vòng đời có state machine ở §10.1. -->
+<!-- fill: When filling §4.2 and §4.3, consider each point fully and record the decision in the right section: history, financial and audit-log tables are append-only; an entity whose child data carries financial or legal constraints is soft-deleted with a deleted_at column, hard delete is forbidden, and the default query behavior for soft-deleted records is stated; time-dependent values (price, rate, configuration) are captured into the transaction record; arithmetic rules are written in inline code, matching the column names; natural unique keys and composite unique keys; finite value domains are listed in full, an entity with a lifecycle has a state machine in §10.1. -->
 <!-- /SLOT-CONTENT -->

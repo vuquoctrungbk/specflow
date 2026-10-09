@@ -2,100 +2,100 @@
 doc_type: overlay-section
 status: stable
 version: 1.2.1
-language: vi-en
+language: en
 surface: mobile-app
 ---
 
-# Overlay mobile-app: khối cho SRS
+# Overlay mobile-app: blocks for the SRS
 
 <!-- SLOT-CONTENT: srs.constraints.technical -->
-| Ràng buộc | Nội dung |
+| Constraint | Content |
 | --- | --- |
-| Stack | Theo stack profile `{{STACK_PROFILE}}` đã chốt ở Intake mục 14; phiên bản cụ thể ở ARCHITECTURE §2 |
-| Kiểu dữ liệu nghiêm ngặt | Ngôn ngữ có kiểm tra kiểu tĩnh, bật chế độ nghiêm ngặt; quy tắc cụ thể ở ARCHITECTURE và `.claude/rules/` |
-| Nền tảng và phiên bản hệ điều hành | <!-- fill: iOS và Android, phiên bản tối thiểu của từng nền tảng; điện thoại, máy tính bảng hay cả hai; hướng màn hình --> |
-| Ma trận thiết bị | <!-- fill: các thiết bị hoặc cấu hình dùng cho smoke test trước phát hành: máy cấu hình thấp nhất được hỗ trợ, máy phổ biến nhất của người dùng, màn hình nhỏ nhất --> |
-| Làm việc khi mất mạng | <!-- fill: chức năng nào dùng được khi mất mạng; thời gian mất mạng tối đa phải chịu được; dung lượng dữ liệu tối đa giữ trên máy --> |
-| Quyền hệ điều hành | <!-- fill: mỗi quyền (camera, vị trí, thông báo, ảnh) và lý do; xin quyền lúc người dùng dùng tính năng cần nó, không xin khi mở ứng dụng --> |
-| Lưu trữ an toàn | Token và secret chỉ nằm trong kho khóa của hệ điều hành (Keychain, Android Keystore); dữ liệu nghiệp vụ trên máy xóa khi đăng xuất, sau khi đã cảnh báo về thay đổi chưa đồng bộ |
-| Giao thức | Mọi lời gọi mạng qua HTTPS |
-| Nguồn chân lý | Giá trị nghiệp vụ, quyền và trạng thái do API quyết định; ứng dụng hiển thị bản sao trên máy kèm trạng thái đồng bộ, không tự quyết thay API |
-| Phiên bản ứng dụng tối thiểu | <!-- fill: cách API hoặc cấu hình từ xa báo phiên bản thấp nhất còn được hỗ trợ và hành vi của ứng dụng cũ hơn (chặn và dẫn tới cửa hàng) --> |
-| Thời gian và tiền tệ | Nhận từ API theo UTC và ISO 8601; hiển thị theo locale và múi giờ của thiết bị; thời điểm tạo thay đổi trên máy chỉ dùng để hiển thị, không dùng để phân xử xung đột |
+| Stack | Per the stack profile `{{STACK_PROFILE}}` chosen in Intake §14; specific versions in ARCHITECTURE §2 |
+| Strict typing | A language with static type checking, strict mode on; specific rules in ARCHITECTURE and `.claude/rules/` |
+| Platform and OS version | <!-- fill: iOS and Android, the minimum version of each platform; phone, tablet or both; screen orientation --> |
+| Device matrix | <!-- fill: the devices or configurations used for the smoke test before release: the lowest-spec supported device, the most common device among users, the smallest screen --> |
+| Offline work | <!-- fill: which functions work offline; the longest offline period that must be tolerated; the maximum amount of data kept on the device --> |
+| OS permissions | <!-- fill: each permission (camera, location, notifications, photos) and its reason; ask for the permission when the user uses the feature that needs it, not when the app opens --> |
+| Secure storage | Tokens and secrets live only in the OS key store (Keychain, Android Keystore); business data on the device is deleted on logout, after warning about changes not yet synced |
+| Protocol | Every network call goes through HTTPS |
+| Source of truth | Business values, permissions and status are decided by the API; the app shows the on-device copy with its sync state and does not decide in place of the API |
+| Minimum app version | <!-- fill: how the API or remote config reports the lowest supported version, and the behavior of an older app (block and send to the store) --> |
+| Time and currency | Received from the API in UTC and ISO 8601; displayed by the device's locale and time zone; the time a change was made on the device is only for display and is not used to settle conflicts |
 <!-- /SLOT-CONTENT -->
 
 <!-- SLOT-CONTENT: srs.external-interfaces -->
-### Giao diện người dùng (User Interfaces)
+### User Interfaces
 
-<!-- fill: Một hàng cho mỗi màn hình; bảng này là nguồn duy nhất của danh sách màn hình. SCR ID dạng SCR-<MOD>-NN đặt ở đây (CONVENTIONS mục 4), MOD là mã phân hệ có FR chính của màn hình, NN duy nhất theo MOD trong toàn dự án, kể cả khi web và mobile dùng chung mã phân hệ; Giai đoạn 1W chi tiết hóa mỗi SCR ID thành một trang wireframe, không đặt thêm ID. Dự án brownfield: màn hình không đổi theo Gap Analysis ghi Giữ nguyên ở ô SCR ID. Dự án có Intake cũ hơn 1.3.0 bỏ cột SCR ID. Route là đường dẫn màn hình trong ứng dụng, cũng dùng cho deep link nếu có. -->
+<!-- fill: One row per screen; this table is the only source of the screen list. The SCR ID in the form SCR-<MOD>-NN is set here (CONVENTIONS §4), MOD is the module code that has the screen's main FR, NN is unique per MOD across the whole project, even when web and mobile share the module code; Stage 1W details each SCR ID as one wireframe page, without adding IDs. Brownfield project: a screen that does not change per the Gap Analysis records Unchanged in the SCR ID cell. Route is the screen's path inside the app, also used for the deep link if there is one. -->
 
-| Màn hình | SCR ID | Route | Tác nhân | Mục đích | Dùng khi mất mạng | FR |
+| Screen | SCR ID | Route | Actor | Purpose | Works offline | FR |
 | --- | --- | --- | --- | --- | :---: | --- |
-| <!-- fill --> | {{SCR_ID}} | `/{{ROUTE_PATH}}` | `ACT_{{ROLE_CODE}}` | <!-- fill --> | <!-- fill: chọn một: Có \| Chỉ xem \| Không --> | FR-{{MODULE_CODE}}-001 |
+| <!-- fill --> | {{SCR_ID}} | `/{{ROUTE_PATH}}` | `ACT_{{ROLE_CODE}}` | <!-- fill --> | <!-- fill: choose one: Yes \| View only \| No --> | FR-{{MODULE_CODE}}-001 |
 
-Yêu cầu chung cho mọi màn hình:
+Requirements common to every screen:
 
-- Năm trạng thái giao diện (UI states): mỗi màn hình và mỗi vùng dữ liệu độc lập có đủ `Initial`, `Loading`, `Empty`, `Success`, `Error`. Dữ liệu đã có trên máy hiển thị ngay, không chờ mạng; `Loading` chỉ dùng khi máy chưa có dữ liệu. Trạng thái không áp dụng ghi N/A kèm lý do; có Giai đoạn 1W thì ghi ở trang wireframe của màn hình (mục 4), SPEC nhận lại; không có Giai đoạn 1W thì ghi thẳng trong SPEC.
-- Trạng thái đồng bộ của bản ghi: mỗi bản ghi sửa được khi mất mạng hiển thị một trong `Synced` (khớp bản của API), `Queued` (đã lưu trên máy, chờ gửi), `Conflict` (API có bản khác mới hơn, người dùng cần chọn), `Rejected` (API từ chối thay đổi, kèm lý do). Màn hình danh sách hiển thị số thay đổi chờ gửi và số mục cần chọn.
-- Chỉ báo mạng: khi mất mạng, ứng dụng báo rõ và vẫn cho làm các thao tác ghi dùng được khi mất mạng.
-- Trợ năng: mỗi màn hình đạt các tiêu chí WCAG 2.2 ở mức của NFR-USAB, áp cho ứng dụng di động theo WCAG2ICT; tiêu chí xét ở từng màn hình khi lập wireframe theo `specflow/CONVENTIONS.md` mục 10.2. Con số của nền tảng: vùng chạm tối thiểu 44 × 44 pt trên iOS và 48 × 48 dp trên Android; chữ co giãn theo cỡ chữ hệ thống; trình đọc màn hình VoiceOver và TalkBack.
-- Mọi chuỗi hiển thị lấy từ bộ chuỗi theo locale; locale mặc định <!-- fill: ví dụ vi-VN -->.
+- Five UI states: every screen and every independent data zone has `Initial`, `Loading`, `Empty`, `Success`, `Error`. Data already on the device shows at once without waiting for the network; `Loading` is used only when the device has no data yet. A state that does not apply records N/A with a reason; with Stage 1W, record it on the screen's wireframe page (§4) and the SPEC takes it back; without Stage 1W, record it directly in the SPEC.
+- Record sync state: every record that can be edited offline shows one of `Synced` (matches the API's version), `Queued` (saved on the device, waiting to be sent), `Conflict` (the API has a newer version, the user must choose), `Rejected` (the API refused the change, with a reason). A list screen shows the number of changes waiting to be sent and the number of items that need a choice.
+- Network indicator: when offline, the app says so clearly and still allows the write actions that work offline.
+- Accessibility: every screen meets the WCAG 2.2 criteria at the level of NFR-USAB, applied to mobile apps through WCAG2ICT; the criteria are considered per screen when the wireframe is written, per `specflow/CONVENTIONS.md` §10.2. Platform figures: minimum touch target 44 × 44 pt on iOS and 48 × 48 dp on Android; text scales with the system font size; the VoiceOver and TalkBack screen readers.
+- Every displayed string comes from the string set by locale; default locale <!-- fill: for example en-US -->.
 
-### Giao diện phần cứng (Hardware Interfaces)
+### Hardware Interfaces
 
-<!-- fill: Giữ hàng áp dụng, ghi "Không" ở cột Áp dụng cho hàng còn lại thay vì xóa. -->
+<!-- fill: Keep the rows that apply, and write "No" in the Applies column of the other rows instead of deleting them. -->
 
-| Phần cứng | Mục đích | Quyền cần xin | Khi bị từ chối | Áp dụng |
+| Hardware | Purpose | Permission to request | When denied | Applies |
 | --- | --- | --- | --- | :---: |
-| Camera | <!-- fill --> | Camera | <!-- fill: tính năng thay thế hoặc hướng dẫn mở cài đặt --> | <!-- fill: chọn một: Có \| Không --> |
-| Vị trí | <!-- fill --> | Vị trí khi dùng ứng dụng | <!-- fill --> | <!-- fill: chọn một: Có \| Không --> |
-| Sinh trắc học | <!-- fill: mở khóa ứng dụng --> | Face ID hoặc vân tay | <!-- fill: dùng mật khẩu --> | <!-- fill: chọn một: Có \| Không --> |
-| Bộ nhớ thiết bị | Cơ sở dữ liệu cục bộ và tệp chờ gửi | Không cần | <!-- fill: hành vi khi bộ nhớ đầy --> | Có |
+| Camera | <!-- fill --> | Camera | <!-- fill: a replacement feature or guidance to open settings --> | <!-- fill: choose one: Yes \| No --> |
+| Location | <!-- fill --> | Location while using the app | <!-- fill --> | <!-- fill: choose one: Yes \| No --> |
+| Biometrics | <!-- fill: unlock the app --> | Face ID or fingerprint | <!-- fill: use a password --> | <!-- fill: choose one: Yes \| No --> |
+| Device storage | The local database and files waiting to be sent | Not needed | <!-- fill: behavior when storage is full --> | Yes |
 
-### Giao diện phần mềm (Software Interfaces)
+### Software Interfaces
 
-| Hệ thống | Mục đích | Giao thức và định dạng | Xác thực và an toàn | Áp dụng |
+| System | Purpose | Protocol and format | Authentication and safety | Applies |
 | --- | --- | --- | --- | :---: |
-| API backend | <!-- fill: tên API và tài liệu contract (SPEC, OpenAPI) mà ứng dụng gọi, gồm contract đồng bộ --> | REST, JSON, HTTPS | <!-- fill: cơ chế phiên đăng nhập, chốt ở ARCHITECTURE §6.1 --> | <!-- fill: chọn một: Có \| Không --> |
-| Dịch vụ thông báo đẩy | <!-- fill: loại thông báo; thông báo chỉ báo có thay đổi, không chứa dữ liệu cá nhân --> | APNs, FCM hoặc dịch vụ trung gian | Token thiết bị gửi lên API sau khi người dùng đồng ý | <!-- fill: chọn một: Có \| Không --> |
-| Deep link | <!-- fill: đường dẫn mở thẳng màn hình --> | Universal Links, App Links | Kiểm tra quyền như khi mở màn hình từ trong ứng dụng | <!-- fill: chọn một: Có \| Không --> |
-| Theo dõi lỗi và crash | <!-- fill: dịch vụ nhận crash --> | <!-- fill --> | Che dữ liệu cá nhân trước khi gửi | <!-- fill: chọn một: Có \| Không --> |
-| Cửa hàng ứng dụng | Phân phối, phát hành theo tỉ lệ | App Store Connect, Google Play Console | Khóa ký giữ ngoài repo | Có |
+| Backend API | <!-- fill: name of the API and the contract documents (SPEC, OpenAPI) that the app calls, including the sync contract --> | REST, JSON, HTTPS | <!-- fill: the login session mechanism, decided in ARCHITECTURE §6.1 --> | <!-- fill: choose one: Yes \| No --> |
+| Push notification service | <!-- fill: notification types; a notification only signals that there is a change and holds no personal data --> | APNs, FCM or an intermediary service | The device token is sent to the API after the user agrees | <!-- fill: choose one: Yes \| No --> |
+| Deep link | <!-- fill: paths that open a screen directly --> | Universal Links, App Links | Check permissions as when the screen is opened from inside the app | <!-- fill: choose one: Yes \| No --> |
+| Error and crash tracking | <!-- fill: the service that receives crashes --> | <!-- fill --> | Mask personal data before sending | <!-- fill: choose one: Yes \| No --> |
+| App store | Distribution, staged rollout | App Store Connect, Google Play Console | Signing keys kept outside the repo | Yes |
 
-### Giao diện truyền thông (Communications Interfaces)
+### Communications Interfaces
 
-| Kênh | Quy ước | Áp dụng |
+| Channel | Convention | Applies |
 | --- | --- | :---: |
-| HTTPS tới API | JSON UTF-8; lỗi theo envelope của API; thời gian chờ và thử lại theo ARCHITECTURE §7 | Có |
-| Đồng bộ | Gửi thay đổi chờ và nhận thay đổi mới khi có mạng lại, khi mở lại ứng dụng, khi người dùng kéo để làm mới và sau mỗi thao tác ghi; chạy nền theo giới hạn của hệ điều hành nếu có | Có |
+| HTTPS to the API | JSON UTF-8; errors follow the API's envelope; timeout and retry per ARCHITECTURE §7 | Yes |
+| Sync | Send pending changes and receive new changes when the network returns, when the app reopens, when the user pulls to refresh and after every write; runs in the background within OS limits if available | Yes |
 <!-- /SLOT-CONTENT -->
 
 <!-- SLOT-CONTENT: srs.data-model -->
-#### Dữ liệu trên thiết bị (On-device Data)
+#### On-device Data
 
-<!-- fill: Mỗi thực thể giữ trên máy một hàng. Thực thể nghiệp vụ, ERD và quy tắc toàn vẹn thuộc SRS của API; ở đây chỉ ghi phần ứng dụng giữ, trường giữ đúng tên như response của API. §4.2 liệt kê thực thể trên máy và dữ liệu chỉ có trên máy (hàng đợi thay đổi, bản của API khi có xung đột) như thực thể; §4.3 ghi quy tắc giữ, sửa, xóa trên máy. -->
+<!-- fill: One row per entity kept on the device. Business entities, the ERD and integrity rules belong to the API's SRS; here record only the part the app keeps, with fields kept under the same names as the API response. §4.2 lists the on-device entities and the data that exists only on the device (the change queue, the API's version when there is a conflict) as entities; §4.3 records the rules for keeping, editing and deleting on the device. -->
 
-| Thực thể trên máy | Nguồn (endpoint và FR của API) | Phạm vi giữ trên máy | Sửa khi mất mạng | Chứa dữ liệu cá nhân | Xóa khi |
+| On-device entity | Source (API endpoint and FR) | Scope kept on the device | Edited offline | Holds personal data | Deleted when |
 | --- | --- | --- | :---: | :---: | --- |
-| {{ENTITY_NAME}} | <!-- fill --> | <!-- fill: ví dụ chỉ bản ghi được giao cho người dùng, trong 30 ngày --> | <!-- fill: chọn một: Có \| Không --> | <!-- fill: chọn một: Có \| Không --> | <!-- fill: đăng xuất, hết phạm vi, API báo đã xóa --> |
+| {{ENTITY_NAME}} | <!-- fill --> | <!-- fill: for example only records assigned to the user, within 30 days --> | <!-- fill: choose one: Yes \| No --> | <!-- fill: choose one: Yes \| No --> | <!-- fill: logout, out of scope, the API reports it deleted --> |
 
-#### Chiến lược đồng bộ (Sync Strategy)
+#### Sync Strategy
 
-| Hạng mục | Quyết định |
+| Item | Decision |
 | --- | --- |
-| Hướng đồng bộ | <!-- fill: dữ liệu nào chỉ nhận từ API, dữ liệu nào ứng dụng gửi lên --> |
-| Phát hiện xung đột | Mỗi bản ghi sửa được mang phiên bản do API cấp; thay đổi gửi kèm phiên bản mà người dùng đã sửa trên đó; API từ chối khi phiên bản đó cũ |
-| Giải quyết xung đột | <!-- fill: chọn một, có ADR: người dùng chọn giữa bản của mình và bản của API \| bản của API thắng, thay đổi trên máy bị bỏ kèm thông báo \| gộp theo từng trường; không dùng đồng hồ của thiết bị để phân xử --> |
-| Thứ tự gửi | Thay đổi gửi lần lượt theo thứ tự tạo; thay đổi sau của cùng bản ghi chờ thay đổi trước có kết quả |
-| Gửi lại | Mỗi thay đổi có một khóa idempotency riêng; gửi lại sau lỗi mạng, hết thời gian chờ hoặc `5xx` dùng đúng khóa và nội dung cũ |
-| Xóa | <!-- fill: API báo bản ghi bị xóa hoặc ra khỏi phạm vi thế nào; bản ghi còn thay đổi chưa gửi thì xử lý ra sao --> |
-| Giới hạn | <!-- fill: số thay đổi chờ tối đa, dung lượng tệp chờ gửi, thời gian giữ thay đổi bị từ chối --> |
+| Sync direction | <!-- fill: which data is only received from the API, which data the app sends up --> |
+| Conflict detection | Every editable record carries a version issued by the API; a change is sent with the version the user edited on top of; the API refuses when that version is stale |
+| Conflict resolution | <!-- fill: choose one, with an ADR: the user chooses between their version and the API's version \| the API's version wins, the change on the device is dropped with a notice \| merge per field; do not use the device clock to settle --> |
+| Send order | Changes are sent one after another in creation order; a later change of the same record waits until the earlier change has a result |
+| Resend | Every change has its own idempotency key; a resend after a network error, timeout or `5xx` uses exactly the same key and the same content |
+| Delete | <!-- fill: how the API reports that a record is deleted or out of scope; what happens to a record that still has unsent changes --> |
+| Limits | <!-- fill: the maximum number of pending changes, the size of files waiting to be sent, how long rejected changes are kept --> |
 
-#### Bảng xung đột (Conflict Table)
+#### Conflict Table
 
-<!-- fill: Mỗi tình huống hai nơi cùng đổi một bản ghi một hàng: hai thiết bị, thiết bị và người dùng web, thiết bị và tác vụ của hệ thống. -->
+<!-- fill: One row for each situation where two places change the same record: two devices, a device and a web user, a device and a system job. -->
 
-| Thực thể | Tình huống | Phát hiện ở | Cách giải quyết | Người dùng thấy gì |
+| Entity | Situation | Detected at | Resolution | What the user sees |
 | --- | --- | --- | --- | --- |
-| {{ENTITY_NAME}} | <!-- fill --> | <!-- fill: ví dụ API trả mã xung đột phiên bản khi nhận thay đổi --> | <!-- fill: theo chiến lược ở bảng trên --> | <!-- fill --> |
+| {{ENTITY_NAME}} | <!-- fill --> | <!-- fill: for example the API returns a version conflict code when it receives the change --> | <!-- fill: per the strategy in the table above --> | <!-- fill --> |
 <!-- /SLOT-CONTENT -->

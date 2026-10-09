@@ -1,183 +1,182 @@
 ---
 doc_type: conventions
 status: stable
-version: 3.2.0
-language: vi-en
+version: 4.0.0
+language: en
 ---
 
-# Quy ước bộ mẫu specflow (specflow Conventions)
+# specflow Conventions
 
-Hợp đồng kỹ thuật bắt buộc cho mọi template, overlay, stack profile, starter, ví dụ và mọi tài liệu agent sinh ra từ bộ mẫu. Đây là nơi duy nhất định nghĩa placeholder, slot, frontmatter, ID scheme, chính sách ngôn ngữ, bố cục tài liệu dự án, quy tắc định dạng và tiêu chuẩn UI/UX của wireframe (mục 10); file khác chỉ tham chiếu, không định nghĩa lại. Mọi thay đổi ở đây MUST tăng `version` và ghi vào `CHANGELOG.md`. Từ khóa MUST, MUST NOT, SHOULD, MAY hiểu theo RFC 2119 và RFC 8174: chỉ mang nghĩa này khi viết in hoa. MUST tương đương `shall` của ISO/IEC/IEEE 29148, SHOULD tương đương `should`.
+The mandatory technical contract for every template, overlay, stack profile, starter, example and every document an agent generates from the template set. This is the only place that defines placeholders, slots, frontmatter, the ID scheme, the language policy, the layout of project documents, formatting rules and the UI/UX standard for wireframes (§10); other files only refer to it and do not define these again. Every change here MUST raise `version` and be recorded in `CHANGELOG.md`. The keywords MUST, MUST NOT, SHOULD, MAY are read as in RFC 2119 and RFC 8174: they carry this meaning only when written in capitals. MUST is equivalent to `shall` of ISO/IEC/IEEE 29148, SHOULD to `should`.
 
-## 1. Biến giữ chỗ (Placeholder)
+## 1. Placeholder
 
-- Placeholder của bộ mẫu có đúng một dạng `{{UPPER_SNAKE}}`, tức chuỗi khớp biểu thức `\{\{[A-Z][A-Z0-9_]*\}\}`. Dấu `{{` trong cú pháp khác (biểu thức `${{ }}` của CI, JSX, Mermaid, template engine) không phải placeholder.
-- Dạng in hoa dành riêng cho bộ mẫu. Biến trong prompt của sản phẩm (prompt spec của overlay `ai-llm-app`) viết `{{lower_snake}}`.
-- Không dùng `[...]`, `<...>` hay chữ mô tả làm placeholder. Ký hiệu mẫu (pattern notation) như `{MOD}`, `NNN`, `<slug>`, `{YYMMDD-HHmm}` chỉ mô tả định dạng tên và ID trong file hạ tầng, `README.md`, khối Documentation Layout và chú thích `fill`; nội dung sẽ được chép vào tài liệu dự án không dùng ký hiệu này ngoài chú thích `fill`.
-- Placeholder chỉ dùng cho giá trị một dòng. Nội dung tự do dùng chú thích `<!-- fill: ... -->` đặt đúng chỗ cần viết; hướng dẫn cho placeholder đặt ngay sau nó trong chú thích này.
-- Placeholder buộc chọn ghi tập giá trị hợp lệ: `<!-- fill: chọn một: A | B | C -->`. Tài liệu sinh ra MUST NOT còn dạng "A hoặc B". Lựa chọn có hệ quả kiến trúc được đánh dấu `có ADR` (trong chú thích `fill` hoặc cột định dạng của catalog) và MUST được một ADR bao phủ; lựa chọn khác chỉ cần ghi giá trị.
-- Frontmatter YAML: placeholder đặt trong nháy kép, kể cả khi nằm trong list (`title: "{{FEATURE_NAME}}"`, `parent: ["docs/specs/SPEC_{{FEATURE_KEY}}.md"]`). Khóa danh sách (`parent`, `overlays`, `assembled_from`) luôn là YAML list; template ghi sẵn giá trị cố định nếu có (ví dụ `parent` của SRS luôn gồm Intake), còn lại để `[]` cho agent điền khi tạo tài liệu.
-- Mục không áp dụng: giữ heading, ghi `N/A: <lý do>`, MUST NOT xóa mục. Bảng có hàng mẫu: nhân bản hàng theo nhu cầu, xóa hàng mẫu không dùng.
-- Tài liệu sinh ra MUST NOT còn placeholder, chú thích `fill` (dạng `<!-- fill: ... -->` hay `<!-- fill -->`), `<!-- slot-hint:`, dòng `<!-- SLOT` hay `<!-- PROFILE-SLOT`.
-- Placeholder mới MUST được thêm vào catalog dưới đây trước khi dùng. `scripts/check-templates.sh` coi mọi hàng có ô đầu là placeholder là catalog. Cột "Nguồn" cho biết ai cấp giá trị: `Intake`, `Agent` (agent chốt khi soạn tài liệu), `Người dùng` (thay trước khi gửi prompt), `Profile` (bảng "Giá trị placeholder" của stack profile thuộc bề mặt chứa placeholder). Placeholder nguồn `Profile` chỉ được dùng trong file của overlay, không dùng trong core và không dùng trong khối cho slot `srs.*` (phiên bản cụ thể chốt ở ARCHITECTURE).
+- A placeholder of the template set has exactly one form, `{{UPPER_SNAKE}}`, that is, a string matching the expression `\{\{[A-Z][A-Z0-9_]*\}\}`. The `{{` sign in other syntax (the `${{ }}` expression of CI, JSX, Mermaid, template engines) is not a placeholder.
+- The upper-case form is reserved for the template set. A variable in a product's prompt (the prompt spec of the `ai-llm-app` overlay) is written `{{lower_snake}}`.
+- Do not use `[...]`, `<...>` or descriptive words as a placeholder. Pattern notation such as `{MOD}`, `NNN`, `<slug>`, `{YYMMDD-HHmm}` only describes the format of names and IDs in infrastructure files, `README.md`, the Documentation Layout block and `fill` comments; content that will be copied into a project document does not use this notation outside a `fill` comment.
+- A placeholder is only for a single-line value. Free content uses a `<!-- fill: ... -->` comment placed exactly where the text is to be written; the guidance for a placeholder goes right after it in this comment.
+- A placeholder that forces a choice states the set of valid values: `<!-- fill: choose one: A | B | C -->`. A generated document MUST NOT keep the form "A or B". A choice with an architectural consequence is marked `has ADR` (in the `fill` comment or in the format column of the catalog) and MUST be covered by an ADR; other choices only need the value recorded.
+- YAML frontmatter: a placeholder is put in double quotes, also inside a list (`title: "{{FEATURE_NAME}}"`, `parent: ["docs/specs/SPEC_{{FEATURE_KEY}}.md"]`). List keys (`parent`, `overlays`, `assembled_from`) are always a YAML list; the template writes the fixed value when there is one (for example the `parent` of the SRS always contains the Intake), and otherwise leaves `[]` for the agent to fill when it creates the document.
+- A section that does not apply: keep the heading, write `N/A: <reason>`, and MUST NOT delete the section. A table with a sample row: duplicate the row as needed and delete the unused sample row.
+- A generated document MUST NOT keep a placeholder, a `fill` comment (in the form `<!-- fill: ... -->` or `<!-- fill -->`), `<!-- slot-hint:`, a `<!-- SLOT` line or a `<!-- PROFILE-SLOT` line.
+- A new placeholder MUST be added to the catalog below before use. `scripts/check-templates.sh` treats every row whose first cell is a placeholder as the catalog. The "Source" column says who supplies the value: `Intake`, `Agent` (the agent decides when it writes the document), `User` (replaced before the prompt is sent), `Profile` (the "Placeholder values" table of the stack profile of the surface that holds the placeholder). A placeholder with source `Profile` is only used in an overlay file, not in core and not in a block for a `srs.*` slot (the concrete version is fixed at ARCHITECTURE).
 
-| Placeholder | Ý nghĩa | Định dạng hoặc giá trị hợp lệ | Nguồn |
+| Placeholder | Meaning | Format or valid value | Source |
 | --- | --- | --- | --- |
-| `{{PROJECT_NAME}}` | Tên dự án | Văn bản tự do | Intake |
-| `{{PROJECT_SLUG}}` | Tên ngắn dùng trong đường dẫn | `kebab-case` | Intake |
-| `{{PROJECT_BRIEF}}` | Mô tả ý tưởng dự án gửi kèm Prompt 0 | Văn bản tự do | Người dùng |
-| `{{DATE}}` | Ngày | `YYYY-MM-DD` | Agent |
-| `{{AUTHOR}}` | Người hoặc agent soạn | Văn bản tự do | Agent |
-| `{{APPROVER}}` | Người phê duyệt gate | Tên hoặc vai trò | Intake |
-| `{{MODULE_ID}}` | ID phân hệ | `MOD-NN` | Agent |
-| `{{MODULE_CODE}}` | Mã phân hệ trong ID yêu cầu | Xem mục 4, ví dụ `AUTH`, `UI-AUTH` | Người dùng, Agent |
-| `{{MODULE_NAME}}` | Tên phân hệ | Văn bản tự do | Agent |
-| `{{MODULE_SLUG}}` | Tên thư mục mã nguồn của phân hệ | `kebab-case`; backend dùng danh từ số nhiều; stack profile được quy định cách viết khác khi ngôn ngữ bắt buộc (ví dụ package Python dùng `snake_case`) | Agent |
-| `{{PROMPT_ID}}` | ID của một prompt trong Prompt Spec (overlay `ai-llm-app`) | `PROMPT-{MOD}-NNN`, xem mục 4 | Agent |
-| `{{ROLE_CODE}}` | Mã vai trò trong ID tác nhân `ACT_<ROLE>` | `UPPER_SNAKE` | Agent |
-| `{{ACTOR_NAME}}` | Tên tác nhân trong sơ đồ và bảng | Văn bản tự do | Agent |
-| `{{EXTERNAL_SYSTEM}}` | Tên hệ thống ngoài trong sơ đồ và bảng | Văn bản tự do | Agent |
-| `{{COMPONENT_NAME}}` | Tên thành phần trong sơ đồ | Văn bản tự do | Agent |
-| `{{ENTITY_NAME}}` | Tên thực thể trong ERD và schema | `UPPER_SNAKE` trong ERD, theo quy ước DSL trong schema | Agent |
-| `{{RESOURCE_PATH}}` | Đường dẫn tài nguyên API sau tiền tố phiên bản | `kebab-case`, danh từ số nhiều | Agent |
-| `{{ROUTE_PATH}}` | Đường dẫn trang của giao diện web hoặc màn hình của ứng dụng di động, không có dấu `/` đầu | Các đoạn `kebab-case` phân cách bằng `/`; đoạn động theo cú pháp của framework, ví dụ `[itemId]` | Agent |
-| `{{STATE_NAME}}` | Tên trạng thái trong state machine | `UPPER_SNAKE` | Agent |
-| `{{EVENT_NAME}}` | Tên sự kiện, chuyển trạng thái hoặc domain event | Văn bản tự do hoặc `dot.case` | Agent |
-| `{{MESSAGE}}` | Nhãn cạnh hoặc thông điệp trong sơ đồ (mục đích, giao thức, lời gọi) | Văn bản tự do | Agent |
-| `{{FEATURE_NAME}}` | Tên tính năng | Văn bản tự do | Người dùng, Agent |
-| `{{FEATURE_KEY}}` | Khóa tính năng trong tên file SPEC | `UPPER_SNAKE` | Người dùng, Agent |
-| `{{FEATURE_SLUG}}` | Khóa tính năng trong tên thư mục plan | `kebab-case` | Người dùng, Agent |
-| `{{PLAN_DIR}}` | Tên thư mục plan trong `plans/` | `{YYMMDD-HHmm}-<slug>` | Người dùng |
-| `{{RELEASE}}` | Nhãn đợt phát hành (bản phát hành) mà SPEC và plan thực hiện; giá trị của khóa `release` (mục 3) | Một nhãn ở cột Bản phát hành của SRS §6.1, ví dụ `R1`; tên các đợt dự kiến ghi ở Intake | Người dùng, Agent |
-| `{{RELEASE_SLUG}}` | Nhãn đợt phát hành trong tên thư mục plan của đợt | `kebab-case` của `{{RELEASE}}`, ví dụ `r1` | Agent |
-| `{{PHASE_TITLE}}` | Tên một pha của Implementation Plan | Văn bản tự do | Agent |
-| `{{PRIORITY}}` | Mức ưu tiên của plan hoặc pha | `P1` \| `P2` \| `P3` | Agent |
-| `{{EFFORT}}` | Ước lượng công | Số + `h` hoặc `d` | Agent |
-| `{{SPEC_ID}}` | ID spec | `SPEC-{MOD}-NNN` | Người dùng, Agent |
-| `{{SCR_ID}}` | ID màn hình của wireframe | `SCR-{MOD}-NN`, xem mục 4 | Agent |
-| `{{COMPONENT_ID}}` | ID component của hệ thống thiết kế | `CMP-NN`, xem mục 4 | Agent |
-| `{{PATTERN_ID}}` | ID pattern của hệ thống thiết kế | `PAT-NN`, xem mục 4 | Agent |
-| `{{TEMPLATE_ID}}` | ID template của hệ thống thiết kế | `TPL-NN`, xem mục 4 | Agent |
-| `{{SCREEN_NAME}}` | Tên màn hình trong wireframe và sơ đồ điều hướng | Văn bản tự do | Agent |
-| `{{ENTRY_POINT}}` | Điểm vào của màn hình | Web: route dạng `/{{ROUTE_PATH}}`; mobile: deep link hoặc tên màn hình trong navigator | Agent |
-| `{{ADR_NUMBER}}` | Số ADR | `NNNN` | Agent |
-| `{{ADR_TITLE}}` | Tên quyết định kiến trúc | Văn bản tự do | Agent |
-| `{{OVERLAYS}}` | Danh sách bề mặt dạng văn bản | Tên overlay, phân cách dấu phẩy | Intake |
-| `{{STACK_PROFILE}}` | Stack profile của bề mặt chứa placeholder | Tên file trong `stack-profiles/`, không đuôi; hoặc `none` khi không profile nào khớp theo PLAYBOOK mục 3, lý do ghi ở cột Lý do chọn của Intake mục 14 | Intake |
-| `{{DOCS_MODE}}` | Chế độ lưu trữ SRS | `monolithic` \| `modular` | Intake |
-| `{{SOURCE_GLOB}}` | Glob thư mục mã nguồn mà một rule trong `.claude/rules/` áp dụng | Glob tính từ gốc dự án; nhiều thư mục thì mỗi glob một phần tử list | Agent |
-| `{{WCAG_LEVEL}}` | Mức tuân thủ WCAG 2.2 | `A` \| `AA` \| `AAA` | Agent |
-| `{{COVERAGE_THRESHOLD}}` | Ngưỡng coverage của NFR-MAINT | Số nguyên phần trăm; stack profile gợi ý mặc định | Agent |
-| `{{HTTP_OR_DOMAIN_ERROR}}` | Mã lỗi của exception flow | HTTP status + error code, hoặc mã lỗi miền | Agent |
-| `{{TOKEN_FORMAT}}` | Định dạng access token | Một giá trị, có ADR | Agent |
-| `{{SIGNING_ALG}}` | Thuật toán ký token | Một giá trị, có ADR | Agent |
-| `{{ACCESS_TTL}}` | Thời hạn access token | Số + đơn vị | Agent |
-| `{{REFRESH_TTL}}` | Thời hạn refresh token | Số + đơn vị | Agent |
-| `{{REFRESH_STORE}}` | Nơi lưu refresh token | Một nơi duy nhất, có ADR | Agent |
-| `{{PAGINATION_STYLE}}` | Kiểu phân trang | `offset` \| `cursor`, có ADR | Agent |
-| `{{ID_FORMAT}}` | Định dạng ID tài nguyên | Một giá trị, ví dụ `UUIDv7`, có ADR | Agent |
-| `{{ISOLATION_LEVEL}}` | Mức isolation mặc định của transaction | Một giá trị | Profile |
-| `{{LANGUAGE_STRICT_MODE_RULE}}` | Quy tắc kiểu nghiêm ngặt của ngôn ngữ | Một câu | Profile |
-| `{{RENDER_BOUNDARY_RULE}}` | Quy tắc ranh giới giữa mã render ở server và mã chạy ở trình duyệt | Một câu | Profile |
-| `{{CODEGEN_CMD}}` | Lệnh sinh mã trước khi typecheck, test, build (client ORM, client API) | Một dòng lệnh, hoặc `N/A: <lý do>` | Profile |
-| `{{LINT_CMD}}` | Lệnh lint | Một dòng lệnh | Profile |
-| `{{TYPECHECK_CMD}}` | Lệnh typecheck | Một dòng lệnh, hoặc `N/A: <lý do>` | Profile |
-| `{{UNIT_TEST_CMD}}` | Lệnh unit test | Một dòng lệnh | Profile |
-| `{{INTEGRATION_TEST_CMD}}` | Lệnh integration test | Một dòng lệnh | Profile |
-| `{{E2E_TEST_CMD}}` | Lệnh e2e test | Một dòng lệnh, hoặc `N/A: <lý do>` | Profile |
-| `{{EVAL_CMD}}` | Lệnh chạy test đánh giá prompt với mô hình thật (`EVAL`, `INJ`, `COST`) | Một dòng lệnh | Profile |
-| `{{COVERAGE_CMD}}` | Lệnh đo coverage | Một dòng lệnh | Profile |
-| `{{BUILD_CMD}}` | Lệnh build | Một dòng lệnh | Profile |
-| `{{AUDIT_CMD}}` | Lệnh kiểm tra lỗ hổng dependency | Một dòng lệnh | Profile |
-| `{{MIGRATION_CHECK_CMD}}` | Lệnh kiểm tra schema và migration khớp nhau | Một dòng lệnh | Profile |
-| `{{MIGRATION_DEPLOY_CMD}}` | Lệnh áp migration khi triển khai | Một dòng lệnh | Profile |
-| `{{OPENAPI_LINT_CMD}}` | Lệnh kiểm tra tài liệu OpenAPI của API | Một dòng lệnh | Profile |
-| `{{PLATFORM_CHECK_CMD}}` | Lệnh kiểm tra cấu hình nền tảng và độ tương thích phiên bản dependency với SDK của ứng dụng di động | Một dòng lệnh | Profile |
+| `{{PROJECT_NAME}}` | Project name | Free text | Intake |
+| `{{PROJECT_SLUG}}` | Short name used in paths | `kebab-case` | Intake |
+| `{{PROJECT_BRIEF}}` | Description of the project idea sent with Prompt 0 | Free text | User |
+| `{{DATE}}` | Date | `YYYY-MM-DD` | Agent |
+| `{{AUTHOR}}` | Person or agent who writes | Free text | Agent |
+| `{{APPROVER}}` | Person who approves the gate | Name or role | Intake |
+| `{{MODULE_ID}}` | Module ID | `MOD-NN` | Agent |
+| `{{MODULE_CODE}}` | Module code in the requirement ID | See §4, for example `AUTH`, `UI-AUTH` | User, Agent |
+| `{{MODULE_NAME}}` | Module name | Free text | Agent |
+| `{{MODULE_SLUG}}` | Name of the source directory of the module | `kebab-case`; backend uses plural nouns; a stack profile is allowed to prescribe another spelling when the language requires it (for example a Python package uses `snake_case`) | Agent |
+| `{{PROMPT_ID}}` | ID of a prompt in the Prompt Spec (`ai-llm-app` overlay) | `PROMPT-{MOD}-NNN`, see §4 | Agent |
+| `{{ROLE_CODE}}` | Role code in the actor ID `ACT_<ROLE>` | `UPPER_SNAKE` | Agent |
+| `{{ACTOR_NAME}}` | Actor name in diagrams and tables | Free text | Agent |
+| `{{EXTERNAL_SYSTEM}}` | Name of an external system in diagrams and tables | Free text | Agent |
+| `{{COMPONENT_NAME}}` | Component name in a diagram | Free text | Agent |
+| `{{ENTITY_NAME}}` | Entity name in the ERD and schema | `UPPER_SNAKE` in the ERD, per the DSL convention in the schema | Agent |
+| `{{RESOURCE_PATH}}` | API resource path after the version prefix | `kebab-case`, plural nouns | Agent |
+| `{{ROUTE_PATH}}` | Page path of a web UI or screen of a mobile app, without a leading `/` | `kebab-case` segments separated by `/`; a dynamic segment follows the syntax of the framework, for example `[itemId]` | Agent |
+| `{{STATE_NAME}}` | State name in a state machine | `UPPER_SNAKE` | Agent |
+| `{{EVENT_NAME}}` | Name of an event, transition or domain event | Free text or `dot.case` | Agent |
+| `{{MESSAGE}}` | Edge label or message in a diagram (purpose, protocol, call) | Free text | Agent |
+| `{{FEATURE_NAME}}` | Feature name | Free text | User, Agent |
+| `{{FEATURE_KEY}}` | Feature key in the SPEC file name | `UPPER_SNAKE` | User, Agent |
+| `{{FEATURE_SLUG}}` | Feature key in the plan directory name | `kebab-case` | User, Agent |
+| `{{PLAN_DIR}}` | Name of the plan directory in `plans/` | `{YYMMDD-HHmm}-<slug>` | User |
+| `{{RELEASE}}` | Label of the release that the SPEC and the plan implement; the value of the `release` key (§3) | A label in the Release column of SRS §6.1, for example `R1`; the names of the planned releases are recorded at the Intake | User, Agent |
+| `{{RELEASE_SLUG}}` | Release label in the plan directory name of the release | `kebab-case` of `{{RELEASE}}`, for example `r1` | Agent |
+| `{{PHASE_TITLE}}` | Name of a phase of the Implementation Plan | Free text | Agent |
+| `{{PRIORITY}}` | Priority of the plan or phase | `P1` \| `P2` \| `P3` | Agent |
+| `{{EFFORT}}` | Effort estimate | Number + `h` or `d` | Agent |
+| `{{SPEC_ID}}` | Spec ID | `SPEC-{MOD}-NNN` | User, Agent |
+| `{{SCR_ID}}` | Screen ID of a wireframe | `SCR-{MOD}-NN`, see §4 | Agent |
+| `{{COMPONENT_ID}}` | Component ID of the design system | `CMP-NN`, see §4 | Agent |
+| `{{PATTERN_ID}}` | Pattern ID of the design system | `PAT-NN`, see §4 | Agent |
+| `{{TEMPLATE_ID}}` | Template ID of the design system | `TPL-NN`, see §4 | Agent |
+| `{{SCREEN_NAME}}` | Screen name in wireframes and navigation diagrams | Free text | Agent |
+| `{{ENTRY_POINT}}` | Entry point of a screen | Web: route in the form `/{{ROUTE_PATH}}`; mobile: deep link or screen name in the navigator | Agent |
+| `{{ADR_NUMBER}}` | ADR number | `NNNN` | Agent |
+| `{{ADR_TITLE}}` | Name of the architectural decision | Free text | Agent |
+| `{{OVERLAYS}}` | List of surfaces as text | Overlay names, separated by commas | Intake |
+| `{{STACK_PROFILE}}` | Stack profile of the surface that holds the placeholder | File name in `stack-profiles/`, without extension; or `none` when no profile matches under PLAYBOOK §3, with the reason recorded in the Reason for choice column of Intake §14 | Intake |
+| `{{DOCS_MODE}}` | SRS storage mode | `monolithic` \| `modular` | Intake |
+| `{{SOURCE_GLOB}}` | Glob of the source directory that a rule in `.claude/rules/` applies to | Glob from the project root; for several directories, one glob per list element | Agent |
+| `{{WCAG_LEVEL}}` | WCAG 2.2 conformance level | `A` \| `AA` \| `AAA` | Agent |
+| `{{COVERAGE_THRESHOLD}}` | Coverage threshold of NFR-MAINT | Integer percentage; the stack profile suggests a default | Agent |
+| `{{HTTP_OR_DOMAIN_ERROR}}` | Error code of an exception flow | HTTP status + error code, or a domain error code | Agent |
+| `{{TOKEN_FORMAT}}` | Access token format | One value, has ADR | Agent |
+| `{{SIGNING_ALG}}` | Token signing algorithm | One value, has ADR | Agent |
+| `{{ACCESS_TTL}}` | Access token lifetime | Number + unit | Agent |
+| `{{REFRESH_TTL}}` | Refresh token lifetime | Number + unit | Agent |
+| `{{REFRESH_STORE}}` | Where the refresh token is stored | Exactly one place, has ADR | Agent |
+| `{{PAGINATION_STYLE}}` | Pagination style | `offset` \| `cursor`, has ADR | Agent |
+| `{{ID_FORMAT}}` | Resource ID format | One value, for example `UUIDv7`, has ADR | Agent |
+| `{{ISOLATION_LEVEL}}` | Default transaction isolation level | One value | Profile |
+| `{{LANGUAGE_STRICT_MODE_RULE}}` | Strict typing rule of the language | One sentence | Profile |
+| `{{RENDER_BOUNDARY_RULE}}` | Rule for the boundary between server-side render code and code that runs in the browser | One sentence | Profile |
+| `{{CODEGEN_CMD}}` | Code generation command before typecheck, test, build (ORM client, API client) | One command line, or `N/A: <reason>` | Profile |
+| `{{LINT_CMD}}` | Lint command | One command line | Profile |
+| `{{TYPECHECK_CMD}}` | Typecheck command | One command line, or `N/A: <reason>` | Profile |
+| `{{UNIT_TEST_CMD}}` | Unit test command | One command line | Profile |
+| `{{INTEGRATION_TEST_CMD}}` | Integration test command | One command line | Profile |
+| `{{E2E_TEST_CMD}}` | E2E test command | One command line, or `N/A: <reason>` | Profile |
+| `{{EVAL_CMD}}` | Command that runs the prompt evaluation tests with a real model (`EVAL`, `INJ`, `COST`) | One command line | Profile |
+| `{{COVERAGE_CMD}}` | Coverage measurement command | One command line | Profile |
+| `{{BUILD_CMD}}` | Build command | One command line | Profile |
+| `{{AUDIT_CMD}}` | Dependency vulnerability check command | One command line | Profile |
+| `{{MIGRATION_CHECK_CMD}}` | Command that checks that the schema and the migrations match | One command line | Profile |
+| `{{MIGRATION_DEPLOY_CMD}}` | Command that applies migrations at deployment | One command line | Profile |
+| `{{OPENAPI_LINT_CMD}}` | Command that checks the OpenAPI document of the API | One command line | Profile |
+| `{{PLATFORM_CHECK_CMD}}` | Command that checks the platform configuration and the compatibility of dependency versions with the SDK of the mobile app | One command line | Profile |
 
-## 2. Slot và quy tắc ghép (Slot & Assembly)
+## 2. Slot & Assembly
 
-| Dòng đánh dấu | Đặt ở | Ý nghĩa |
+| Marker line | Placed in | Meaning |
 | --- | --- | --- |
-| `<!-- SLOT: <slot.id> -->` | Core, PLAYBOOK | Điểm chèn nội dung overlay; luôn là phần cuối của mục chứa nó |
-| `<!-- slot-hint: ... -->` | Tối đa hai dòng ngay sau dòng SLOT | Mô tả nội dung mong đợi; xóa khi ghép |
-| `<!-- SLOT-CONTENT: <slot.id> -->` và `<!-- /SLOT-CONTENT -->` | File section của overlay | Mở và đóng khối nội dung overlay cho slot |
-| `<!-- PROFILE-SLOT: <slot.id> -->` | Bên trong khối SLOT-CONTENT cùng ID | Điểm chèn nội dung stack profile |
-| `<!-- PROFILE-CONTENT: <slot.id> -->` và `<!-- /PROFILE-CONTENT -->` | Stack profile | Mở và đóng khối nội dung profile cho PROFILE-SLOT cùng ID |
+| `<!-- SLOT: <slot.id> -->` | Core, PLAYBOOK | Insertion point for overlay content; always the last part of the section that holds it |
+| `<!-- slot-hint: ... -->` | At most two lines right after the SLOT line | Describes the expected content; deleted when assembled |
+| `<!-- SLOT-CONTENT: <slot.id> -->` and `<!-- /SLOT-CONTENT -->` | Section file of an overlay | Open and close the block of overlay content for a slot |
+| `<!-- PROFILE-SLOT: <slot.id> -->` | Inside the SLOT-CONTENT block with the same ID | Insertion point for stack profile content |
+| `<!-- PROFILE-CONTENT: <slot.id> -->` and `<!-- /PROFILE-CONTENT -->` | Stack profile | Open and close the block of profile content for the PROFILE-SLOT with the same ID |
 
-- Mỗi dòng đánh dấu đứng riêng một dòng; cú pháp minh họa trong khối code không được tính. Không lồng khối cùng loại.
-- Overlay là thư mục `overlays/<surface>/` có `OVERLAY.md`. Mỗi overlay MUST cung cấp đủ mọi slot trong catalog, mỗi slot đúng một khối SLOT-CONTENT, đặt trong file ngoài `stack-profiles/`. Slot không áp dụng cho bề mặt vẫn có khối, nội dung là `N/A: <lý do>` hoặc tham chiếu.
-- Stack profile là `overlays/<surface>/stack-profiles/<profile>.md`, cung cấp giá trị cụ thể theo ba cách: (1) mục "Giá trị placeholder" có bảng hàng `` `{{NAME}}` `` và giá trị một dòng, đủ cho mọi placeholder nguồn `Profile` mà overlay dùng; (2) một khối PROFILE-CONTENT cho mỗi dòng PROFILE-SLOT của overlay, không thừa không thiếu; (3) một mục có heading chứa `(Tech Stack)` với bảng công nghệ cùng cột với ARCHITECTURE §2.1 (trừ cột Bề mặt), để agent chép vào §2.1. Profile MUST NOT chứa khối SLOT-CONTENT.
-- Heading trong khối không đánh số. Cấp heading cao nhất trong khối SLOT-CONTENT bằng cột "Cấp khối" của catalog; khối PROFILE-CONTENT dùng cấp bằng hoặc sâu hơn cấp của dòng PROFILE-SLOT trong khối chứa nó.
-- Khối PROFILE-CONTENT có thể chứa chú thích `<!-- fill: ... -->` đánh dấu phần mẫu (ví dụ schema minh họa) mà agent thay bằng nội dung thật; phần không có chú thích `fill` được chép nguyên văn.
-- Quy tắc ghép:
-  1. Thứ tự đọc: file core, `OVERLAY.md`, file section của overlay, stack profile của bề mặt.
-  2. Nội dung của một bề mặt cho slot X là phần giữa dòng mở và dòng đóng của khối SLOT-CONTENT X, trong đó mỗi dòng PROFILE-SLOT được thay bằng phần giữa dòng mở và dòng đóng của khối PROFILE-CONTENT cùng ID trong profile của bề mặt.
-  3. Một overlay: thay dòng SLOT và các dòng slot-hint bằng nội dung của bề mặt.
-  4. Nhiều overlay cùng cung cấp một slot: nối nội dung theo thứ tự `overlays` khai báo trong Intake. Mỗi bề mặt mở đầu bằng heading tên bề mặt ở cấp khối (ví dụ `### Backend API`); mọi heading bên trong hạ một cấp.
-  5. Thay placeholder nguồn `Profile` bằng giá trị trong profile của bề mặt chứa placeholder. Khi nội dung bề mặt đã bị hạ cấp heading ở bước 4, heading của khối PROFILE-CONTENT chèn vào bề mặt đó cũng hạ đúng số cấp ấy.
-  6. Ghi `overlays` và `assembled_from` vào frontmatter (mục 3).
-- Bề mặt không có stack profile (Intake ghi `none`; áp cho dự án có Intake tạo từ template Intake `1.2.0` trở lên). Bước 2 và bước 5 không có nguồn profile, nên mỗi dòng PROFILE-SLOT được thay bằng nội dung viết cho dự án và mỗi placeholder nguồn `Profile` bằng giá trị của dự án, lấy từ: dự án greenfield, đề xuất ở ARCHITECTURE §2 kèm ADR (PLAYBOOK mục 3 quy tắc 5); dự án brownfield, Codebase Summary §7 (lệnh) và As-Is Architecture §2 (tech stack, cấu trúc). Khi nguồn đó chưa có (ví dụ `CLAUDE.md` khởi tạo ở Giai đoạn 0), mục chứa nội dung ấy ghi theo PLAYBOOK mục 2.1. Tài liệu ghi tên bề mặt đó ở khóa frontmatter `stack_profile_none` (mục 3); `assembled_from` ghi nguồn core hoặc starter và overlay như thường, không có mục `stack-profiles/` của bề mặt đó.
-- Starter là core đã ghép với overlay, không gắn profile: starter không còn dòng SLOT nhưng giữ dòng PROFILE-SLOT và placeholder nguồn `Profile`. Khi dùng starter, agent làm bước 2 và bước 5 với profile đã chọn trong Intake. `CLAUDE.md.template` của starter còn thêm vào cuối Phụ lục A, theo thứ tự `overlays`, mỗi file trong `agent-rules/` của overlay thành một mục `### A.N. \`.claude/rules/<file>\`` (N tiếp theo sau A.2) chứa nguyên văn file trong một khối code `markdown`.
-- Starter là kết quả cơ học của các quy tắc trên: `scripts/check-templates.sh` tự ghép lại mọi file starter từ nguồn khai báo (mục đầu `assembled_from` và `overlays`) và báo lỗi khi khác dù một ký tự. Sửa core hoặc overlay thì ghép lại starter; không sửa tay starter.
-- Tên hiển thị bề mặt: `backend-api` là Backend API, `frontend-web` là Frontend Web, `mobile-app` là Mobile App, `ai-llm-app` là AI/LLM App.
+- Each marker line stands on a line of its own; syntax shown as an illustration in a code block is not counted. Do not nest blocks of the same kind.
+- An overlay is a directory `overlays/<surface>/` with an `OVERLAY.md`. Each overlay MUST provide every slot in the catalog, each slot exactly one SLOT-CONTENT block, placed in a file outside `stack-profiles/`. A slot that does not apply to the surface still has a block, whose content is `N/A: <reason>` or a reference.
+- A stack profile is `overlays/<surface>/stack-profiles/<profile>.md`, and supplies concrete values in three ways: (1) a "Placeholder values" section with a table of rows `` `{{NAME}}` `` and a single-line value, enough for every placeholder with source `Profile` that the overlay uses; (2) one PROFILE-CONTENT block for each PROFILE-SLOT line of the overlay, no more and no fewer; (3) a section whose heading contains `(Tech Stack)` with a technology table that has the same columns as ARCHITECTURE §2.1 (except the Surface column), for the agent to copy into §2.1. A profile MUST NOT contain a SLOT-CONTENT block.
+- A heading inside a block is not numbered. The highest heading level in a SLOT-CONTENT block equals the "Block level" column of the catalog; a PROFILE-CONTENT block uses a level equal to or deeper than the level of the PROFILE-SLOT line in the block that holds it.
+- A PROFILE-CONTENT block may contain a `<!-- fill: ... -->` comment that marks a sample part (for example an illustrative schema) which the agent replaces with real content; a part without a `fill` comment is copied verbatim.
+- Assembly rules:
+  1. Reading order: the core file, `OVERLAY.md`, the section file of the overlay, the stack profile of the surface.
+  2. The content of a surface for slot X is the part between the opening line and the closing line of the SLOT-CONTENT X block, in which each PROFILE-SLOT line is replaced by the part between the opening line and the closing line of the PROFILE-CONTENT block with the same ID in the profile of the surface.
+  3. One overlay: replace the SLOT line and the slot-hint lines with the content of the surface.
+  4. Several overlays provide the same slot: concatenate the content in the order of `overlays` declared in the Intake. Each surface opens with a heading with the name of the surface at the block level (for example `### Backend API`); every heading inside is lowered by one level.
+  5. Replace each placeholder with source `Profile` with the value in the profile of the surface that holds the placeholder. When the content of a surface has had its headings lowered at step 4, the headings of the PROFILE-CONTENT block inserted into that surface are lowered by the same number of levels.
+  6. Write `overlays` and `assembled_from` into the frontmatter (§3).
+- A surface without a stack profile (the Intake records `none`). Step 2 and step 5 have no profile source, so each PROFILE-SLOT line is replaced by content written for the project and each placeholder with source `Profile` by a value of the project, taken from: for a greenfield project, the proposal in ARCHITECTURE §2 with an ADR (PLAYBOOK §3 rule 5); for a brownfield project, Codebase Summary §7 (commands) and As-Is Architecture §2 (tech stack, structure). When that source does not exist yet (for example the `CLAUDE.md` created at Stage 0), the section that holds that content is written per PLAYBOOK §2.1. The document records the name of that surface in the frontmatter key `stack_profile_none` (§3); `assembled_from` records the core or starter source and the overlay as usual, without an entry in `stack-profiles/` for that surface.
+- A starter is the core assembled with the overlays, not bound to a profile: a starter has no SLOT line any more but keeps the PROFILE-SLOT lines and the placeholders with source `Profile`. When a starter is used, the agent does step 2 and step 5 with the profile chosen in the Intake. The `CLAUDE.md.template` of a starter also appends to the end of Appendix A, in the order of `overlays`, a section for each file in the `agent-rules/` of the overlay, `### A.N. \`.claude/rules/<file>\`` (N continuing after A.2), that holds the file verbatim in a `markdown` code block.
+- A starter is the mechanical result of the rules above: `scripts/check-templates.sh` reassembles every starter file from the declared sources (the first entry of `assembled_from`, and `overlays`) and reports an error when it differs by even one character. When the core or an overlay is changed, reassemble the starter; do not edit a starter by hand.
+- Surface display names: `backend-api` is Backend API, `frontend-web` is Frontend Web, `mobile-app` is Mobile App, `ai-llm-app` is AI/LLM App.
 
-| Dòng đánh dấu | Vị trí | Cấp khối | Overlay cung cấp |
+| Marker line | Location | Block level | Overlay provides |
 | --- | --- | --- | --- |
-| `<!-- SLOT: srs.constraints.technical -->` | `core/01_SRS_Template.md` §2.5 | `####` | Ràng buộc kỹ thuật của bề mặt: kiểu dữ liệu, nền tảng, trình duyệt hoặc OS, toàn vẹn giao dịch |
-| `<!-- SLOT: srs.external-interfaces -->` | `core/01_SRS_Template.md` §3 | `###` | Mục chi tiết cho từng loại giao diện ngoài áp dụng với bề mặt (User, Hardware, Software, Communications Interfaces, Interfaces with Services theo ISO/IEC/IEEE 29148 §9.6.4), heading theo tên loại |
-| `<!-- SLOT: srs.data-model -->` | `core/01_SRS_Template.md` §4.1 | `####` | Mô hình dữ liệu logic: ERD, view model, local store hoặc dataset |
-| `<!-- SLOT: arch.views -->` | `core/02_Architecture_Core_Template.md` §3 | `###` | C4 Level 2, Level 3 hoặc sơ đồ tương đương của bề mặt, và deployment view |
-| `<!-- SLOT: arch.layout -->` | `core/02_Architecture_Core_Template.md` §4 | `###` | Cây thư mục theo tầng và vị trí file test |
-| `<!-- SLOT: arch.schema -->` | `core/02_Architecture_Core_Template.md` §5 | `###` | Schema vật lý hoặc schema dữ liệu theo DSL của profile |
-| `<!-- SLOT: arch.conventions -->` | `core/02_Architecture_Core_Template.md` §7 | `###` | Quy ước giao tiếp của bề mặt và cách ánh xạ mã lỗi của Error Code Registry (§7.1) sang bề mặt |
-| `<!-- SLOT: arch.deployment -->` | `core/02_Architecture_Core_Template.md` §8 | `###` | Topology, build, release, migration khi deploy, rollback |
-| `<!-- SLOT: spec.contract -->` | `core/04_Spec_Core_Template.md` §3 | `###` | Hình dạng contract: endpoint và DTO, màn hình và UI state, prompt spec |
-| `<!-- SLOT: spec.test-types -->` | `core/04_Spec_Core_Template.md` §9 | `###` | Loại test đặc thù bề mặt, dạng test `CONC` của bề mặt, công cụ, vị trí file |
-| `<!-- SLOT: playbook.verify-commands -->` | `PLAYBOOK.md` §11 và `core/06_Agent_Context_Template.md` | `###` | Lệnh verify theo stack profile và điều kiện pass |
+| `<!-- SLOT: srs.constraints.technical -->` | `core/01_SRS_Template.md` §2.5 | `####` | Technical constraints of the surface: data types, platform, browser or OS, transaction integrity |
+| `<!-- SLOT: srs.external-interfaces -->` | `core/01_SRS_Template.md` §3 | `###` | Detailed sections for each type of external interface that applies to the surface (User, Hardware, Software, Communications Interfaces, Interfaces with Services per ISO/IEC/IEEE 29148 §9.6.4), headings named after the type |
+| `<!-- SLOT: srs.data-model -->` | `core/01_SRS_Template.md` §4.1 | `####` | Logical data model: ERD, view model, local store or dataset |
+| `<!-- SLOT: arch.views -->` | `core/02_Architecture_Core_Template.md` §3 | `###` | C4 Level 2, Level 3 or an equivalent diagram of the surface, and the deployment view |
+| `<!-- SLOT: arch.layout -->` | `core/02_Architecture_Core_Template.md` §4 | `###` | Directory tree by layer and location of test files |
+| `<!-- SLOT: arch.schema -->` | `core/02_Architecture_Core_Template.md` §5 | `###` | Physical schema or data schema in the DSL of the profile |
+| `<!-- SLOT: arch.conventions -->` | `core/02_Architecture_Core_Template.md` §7 | `###` | Communication conventions of the surface and how the error codes of the Error Code Registry (§7.1) map onto the surface |
+| `<!-- SLOT: arch.deployment -->` | `core/02_Architecture_Core_Template.md` §8 | `###` | Topology, build, release, migration at deployment, rollback |
+| `<!-- SLOT: spec.contract -->` | `core/04_Spec_Core_Template.md` §3 | `###` | Shape of the contract: endpoint and DTO, screen and UI state, prompt spec |
+| `<!-- SLOT: spec.test-types -->` | `core/04_Spec_Core_Template.md` §9 | `###` | Test types specific to the surface, the `CONC` test form of the surface, tools, file locations |
+| `<!-- SLOT: playbook.verify-commands -->` | `PLAYBOOK.md` §11 and `core/06_Agent_Context_Template.md` | `###` | Verify commands per stack profile and the pass conditions |
 
-## 3. Siêu dữ liệu đầu file (Frontmatter)
+## 3. Frontmatter
 
-Mọi file `.md` của bộ mẫu (trừ `README.md`, `CHANGELOG.md`) và mọi tài liệu sinh ra MUST bắt đầu bằng YAML frontmatter.
+Every `.md` file of the template set (except `README.md`, `CHANGELOG.md`) and every generated document MUST start with YAML frontmatter.
 
-- File hạ tầng (`doc_type` thuộc nhóm hạ tầng ở cuối mục) dùng `version` cho chính nó.
-- Template là file trong `core/`, `brownfield/`, `starters/` hoặc `overlays/` có `doc_type` của tài liệu dự án hay tài liệu brownfield. Template mang sẵn frontmatter của tài liệu đầu ra để agent chép nguyên file rồi điền, nên trong template `version` luôn là `0.1.0` (version khởi tạo của đầu ra) và version của chính template ghi ở `template_version`.
-- Tài liệu sinh ra giữ `template_version` chép từ template và ghi `assembled_from`: `path@version` của mọi nguồn đã ghép, tính từ gốc bộ mẫu. Nguồn là template (có `template_version`, kể cả template nằm trong `overlays/`) lấy `template_version`; nguồn là file hạ tầng (overlay section, stack profile) lấy `version`. Starter ghi sẵn nguồn core và overlay; agent thêm stack profile. `scripts/check-templates.sh` cảnh báo khi nguồn hiện tại mới hơn mục `assembled_from` ở mức MINOR hoặc MAJOR, và báo lỗi khi mục đó mới hơn nguồn. Bản PATCH của nguồn chỉ sửa câu chữ, không đổi cấu trúc hay quy tắc, nên không đòi ghép lại tài liệu.
-- Cổng theo phiên bản template của một tài liệu (ví dụ "áp cho dự án có Intake tạo từ template Intake `1.3.0` trở lên") đọc theo một cách duy nhất: khóa `template_version` của chính tài liệu đó; tài liệu không có khóa này (ví dụ tài liệu từ trước khi mục này ghi `template_version`, hoặc fixture chỉ có `assembled_from`) thì đọc version ghi ở mục `assembled_from` cho nguồn tương ứng.
+- An infrastructure file (a `doc_type` in the infrastructure group at the end of the section) uses `version` for itself.
+- A template is a file in `core/`, `brownfield/`, `starters/` or `overlays/` that has a `doc_type` of a project document or a brownfield document. A template carries the frontmatter of the output document so that the agent can copy the whole file and then fill it, so in a template `version` is always `0.1.0` (the initial version of the output) and the version of the template itself is written in `template_version`.
+- A generated document keeps the `template_version` copied from the template and records `assembled_from`: the `path@version` of every source that was assembled, counted from the root of the template set. A source that is a template (has `template_version`, including a template located in `overlays/`) contributes its `template_version`; a source that is an infrastructure file (overlay section, stack profile) contributes its `version`. A starter records the core and overlay sources in advance; the agent adds the stack profile. `scripts/check-templates.sh` warns when the current source is newer than the `assembled_from` entry at the MINOR or MAJOR level, and reports an error when that entry is newer than the source. A PATCH release of a source only fixes wording, without changing structure or rules, so it does not require the document to be assembled again.
 
-| Khóa | Bắt buộc với | Giá trị |
+| Key | Required for | Value |
 | --- | --- | --- |
-| `doc_type` | Mọi file | Xem danh sách dưới bảng |
-| `status` | Mọi file | Theo bảng trạng thái theo `doc_type` ở cuối mục |
-| `version` | Mọi file | SemVer. Tài liệu sinh ra bắt đầu `0.1.0`; `1.0.0` là bản được duyệt đầu tiên |
-| `language` | Mọi file | `vi-en` |
-| `template_version` | Template, starter | Template: version của chính template. Starter: bằng `template_version` của file core nguồn (mục đầu `assembled_from`), vì starter được ghép cơ học từ nguồn; thay đổi của overlay trong starter thấy qua các mục overlay của `assembled_from` |
-| `assembled_from` | Starter, tài liệu sinh ra | YAML list `path@version` |
-| `parent` | Tài liệu sinh ra, trừ intake | YAML list đường dẫn (tính từ gốc dự án) tới tài liệu thượng nguồn |
-| `overlays` | Tài liệu sinh ra | YAML list bề mặt, ví dụ `[backend-api, frontend-web]` |
-| `module_id` | Tùy chọn | `MOD-NN` |
-| `surface` | Overlay, overlay-section, profile | Tên overlay |
-| `profile` | Profile | Tên profile |
-| `stack_profile_none` | Tài liệu sinh ra có nguồn cần stack profile (ARCHITECTURE, SPEC, `CLAUDE.md`, rule trong `.claude/rules/`) khi ít nhất một bề mặt của nó không có profile khớp; không dùng ở tài liệu khác. Áp cho dự án có Intake tạo từ template Intake `1.2.0` trở lên | Danh sách tên overlay (bề mặt) không có profile khớp, ví dụ `[backend-api]`. Bề mặt khác của cùng tài liệu vẫn ghi profile ở `assembled_from`. `scripts/check-templates.sh` không đòi mục `stack-profiles/` cho bề mặt có tên trong danh sách, và báo lỗi khi bề mặt có tên trong danh sách mà `assembled_from` vẫn có profile của nó |
-| `spec_id` | Spec, implementation phase; implementation plan tạo từ template plan `1.1.0` trở xuống | `SPEC-{MOD}-NNN`. Ở pha của plan theo đợt, `spec_id` là một phần tử của `spec_ids` của `plan.md` |
-| `release` | Implementation plan tạo từ template plan `1.2.0` trở lên; spec tạo từ template SPEC `1.2.0` trở lên ở dự án có Intake tạo từ template Intake `1.3.0` trở lên | Đúng một nhãn ở cột Bản phát hành của SRS §6.1, ví dụ `R1`. Plan: đợt mà plan thực hiện (mục 9). Spec: đợt của SPEC; mọi FR ở SPEC §1.5 có Bản phát hành bằng nhãn này (PLAYBOOK mục 2.4), trừ SPEC `superseded` (PLAYBOOK mục 8). SPEC tạo từ template cũ hơn không có khóa và vẫn hợp lệ; đợt của nó là Bản phát hành của các FR ở §1.5. Dự án có Intake cũ hơn `1.3.0` không ghi khóa này ở SPEC |
-| `risk` | Spec tạo từ template SPEC `1.4.0` trở lên | `high` hoặc `normal`; SPEC cũ hơn không ghi khóa này được coi là `high`. `high` khi SPEC chạm xác thực hay phân quyền, cô lập giữa người thuê, tiền hay hạn ngạch, dữ liệu cá nhân, schema đang có dữ liệu, hoặc hợp đồng công khai đã duyệt; còn lại `normal`. Agent đề xuất mức, người duyệt Gate 3 xác nhận và đổi được. SPEC `normal` có ở §1.1 một dòng `- Mức rủi ro:` nêu lý do và giữ File Diff ở §2 của chính nó, đường dẫn trong backtick. `scripts/check-templates.sh` là lưới tối thiểu, không thay người duyệt: nó từ chối `normal` khi một đường dẫn ở File Diff mang từ của các vùng trên (ví dụ `auth`, `login`, `session`, `tenant`, `billing`, `payment`, `personal`), nằm trong vùng mà Intake mục 14 khai ở hàng `Vùng rủi ro cao`, hoặc là file schema, migration hay hợp đồng công khai có mô tả thay đổi phá hủy (xóa, đổi tên, đổi kiểu, `NOT NULL`). Mức này quyết định cách đóng SPEC (PLAYBOOK mục 2.6) và việc dừng chờ duyệt khi sửa (PLAYBOOK mục 8) |
-| `spec_ids` | Implementation plan tạo từ template plan `1.2.0` trở lên | YAML list `SPEC-{MOD}-NNN`: mọi SPEC của đợt `release` mà plan thực hiện (mục 9) |
+| `doc_type` | Every file | See the list below the table |
+| `status` | Every file | Per the table of valid status by `doc_type` at the end of the section |
+| `version` | Every file | SemVer. A generated document starts at `0.1.0`; `1.0.0` is the first approved version |
+| `language` | Every file | The language code of the project, the same value in every document (§5): `en`, `vi` |
+| `template_version` | Template, starter | Template: the version of the template itself. Starter: equal to the `template_version` of the source core file (the first entry of `assembled_from`), because a starter is assembled mechanically from its sources; a change of an overlay in the starter shows through the overlay entries of `assembled_from` |
+| `assembled_from` | Starter, generated document | YAML list `path@version` |
+| `parent` | Generated document, except the intake | YAML list of paths (from the project root) to the upstream documents |
+| `overlays` | Generated document | YAML list of surfaces, for example `[backend-api, frontend-web]` |
+| `module_id` | Optional | `MOD-NN` |
+| `surface` | Overlay, overlay-section, profile | Overlay name |
+| `profile` | Profile | Profile name |
+| `stack_profile_none` | A generated document whose sources need a stack profile (ARCHITECTURE, SPEC, `CLAUDE.md`, a rule in `.claude/rules/`) when at least one of its surfaces has no matching profile; not used in other documents | List of the names of the overlays (surfaces) that have no matching profile, for example `[backend-api]`. Other surfaces of the same document still record their profile in `assembled_from`. `scripts/check-templates.sh` does not require an entry in `stack-profiles/` for a surface whose name is in the list, and reports an error when a surface named in the list still has its profile in `assembled_from` |
+| `spec_id` | Spec, implementation phase | `SPEC-{MOD}-NNN`. In a phase of a release-based plan, `spec_id` is one element of `spec_ids` of `plan.md` |
+| `release` | Implementation plan, spec | Exactly one label in the Release column of SRS §6.1, for example `R1`. Plan: the release that the plan implements (§9). Spec: the release of the SPEC; every FR in SPEC §1.5 has a Release equal to this label (PLAYBOOK §2.4), except a `superseded` SPEC (PLAYBOOK §8). |
+| `risk` | Spec | `high` or `normal`. `high` when the SPEC touches authentication or authorization, isolation between tenants, money or quotas, personal data, a schema that already holds data, or an approved public contract; otherwise `normal`. The agent proposes the level, the approver of Gate 3 confirms it and may change it. A `normal` SPEC has at §1.1 a line `- Risk level:` that states the reason, and keeps the File Diff at §2 of its own, with paths in backticks. `scripts/check-templates.sh` is a minimum safety net, not a replacement for the approver: it rejects `normal` when a path in the File Diff carries a word of the areas above (for example `auth`, `login`, `session`, `tenant`, `billing`, `payment`, `personal`), lies in an area that Intake §14 declares in the row `High-risk areas`, or is a schema file, a migration or a public contract with a description of a destructive change (delete, rename, change type, `NOT NULL`). This level decides how a SPEC is closed (PLAYBOOK §2.6) and whether to stop for approval on a change (PLAYBOOK §8) |
+| `spec_ids` | Implementation plan | YAML list `SPEC-{MOD}-NNN`: every SPEC of the `release` that the plan implements (§9) |
 | `prompt_id` | Prompt spec | `PROMPT-{MOD}-NNN` |
-| `paths` | Rule trong `.claude/rules/` | Danh sách glob mà rule áp dụng (khóa của Claude Code) |
-| `adr_id`, `date`, `deciders`, `superseded_by` | ADR (`superseded_by` khi status là `superseded`) | `ADR-NNNN`, `YYYY-MM-DD`, danh sách người quyết định, `ADR-NNNN`. MADR 4.0.0 gọi khóa này là `decision-makers`; specflow giữ `deciders` có chủ ý để ADR đã có không phải đổi khóa |
-| `title`, `description`, `priority`, `effort`, `tags`, `created` | Implementation plan | Theo mục 9 |
+| `paths` | Rule in `.claude/rules/` | List of globs that the rule applies to (a Claude Code key) |
+| `adr_id`, `date`, `deciders`, `superseded_by` | ADR (`superseded_by` when status is `superseded`) | `ADR-NNNN`, `YYYY-MM-DD`, list of decision makers, `ADR-NNNN`. MADR 4.0.0 calls this key `decision-makers`; specflow keeps `deciders` on purpose so that existing ADRs do not have to change the key |
+| `title`, `description`, `priority`, `effort`, `tags`, `created` | Implementation plan | Per §9 |
 
-`doc_type` hợp lệ:
+Valid `doc_type` values:
 
-- Tài liệu dự án: `intake`, `srs`, `srs-module`, `wireframe-index`, `wireframe-screen`, `design-system`, `architecture`, `adr`, `spec`, `prompt-spec`, `implementation-plan`, `implementation-phase`, `agent-context`, `agent-rule`, `roadmap`.
-- Tài liệu brownfield: `codebase-summary`, `as-is-architecture`, `regression-baseline`, `gap-analysis`, `migration-plan`.
-- File hạ tầng của bộ mẫu: `playbook`, `conventions`, `overlay`, `overlay-section`, `profile`, `spec-addendum`.
+- Project documents: `intake`, `srs`, `srs-module`, `wireframe-index`, `wireframe-screen`, `design-system`, `architecture`, `adr`, `spec`, `prompt-spec`, `implementation-plan`, `implementation-phase`, `agent-context`, `agent-rule`, `roadmap`.
+- Brownfield documents: `codebase-summary`, `as-is-architecture`, `regression-baseline`, `gap-analysis`, `migration-plan`.
+- Template-set infrastructure files: `playbook`, `conventions`, `overlay`, `overlay-section`, `profile`, `spec-addendum`.
 
-`wireframe-index` là chỉ mục wireframe `docs/wireframes/00_WIREFRAME_INDEX.md`; chỉ mục không đặt tên `README.md` vì `README.md` được miễn frontmatter. `wireframe-screen` là trang của một màn hình, `docs/wireframes/SCR-<MOD>-NN.md`. Hai loại này thuộc Giai đoạn 1W (PLAYBOOK mục 2.2.1), áp cho dự án có Intake tạo từ template Intake `1.3.0` trở lên. `design-system` là tài liệu hệ thống thiết kế `docs/design-system/DESIGN_SYSTEM.md` (CONVENTIONS mục 10.7); thuộc Giai đoạn 1W, áp cho dự án có chỉ mục wireframe từ template chỉ mục `1.3.0` trở lên và ít nhất một trang từ template trang `1.4.0` trở lên.
+`wireframe-index` is the wireframe index `docs/wireframes/00_WIREFRAME_INDEX.md`; the index is not named `README.md` because `README.md` is exempt from frontmatter. `wireframe-screen` is the page of one screen, `docs/wireframes/SCR-<MOD>-NN.md`. These two types belong to Stage 1W (PLAYBOOK §2.2.1). `design-system` is the design system document `docs/design-system/DESIGN_SYSTEM.md` (CONVENTIONS §10.7); it belongs to Stage 1W.
 
-Trạng thái hợp lệ theo `doc_type` (`scripts/check-templates.sh` đọc bảng này). Tài liệu có `status: approved` có `version` từ `1.0.0` trở lên.
+Valid status by `doc_type` (`scripts/check-templates.sh` reads this table). A document with `status: approved` has a `version` of `1.0.0` or higher.
 
-| `doc_type` | Trạng thái |
+| `doc_type` | Status |
 | --- | --- |
 | `intake`, `srs`, `srs-module`, `wireframe-index`, `wireframe-screen`, `design-system`, `architecture`, `prompt-spec`, `agent-context`, `agent-rule`, `codebase-summary`, `as-is-architecture`, `regression-baseline`, `gap-analysis`, `migration-plan` | `draft`, `in-review`, `approved`, `superseded` |
 | `spec` | `draft`, `in-review`, `approved`, `implemented`, `superseded` |
@@ -187,328 +186,329 @@ Trạng thái hợp lệ theo `doc_type` (`scripts/check-templates.sh` đọc b�
 | `roadmap` | `active` |
 | `playbook`, `conventions`, `overlay`, `overlay-section`, `profile`, `spec-addendum` | `draft`, `stable`, `deprecated` |
 
-## 4. Quy ước ID (ID Scheme) và truy xuất nguồn gốc (Traceability)
+## 4. ID Scheme & Traceability
 
-`{MOD}` là mã phân hệ: 2 đến 6 chữ in hoa, có thể thêm đúng một đoạn con 2 đến 6 chữ in hoa sau dấu gạch (`AUTH`, `UI-AUTH`). `N` là chữ số, đệm số 0 bên trái. Dự án gọi API của một dự án khác đặt mã phân hệ khác mã phân hệ của API đó (ví dụ thêm tiền tố `UI-`), để ID của hai dự án không trùng nhau khi tài liệu tham chiếu chéo. Dự án brownfield đặt mã phân hệ ở Codebase Summary §3; SRS to-be dùng lại mã đó cho phân hệ còn tồn tại (`brownfield/PLAYBOOK_BROWNFIELD.md` mục 5.3).
+`{MOD}` is the module code: 2 to 6 capital letters, optionally followed by exactly one sub-segment of 2 to 6 capital letters after a hyphen (`AUTH`, `UI-AUTH`). `N` is a digit, padded with zeros on the left. A project that calls the API of another project uses a module code different from the module code of that API (for example with a `UI-` prefix added), so that the IDs of the two projects do not collide when documents cross-reference. A brownfield project sets the module code in Codebase Summary §3; the to-be SRS reuses that code for a module that remains (`brownfield/PLAYBOOK_BROWNFIELD.md` §5.3).
 
-| Loại | Mẫu | Định nghĩa tại |
+| Kind | Pattern | Defined at |
 | --- | --- | --- |
-| Mục tiêu dự án | `GOAL-NN` | Intake §2.2 |
-| Phân hệ | `MOD-NN` | SRS §1.2 |
-| Tác nhân | `ACT_<ROLE>` | SRS §2.2 |
+| Project goal | `GOAL-NN` | Intake §2.2 |
+| Module | `MOD-NN` | SRS §1.2 |
+| Actor | `ACT_<ROLE>` | SRS §2.2 |
 | Business rule | `BR-NNN` | SRS §5 |
-| Yêu cầu chức năng | `FR-{MOD}-NNN` | SRS §6 |
-| Màn hình (wireframe) | `SCR-{MOD}-NN`, file `docs/wireframes/SCR-<MOD>-NN.md` | SRS §3, cột `SCR ID` của bảng Giao diện người dùng; trang wireframe ở Giai đoạn 1W chi tiết hóa |
-| Component (hệ thống thiết kế) | `CMP-NN` | `docs/design-system/DESIGN_SYSTEM.md` (CONVENTIONS mục 10.7) |
-| Pattern (hệ thống thiết kế) | `PAT-NN` | `docs/design-system/DESIGN_SYSTEM.md` (CONVENTIONS mục 10.7) |
-| Template (hệ thống thiết kế) | `TPL-NN` | `docs/design-system/DESIGN_SYSTEM.md` (CONVENTIONS mục 10.7) |
-| Yêu cầu phi chức năng | `NFR-{CAT}-NN`, CAT thuộc `PERF`, `SEC`, `RELI`, `MAINT`, `USAB`, `FLEX`, `SAFE`, `I18N`, `LEGAL`, `OBS`, `DATA`, `COMPAT`, `COST`; ánh xạ sang ISO/IEC 25010 ở mục 8 | SRS §7 |
-| Tiêu chí nghiệm thu | `AC-{MOD}-NN` | SRS §8 |
-| Test case | `TC-{MOD}-{TYPE}-NN`, TYPE thuộc `UNIT`, `INT`, `E2E`, `CTR`, `CONC`, `LOAD`, `A11Y`, `VIS`, `EVAL`, `INJ`, `COST`, `SMOKE`, `REG` | SPEC §9; `REG` ở Regression Baseline §6.1 |
-| Quyết định kiến trúc | `ADR-NNNN`, file `docs/adr/NNNN-<slug>.md` | ARCHITECTURE §12 |
-| Spec | `SPEC-{MOD}-NNN`, file `docs/specs/SPEC_<FEATURE_KEY>.md` | SPEC frontmatter và §1 |
-| Prompt (overlay `ai-llm-app`) | `PROMPT-{MOD}-NNN`, file `docs/prompts/PROMPT_<NAME>.md` | SRS §4.1 (bảng bộ dữ liệu đánh giá); Prompt Spec frontmatter và §1 dùng lại |
-| Bất biến cốt lõi (Core Invariant) | `INV-NN`, đánh số riêng trong từng SPEC | SPEC §1.2 |
-| Hành vi phải giữ (brownfield) | `RB-NNN` | Regression Baseline §3 |
-| Giả định hoặc câu hỏi mở | `AQ-NN`, đánh số riêng trong từng tài liệu | Mục `Assumptions & Open Questions` |
-| Mã lỗi | `UPPER_SNAKE` | Error Code Registry trong ARCHITECTURE §7.1 |
+| Functional requirement | `FR-{MOD}-NNN` | SRS §6 |
+| Screen (wireframe) | `SCR-{MOD}-NN`, file `docs/wireframes/SCR-<MOD>-NN.md` | SRS §3, column `SCR ID` of the User Interfaces table; the wireframe page at Stage 1W details it |
+| Component (design system) | `CMP-NN` | `docs/design-system/DESIGN_SYSTEM.md` (CONVENTIONS §10.7) |
+| Pattern (design system) | `PAT-NN` | `docs/design-system/DESIGN_SYSTEM.md` (CONVENTIONS §10.7) |
+| Template (design system) | `TPL-NN` | `docs/design-system/DESIGN_SYSTEM.md` (CONVENTIONS §10.7) |
+| Non-functional requirement | `NFR-{CAT}-NN`, CAT is one of `PERF`, `SEC`, `RELI`, `MAINT`, `USAB`, `FLEX`, `SAFE`, `I18N`, `LEGAL`, `OBS`, `DATA`, `COMPAT`, `COST`; mapped to ISO/IEC 25010 in §8 | SRS §7 |
+| Acceptance criterion | `AC-{MOD}-NN` | SRS §8 |
+| Test case | `TC-{MOD}-{TYPE}-NN`, TYPE is one of `UNIT`, `INT`, `E2E`, `CTR`, `CONC`, `LOAD`, `A11Y`, `VIS`, `EVAL`, `INJ`, `COST`, `SMOKE`, `REG` | SPEC §9; `REG` in Regression Baseline §6.1 |
+| Architectural decision | `ADR-NNNN`, file `docs/adr/NNNN-<slug>.md` | ARCHITECTURE §12 |
+| Spec | `SPEC-{MOD}-NNN`, file `docs/specs/SPEC_<FEATURE_KEY>.md` | SPEC frontmatter and §1 |
+| Prompt (`ai-llm-app` overlay) | `PROMPT-{MOD}-NNN`, file `docs/prompts/PROMPT_<NAME>.md` | SRS §4.1 (evaluation dataset table); the Prompt Spec frontmatter and §1 reuse it |
+| Core Invariant | `INV-NN`, numbered separately in each SPEC | SPEC §1.2 |
+| Behavior to preserve (brownfield) | `RB-NNN` | Regression Baseline §3 |
+| Assumption or open question | `AQ-NN`, numbered separately in each document | The `Assumptions & Open Questions` section |
+| Error code | `UPPER_SNAKE` | Error Code Registry in ARCHITECTURE §7.1 |
 
-ID màn hình `SCR-{MOD}-NN` (áp cho dự án có Intake tạo từ template Intake `1.3.0` trở lên): `{MOD}` là mã phân hệ chủ của màn hình, tức phân hệ có FR chính mà màn hình hiện thực; NN duy nhất theo MOD trong toàn dự án, kể cả khi web và mobile dùng chung một mã phân hệ (bảng ở SRS §3 ghi bề mặt của từng màn hình). ID được đặt ở Giai đoạn 1, trong bảng Giao diện người dùng ở SRS §3, cột `SCR ID`, để SRS đã duyệt ở Gate 1 không phải sửa lại chỉ để điền ID sau Giai đoạn 1W; chỉ màn hình mới phát hiện ở Giai đoạn 1W mới làm SRS đổi theo PLAYBOOK mục 8. Dự án brownfield: màn hình không đổi theo Gap Analysis không có ID; ô `SCR ID` ghi `Giữ nguyên` (`brownfield/PLAYBOOK_BROWNFIELD.md` mục 5.3). ID màn hình bỏ đi không dùng lại.
+Screen ID `SCR-{MOD}-NN`: `{MOD}` is the owning module code of the screen, that is, the module whose main FR the screen implements; NN is unique per MOD across the whole project, even when web and mobile share one module code (the table at SRS §3 records the surface of each screen). The ID is assigned at Stage 1, in the User Interfaces table at SRS §3, column `SCR ID`, so that an SRS approved at Gate 1 does not have to be edited only to fill in IDs after Stage 1W; only a screen newly discovered at Stage 1W makes the SRS change, per PLAYBOOK §8. A brownfield project: a screen that does not change under the Gap Analysis has no ID; the `SCR ID` cell records `Unchanged` (`brownfield/PLAYBOOK_BROWNFIELD.md` §5.3). A screen ID that is dropped is not reused.
 
-Ý nghĩa TYPE: `CTR` contract test; `CONC` kiểm chứng bất biến dưới thao tác đồng thời hoặc xen kẽ, dạng cụ thể do overlay định nghĩa (request song song, bấm gửi hai lần, hai thiết bị cùng sửa khi offline); `EVAL` đánh giá mô hình trên dataset; `INJ` prompt injection và red-team; `COST` ngân sách token hoặc chi phí; `SMOKE` smoke test môi trường hoặc thiết bị; `REG` regression của hành vi `RB-*`.
+Meaning of TYPE: `CTR` contract test; `CONC` verifies an invariant under concurrent or interleaved operations, the concrete form being defined by the overlay (parallel requests, double submit, two devices editing while offline); `EVAL` evaluates a model on a dataset; `INJ` prompt injection and red-team; `COST` token or cost budget; `SMOKE` smoke test of an environment or device; `REG` regression of a `RB-*` behavior.
 
-Chuỗi truy xuất bắt buộc:
+Required traceability chain:
 
-- `GOAL → FR, NFR`: cột Nguồn của FR (bảng thuộc tính SRS §6.1) và của NFR (SRS §7) dẫn `GOAL-NN` khi yêu cầu phục vụ một mục tiêu; mỗi `GOAL-NN` ở Intake được ít nhất một FR hoặc NFR dẫn. Áp cho SRS tạo từ template SRS `1.2.0` trở lên và Intake tạo từ template Intake `1.1.0` trở lên.
-- `FR → SCR` (áp cho dự án có Intake tạo từ template Intake `1.3.0` trở lên và có Giai đoạn 1W): cột FR của bảng Giao diện người dùng ở SRS §3 và bảng đối chiếu của chỉ mục wireframe. Danh sách màn hình có một nguồn là SRS §3. Chỉ mục wireframe lặp lại danh sách đó ở danh mục màn hình, và người duyệt Gate 1W đối chiếu hai nơi (`scripts/check-templates.sh` kiểm điều này trên ví dụ của bộ mẫu); SPEC chỉ dẫn `SCR-*`, không định nghĩa màn hình. Bảng đối chiếu có đúng một hàng cho mỗi FR ở SRS §6.1 có ưu tiên khác `Won't` (FR `Won't` không được làm nên không có hàng), ghi một trong: các `SCR-*` hiện thực FR; `Không có giao diện` kèm lý do; hoặc, ở dự án brownfield, `Giữ nguyên` kèm dẫn ảnh chụp ở Regression Baseline §5. Trang wireframe dẫn ít nhất một FR có thật; AC mà trang dẫn có ở SRS §8 và thuộc một FR của trang. Cột FR ở hàng của một màn hình trong bảng Giao diện người dùng ở SRS §3 liệt kê đúng các FR mà màn hình đó hiện thực, tức đúng các FR có hàng đối chiếu ghi `SCR ID` của màn hình; hai nơi lệch nhau thì sửa SRS theo PLAYBOOK mục 8.
-- `FR → AC` trong SRS §8; `AC → TC → file test → tên test` trong SPEC §9, là nơi duy nhất ghi TC cùng với file pha. Bảng tra AC và NFR tới TC của cả dự án do `scripts/project-index.py` sinh ở `docs/INDEX.md` mục 5. SRS tạo từ template SRS cũ hơn `1.3.0` còn cột TC ở §8: cột đó không cập nhật nữa và không được đối chiếu với SPEC. SPEC §9 ghi đúng file và tên test của từng TC. Tên test mô tả hành vi bằng tiếng Anh, ví dụ `rejects an expired access token`; không đưa TC ID hay ID quy trình vào tên test, chú thích mã, tên migration hay commit message, vì các ID này thuộc tài liệu và truy vết qua bảng.
-- Mỗi Core Invariant `INV-NN` của spec có ít nhất một `TC-{MOD}-CONC-NN`.
-- `NFR → TC`: SPEC §9 nhận `NFR-*` ở cột "AC hoặc INV". Một NFR ở SPEC §1.5 có cách kiểm `Test` ở bảng NFR của SRS §8 thì SPEC đó có test ghi NFR ở §9 (NFR dùng chung nhiều phân hệ có thể được kiểm bởi test của một SPEC khác đã ghi NFR đó ở §9 của nó). NFR kiểm bằng `Inspection`, `Demo` hoặc `Analysis` không cần TC. TC chạy trên môi trường thật (tải, smoke) được lên lịch ở plan như TC khác: pha viết kịch bản test và kiểm kịch bản chạy được; lần chạy trên staging ghi ở ARCHITECTURE §11, chặn bước triển khai production chứ không chặn Definition of Done của tính năng. Áp cho SRS tạo từ template SRS `1.2.0` trở lên.
-- Đánh số TC: NN của `TC-{MOD}-{TYPE}-NN` duy nhất theo cặp (MOD, TYPE) trong toàn dự án. SPEC mới lấy số kế tiếp ở `docs/INDEX.md` mục 3 (viết nhiều SPEC trong một lượt thì dựng lại chỉ mục sau mỗi SPEC, để hai SPEC không lấy cùng số), tính trên mọi SPEC, Regression Baseline §6.1 và cột TC còn lại ở SRS cũ; test `REG` của brownfield theo cùng quy tắc (`brownfield/PLAYBOOK_BROWNFIELD.md` mục 5.3). Ở Regression Baseline §6.1, mọi test bảo vệ một `RB-*` mang loại `REG`, kể cả test có sẵn trước Giai đoạn 0R, vì loại ghi vai trò bảo vệ hành vi chứ không ghi kiểu test; một test tham số hóa là một TC; TC dùng mã phân hệ của hành vi được bảo vệ, không phải mã phân hệ chứa file test. Ba quy tắc này và việc tính §6.1 khi đánh số áp cho dự án có Intake tạo từ template Intake `1.2.0` trở lên; ID đã duyệt không đánh số lại.
-- `NFR → tactic → ADR` trong ARCHITECTURE §8; `MOD → thành phần → thư mục` trong ARCHITECTURE §4.
-- `FR, NFR → dòng roadmap → SPEC → pha → commit → tag` trong `docs/ROADMAP.md` (mục 11), áp cho dự án có Intake tạo từ template Intake `1.4.0` trở lên.
-- Mỗi mã lỗi xuất hiện ở SRS hoặc SPEC MUST có trong Error Code Registry.
+- `GOAL → FR, NFR`: the Source column of the FR (attribute table of SRS §6.1) and of the NFR (SRS §7) cites `GOAL-NN` when the requirement serves a goal; every `GOAL-NN` in the Intake is cited by at least one FR or NFR.
+- `FR → SCR` (a project with Stage 1W): the FR column of the User Interfaces table at SRS §3 and the mapping table of the wireframe index. The list of screens has one source, SRS §3. The wireframe index repeats that list in the screen catalog, and the approver of Gate 1W compares the two places (`scripts/check-templates.sh` checks this on the examples of the template set); a SPEC only cites `SCR-*` and does not define screens. The mapping table has exactly one row for each FR in SRS §6.1 whose priority is not `Won't` (a `Won't` FR is not to be built, so it has no row), recording one of: the `SCR-*` that implement the FR; `No UI` with a reason; or, in a brownfield project, `Unchanged` with a citation of the screenshot in Regression Baseline §5. A wireframe page cites at least one real FR; an AC that the page cites exists in SRS §8 and belongs to an FR of the page. The FR column in the row of a screen in the User Interfaces table at SRS §3 lists exactly the FRs that the screen implements, that is, exactly the FRs whose cross-reference row records the `SCR ID` of the screen; when the two places differ, fix the SRS per PLAYBOOK §8.
+- `FR → AC` in SRS §8; `AC → TC → test file → test name` in SPEC §9, the only place that records a TC together with the phase file. The lookup table from AC and NFR to TC for the whole project is generated by `scripts/project-index.py` in `docs/INDEX.md` §5. SPEC §9 records the exact file and test name of each TC. A test name describes behavior in English, for example `rejects an expired access token`; do not put a TC ID or a process ID in a test name, a code comment, a migration name or a commit message, because these IDs belong to documents and are traced through the table.
+- Every Core Invariant `INV-NN` of a spec has at least one `TC-{MOD}-CONC-NN`.
+- `NFR → TC`: SPEC §9 accepts `NFR-*` in the column "AC or INV". An NFR in SPEC §1.5 whose verification method is `Test` in the NFR table of SRS §8 has a test that records the NFR in §9 of that SPEC (an NFR shared by several modules may be verified by the test of another SPEC that records that NFR in its §9). An NFR verified by `Inspection`, `Demo` or `Analysis` needs no TC. A TC that runs on a real environment (load, smoke) is scheduled in the plan like any other TC: the phase writes the test script and checks that the script runs; the run on staging is recorded in ARCHITECTURE §11 and blocks the production deployment step, but does not block the Definition of Done of the feature.
+- TC numbering: NN of `TC-{MOD}-{TYPE}-NN` is unique per pair (MOD, TYPE) across the whole project. A new SPEC takes the next number in `docs/INDEX.md` §3 (when writing several SPECs in one pass, rebuild the index after each SPEC so that two SPECs do not take the same number), counted over every SPEC and Regression Baseline §6.1; a brownfield `REG` test follows the same rule (`brownfield/PLAYBOOK_BROWNFIELD.md` §5.3). In Regression Baseline §6.1, every test that protects an `RB-*` carries type `REG`, including a test that already existed before Stage 0R, because the type records the role of protecting behavior and not the kind of test; a parameterized test is one TC; a TC uses the module code of the behavior being protected, not the module code that holds the test file. An approved ID is not renumbered.
+- `NFR → tactic → ADR` in ARCHITECTURE §8; `MOD → component → directory` in ARCHITECTURE §4.
+- `FR, NFR → roadmap row → SPEC → phase → commit → tag` in `docs/ROADMAP.md` (§11).
+- Every error code that appears in an SRS or SPEC MUST be in the Error Code Registry.
 
-## 5. Ngôn ngữ (Language Policy)
+## 5. Language Policy
 
-- Tiêu đề và diễn giải viết tiếng Việt có dấu đầy đủ; thuật ngữ tiếng Anh đặt trong ngoặc ở lần xuất hiện đầu. Heading ở lần đầu theo dạng "Tiếng Việt (English Term)".
-- Không dịch thuật ngữ kỹ thuật đã phổ biến: idempotency, transaction, middleware, race condition, endpoint, payload.
-- Luôn dùng tiếng Anh cho: định danh code, tên file, tên bảng và cột, mã lỗi, ID yêu cầu (FR, NFR, AC, TC, ADR), commit message, tên test, tên branch. Từ khóa RFC 2119 viết in hoa tiếng Anh.
-- Agent MUST NOT chuyển sang toàn tiếng Anh hoặc toàn tiếng Việt giữa chừng một tài liệu.
+- The language of a project is the `language` key in the frontmatter of its Intake: a code of a folder of `scripts/locales/` (`en`, `vi`). Every document of the project carries the same value, and `scripts/check-templates.sh` refuses a document that states another one. The agent asks for the language at Stage 0 and writes it in the Intake before it writes any other document.
+- Headings, prose and the labels that the scripts read (column names, line prefixes, cell values, roadmap statuses) are written in that language. The labels are the exact strings of `scripts/locales/<language>/`; the agent copies them and never rephrases them. A heading keeps its section number.
+- The rules, prompts and templates of the kit are written in English. When the language of the project is not English, the agent writes the headings and the text of a template in the project language while copying it, keeping the section numbers, tables, IDs and labels. A heading is written `<title in the project language> (<English title of the template>)`, for example `## 1. Giới thiệu (Introduction)`; the English part is the key that the scripts match. A project in English uses the title of the template, without parentheses.
+- To find a label, search the English string of the template in `scripts/locales/en/*.tsv` and use the value of the same key in `scripts/locales/<language>/`. Never translated: IDs, priorities (`Must`, `Should`, `Could`, `Won't`), verification methods (`Test`, `Inspection`, `Demo`, `Analysis`), test type names (`Unit`, `Integration`), standard codes and RFC 2119 keywords. A label value MUST NOT contain `/`, `&` or `\`, which break the scripts' `sed`.
+- Do not translate widely used technical terms: idempotency, transaction, middleware, race condition, endpoint, payload.
+- Always use English for: code identifiers, file names, table and column names, error codes, requirement IDs (FR, NFR, AC, TC, ADR), commit messages, test names, branch names. RFC 2119 keywords are written in English capitals.
+- Adding a language is not a supported path of this release. A new language folder has the same keys as `en`, defines `docs_high_names_match` in `lists.tsv`, and keeps `(`, `)` and `.` out of label values, as it does `/`, `&` and `\`, because the scripts put labels into `sed` and `grep -E`.
+- An agent MUST NOT switch midway through a document to another language.
 
-## 6. Bố cục tài liệu dự án sinh ra (specflow Standard Layout)
+## 6. specflow Standard Layout
 
-Bộ mẫu được cài vào thư mục `specflow/` ở gốc dự án (chỉ đọc; agent MUST NOT sửa file trong `specflow/`). `CLAUDE.md` của dự án MUST chép nguyên văn cả hai dòng dấu mốc dưới đây và toàn bộ nội dung giữa chúng vào mục `## Documentation Layout`; `scripts/check-templates.sh` đối chiếu từng ký tự ở template, starter và ví dụ của bộ mẫu.
+The template set is installed into the `specflow/` directory at the project root (read-only; an agent MUST NOT edit files in `specflow/`). The `CLAUDE.md` of the project MUST copy verbatim both marker lines below and all the content between them into the section `## Documentation Layout`; `scripts/check-templates.sh` compares character by character in the templates, starters and examples of the template set.
 
 <!-- BEGIN: docs-layout-override -->
-Dự án này dùng bố cục tài liệu specflow. Bỏ qua bộ tên tài liệu `project-overview-pdr.md`, `system-architecture.md`, `code-standards.md`, `deployment-guide.md`, `codebase-summary.md`, `project-roadmap.md` của rule toàn cục và không tạo các file đó. Vai trò của chúng được thay như sau:
+This project uses the specflow document layout. Ignore the global rule's set of document names `project-overview-pdr.md`, `system-architecture.md`, `code-standards.md`, `deployment-guide.md`, `codebase-summary.md`, `project-roadmap.md` and do not create those files. Their roles are replaced as follows:
 
-| Tên theo rule toàn cục | Thay bằng trong bố cục specflow |
+| Name in the global rule | Replaced by in the specflow layout |
 | --- | --- |
-| `project-overview-pdr.md` | `docs/intake/PROJECT_INTAKE.md` và SRS trong `docs/srs/` |
+| `project-overview-pdr.md` | `docs/intake/PROJECT_INTAKE.md` and the SRS in `docs/srs/` |
 | `system-architecture.md` | `docs/ARCHITECTURE.md` |
-| `code-standards.md` | ARCHITECTURE §1 (Golden Rules), §7 (conventions) và `.claude/rules/` |
-| `deployment-guide.md` | ARCHITECTURE §8 (Deployment) và §11 (CI/CD) |
-| `codebase-summary.md` | ARCHITECTURE §4 (layout); dự án brownfield dùng `docs/brownfield/CODEBASE_SUMMARY.md` |
-| `project-roadmap.md` | `docs/ROADMAP.md` (dự án có Intake tạo từ template Intake `1.4.0` trở lên), Implementation Plan trong `plans/` và phạm vi trong SRS §1.2 |
+| `code-standards.md` | ARCHITECTURE §1 (Golden Rules), §7 (conventions) and `.claude/rules/` |
+| `deployment-guide.md` | ARCHITECTURE §8 (Deployment) and §11 (CI/CD) |
+| `codebase-summary.md` | ARCHITECTURE §4 (layout); a brownfield project uses `docs/brownfield/CODEBASE_SUMMARY.md` |
+| `project-roadmap.md` | `docs/ROADMAP.md`, the Implementation Plan in `plans/` and the scope in SRS §1.2 |
 
 ```text
-specflow/                                 # bộ mẫu specflow, chỉ đọc
+specflow/                                 # the specflow template set, read-only
 docs/
 ├── intake/PROJECT_INTAKE.md
-├── ROADMAP.md                        # Intake 1.4.0 trở lên: việc phải làm, tiến độ, mốc (CONVENTIONS mục 11)
-├── INDEX.md                          # chỉ mục sinh bởi specflow/scripts/project-index.py, không sửa tay
-├── gates/GATE-N.md                   # sổ duyệt của từng gate, do specflow/scripts/gate.py ghi, không sửa tay
+├── ROADMAP.md                        # work to do, progress, milestones (CONVENTIONS §11)
+├── INDEX.md                          # index built by specflow/scripts/project-index.py, never edited by hand
+├── gates/GATE-N.md                   # approval ledger of each gate, written by specflow/scripts/gate.py, never edited by hand
 ├── srs/SRS.md                        # monolithic
-├── srs/00_SRS_MASTER.md              # modular: tổng quan, NFR, mô hình dữ liệu chung
-├── srs/SRS_MODULE_<NAME>.md          # modular: use case của từng phân hệ
-├── wireframes/00_WIREFRAME_INDEX.md  # khi có giao diện (Giai đoạn 1W): chỉ mục, đối chiếu FR
-├── wireframes/SCR-<MOD>-NN.md        # một trang cho mỗi màn hình
-├── wireframes/html/SCR-<MOD>-NN.html # tùy chọn: HTML tĩnh low-fi
+├── srs/00_SRS_MASTER.md              # modular: overview, NFRs, shared data model
+├── srs/SRS_MODULE_<NAME>.md          # modular: the use cases of one module
+├── wireframes/00_WIREFRAME_INDEX.md  # when there is a UI (Stage 1W): index, FR traceability
+├── wireframes/SCR-<MOD>-NN.md        # one page per screen
+├── wireframes/html/SCR-<MOD>-NN.html # a static HTML screen per page, when the Intake asks for HTML
 ├── ARCHITECTURE.md
-├── architecture/                     # tệp đi kèm của ARCHITECTURE (CONVENTIONS mục 7)
+├── architecture/                     # companion files of ARCHITECTURE (CONVENTIONS §7)
 ├── adr/NNNN-<slug>.md
 ├── specs/SPEC_<FEATURE_KEY>.md
-├── specs/SPEC_<FEATURE_KEY>.*        # tệp đi kèm của SPEC, không phải .md (CONVENTIONS mục 7)
-├── prompts/PROMPT_<NAME>.md          # chỉ khi dùng overlay ai-llm-app
-├── design-system/DESIGN_SYSTEM.md    # khi có giao diện (Giai đoạn 1W): hệ thống thiết kế
-├── design-system/tokens.json         # token nguồn, định dạng DTCG
-└── brownfield/                       # chỉ dự án brownfield
+├── specs/SPEC_<FEATURE_KEY>.*        # companion files of a SPEC, not .md (CONVENTIONS §7)
+├── prompts/PROMPT_<NAME>.md          # only with the ai-llm-app overlay
+├── design-system/DESIGN_SYSTEM.md    # when there is a UI (Stage 1W): the design system
+├── design-system/tokens.json         # source tokens, DTCG format
+└── brownfield/                       # brownfield projects only
     ├── CODEBASE_SUMMARY.md
     ├── AS_IS_ARCHITECTURE.md
     ├── REGRESSION_BASELINE.md
     ├── GAP_ANALYSIS.md
     └── MIGRATION_PLAN.md
-plans/{YYMMDD-HHmm}-{slug}/plan.md    # Implementation Plan, định dạng ở CONVENTIONS mục 9
+plans/{YYMMDD-HHmm}-{slug}/plan.md    # Implementation Plan, format in CONVENTIONS §9
 plans/{YYMMDD-HHmm}-{slug}/phase-NN-<slug>.md
-plans/reports/                        # report của agent
+plans/reports/                        # agent reports
 CLAUDE.md
 .claude/rules/*.md
 ```
 
-Implementation Plan và report nằm trong `plans/` theo định dạng ở CONVENTIONS mục 9 (không cần công cụ riêng); không tạo `IMPLEMENTATION_PLAN.md` ở gốc. Khi rule toàn cục và tài liệu specflow mâu thuẫn về bố cục hoặc quy trình tài liệu, tài liệu specflow thắng trong phạm vi dự án này. Các rule toàn cục khác (development rules, git, process management) vẫn có hiệu lực.
+The Implementation Plan and reports live in `plans/` in the format of CONVENTIONS §9 (no separate tool needed); do not create `IMPLEMENTATION_PLAN.md` at the root. When the global rule and the specflow documents disagree about the layout or the documentation process, the specflow documents win within this project. The other global rules (development rules, git, process management) stay in force.
 <!-- END: docs-layout-override -->
 
-Khối của các bản trước vẫn hợp lệ: dự án đang dùng khối cũ không phải sửa `CLAUDE.md`. `scripts/check-templates.sh` chấp nhận khối hiện tại cùng mọi khối cũ ghi ở `COMPATIBILITY.md` mục 6.
+## 7. Formatting
 
-## 7. Định dạng (Formatting)
-
-- Không dùng LaTeX. Dùng ký tự `≤ ≥ ≠ × Σ →` và đặt công thức trong inline code, ví dụ `total = Σ line_amount`.
-- Mọi sơ đồ dùng Mermaid (`flowchart`, `sequenceDiagram`, `erDiagram`, `stateDiagram-v2`); C4 vẽ bằng `flowchart`. Không vẽ khung ASCII. Cây thư mục dùng khối `text`.
-- Bảng markdown luôn có hàng header. Khối code luôn có nhãn ngôn ngữ. Không dùng emoji.
-- Trần kích thước của tài liệu dự án: một SPEC dài tối đa 500 dòng, tài liệu ARCHITECTURE tối đa 800 dòng, một dòng của hai loại tài liệu này tối đa 1.000 ký tự. Tài liệu vượt trần MUST chuyển khối máy đọc ra tệp đi kèm theo gạch đầu dòng dưới; ô bảng dài thì tách thành nhiều hàng hoặc thành danh sách dưới bảng. `scripts/check-templates.sh` báo lỗi với SPEC tạo từ template SPEC `1.3.0` trở lên và ARCHITECTURE tạo từ template Architecture `1.2.0` trở lên; tài liệu tạo từ template cũ hơn chỉ nhận cảnh báo. Trần dòng tính cả dòng trong khối code và frontmatter. Ngoại lệ so với cách đọc phiên bản ở mục 3: để trần xét phiên bản template, checker lấy phiên bản mới hơn giữa `template_version` và mục core của `assembled_from`, và tài liệu không ghi cả hai khóa chịu trần.
-- Tệp đi kèm (companion file), chỉ dùng cho SPEC và ARCHITECTURE: một khối máy đọc của SPEC hoặc ARCHITECTURE (hợp đồng API, lược đồ dữ liệu, mã mẫu, cây thư mục, sơ đồ Mermaid dài) được phép nằm ở một tệp riêng thay cho khối code trong tài liệu. Tại chỗ của khối, tài liệu ghi một dòng bắt đầu bằng `Tệp đi kèm:`, tiếp theo là đường dẫn tính từ gốc dự án đặt trong inline code và một câu nói tệp chứa gì. Tệp đi kèm không phải file markdown. Tệp đi kèm của SPEC đặt cạnh SPEC, tên là tên tệp SPEC bỏ đuôi `.md`, thêm một tên ngắn và đuôi của định dạng, ví dụ `docs/specs/SPEC_ORDER_CREATE.openapi.yaml`; tệp đi kèm của ARCHITECTURE đặt trong `docs/architecture/`, ví dụ `docs/architecture/schema.prisma`. Tệp đi kèm là một phần của tài liệu dẫn nó: cùng version, cùng lần duyệt, và sửa tệp là sửa tài liệu theo PLAYBOOK mục 8. Mỗi tệp đi kèm được đúng một tài liệu dẫn; `scripts/check-templates.sh` kiểm tệp có thật, đặt đúng chỗ và có đúng một tài liệu dẫn.
-- Tên file: template lõi và template brownfield `NN_Name_Template.md`; template Implementation Plan là thư mục `core/05_Implementation_Plan_Template/` theo mục 9; template wireframe là thư mục `core/07_Wireframe_Template/` gồm `00_Wireframe_Index_Template.md` (chỉ mục), `SCR_Screen_Template.md` (trang màn hình), `Design_System_Template.md` (tài liệu hệ thống thiết kế) và `Design_Tokens_Template.json` (token mẫu); template bổ sung của overlay `Name_Template.md`; file section của overlay `kebab-case.md`, trừ `OVERLAY.md`; stack profile `stack-profiles/<profile>.md`; starter `<DOC>_Template.md` và `CLAUDE.md.template`; file hạ tầng viết hoa như `PLAYBOOK.md`, `PROMPTS.md`, `COMPATIBILITY.md`, `PLAYBOOK_BROWNFIELD.md`, `Spec_Brownfield_Addendum.md`.
-- Heading của core và template brownfield đánh số (`## N.`, `### N.M.`), trừ template Implementation Plan (theo mục 9), mục `## Documentation Layout` và phụ lục của Agent Context; heading trong khối SLOT-CONTENT và PROFILE-CONTENT không đánh số.
-- Mục bắt buộc theo `doc_type` (heading chứa đúng chuỗi, script đọc các dòng dưới):
-  - `Assumptions & Open Questions`: mọi template và tài liệu sinh ra, trừ `implementation-phase`, `agent-rule`, `roadmap` (câu hỏi ghi ở tài liệu nguồn, yêu cầu mới ghi ở mục Yêu cầu mới của roadmap).
+- Do not use LaTeX. Use the characters `≤ ≥ ≠ × Σ →` and put formulas in inline code, for example `total = Σ line_amount`.
+- Every diagram uses Mermaid (`flowchart`, `sequenceDiagram`, `erDiagram`, `stateDiagram-v2`); C4 is drawn with `flowchart`. Do not draw ASCII frames. A directory tree uses a `text` block.
+- A markdown table always has a header row. A code block always has a language label. Do not use emoji.
+- Size ceiling of project documents: a SPEC is at most 500 lines long, an ARCHITECTURE document at most 800 lines, and one line of these two kinds of document at most 1,000 characters. A document over the ceiling MUST move machine-readable blocks out to a companion file per the bullet below; a long table cell is split into several rows or into a list under the table. `scripts/check-templates.sh` reports an error when a SPEC or ARCHITECTURE exceeds the ceiling. The line ceiling counts lines inside code blocks and the frontmatter.
+- Companion file, used only for a SPEC and ARCHITECTURE: a machine-readable block of a SPEC or ARCHITECTURE (API contract, data schema, sample code, directory tree, long Mermaid diagram) is allowed to live in a file of its own instead of a code block in the document. In place of the block, the document writes a line that starts with `Companion file:`, followed by the path from the project root in inline code and a sentence saying what the file holds. A companion file is not a markdown file. The companion file of a SPEC sits next to the SPEC, and its name is the SPEC file name without the `.md` extension, plus a short name and the extension of the format, for example `docs/specs/SPEC_ORDER_CREATE.openapi.yaml`; the companion file of ARCHITECTURE sits in `docs/architecture/`, for example `docs/architecture/schema.prisma`. A companion file is part of the document that cites it: the same version, the same approval, and editing the file is editing the document per PLAYBOOK §8. Each companion file is cited by exactly one document; `scripts/check-templates.sh` checks that the file exists, is in the right place and is cited by exactly one document.
+- File names: core templates and brownfield templates `NN_Name_Template.md`; the Implementation Plan template is the directory `core/05_Implementation_Plan_Template/` per §9; the wireframe template is the directory `core/07_Wireframe_Template/` with `00_Wireframe_Index_Template.md` (index), `SCR_Screen_Template.md` (screen page), `Design_System_Template.md` (design system document) and `Design_Tokens_Template.json` (sample tokens); the additional templates of an overlay `Name_Template.md`; the section files of an overlay `kebab-case.md`, except `OVERLAY.md`; stack profile `stack-profiles/<profile>.md`; starter `<DOC>_Template.md` and `CLAUDE.md.template`; infrastructure files in capitals such as `PLAYBOOK.md`, `PROMPTS.md`, `PLAYBOOK_BROWNFIELD.md`, `Spec_Brownfield_Addendum.md`.
+- Headings of core and brownfield templates are numbered (`## N.`, `### N.M.`), except the Implementation Plan template (per §9), the section `## Documentation Layout` and the appendices of the Agent Context; headings inside SLOT-CONTENT and PROFILE-CONTENT blocks are not numbered.
+- Required sections by `doc_type` (the heading must contain the exact string; the script reads the lines below):
+  - `Assumptions & Open Questions`: every template and generated document, except `implementation-phase`, `agent-rule`, `roadmap` (questions are recorded in the source document, new requirements in the New Requests section of the roadmap).
   - `Version History`: `intake`, `srs`, `srs-module`, `wireframe-index`, `wireframe-screen`, `design-system`, `architecture`, `spec`, `prompt-spec`, `codebase-summary`, `as-is-architecture`, `regression-baseline`, `gap-analysis`, `migration-plan`.
   - `Failure Modes`, `Eval Metric`: `prompt-spec`.
-- Template không chứa ví dụ nghiệp vụ; ví dụ nằm trong `examples/<overlay>/`.
-- Bố cục low-fi của trang wireframe (áp cho dự án có Intake tạo từ template Intake `1.3.0` trở lên) viết trong một khối `text`, không dùng ảnh hay công cụ vẽ. Khối chia màn hình thành vùng xếp từ trên xuống; mỗi vùng mở bằng một dòng `== Tên vùng ==` (ví dụ `== Header ==`, `== Nội dung ==`), các vùng cạnh nhau ghi trên cùng dòng mở, phân cách bằng ` | `. Dưới dòng mở, mỗi thành phần một dòng thụt hai dấu cách: `[Nhãn]` cho nút, `Nhãn: [____]` cho trường nhập, `( ) Nhãn` và `[ ] Nhãn` cho lựa chọn, `...` cho phần lặp của danh sách; dòng chữ thường là văn bản hoặc nhãn tĩnh; thành phần con thụt thêm hai dấu cách dưới thành phần cha (ví dụ các trường của một dòng danh sách); hộp thoại hay lớp phủ là một vùng `== Hộp thoại: Tên ==` đặt sau vùng mà nó che. Trang từ template trang `1.5.0` trở lên đánh số vùng: dòng mở là `== N. Tên vùng ==`, vùng cạnh nhau `== 2. Danh sách | 3. Chi tiết ==`, hộp thoại `== 4. Hộp thoại: Tên ==`; số đánh liên tiếp từ 1 trên trang theo thứ tự đọc (từ trên xuống, từ trái sang phải), không thuộc tên vùng, và góp ý về wireframe ghi SCR ID cộng số vùng. HTML của trang đó ghi cùng số ở tiêu đề vùng khi HTML có tiêu đề vùng, nếu không thì ở chú thích HTML ngay trước khối của vùng. Nhãn trùng cột thành phần của bảng thành phần trên trang. Khối chỉ vẽ trạng thái `Success`; bốn trạng thái còn lại mô tả ở bảng trạng thái của trang. Màn hình form mà `Success` là rời màn hình (chuyển trang, thông báo thay cho form) thì khối vẽ trạng thái `Initial` và ghi điều đó ngay dưới khối.
-- HTML của wireframe: một file tĩnh `docs/wireframes/html/SCR-<MOD>-NN.html` cho mỗi trang, bắt buộc khi Intake mục 14 ghi Giai đoạn 1W `Có, kèm HTML đầy đủ` (mặc định từ template Intake `1.6.0`), không có khi ghi `Có, chỉ Markdown` (áp cho Intake từ `1.3.0`). Đó là màn hình đầy đủ từ hệ thống thiết kế: nội dung mẫu thật, giá trị trực quan lấy từ token (mục 10.7), mỗi thành phần của bảng thành phần là phần tử `data-cmp="CMP-NN"` (đúng tập Component ID của bảng), mỗi trạng thái UI không N/A là phần tử `id="state-initial"` (hoặc `loading`, `empty`, `success`, `error`), trạng thái mà khối bố cục vẽ (Success, hoặc Initial khi Success rời màn hình) hiện mặc định, các trạng thái khác hiện bằng `:target` qua link `#state-…` trên trang; có meta viewport, trang `frontend-web` có `@media` cho breakpoint nhỏ nhất và lớn nhất của SRS §2.5; tiêu đề không gọi nó là low-fi. File MUST chỉ dùng CSS viết trong thẻ `<style>` của chính file, dữ liệu mẫu tự đặt (không dùng dữ liệu người thật, secret hay URL nội bộ) và có thẻ `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:">` đặt trong `<head>`. File MUST NOT có thẻ script, thuộc tính sự kiện `on...=`, thẻ `iframe`, `object`, `embed`, `base`, form gửi đi, stylesheet hay `@import` ngoài, thư viện CSS ngoài, dấu `\` trong thẻ `<style>` hay thuộc tính `style` (escape CSS), hay `&` trong thuộc tính `style` (thực thể HTML); và MUST NOT có URL `http:`, `https:` hay bắt đầu bằng `//` ở mọi thuộc tính nhận URL (`src`, `srcset`, `href`, `poster`, `background`, `ping`, `cite`, `data`), `url(` hoặc hàm CSS khác nhận URL như `image-set(`. Link chỉ trỏ tới file `SCR-*.html` cùng thư mục, hoặc tới `#id` trong cùng file, kể cả dạng `SCR-*.html#id`.
-- Link markdown chỉ dùng trong file hạ tầng và `README.md`, trỏ tới file của bộ mẫu bằng đường dẫn tương đối tồn tại. Nội dung sẽ được chép vào tài liệu dự án (template, starter, khối SLOT-CONTENT và PROFILE-CONTENT) ghi đường dẫn bằng inline code, không dùng link; ngoại lệ duy nhất là link từ `plan.md` tới file pha `phase-NN-<slug>.md` cùng thư mục trong bảng Phases của Implementation Plan.
+- A template contains no business example; examples live in `examples/<overlay>/`.
+- The low-fi layout of a wireframe page is written in one `text` block, with no images or drawing tools. The block divides the screen into zones stacked from top to bottom; each zone opens with a line `== Zone name ==` (for example `== Header ==`, `== Content ==`), zones side by side are written on the same opening line, separated by ` | `. Under the opening line, each component takes one line indented by two spaces: `[Label]` for a button, `Label: [____]` for an input field, `( ) Label` and `[ ] Label` for choices, `...` for the repeated part of a list; a line of plain text is static text or a label; a child component is indented two more spaces under its parent (for example the fields of a list row); a dialog or overlay is a zone `== Dialog: Name ==` placed after the zone that it covers. A page numbers its zones: the opening line is `== N. Zone name ==`, zones side by side `== 2. List | 3. Detail ==`, a dialog `== 4. Dialog: Name ==`; the numbers run consecutively from 1 on the page in reading order (top to bottom, left to right), are not part of the zone name, and feedback on a wireframe records the SCR ID plus the zone number. The HTML of the page records the same number in the zone heading when the HTML has zone headings, and otherwise in the HTML comment right before the block of the zone. A label matches the Component column of the component table on the page. The block draws only the `Success` state; the other four states are described in the state table of the page. A form screen whose `Success` leaves the screen (a page change, or a message replacing the form) has the block draw the `Initial` state and says so right under the block.
+- The HTML of a wireframe: one static file `docs/wireframes/html/SCR-<MOD>-NN.html` for each page, required when Intake §14 records Stage 1W as `Yes, with full HTML` (the default), absent when it records `Yes, Markdown only`. It is a full screen from the design system: real sample content, visual values taken from tokens (§10.7), each component of the component table is an element `data-cmp="CMP-NN"` (exactly the set of Component IDs of the table), each UI state that is not N/A is an element `id="state-initial"` (or `loading`, `empty`, `success`, `error`), the state that the layout block draws (Success, or Initial when Success leaves the screen) is shown by default, the other states are shown with `:target` through `#state-…` links on the page; it has a viewport meta, a `frontend-web` page has `@media` for the smallest and the largest breakpoint of SRS §2.5; the title does not call it low-fi. The file MUST use only CSS written in the `<style>` tag of the file itself, self-made sample data (no data of real people, secrets or internal URLs) and have the tag `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:">` placed in `<head>`. The file MUST NOT have a script tag, an event attribute `on...=`, an `iframe`, `object`, `embed` or `base` tag, a form that submits, an external stylesheet or `@import`, an external CSS library, a `\` sign in the `<style>` tag or in a `style` attribute (CSS escape), or `&` in a `style` attribute (HTML entity); and MUST NOT have a URL `http:`, `https:` or starting with `//` in any attribute that takes a URL (`src`, `srcset`, `href`, `poster`, `background`, `ping`, `cite`, `data`), `url(` or another CSS function that takes a URL such as `image-set(`. A link only points to a `SCR-*.html` file in the same directory, or to an `#id` in the same file, including the form `SCR-*.html#id`.
+- A markdown link is only used in infrastructure files and `README.md`, pointing to a file of the template set with an existing relative path. Content that will be copied into a project document (templates, starters, SLOT-CONTENT and PROFILE-CONTENT blocks) writes paths in inline code and does not use links; the only exception is the link from `plan.md` to a phase file `phase-NN-<slug>.md` in the same directory in the Phases table of the Implementation Plan.
 
-## 8. Chất lượng yêu cầu trong SRS (Requirement Quality)
+## 8. Requirement Quality
 
-Mục này áp cho SRS tạo từ `core/01_SRS_Template.md` bản `1.1.0` trở lên (khóa `template_version` của tài liệu). Chuẩn tham chiếu: ISO/IEC/IEEE 29148:2018 §5.2 cho cách viết yêu cầu, ISO/IEC 25010:2023 cho nhóm NFR.
+Reference standards: ISO/IEC/IEEE 29148:2018 §5.2 for how to write requirements, ISO/IEC 25010:2023 for the NFR groups.
 
-Phát biểu yêu cầu (Requirement Statement). Mỗi FR có một câu ở cột `Phát biểu yêu cầu` của bảng danh mục SRS §6.1. Chủ ngữ là hệ thống hoặc một phân hệ; câu chứa đúng một từ khóa `MUST` hoặc `MUST NOT` và nêu một hành vi kiểm chứng được. Câu viết theo một trong năm mẫu EARS (Easy Approach to Requirements Syntax):
+Requirement Statement. Each FR has one sentence in the column `Requirement statement` of the catalog table of SRS §6.1. The subject is the system or a module; the sentence contains exactly one keyword `MUST` or `MUST NOT` and states one verifiable behavior. The sentence is written in one of the five EARS (Easy Approach to Requirements Syntax) patterns:
 
-| Mẫu | Khuôn câu |
+| Pattern | Sentence template |
 | --- | --- |
-| Luôn đúng (Ubiquitous) | `<hệ thống> MUST <phản hồi>` |
-| Theo sự kiện (Event-driven) | `Khi <sự kiện>, <hệ thống> MUST <phản hồi>` |
-| Theo trạng thái (State-driven) | `Trong khi <trạng thái>, <hệ thống> MUST <phản hồi>` |
-| Tính năng tùy chọn (Optional feature) | `Ở nơi có <tính năng>, <hệ thống> MUST <phản hồi>` |
-| Hành vi không mong muốn (Unwanted behaviour) | `Nếu <điều kiện>, thì <hệ thống> MUST <phản hồi>` |
+| Ubiquitous | `<system> MUST <response>` |
+| Event-driven | `When <event>, <system> MUST <response>` |
+| State-driven | `While <state>, <system> MUST <response>` |
+| Optional feature | `Where <feature> is present, <system> MUST <response>` |
+| Unwanted behaviour | `If <condition>, then <system> MUST <response>` |
 
-Một FR nêu một hành vi (đặc tính singular). Hành vi phụ đi kèm nằm ở use case (§6.2) hoặc Business Rule (§5), không ghép thành nhiều hành vi trong một câu. FR đã duyệt mà gộp hai hành vi độc lập thì giữ ID cũ cho hành vi chính và thêm FR mới với số kế tiếp cho hành vi còn lại; không đánh số lại.
+An FR states one behavior (the singular characteristic). An accompanying secondary behavior goes in a use case (§6.2) or a Business Rule (§5), and several behaviors are not combined in one sentence. An approved FR that merges two independent behaviors keeps the old ID for the main behavior, and a new FR with the next number is added for the other behavior; do not renumber.
 
-Thuộc tính yêu cầu (Requirement Attributes). Bảng danh mục §6.1 ghi Ưu tiên (MoSCoW), Bản phát hành (phân bổ yêu cầu theo 29148 §9.6.9, một nhãn như `R1`) và Cách kiểm chứng. Bảng thuộc tính §6.1 ghi Tiên quyết, Lý do, Nguồn và Rủi ro, một trong `Cao | Trung bình | Thấp`. Trong danh sách thuộc tính mẫu của 29148 §5.2.8, specflow dùng ID, ưu tiên, rủi ro, lý do và loại (FR, NFR, BR); version theo version của tài liệu; không dùng owner và difficulty. Bản phát hành, nguồn, tiên quyết và cách kiểm chứng là thuộc tính specflow thêm vào.
+Requirement Attributes. The catalog table of §6.1 records Priority (MoSCoW), Release (the allocation of requirements per 29148 §9.6.9, a label such as `R1`) and Verification method. The attribute table of §6.1 records Prerequisite, Rationale, Source and Risk, one of `High | Medium | Low`. Of the sample attribute list of 29148 §5.2.8, specflow uses ID, priority, risk, rationale and type (FR, NFR, BR); the version follows the version of the document; owner and difficulty are not used. Release, source, prerequisite and verification method are attributes that specflow adds.
 
-Cách kiểm chứng (Verification Method, 29148 §6.5.2): một trong `Test | Inspection | Demo | Analysis`, dùng chung cho FR, BR và NFR.
+Verification Method (29148 §6.5.2): one of `Test | Inspection | Demo | Analysis`, shared by FR, BR and NFR.
 
-NFR. Ô Yêu cầu là nhãn ngắn; phần đo được nằm ở Chỉ số, Cách đo và Ngưỡng. NFR không áp dụng có ô Yêu cầu bắt đầu bằng `N/A:` kèm lý do; không viết "Không áp dụng". Mỗi NFR áp dụng có một dòng ở bảng NFR của SRS §8. Nhóm NFR ánh xạ sang ISO/IEC 25010:2023 như sau:
+NFR. The Requirement cell is a short label; the measurable part sits in Metric, Measurement method and Threshold. A non-applicable NFR has a Requirement cell that starts with `N/A:` and a reason; do not write "Not applicable". Each applicable NFR has one row in the NFR table of SRS §8. The NFR groups map onto ISO/IEC 25010:2023 as follows:
 
-| Đặc tính ISO/IEC 25010:2023 | Nhóm NFR của specflow |
+| ISO/IEC 25010:2023 characteristic | specflow NFR group |
 | --- | --- |
-| Functional suitability | Không phải NFR: FR và AC ở SRS §6, §8 |
+| Functional suitability | Not an NFR: FR and AC in SRS §6, §8 |
 | Performance efficiency (time behaviour, resource utilization, capacity) | `PERF` |
 | Compatibility (co-existence, interoperability) | `COMPAT` |
-| Interaction capability (trước đây là usability) | `USAB` |
+| Interaction capability (formerly usability) | `USAB` |
 | Reliability (faultlessness, availability, fault tolerance, recoverability) | `RELI` |
-| Security (confidentiality, integrity, non-repudiation, accountability, authenticity, resistance) | `SEC`; nhật ký kiểm toán phục vụ accountability ghi ở `OBS` |
+| Security (confidentiality, integrity, non-repudiation, accountability, authenticity, resistance) | `SEC`; the audit log that serves accountability is recorded under `OBS` |
 | Maintainability | `MAINT` |
 | Flexibility (adaptability, installability, replaceability, scalability) | `FLEX` |
 | Safety | `SAFE` |
 
-`I18N`, `LEGAL`, `OBS`, `DATA` và `COST` là nhóm mở rộng của specflow, không tương ứng một đặc tính 25010.
+`I18N`, `LEGAL`, `OBS`, `DATA` and `COST` are extension groups of specflow and do not correspond to a 25010 characteristic.
 
-Từ mơ hồ (Vague Terms, 29148 §5.2.7). Cột Phát biểu yêu cầu của FR và cột Yêu cầu, Ngưỡng của NFR không chứa từ ở bảng dưới. `scripts/check-templates.sh` đọc bảng này và so khớp không phân biệt hoa thường; tài liệu lưu ở dạng Unicode NFC. Từ mơ hồ phụ thuộc ngữ cảnh (ví dụ "hỗ trợ", "tối thiểu" đi với con số) do người duyệt xét ở Gate 1, không nằm trong bảng.
+Vague Terms (29148 §5.2.7). The Requirement statement column of an FR and the Requirement and Threshold columns of an NFR do not contain a word from the table below. `scripts/check-templates.sh` reads this table and matches without regard to case; documents are stored in Unicode NFC. A context-dependent vague word (for example "supports", "minimum" next to a number) is judged by the approver at Gate 1 and is not in the table.
 
-| Từ mơ hồ | Lý do | Cách viết lại |
+| Vague term | Reason | Rewrite as |
 | --- | --- | --- |
-| `thân thiện` | Chủ quan | Nêu thao tác và chỉ số đo được |
-| `dễ dùng` | Chủ quan | Số bước, tỉ lệ hoàn thành trong thử nghiệm với người dùng |
-| `nhanh chóng` | Không đo được | Ngưỡng thời gian kèm đơn vị |
-| `tối ưu` | So sánh ngầm, không có mốc | Ngưỡng cụ thể |
-| `hiệu quả` | Chủ quan | Chỉ số và ngưỡng |
-| `linh hoạt` | Không kiểm chứng được | Nêu thay đổi được phép và cách thực hiện |
-| `tốt hơn` | So sánh không có mốc | Mốc so sánh và con số |
-| `nếu có thể` | Kẽ hở | Điều kiện rõ, hoặc hạ ưu tiên thành Should |
-| `khi phù hợp` | Kẽ hở | Điều kiện rõ |
-| `và/hoặc` | Logic mơ hồ | Tách thành hai yêu cầu hoặc chọn một |
-| `v.v.` | Danh sách không đầy đủ | Liệt kê đủ |
-| `nhưng không giới hạn` | Phạm vi mở | Liệt kê đủ |
+| `user-friendly` | Subjective | State the operation and a measurable metric |
+| `easy to use` | Subjective | Number of steps, completion rate in a test with users |
+| `fast` | Not measurable | A time threshold with a unit |
+| `optimal` | Implicit comparison, no baseline | A concrete threshold |
+| `efficient` | Subjective | A metric and a threshold |
+| `flexible` | Not verifiable | State the allowed changes and how they are made |
+| `better` | Comparison without a baseline | The baseline for comparison and a number |
+| `if possible` | Loophole | A clear condition, or lower the priority to Should |
+| `when appropriate` | Loophole | A clear condition |
+| `and/or` | Ambiguous logic | Split into two requirements or choose one |
+| `etc.` | Incomplete list | List everything |
+| `but not limited to` | Open scope | List everything |
 
-## 9. Định dạng Implementation Plan (Implementation Plan Format)
+## 9. Implementation Plan Format
 
-Định dạng này là markdown thường, không cần công cụ riêng. Nó tương thích với lệnh `ak plan` của AgentKit, nhưng bộ mẫu không đòi cài `ak`. Trong dự án, người duyệt Gate 4 kiểm các quy tắc dưới; `scripts/check-templates.sh` kiểm chúng trên ví dụ của bộ mẫu.
+This format is plain markdown and needs no dedicated tool. It is compatible with the `ak plan` command of AgentKit, but the template set does not require installing `ak`. In a project, the approver of Gate 4 checks the rules below; `scripts/check-templates.sh` checks them on the examples of the template set.
 
-- Mỗi plan là một thư mục `plans/{YYMMDD-HHmm}-<slug>/` gồm `plan.md` và các file pha `phase-NN-<slug>.md`, NN là hai chữ số liên tục từ `01`, `<slug>` là `kebab-case`.
-- `plan.md` có frontmatter với `title` và các khóa của `implementation-plan` ở mục 3; `status` là `pending`, `in-progress` hoặc `completed`.
-- Mỗi file pha có frontmatter với `phase` bằng số NN trong tên file, `title` và các khóa của `implementation-phase` ở mục 3; `status` là `todo`, `in-progress` hoặc `done`.
-- `plan.md` có bảng Phases: mỗi file pha có đúng một dòng, cột Phase là link tương đối tới file đó, cột Status khớp `status` của pha. Cột Status so khớp không phân biệt hoa thường; `Pending` tương đương `todo`, `In progress` tương đương `in-progress`, `Completed` tương đương `done`.
-- Không có link trong bảng Phases trỏ tới file pha không tồn tại.
-- `plan.md` tạo từ template plan `1.3.0` trở lên có mục `Lịch sử phiên bản (Version History)`.
-- File pha tạo từ template pha `1.3.0` trở lên có mục `Đọc trước (Read First)`: mỗi dòng là một tài liệu của dự án trong inline code, theo sau là các mục cần đọc dạng `§1.5, §2, §9`. `scripts/check-templates.sh` báo lỗi khi tài liệu không tồn tại, khi một dòng không có mục nào, hoặc khi tài liệu không có tiêu đề mang số mục đó. Pha chỉ nạp các mục này của SPEC và ARCHITECTURE, không nạp toàn văn (PLAYBOOK mục 6, hàng 4b).
+- Each plan is a directory `plans/{YYMMDD-HHmm}-<slug>/` that holds `plan.md` and the phase files `phase-NN-<slug>.md`, NN being two digits running continuously from `01`, `<slug>` being `kebab-case`.
+- `plan.md` has frontmatter with `title` and the keys of `implementation-plan` in §3; `status` is `pending`, `in-progress` or `completed`.
+- Each phase file has frontmatter with `phase` equal to the number NN in the file name, `title` and the keys of `implementation-phase` in §3; `status` is `todo`, `in-progress` or `done`.
+- `plan.md` has a Phases table: each phase file has exactly one row, the Phase column is a relative link to that file, and the Status column matches the `status` of the phase. The Status column is matched without regard to case; `Pending` is equivalent to `todo`, `In progress` to `in-progress`, `Completed` to `done`.
+- No link in the Phases table points to a phase file that does not exist.
+- `plan.md` has a `Version History` section.
+- A phase file has a `Read First` section: each line is a project document in inline code, followed by the sections to read in the form `§1.5, §2, §9`. `scripts/check-templates.sh` reports an error when the document does not exist, when a line has no section, or when the document has no heading that carries that section number. A phase loads only these sections of the SPEC and ARCHITECTURE, not the full text (PLAYBOOK §6, row 4b).
 
-Plan theo đợt phát hành (Release Plan). Áp cho dự án có Intake tạo từ template Intake `1.3.0` trở lên; plan của các dự án này tạo từ template plan `1.2.0` trở lên. Một plan thực hiện mọi SPEC của một đợt (PLAYBOOK mục 2.5):
+Release Plan. One plan implements every SPEC of a release (PLAYBOOK §2.5):
 
-- Thư mục plan của đợt theo quy tắc chung `plans/{YYMMDD-HHmm}-<slug>/`; slug nên là `release-<release-slug>`, với `<release-slug>` là nhãn đợt viết `kebab-case`. Tên thư mục không phải điều kiện: đợt được xác định bằng khóa `release`, nên plan đã có giữ tên cũ khi nâng lên template `1.2.0`.
-- `plan.md` có khóa `release` (nhãn đợt ở cột Bản phát hành của SRS §6.1) và `spec_ids` (YAML list mọi SPEC của đợt mà plan thực hiện), không có `spec_id`.
-- Mỗi file pha có `spec_id` là một phần tử của `spec_ids`; một pha chỉ thuộc một SPEC. Pha của cùng một SPEC đứng liền nhau.
-- Mỗi phần tử của `spec_ids` có ít nhất một pha và có file SPEC trong `docs/specs/`.
-- SPEC trong `spec_ids` có khóa `release` (mục 3) thì khóa đó bằng `release` của plan.
-- Mọi FR mà SPEC trong `spec_ids` dẫn ở SPEC §1.5 có Bản phát hành bằng `release`; SPEC nào dẫn FR của đợt thì có trong `spec_ids`, trừ SPEC `superseded` (PLAYBOOK mục 8).
-- Plan tạo từ template plan `1.1.0` với một `spec_id` ở `plan.md` và ở mọi pha vẫn hợp lệ: đó là plan của một SPEC, cách làm theo tính năng của dự án có Intake cũ hơn `1.3.0`. Dự án đó lập plan mới từ template plan `1.2.0` trở lên thì ghi `spec_ids` chỉ có một SPEC và `release` là Bản phát hành của các FR mà SPEC dẫn; hai quy tắc đối chiếu đợt (FR mà SPEC dẫn thuộc đúng `release`; SPEC dẫn FR của đợt thì nằm trong `spec_ids`) chỉ áp cho dự án có Intake tạo từ template Intake `1.3.0` trở lên, vì SPEC của dự án cũ không chia theo đợt. Khi FR của SPEC thuộc nhiều đợt, `release` ghi đợt sớm nhất.
+- The plan directory of a release follows the general rule `plans/{YYMMDD-HHmm}-<slug>/`; the slug should be `release-<release-slug>`, with `<release-slug>` being the release label in `kebab-case`. The directory name is not a condition: the release is identified by the `release` key.
+- `plan.md` has the key `release` (the release label in the Release column of SRS §6.1) and `spec_ids` (a YAML list of every SPEC of the release that the plan implements), and has no `spec_id`.
+- Each phase file has a `spec_id` that is one element of `spec_ids`; a phase belongs to only one SPEC. Phases of the same SPEC stand next to each other.
+- Each element of `spec_ids` has at least one phase and has a SPEC file in `docs/specs/`.
+- The `release` key (§3) of a SPEC in `spec_ids` equals the `release` of the plan.
+- Every FR that a SPEC in `spec_ids` cites in SPEC §1.5 has a Release equal to `release`; any SPEC that cites an FR of the release is in `spec_ids`, except a `superseded` SPEC (PLAYBOOK §8).
 
-## 10. Tiêu chuẩn UI/UX (UI/UX Standards)
+## 10. UI/UX Standards
 
-Mục này là nguồn duy nhất của quy tắc thiết kế giao diện mà wireframe ở Giai đoạn 1W (PLAYBOOK mục 2.2.1) phải theo. Overlay chỉ giữ con số và cách điền riêng của nền tảng; template, PLAYBOOK và rule cho agent dẫn về mục này, không viết lại quy tắc. Mục này áp cho wireframe tạo từ template wireframe `1.2.0` trở lên, xét theo từng file: chỉ mục theo `template_version` của chỉ mục, trang theo `template_version` của trang.
+This section is the only source of the interface design rules that wireframes at Stage 1W (PLAYBOOK §2.2.1) must follow. An overlay keeps only the numbers and the way of filling in that are specific to a platform; templates, the PLAYBOOK and rules for agents point back to this section and do not restate the rules.
 
-### 10.1. Nền tảng (Foundation)
+### 10.1. Foundation
 
-- Quy trình: thiết kế lấy con người làm trung tâm (human-centred design) theo ISO 9241-210:2019. Hiểu ngữ cảnh dùng ở SRS, thiết kế ở wireframe, đánh giá bằng bảng heuristic (10.3) và bảng mẫu lừa người dùng (10.4) trước Gate 1W, rồi sửa và đánh giá lại.
-- Chất lượng tương tác: đặc tính Interaction capability của ISO/IEC 25010:2023, là nhóm NFR `USAB` (mục 8). Tám đặc tính con được xét ở các chỗ sau của wireframe; không có checklist riêng cho từng đặc tính.
+- Process: human-centred design per ISO 9241-210:2019. Understand the context of use in the SRS, design in the wireframe, evaluate with the heuristic table (10.3) and the deceptive pattern table (10.4) before Gate 1W, then fix and evaluate again.
+- Interaction quality: the Interaction capability characteristic of ISO/IEC 25010:2023, which is the NFR group `USAB` (§8). The eight sub-characteristics are considered at the following places of the wireframe; there is no separate checklist for each characteristic.
 
-| Đặc tính con ISO/IEC 25010:2023 | Nơi xét trên wireframe |
+| ISO/IEC 25010:2023 sub-characteristic | Where it is considered on the wireframe |
 | --- | --- |
-| Appropriateness recognizability | Mục đích của trang; nhãn ở bảng thành phần |
-| Learnability | Trạng thái `Initial` của trang; sơ đồ điều hướng của chỉ mục |
-| Operability | Bố cục low-fi, bảng thành phần, mục trợ năng của trang (bàn phím, focus, vùng chạm) |
-| User error protection | Trạng thái `Error` và AC của trang; heuristic `H5`, `H9` |
-| User engagement | Hướng thị giác và motion ở hệ thống thiết kế (10.7); không xét trên trang low-fi |
-| Inclusivity | Mục trợ năng của trang; câu hỏi tự vấn ở 10.5 |
-| User assistance | Mục trợ năng của trang; lối vào trợ giúp ở sơ đồ điều hướng (tiêu chí 3.2.6) |
-| Self-descriptiveness | Nhãn ở bảng thành phần và bố cục low-fi; heuristic `H2`, `H6` |
+| Appropriateness recognizability | Purpose of the page; labels in the component table |
+| Learnability | `Initial` state of the page; navigation diagram of the index |
+| Operability | Low-fi layout, component table, accessibility section of the page (keyboard, focus, touch targets) |
+| User error protection | `Error` state and ACs of the page; heuristics `H5`, `H9` |
+| User engagement | Visual direction and motion in the design system (10.7); not considered on a low-fi page |
+| Inclusivity | Accessibility section of the page; the self-review questions in 10.5 |
+| User assistance | Accessibility section of the page; the help entry in the navigation diagram (criterion 3.2.6) |
+| Self-descriptiveness | Labels in the component table and the low-fi layout; heuristics `H2`, `H6` |
 
-- Trợ năng: WCAG 2.2 (W3C Recommendation) ở mức mà NFR-USAB của SRS chọn (`A`, `AA` hoặc `AAA`). WCAG 3.0 chưa dùng vì còn là bản nháp (Working Draft); bộ mẫu xét lại khi nó thành Candidate Recommendation.
+- Accessibility: WCAG 2.2 (a W3C Recommendation) at the level that the NFR-USAB of the SRS chooses (`A`, `AA` or `AAA`). WCAG 3.0 is not used yet because it is still a Working Draft; the template set revisits it when it becomes a Candidate Recommendation.
 
-### 10.2. Tiêu chí WCAG 2.2 xét ở wireframe (WCAG 2.2 Criteria at Wireframe Level)
+### 10.2. WCAG 2.2 Criteria at Wireframe Level
 
-Bảng dưới liệt kê tiêu chí thành công (success criterion) thấy được trên wireframe low-fi. Một tiêu chí áp cho dự án khi mức ở NFR-USAB bằng hoặc cao hơn mức của tiêu chí (`A` < `AA` < `AAA`); tiêu chí không áp ghi N/A kèm lý do ở chỗ ghi của nó. Tiêu chí WCAG khác vẫn áp theo NFR-USAB và được kiểm bằng test `A11Y` ở SPEC §9; bảng này chỉ nêu phần người duyệt Gate 1W xét được trên wireframe. Con số của nền tảng (vùng chạm, breakpoint) nằm ở mục Giai đoạn 1W của `OVERLAY.md` của bề mặt (10.6).
+The table below lists the success criteria that can be seen on a low-fi wireframe. A criterion applies to a project when the level in NFR-USAB is equal to or higher than the level of the criterion (`A` < `AA` < `AAA`); a criterion that does not apply records N/A with a reason at its recording place. Other WCAG criteria still apply under NFR-USAB and are checked by `A11Y` tests in SPEC §9; this table only states what the approver of Gate 1W can judge on a wireframe. The platform numbers (touch targets, breakpoints) are in the Stage 1W section of the `OVERLAY.md` of the surface (10.6).
 
-| Tiêu chí WCAG 2.2 | Mức | Ghi ở đâu trên wireframe |
+| WCAG 2.2 criterion | Level | Where recorded on the wireframe |
 | --- | --- | --- |
-| `1.1.1` Non-text Content | A | Mục trợ năng của trang: nhãn thay thế của mỗi phần tử không có chữ (nút biểu tượng, hình ảnh) |
-| `1.4.4` Resize Text | AA | Mục trợ năng của trang: bố cục khi chữ phóng to hoặc theo cỡ chữ hệ thống |
-| `1.4.10` Reflow | AA | Bố cục low-fi vẽ ở độ rộng nhỏ nhất của bề mặt; không có cuộn ngang, trừ nội dung cần hai chiều như bảng lớn hay bản đồ |
-| `2.1.1` Keyboard | A | Mục trợ năng của trang: mọi thao tác ở bảng thành phần làm được bằng bàn phím, hoặc bằng công nghệ hỗ trợ của hệ điều hành trên mobile |
-| `2.4.3` Focus Order | A | Mục trợ năng của trang: thứ tự focus hoặc thứ tự đọc theo bố cục |
-| `2.4.6` Headings and Labels | AA | Bảng thành phần: nhãn và tiêu đề nói đúng chức năng |
-| `2.4.7` Focus Visible | AA | Mục trợ năng của trang: phần tử đang nhận focus thấy được |
-| `2.4.11` Focus Not Obscured (Minimum) | AA | Mục trợ năng của trang: phần tử cố định (header, footer, banner, thanh tab) không che hết phần tử đang nhận focus |
-| `2.5.7` Dragging Movements | AA | Bảng thành phần: thao tác kéo có cách thay bằng một lần chạm hoặc nhấp |
-| `2.5.8` Target Size (Minimum) | AA | Mục trợ năng của trang: vùng chạm hoặc vùng bấm theo con số của overlay |
-| `3.2.6` Consistent Help | A | Sơ đồ điều hướng của chỉ mục: lối vào trợ giúp lặp ở nhiều màn hình nằm cùng vị trí tương đối; ghi một lần ở chỉ mục |
-| `3.3.1` Error Identification | A | Trạng thái `Error` của trang: lỗi chỉ rõ trường hay thao tác lỗi |
-| `3.3.2` Labels or Instructions | A | Bảng thành phần: mỗi trường nhập có nhãn hoặc hướng dẫn |
-| `3.3.7` Redundant Entry | A | Trạng thái `Initial` của bước sau trong luồng nhiều bước: dữ liệu đã nhập ở bước trước được điền sẵn hoặc chọn lại được, không bắt nhập lại |
-| `3.3.8` Accessible Authentication (Minimum) | AA | Trang có dòng `Màn hình xác thực: Có`: cách xác thực không dựa vào kiểm tra nhận thức (ghi nhớ, chép lại, giải đố) hoặc có cách thay thế; cho dán và cho trình quản lý mật khẩu tự điền |
-| `4.1.2` Name, Role, Value | A | Bảng thành phần và mục trợ năng: mỗi phần tử tương tác có tên và vai trò mà trình đọc màn hình đọc được |
-| `4.1.3` Status Messages | AA | Mục trợ năng của trang: thông báo trạng thái (đang gửi, thành công, lỗi) được trình đọc màn hình đọc mà không chuyển focus |
+| `1.1.1` Non-text Content | A | Accessibility section of the page: the alternative label of each element without text (icon buttons, images) |
+| `1.4.4` Resize Text | AA | Accessibility section of the page: the layout when text is enlarged or follows the system font size |
+| `1.4.10` Reflow | AA | The low-fi layout is drawn at the smallest width of the surface; no horizontal scrolling, except for content that needs two dimensions such as a large table or a map |
+| `2.1.1` Keyboard | A | Accessibility section of the page: every operation in the component table can be done with the keyboard, or with the assistive technology of the operating system on mobile |
+| `2.4.3` Focus Order | A | Accessibility section of the page: the focus order or reading order follows the layout |
+| `2.4.6` Headings and Labels | AA | Component table: labels and headings state the function accurately |
+| `2.4.7` Focus Visible | AA | Accessibility section of the page: the element that has focus is visible |
+| `2.4.11` Focus Not Obscured (Minimum) | AA | Accessibility section of the page: a fixed element (header, footer, banner, tab bar) does not fully cover the element that has focus |
+| `2.5.7` Dragging Movements | AA | Component table: a drag operation has an alternative with a single tap or click |
+| `2.5.8` Target Size (Minimum) | AA | Accessibility section of the page: touch or click targets follow the numbers of the overlay |
+| `3.2.6` Consistent Help | A | Navigation diagram of the index: a help entry repeated on several screens sits at the same relative position; recorded once in the index |
+| `3.3.1` Error Identification | A | `Error` state of the page: the error names the field or the operation at fault |
+| `3.3.2` Labels or Instructions | A | Component table: each input field has a label or instructions |
+| `3.3.7` Redundant Entry | A | `Initial` state of a later step in a multi-step flow: data already entered in an earlier step is pre-filled or can be selected again, not asked for again |
+| `3.3.8` Accessible Authentication (Minimum) | AA | A page with the line `Authentication screen: Yes`: the authentication method does not rely on a cognitive test (memorizing, transcribing, solving a puzzle) or has an alternative; paste is allowed and password managers can auto-fill |
+| `4.1.2` Name, Role, Value | A | Component table and accessibility section: each interactive element has a name and a role that a screen reader can read |
+| `4.1.3` Status Messages | AA | Accessibility section of the page: status messages (sending, success, error) are read by a screen reader without moving focus |
 
-### 10.3. Đánh giá heuristic (Heuristic Evaluation)
+### 10.3. Heuristic Evaluation
 
-Chỉ mục wireframe có một bảng đánh giá theo 10 heuristic của Nielsen (Nielsen Norman Group), đúng một hàng cho mỗi khóa ở bảng dưới, theo thứ tự khóa. Khóa `H1` đến `H10` là khóa so khớp ổn định; tên tiếng Anh ghi đúng như nguồn. Người lập wireframe tự đánh giá toàn bộ luồng của chỉ mục và các trang, không chấm điểm. Mỗi hàng ghi mức vấn đề là một trong `Nghiêm trọng | Nhỏ | Không có`:
+The wireframe index has one evaluation table based on the 10 heuristics of Nielsen (Nielsen Norman Group), with exactly one row for each key in the table below, in key order. The keys `H1` to `H10` are stable matching keys; the English names are recorded exactly as in the source. The wireframe author evaluates the whole flow of the index and the pages by themselves, without scoring. Each row records a problem level; the problem level is one of `Critical | Minor | None`:
 
-- `Nghiêm trọng`: người dùng không hoàn thành được nhiệm vụ của một FR, có thể mất dữ liệu hay tiền mà không biết, hoặc một tiêu chí ở 10.2 đang áp bị vi phạm.
-- `Nhỏ`: người dùng vẫn hoàn thành nhiệm vụ nhưng chậm hơn hoặc dễ nhầm.
-- `Không có`: không thấy vấn đề; ô đánh giá nêu căn cứ.
+- `Critical`: the user cannot complete the task of an FR, may lose data or money without knowing, or a criterion in 10.2 that applies is violated.
+- `Minor`: the user still completes the task but more slowly or with a risk of confusion.
+- `None`: no problem is seen; the evaluation cell states the basis.
 
-Vấn đề `Nghiêm trọng` được sửa trước Gate 1W. Cột Mức vấn đề ghi mức còn lại sau khi xử lý; vấn đề đã tìm thấy nêu ở cột Đánh giá và việc đã sửa ở cột Xử lý, nên vấn đề đã sửa hết ghi `Không có`. Hàng còn `Nhỏ` ghi ở cột Xử lý một mục `AQ-NN` ở phần Giả định và câu hỏi mở hoặc lý do chấp nhận. Chỉ mục có nhiều bề mặt dùng một bảng chung; vấn đề chỉ thuộc một bề mặt ghi tên bề mặt ở cột Xử lý. Dự án brownfield chỉ đánh giá màn hình có trang; màn hình `Giữ nguyên` không có trang nên không có đánh giá riêng.
+A `Critical` problem is fixed before Gate 1W. The Problem level column records the level that remains after handling; a problem that was found is stated in the Evaluation column and the fix made in the Handling column, so a problem that was fully fixed is recorded as `None`. A row that remains `Minor` records in the Handling column an `AQ-NN` entry in the Assumptions and Open Questions part, or the reason for accepting it. An index with several surfaces uses one shared table; a problem that belongs to only one surface records the name of the surface in the Handling column. A brownfield project evaluates only screens that have a page; an `Unchanged` screen has no page and so has no evaluation of its own.
 
-| Khóa heuristic | Tên (NN/g) | Xét trên wireframe |
+| Heuristic key | Name | Considered on the wireframe |
 | --- | --- | --- |
-| `H1` | Visibility of System Status | Trạng thái `Loading`, `Success`, `Error` cho biết việc gì đang xảy ra; số tiền, số lượng và trạng thái hiện trước khi người dùng quyết định |
-| `H2` | Match Between the System and the Real World | Nhãn và thứ tự bước dùng ngôn ngữ của người dùng ở SRS, không dùng từ nội bộ |
-| `H3` | User Control and Freedom | Sơ đồ điều hướng có lối quay lại, hủy hoặc hoàn tác cho mỗi luồng |
-| `H4` | Consistency and Standards | Cùng một thao tác có cùng nhãn và vị trí qua các trang; theo quy ước của nền tảng ở overlay |
-| `H5` | Error Prevention | Thao tác không hoàn tác được có bước xác nhận; ràng buộc nhập hiện trước khi gửi |
-| `H6` | Recognition Rather than Recall | Thông tin cần cho bước sau hiện trên màn hình, không bắt nhớ từ bước trước |
-| `H7` | Flexibility and Efficiency of Use | Luồng thường dùng có đường ngắn; không bắt đi qua bước thừa |
-| `H8` | Aesthetic and Minimalist Design | Mỗi vùng của bố cục low-fi chỉ chứa thành phần mà FR của trang cần |
-| `H9` | Help Users Recognize, Diagnose, and Recover from Errors | Trạng thái `Error` nói lỗi gì và cách khắc phục, gắn với trường hay thao tác lỗi |
-| `H10` | Help and Documentation | Lối vào trợ giúp khi luồng cần giải thích; vị trí theo tiêu chí 3.2.6 |
+| `H1` | Visibility of System Status | The `Loading`, `Success`, `Error` states say what is happening; amounts, quantities and status appear before the user decides |
+| `H2` | Match Between the System and the Real World | Labels and the order of steps use the language of the user in the SRS, not internal words |
+| `H3` | User Control and Freedom | The navigation diagram has a way to go back, cancel or undo for each flow |
+| `H4` | Consistency and Standards | The same operation has the same label and position across pages; follows the conventions of the platform in the overlay |
+| `H5` | Error Prevention | An operation that cannot be undone has a confirmation step; input constraints appear before submitting |
+| `H6` | Recognition Rather than Recall | Information needed for a later step is shown on the screen, without forcing the user to remember it from an earlier step |
+| `H7` | Flexibility and Efficiency of Use | A frequently used flow has a short path; the user is not forced through extra steps |
+| `H8` | Aesthetic and Minimalist Design | Each zone of the low-fi layout contains only the components that the FRs of the page need |
+| `H9` | Help Users Recognize, Diagnose, and Recover from Errors | The `Error` state says what the error is and how to fix it, tied to the field or operation at fault |
+| `H10` | Help and Documentation | A help entry when the flow needs explanation; position per criterion 3.2.6 |
 
-### 10.4. Mẫu thiết kế lừa người dùng (Deceptive Patterns)
+### 10.4. Deceptive Patterns
 
-Năm mẫu dưới, theo tên loại của deceptive.design, thấy được trên wireframe low-fi. Chỉ mục wireframe có một bảng kiểm với đúng một hàng cho mỗi khóa `DP1` đến `DP5`, theo thứ tự khóa. Kết quả là `Không có` kèm căn cứ (trang, thành phần hoặc cạnh của sơ đồ điều hướng đã xem), hoặc `Có` kèm vị trí. Gate 1W chặn khi còn hàng `Có`. Mẫu thuộc về cách trình bày; khi bỏ mẫu cần đổi quy tắc nghiệp vụ (ví dụ thời điểm hiện phí) thì sửa SRS theo PLAYBOOK mục 8 trước. Dự án brownfield chỉ kiểm màn hình có trang, như ở 10.3.
+The five patterns below, named after the categories of deceptive.design, can be seen on a low-fi wireframe. The wireframe index has a check table with exactly one row for each key `DP1` to `DP5`, in key order. The result is `None` with evidence (the page, component or edge of the navigation diagram that was examined), or `Found` with the location. Gate 1W blocks while a `Found` row remains. A pattern belongs to the presentation; when removing a pattern requires changing a business rule (for example the moment a fee is shown), fix the SRS first per PLAYBOOK §8. A brownfield project checks only screens that have a page, as in 10.3.
 
-| Khóa mẫu lừa | Tên (deceptive.design) | Dấu hiệu trên wireframe |
+| Deceptive pattern key | Name | Sign on the wireframe |
 | --- | --- | --- |
-| `DP1` | Preselection | Ô đồng ý, ô nhận tin hay lựa chọn có lợi cho bên cung cấp được chọn sẵn ở bảng thành phần hoặc bố cục (`[x] Nhãn`, `(x) Nhãn`) |
-| `DP2` | Obstruction | Trong một luồng, lối từ chối, bỏ qua hay thoát cần nhiều bước hơn, bị ẩn hoặc kém nổi hơn lối đồng ý (so số cạnh ở sơ đồ điều hướng và thành phần ở bố cục) |
-| `DP3` | Hidden costs | Phí, tổng tiền hay điều khoản ràng buộc chỉ hiện ở bước cuối hoặc sau khi đặt, không hiện ở bước người dùng chọn |
-| `DP4` | Hard to cancel | Gói dịch vụ, đăng ký hay tài khoản bắt đầu được trong ứng dụng nhưng không có lối hủy, hoặc lối hủy phải qua kênh khác, trong sơ đồ điều hướng |
-| `DP5` | Confirmshaming | Nhãn của lựa chọn từ chối bêu riếu hoặc làm người dùng thấy có lỗi |
+| `DP1` | Preselection | A consent box, a newsletter box or a choice that benefits the provider is pre-selected in the component table or layout (`[x] Label`, `(x) Label`) |
+| `DP2` | Obstruction | In a flow, the way to decline, skip or leave takes more steps, is hidden or is less prominent than the way to agree (compare the number of edges in the navigation diagram and the components in the layout) |
+| `DP3` | Hidden costs | A fee, a total or a binding term appears only at the last step or after ordering, not at the step where the user chooses |
+| `DP4` | Hard to cancel | A plan, subscription or account can be started in the app but has no way to cancel, or the way to cancel goes through another channel, in the navigation diagram |
+| `DP5` | Confirmshaming | The label of the option to decline shames the user or makes the user feel guilty |
 
-Ranh giới giữa `DP2` và `DP4`: `DP2` xét một luồng đang làm (thanh toán, đăng ký, cấp quyền); `DP4` xét việc chấm dứt một quan hệ kéo dài (gói trả phí, nhận tin, tài khoản).
+The boundary between `DP2` and `DP4`: `DP2` looks at a flow that is being carried out (payment, sign-up, granting permission); `DP4` looks at ending a long-lasting relationship (a paid plan, a mailing subscription, an account).
 
-### 10.5. Câu hỏi tự vấn (Self-review Questions)
+### 10.5. Self-review Questions
 
-Các câu hỏi dưới không chặn gate và không có hàng ở chỉ mục; người lập wireframe tự hỏi trước khi trình Gate 1W, thay đổi phát sinh ghi như mọi thay đổi khác của wireframe.
+The questions below do not block a gate and have no row in the index; the wireframe author asks them before submitting to Gate 1W, and changes that arise are recorded like any other change to the wireframe.
 
-- Thiết kế bao gồm (Microsoft Inclusive Design): ai bị loại khỏi luồng này (khuyết tật lâu dài, tạm thời hay do hoàn cảnh, như một tay bận hoặc trời nắng chói)? Giải pháp cho nhóm đó có giúp mọi người dùng khác không?
-- Cấu trúc màn hình: có thông tin nào nằm hai chỗ trên cùng màn hình (giữa danh sách và panel chi tiết, giữa header và tiêu đề trang) không? Có hai tín hiệu tranh nhau cho cùng một ý (hai nút cùng mức nhấn mà không có chủ đích, màu và icon cùng báo một trạng thái theo hai cách) không? Lựa chọn ngang hàng có chủ đích ghi ở dòng Hành động chính thì không tính. Thông tin ưu tiên của trang có đứng đầu và nổi nhất không?
-- Trợ năng nhận thức (W3C COGA "Making Content Usable"): nhãn và thông báo có dùng từ đơn giản, quen thuộc không? Biểu tượng có kèm chữ không? Luồng có bắt nhớ thông tin, có giới hạn thời gian hay gây áp lực không cần thiết không? Các bước có nhất quán và dễ đoán không?
+- Inclusive design (Microsoft Inclusive Design): who is excluded from this flow (a permanent, temporary or situational disability, such as one busy hand or bright sunlight)? Does the solution for that group also help all other users?
+- Screen structure: does any information appear in two places on the same screen (between a list and a detail panel, between the header and the page title)? Do two signals compete for the same meaning (two buttons with the same emphasis without intent, color and an icon reporting one state in two ways)? Peer choices that are intentional, recorded in the Primary action line, do not count. Does the priority information of the page come first and stand out most?
+- Cognitive accessibility (W3C COGA "Making Content Usable"): do labels and messages use simple, familiar words? Do icons come with text? Does the flow force the user to remember information, or impose time limits or needless pressure? Are the steps consistent and predictable?
 
-### 10.6. Hướng dẫn theo nền tảng (Platform Guidance)
+### 10.6. Platform Guidance
 
-- Con số và hướng dẫn cấu trúc của nền tảng (vùng chạm tối thiểu, breakpoint, vùng an toàn, mẫu điều hướng, cử chỉ quay lại) ghi ở mục Giai đoạn 1W của `OVERLAY.md` của bề mặt, vì Giai đoạn 1W đọc file đó mà không đọc file section của overlay.
-- Phong cách thị giác thuộc hệ thống thiết kế ở 10.7.
-- Ứng dụng không chạy trên web áp tiêu chí WCAG viết theo ngữ web (trang, tiêu đề trang) theo WCAG2ICT của W3C, không tự suy diễn.
+- The numbers and structural guidance of a platform (minimum touch targets, breakpoints, safe areas, navigation patterns, back gestures) are recorded in the Stage 1W section of the `OVERLAY.md` of the surface, because Stage 1W reads that file and does not read the section files of the overlay.
+- Visual style belongs to the design system in 10.7.
+- An application that does not run on the web applies the WCAG criteria written in web terms (page, page title) according to W3C WCAG2ICT, without inventing its own interpretation.
 
-### 10.7. Hệ thống thiết kế (Design System)
+### 10.7. Design System
 
-Mục này là nguồn duy nhất của quy tắc hệ thống thiết kế theo tầng (layered design system) dùng ở Giai đoạn 1W. Áp cho dự án có Intake tạo từ template Intake `1.3.0` trở lên và có Giai đoạn 1W; xét theo từng file như câu mở mục 10: chỉ mục wireframe từ template chỉ mục `1.3.0`, trang wireframe từ template trang `1.4.0`. Tài liệu tạo từ template cũ hơn vẫn hợp lệ cho tới khi được nâng lên theo PLAYBOOK mục 8 (COMPATIBILITY mục 5).
+This section is the only source of the rules of the layered design system used at Stage 1W.
 
-Bảy tầng, từ nền tảng tới trải nghiệm:
+Seven layers, from foundation to experience:
 
-| Tầng | Nội dung | Nơi ghi |
+| Layer | Content | Where recorded |
 | --- | --- | --- |
-| Foundation | Màu theo vai trò, typography, spacing, grid và breakpoint, iconography, elevation, radius, motion, giọng nội dung | `docs/design-system/DESIGN_SYSTEM.md` |
-| Token | Giá trị máy đọc được của Foundation, theo DTCG, ba tầng `primitive`, `semantic`, `component` | `docs/design-system/tokens.json` (và file mode) |
-| Primitive | Phần tử thị giác nhỏ nhất dùng token trực tiếp (màu nền, cỡ chữ, khoảng cách) | `docs/design-system/DESIGN_SYSTEM.md` |
-| Component | Đơn vị giao diện có anatomy, variant, state riêng, ghép từ primitive và token | `docs/design-system/DESIGN_SYSTEM.md` |
-| Pattern | Cách giải quyết một vấn đề tương tác, ghép nhiều component | `docs/design-system/DESIGN_SYSTEM.md` |
-| Template | Cấu trúc vùng dùng chung cho nhiều trang, ghép pattern và component | `docs/design-system/DESIGN_SYSTEM.md` |
-| Experience | Một màn hình cụ thể, chọn một Template và dẫn Pattern, Component | Trang `SCR-*` |
+| Foundation | Colors by role, typography, spacing, grid and breakpoints, iconography, elevation, radius, motion, content voice | `docs/design-system/DESIGN_SYSTEM.md` |
+| Token | Machine-readable values of the Foundation, per DTCG, three tiers `primitive`, `semantic`, `component` | `docs/design-system/tokens.json` (and the mode files) |
+| Primitive | The smallest visual element that uses tokens directly (background color, font size, spacing) | `docs/design-system/DESIGN_SYSTEM.md` |
+| Component | A unit of interface with its own anatomy, variants and states, assembled from primitives and tokens | `docs/design-system/DESIGN_SYSTEM.md` |
+| Pattern | A way to solve an interaction problem, assembling several components | `docs/design-system/DESIGN_SYSTEM.md` |
+| Template | A zone structure shared by several pages, assembling patterns and components | `docs/design-system/DESIGN_SYSTEM.md` |
+| Experience | One concrete screen, choosing one Template and citing Patterns and Components | `SCR-*` page |
 
-Hướng thị giác (visual direction): agent đề xuất 2 đến 3 hướng, mỗi hướng dẫn căn cứ ở thương hiệu, người dùng, lĩnh vực và giọng điệu của dự án; chủ dự án chọn đúng một hướng, tài liệu ghi lý do chọn. Theme mặc định của thư viện giao diện (ví dụ Material 3, Apple Human Interface Guidelines, Fluent 2) là một hướng như mọi hướng khác, chỉ dùng khi được chọn có chủ đích, không phải mặc định của bộ mẫu; tài liệu có dòng "Theme mặc định của thư viện" ghi `Không dùng` hoặc `Dùng có chủ đích` kèm lý do. Material 3, Apple HIG, Fluent 2 chỉ là tham khảo hoặc một hướng được chọn, không phải quy tắc bắt buộc.
+Visual direction: the agent proposes 2 to 3 directions, each citing the grounds in the brand, users, domain and tone of the project; the project owner chooses exactly one direction, and the document records the reason for the choice. The default theme of a UI library (for example Material 3, Apple Human Interface Guidelines, Fluent 2) is a direction like any other, used only when chosen on purpose, not the default of the template set; the document has the line "Library default theme" recording `Not used` or `Used on purpose` with a reason. Material 3, Apple HIG and Fluent 2 are only references or a direction that was chosen, not mandatory rules.
 
-Foundations: màu theo vai trò (không theo tên màu), typography (thang cỡ chữ, độ đậm, chiều cao dòng), spacing, grid và breakpoint (con số nền tảng dẫn `OVERLAY.md`, xem 10.6), iconography, elevation, radius, motion kèm chế độ giảm chuyển động (reduced motion), giọng nội dung.
+Foundations: colors by role (not by color name), typography (type scale, weight, line height), spacing, grid and breakpoints (platform numbers refer to `OVERLAY.md`, see 10.6), iconography, elevation, radius, motion with a reduced motion mode, content voice.
 
-Token (Design Token), theo DTCG Format Module 2025.10 (Design Tokens Community Group):
+Token (Design Token), per the DTCG Format Module 2025.10 (Design Tokens Community Group):
 
-- Tập kiểu `$type` mà bộ mẫu chấp nhận, đúng 13 kiểu của DTCG:
+- The set of `$type` kinds that the template set accepts, exactly the 13 types of DTCG:
 
-  | Kiểu DTCG | Ghi chú |
+  | DTCG type | Note |
   | --- | --- |
-  | `color` | `$value` là object `colorSpace`, `components`, `hex` |
-  | `dimension` | `$value` là object `value`, `unit` |
+  | `color` | `$value` is an object with `colorSpace`, `components`, `hex` |
+  | `dimension` | `$value` is an object with `value`, `unit` |
   | `fontFamily` | |
   | `fontWeight` | |
   | `duration` | |
@@ -521,69 +521,69 @@ Token (Design Token), theo DTCG Format Module 2025.10 (Design Tokens Community G
   | `gradient` | Composite |
   | `typography` | Composite |
 
-- Ba nhóm tầng cố định, mỗi tầng một quy tắc alias:
+- Three fixed tier groups, one alias rule for each tier:
 
-  | Nhóm tầng | Quy tắc alias |
+  | Tier group | Alias rule |
   | --- | --- |
-  | `primitive` | Có giá trị trực tiếp, không alias |
-  | `semantic` | Alias tới token `primitive`; token composite được phép khi mọi giá trị con là alias xuống `primitive` |
-  | `component` | Alias tới token `semantic`; token composite được phép khi mọi giá trị con là alias xuống `semantic` |
+  | `primitive` | Has a direct value, no alias |
+  | `semantic` | Alias to a `primitive` token; a composite token is allowed when every sub-value is an alias down to `primitive` |
+  | `component` | Alias to a `semantic` token; a composite token is allowed when every sub-value is an alias down to `semantic` |
 
-- Alias chỉ viết dạng `{a.b.c}`; bộ mẫu không dùng `$ref`, `$extends` hay `$root` của DTCG. `$type` phân giải theo đúng thứ tự: của chính token, rồi của token đích khi token là alias, rồi của nhóm gần nhất chứa token.
-- `color`: `$value` là object có `colorSpace` bằng `srgb`, `components` khớp `hex` với sai lệch không quá 1/255 mỗi kênh, và `hex`; `hex` là nguồn duy nhất cho tính tương phản, cho CSS và cho công cụ sinh token khác.
-- `dimension`: `$value` là object có `value` (số) và `unit` (`px` hoặc `rem`).
-- Tên token không bắt đầu bằng `$` và không chứa `{`, `}`, `.`.
-- Mode (sáng, tối, theo nền tảng): `tokens.json` là mode mặc định của dự án. Mỗi mode khác là một file `tokens.<mode>.json`, chỉ khai báo lại các token `semantic` đã có ở `tokens.json`, giữ nguyên `$type`; không có file resolver riêng. Dự án có cả web và mobile dùng một hệ thống token: token `semantic` dùng chung, mode phân biệt theo nền tảng khi cần.
-- Tên biến CSS của một token là đường dẫn token bỏ tên nhóm tầng, nối các đoạn còn lại bằng `-` (ví dụ `semantic.color.text.default` thành `--color-text-default`); hai token khác nhau không được cho ra cùng một tên biến.
-- Code và HTML chỉ dùng token `semantic` và `component`, không dùng thẳng token `primitive`.
+- An alias is written only in the form `{a.b.c}`; the template set does not use `$ref`, `$extends` or `$root` of DTCG. `$type` is resolved in exactly this order: that of the token itself, then that of the target token when the token is an alias, then that of the nearest group that contains the token.
+- `color`: `$value` is an object with `colorSpace` equal to `srgb`, `components` matching `hex` with a deviation of no more than 1/255 per channel, and `hex`; `hex` is the only source for contrast, for CSS and for other token generation tools.
+- `dimension`: `$value` is an object with `value` (a number) and `unit` (`px` or `rem`).
+- A token name does not start with `$` and does not contain `{`, `}`, `.`.
+- Mode (light, dark, per platform): `tokens.json` is the default mode of the project. Each other mode is a file `tokens.<mode>.json` that only redeclares the `semantic` tokens that already exist in `tokens.json`, keeping the same `$type`; there is no separate resolver file. A project with both web and mobile that use one token system: `semantic` tokens are shared, and modes are distinguished by platform when needed.
+- The CSS variable name of a token is the token path without the tier group name, with the remaining segments joined by `-` (for example `semantic.color.text.default` becomes `--color-text-default`); two different tokens must not produce the same variable name.
+- Code and HTML only use `semantic` and `component` tokens, and do not use `primitive` tokens directly.
 
-Tương phản (contrast) theo cặp: tài liệu có một bảng cặp màu, mỗi hàng ghi token màu trước (chữ hoặc hình), token màu nền, token typography của chữ (cột Token chữ; ghi `Không` ở hàng phi văn bản), mode, loại (`chữ` hoặc `phi văn bản`), tỷ lệ tương phản đã tính và ngưỡng áp dụng. Chữ lớn theo định nghĩa WCAG được suy ra từ token typography ở cột Token chữ, không do người viết tự khai: `fontSize` từ 24px, hoặc từ 18,66px khi `fontWeight` từ 700 trở lên; `rem` tính theo 16px = 1rem. Ngưỡng theo WCAG 2.2: tiêu chí `1.4.3` (chữ thường 4.5:1, chữ lớn 3:1) và `1.4.11` (phi văn bản 3:1), luôn ở mức AA bất kể mức ở NFR-USAB; tính riêng theo từng mode từ giá trị `hex` của token. Cách tính, một nguồn cho mọi nơi: phân giải alias của mỗi token trong mode của hàng tới một màu đục (không có `alpha` nhỏ hơn 1); mỗi kênh `c` của `hex` (0 đến 255) chia 255, rồi lấy `c / 12.92` khi `c` không quá 0.04045, ngược lại `((c + 0.055) / 1.055)^2.4`; độ chói tương đối `L = 0.2126·R + 0.7152·G + 0.0722·B`; tỷ lệ `(L sáng + 0.05) / (L tối + 0.05)`, làm tròn xuống 2 chữ số, không làm tròn lên (4.499 ghi 4.49, không đạt 4.5). Tự kiểm không cần `scripts/`: tính từng hàng của bảng bằng một lệnh chạy được (`awk`, `python3` hay `node`), không tính nhẩm; checker của bộ mẫu chỉ là lựa chọn khi dự án có.
+Contrast per pair: the document has a table of color pairs, each row recording the foreground color token (text or graphic), the background color token, the typography token of the text (column Text token; record `None` on a non-text row), the mode, the kind (`text` or `non-text`), the computed contrast ratio and the threshold that applies. Large text per the WCAG definition is derived from the typography token in the Text token column, not declared by the writer: `fontSize` from 24px, or from 18.66px when `fontWeight` is 700 or higher; `rem` is computed with 16px = 1rem. Thresholds per WCAG 2.2: criterion `1.4.3` (normal text 4.5:1, large text 3:1) and `1.4.11` (non-text 3:1), always at level AA regardless of the level in NFR-USAB; computed separately for each mode from the `hex` value of the token. The computation, one source for every place: resolve the aliases of each token in the mode of the row down to an opaque color (no `alpha` below 1); divide each channel `c` of `hex` (0 to 255) by 255, then take `c / 12.92` when `c` is not more than 0.04045, otherwise `((c + 0.055) / 1.055)^2.4`; relative luminance `L = 0.2126·R + 0.7152·G + 0.0722·B`; ratio `(L light + 0.05) / (L dark + 0.05)`, truncated down to 2 digits, never rounded up (4.499 is recorded as 4.49, which does not reach 4.5). Self-checking needs nothing in `scripts/`: compute each row of the table with a command that runs (`awk`, `python3` or `node`), not in your head; the checker of the template set is only an option when the project has it.
 
-Danh mục (catalog) component, pattern, template: ID dạng `CMP-NN`, `PAT-NN`, `TPL-NN` (CONVENTIONS mục 4), đánh số trong phạm vi dự án. Nội dung tối thiểu của mỗi mục: component (anatomy, variant, state, hành vi bàn phím theo mẫu WAI-ARIA APG, token dùng, bề mặt áp dụng); pattern (vấn đề giải quyết, khi dùng, khi không dùng, component dùng, luồng, trạng thái); template (cấu trúc vùng, pattern dùng, component dùng, bề mặt áp dụng, thay đổi theo breakpoint). Danh mục chỉ liệt kê mục được ít nhất một trang dùng, trực tiếp hoặc gián tiếp qua cột Component dùng của một mục khác đang được dùng; không liệt kê mục không dùng.
+Catalog of components, patterns, templates: IDs of the form `CMP-NN`, `PAT-NN`, `TPL-NN` (CONVENTIONS §4), numbered within the project. Minimum content of each entry: component (anatomy, variants, states, keyboard behavior per the WAI-ARIA APG pattern, tokens used, surfaces it applies to); pattern (problem solved, when to use, when not to use, components used, flow, states); template (zone structure, patterns used, components used, surfaces it applies to, change per breakpoint). The catalog lists only entries that at least one page uses, directly or indirectly through the Components used column of another entry that is in use; it does not list unused entries.
 
-Trang (Experience): mỗi trang chọn đúng một `TPL-*`; dòng Pattern ghi `PAT-*` hoặc `Không`; mỗi hàng của bảng thành phần có cột `Component ID` dẫn một `CMP-*` có trong danh mục. Vùng của bố cục low-fi (CONVENTIONS mục 7) theo đúng vùng mà Template đã chọn định nghĩa. Trang từ template trang `1.5.0` trở lên ghi thêm ba dòng: `Thông tin ưu tiên` (1 đến 3 thông tin người dùng cần nhất để làm việc chính, theo thứ tự, phân cách `;`; mỗi mục là trường ở SRS §4.2 hoặc nhãn ở bảng thành phần; thông tin thứ nhất đứng đầu và nổi nhất ở bố cục), `Hành động chính` (đúng một hành động, nhãn trong backtick trùng một ô cột Thành phần của bảng thành phần, hoặc `Không` kèm lý do khi màn hình chỉ để xem hay khi các hành động ngang hàng có chủ đích) và `Nội dung biên` (ca biên lấy từ ràng buộc đã có ở SRS, như từ điển dữ liệu §4.2, quy tắc nghiệp vụ hay luồng của FR, và cách hiển thị từng ca; không đặt giới hạn mới; hoặc `Không` kèm lý do khi màn hình không hiển thị dữ liệu hay SRS không có ràng buộc nào cho dữ liệu đó); vùng của bố cục low-fi đánh số theo mục 7.
+Page (Experience): each page chooses exactly one `TPL-*`; the Pattern line records `PAT-*` or `None`; each row of the component table has a column `Component ID` that cites a `CMP-*` that exists in the catalog. The zones of the low-fi layout (CONVENTIONS §7) follow exactly the zones that the chosen Template defines. The page also records three lines: `Priority information` (1 to 3 pieces of information the user needs most to do the main task, in order, separated by `;`; each item is a field in SRS §4.2 or a label in the component table; the first piece comes first and stands out most in the layout), `Primary action` (exactly one action, a label in backticks that matches a cell in the Component column of the component table, or `None` with a reason when the screen is view-only or when peer actions are intentional) and `Edge content` (edge cases taken from constraints that already exist in the SRS, such as the data dictionary §4.2, business rules or the flow of an FR, and how each case is displayed; no new limit is set; or `None` with a reason when the screen shows no data or the SRS has no constraint for that data); the zones of the low-fi layout are numbered per §7.
 
-Chỉ dùng token: HTML của trang từ template trang `1.4.0` trở lên khai báo biến CSS trong khối `:root`, theo giá trị của mode có cột Áp khi ghi bề mặt của trang; trang không ghi mode nào thì `:root` theo mode mặc định. Ngoài khối `:root`, phần giá trị khai báo trong `<style>` không được chứa màu thô (`#…`, `rgb(`, `hsl(`, `oklch(`, `oklab(`); các thuộc tính spacing (`margin`, `padding`, `gap`, `row-gap`, `column-gap`, `inset`, `top`, `right`, `bottom`, `left`, kể cả dạng viết tắt như `margin-top`), radius (`border-radius` và các biến thể góc) và `font-size` chỉ được dùng `var(--…)` hoặc một trong các từ khóa `0`, `auto`, `100%`, `inherit`, `initial`, `unset`. Thuộc tính khác (khung thiết bị như `max-width`, độ dày viền) vẫn được ghi giá trị `px` thô. Thang xám của HTML trang cũ hơn `1.4.0` ở COMPATIBILITY mục 5. Code (ngoài HTML của wireframe) chỉ dùng token theo golden rule của overlay, áp khi dự án có `docs/design-system/`: màu, spacing, radius và cỡ chữ thô chỉ nằm ở file ánh xạ token trong code (biến CSS hoặc theme object). File đó là ánh xạ từ `tokens.json`, viết tay theo bảng ánh xạ của stack profile hoặc sinh bằng công cụ dự án chọn (bộ mẫu không cài công cụ build token), sửa cùng lúc với `tokens.json`; mọi nơi khác chỉ dùng token.
+Token-only use: the HTML of a page declares CSS variables in a `:root` block, following the values of the mode whose Applies when column records the surface of the page; a page that records no mode has its `:root` follow the default mode. Outside the `:root` block, the value part declared in `<style>` must not contain a raw color (`#…`, `rgb(`, `hsl(`, `oklch(`, `oklab(`); the spacing properties (`margin`, `padding`, `gap`, `row-gap`, `column-gap`, `inset`, `top`, `right`, `bottom`, `left`, including shorthand forms such as `margin-top`), radius (`border-radius` and its corner variants) and `font-size` may only use `var(--…)` or one of the keywords `0`, `auto`, `100%`, `inherit`, `initial`, `unset`. Other properties (a device frame such as `max-width`, border thickness) may still be written with a raw `px` value. Code (outside the HTML of the wireframe) uses only tokens per the golden rule of the overlay, applying when the project has `docs/design-system/`: raw color, spacing, radius and font size sit only in the token mapping file in the code (CSS variables or a theme object). That file is a mapping from `tokens.json`, written by hand following the mapping table of the stack profile or generated by a tool the project chooses (the template set does not install a token build tool), and changed at the same time as `tokens.json`; everywhere else uses only tokens.
 
-### 10.8. Tham khảo (References)
+### 10.8. References
 
-Các tài liệu dưới chỉ để tham khảo khi cần giải thích sâu hơn; không là nguồn của quy tắc MUST, vì nội dung của chúng đã được phủ bởi các chuẩn ở 10.1 đến 10.4.
+The documents below are only for reference when a deeper explanation is needed; they are not a source of MUST rules, because their content is already covered by the standards in 10.1 to 10.4.
 
-- ISO 9241-11 (định nghĩa usability), ISO 9241-110 (nguyên tắc tương tác), ISO 9241-112 (trình bày thông tin), ISO 9241-125 (trình bày thị giác), ISO 9241-171 (trợ năng của phần mềm).
-- ISO/IEC 40500: bản ISO của WCAG 2.2, nội dung kỹ thuật như WCAG 2.2.
-- Tám quy tắc vàng của Shneiderman: phần lớn trùng 10 heuristic ở 10.3.
-- EN 301 549 V4.1.1 và luật về trợ năng hay mẫu lừa người dùng của một vùng: chỉ là ví dụ; dự án chọn chuẩn hay luật mình phải theo ở Intake mục 7, bộ mẫu không đặt luật của vùng nào làm quy tắc.
+- ISO 9241-11 (definition of usability), ISO 9241-110 (interaction principles), ISO 9241-112 (presentation of information), ISO 9241-125 (visual presentation), ISO 9241-171 (software accessibility).
+- ISO/IEC 40500: the ISO edition of WCAG 2.2, with technical content identical to WCAG 2.2.
+- Shneiderman's eight golden rules: they mostly overlap with the 10 heuristics in 10.3.
+- EN 301 549 V4.1.1 and the laws on accessibility or deceptive patterns of a region: only examples; a project chooses the standards or laws it must follow in Intake §7, and the template set does not make the law of any region a rule.
 
-## 11. Định dạng Roadmap (Roadmap Format)
+## 11. Roadmap Format
 
-Roadmap `docs/ROADMAP.md` là danh sách việc phải làm của dự án mà coding agent bám theo (PLAYBOOK mục 2, 2.5 đến 2.7). Áp cho dự án có Intake tạo từ template Intake `1.4.0` trở lên; dự án có Intake cũ hơn không cần roadmap (COMPATIBILITY.md mục 5). Trong dự án, agent kiểm các quy tắc dưới bằng đối soát ở PLAYBOOK mục 2.6; `scripts/check-templates.sh` kiểm chúng trên ví dụ của bộ mẫu, trừ việc commit và tag có thật trong git.
+The roadmap `docs/ROADMAP.md` is the list of work to do for the project that the coding agent follows (PLAYBOOK §2, 2.5 to 2.7). In a project, the agent checks the rules below by the reconciliation in PLAYBOOK §2.6; `scripts/check-templates.sh` checks them on the examples of the template set, except for commits and tags that really exist in git.
 
-- File chép từ `core/08_Roadmap_Template.md`, `doc_type: roadmap`, `status: active`; có đủ mục 1 Tiến độ, 2 Hàng việc (2.1 FR, 2.2 NFR mức Must), 3 Yêu cầu mới, 4 Đã hoàn thành, 5 Mốc version. Roadmap không qua gate riêng và không có Version History; lịch sử của nó là git.
-- Intake mục 14 có dòng `Định dạng tag`, giá trị là mẫu tên tag trong backtick; mặc định `{release}-{feature-key}`, trong đó `{release}` là nhãn đợt viết thường và `{feature-key}` là `<FEATURE_KEY>` của file SPEC viết thường, gạch dưới đổi thành gạch ngang, ví dụ `r1-order-create`.
-- Trạng thái của dòng: `Chưa làm`, `Đang làm`, `Xong`, `Đã xác nhận`, `Bỏ`. `Bỏ` chỉ dùng cho dòng mà SRS đã bỏ yêu cầu hay chuyển sang `Won't` (PLAYBOOK mục 8); dòng `Bỏ` không tính ở mục 1.
+- The file is copied from `core/08_Roadmap_Template.md`, `doc_type: roadmap`, `status: active`; it has all of §1 Progress, 2 Work Queue (2.1 Functional Requirements, 2.2 Must NFRs), 3 New Requests, 4 Done, 5 Milestones. The roadmap does not pass a gate of its own and has no Version History; its history is git.
+- Intake §14 has a row `Tag format`, whose value is a tag name pattern in backticks; the default is `{release}-{feature-key}`, in which `{release}` is the release label in lower case and `{feature-key}` is the `<FEATURE_KEY>` of the SPEC file in lower case, with underscores changed to hyphens, for example `r1-order-create`.
+- Status of a row: `Not started`, `In progress`, `Done`, `Confirmed`, `Dropped`. `Dropped` is used only for a row whose requirement the SRS has dropped or moved to `Won't` (PLAYBOOK §8); a `Dropped` row is not counted in §1.
 
-Mục 2.1, Yêu cầu chức năng:
+Part 2.1, Functional Requirements:
 
-- Đúng một dòng cho mỗi FR ở SRS §6.1 có Ưu tiên khác `Won't`; không có dòng cho FR khác, trừ dòng `Bỏ`. Dự án brownfield: FR có Việc cần làm `Giữ nguyên` ở Gap Analysis §2 không có dòng (`brownfield/PLAYBOOK_BROWNFIELD.md` mục 5.3 quy tắc 6). Dòng của FR mà SRS vẫn còn phải làm không được ở trạng thái `Bỏ`.
-- Tên, Ưu tiên và Đợt bằng cột Tên chức năng, Ưu tiên và Bản phát hành của FR ở SRS §6.1.
-- SPEC và Pha chỉ tính tài liệu đã qua gate: SPEC có `version` từ `1.0.0` (đã qua Gate 3), plan có `version` từ `1.0.0` (đã qua Gate 4). SPEC hay plan còn bản nháp `0.x` chưa được ghi vào roadmap, đúng với việc cột SPEC điền khi nhận "Duyệt Gate 3" và cột Pha khi nhận "Duyệt Gate 4" (PLAYBOOK mục 2.7).
-- SPEC liệt kê `spec_id` của mọi SPEC không `superseded` có FR ở §1.5, cách nhau dấu phẩy, theo số pha đầu tiên của SPEC (SPEC chưa có pha xếp sau, theo tên file); `Chưa có` khi chưa có SPEC nào. Dòng `Xong` hay `Đã xác nhận` phải có SPEC, và mọi pha của mọi SPEC đó có `status: done`.
-- Pha là các số pha của plan có `spec_id` của các SPEC đó: `N` khi một pha, `N đến M` khi các pha liền nhau, các khoảng cách nhau dấu phẩy khi không liền; `Chưa có` khi chưa có pha nào.
-- Thứ tự: theo đợt (thứ tự hàng ở mục 1); trong một đợt, dòng có Pha xếp theo số pha đầu tiên trong plan của đợt đó, cùng SPEC theo thứ tự FR ở SPEC §1.5; dòng chưa có Pha đứng sau, theo Ưu tiên `Must`, `Should`, `Could` rồi thứ tự ở SRS §6.1 (SRS `modular`: thứ tự phân hệ ở bảng §6 của file master, rồi thứ tự trong file phân hệ). Dòng `Bỏ` không xét thứ tự. Cột `#` đánh số liên tục từ 1.
-- Làm theo thứ tự: không dòng nào `Xong` hay `Đã xác nhận` khi một dòng đứng trước nó trong cùng đợt còn `Chưa làm`.
-- Đợt đã có plan đã duyệt (`plan.md` có `release` là đợt đó và `version` từ `1.0.0`): mọi dòng của đợt có SPEC và Pha.
+- Exactly one row for each FR in SRS §6.1 whose Priority is not `Won't`; no row for other FRs, except a `Dropped` row. Brownfield project: an FR whose Work needed is `Unchanged` in Gap Analysis §2 has no row (`brownfield/PLAYBOOK_BROWNFIELD.md` §5.3 rule 6). The row of an FR that the SRS still requires to be built must not be in status `Dropped`.
+- Name, Priority and Release equal the columns Function name, Priority and Release of the FR in SRS §6.1.
+- SPEC and Phase count only documents that have passed a gate: a SPEC has a `version` from `1.0.0` (passed Gate 3), a plan has a `version` from `1.0.0` (passed Gate 4). A SPEC or plan that is still a `0.x` draft is not yet recorded in the roadmap, consistent with the SPEC column being filled on receiving "Approved at Gate 3" and the Phase column on receiving "Approved at Gate 4" (PLAYBOOK §2.7).
+- SPEC lists the `spec_id` of every non-`superseded` SPEC that has the FR in §1.5, separated by commas, ordered by the first phase number of the SPEC (a SPEC with no phase comes after, ordered by file name); `Not yet` when there is no SPEC. A `Done` or `Confirmed` row must have a SPEC, and every phase of every such SPEC has `status: done`.
+- Phase is the phase numbers of the plan that have the `spec_id` of those SPECs: `N` for a single phase, `N to M` for consecutive phases, ranges separated by commas when not consecutive; `Not yet` when there is no phase.
+- Order: by release (the order of the rows in §1); within a release, rows that have a Phase are ordered by the first phase number in the plan of that release, the same SPEC following the order of the FRs in SPEC §1.5; rows without a Phase come after, ordered by Priority `Must`, `Should`, `Could` and then the order in SRS §6.1 (SRS `modular`: the order of modules in the table of §6 of the master file, then the order inside the module file). A `Dropped` row is not considered in the order. The column `#` is numbered continuously from 1.
+- Work in order: no row is `Done` or `Confirmed` while a row before it in the same release is still `Not started`.
+- A release that has an approved plan (`plan.md` has `release` equal to that release and `version` from `1.0.0`): every row of the release has a SPEC and a Phase.
 
-Mục 2.2, Yêu cầu phi chức năng mức Must:
+Part 2.2, Must Non-functional Requirements:
 
-- Đúng một dòng cho mỗi NFR ở SRS §7 có Ưu tiên `Must`, theo thứ tự ở SRS §7; không có dòng cho NFR khác, trừ dòng `Bỏ`; dòng của NFR Must còn hiệu lực không được ở trạng thái `Bỏ`. Tên chép cột Nhóm; Cách kiểm chứng bằng cột Cách kiểm chứng của NFR ở SRS §7.
-- SPEC liệt kê `spec_id` của mọi SPEC không `superseded` có NFR ở §1.5, cách nhau dấu phẩy, theo thứ tự SPEC xuất hiện lần đầu ở mục 2.1; `Không có` khi không SPEC nào dẫn.
-- Đợt đóng là một đợt ở mục 1: đợt đầu cho NFR có từ Gate 1, đợt đang làm cho NFR Must thêm sau đó (PLAYBOOK mục 8). Dòng NFR chỉ `Đã xác nhận` khi mọi dòng FR của Đợt đóng đã `Đã xác nhận`.
+- Exactly one row for each NFR in SRS §7 whose Priority is `Must`, in the order of SRS §7; no row for other NFRs, except a `Dropped` row; the row of a Must NFR that is still in force must not be in status `Dropped`. Name copies the Group column; Verification method equals the Verification method column of the NFR in SRS §7.
+- SPEC lists the `spec_id` of every non-`superseded` SPEC that has the NFR in §1.5, separated by commas, in the order the SPECs first appear in §2.1; `None` when no SPEC cites it.
+- Closing release is a release in §1: the first release for NFRs that exist from Gate 1, the release in progress for a Must NFR added later (PLAYBOOK §8). An NFR row is `Confirmed` only when every FR row of its Closing release is `Confirmed`.
 
-Mục 3, 4, 5 và mục 1:
+Parts 3, 4, 5 and part 1:
 
-- Mục 3: cột Quyết định là `Chờ`, `Đưa vào change request` kèm tài liệu bị đổi, hoặc `Bỏ` kèm lý do. Không có yêu cầu thì một hàng `Không có`.
-- Mục 4: mỗi dòng `Xong` hoặc `Đã xác nhận` ở mục 2 có đúng một hàng, và không có hàng cho dòng khác. Bằng chứng: dòng FR ghi ID các TC có ở §9 của SPEC của dòng; dòng NFR ghi bằng chứng theo SRS §8; khi Cách kiểm chứng là `Test` thì ghi ID các TC ở SPEC §9 có tên NFR đó. Commit là hash rút gọn hay đầy đủ (7 đến 40 ký tự hexa). Tag là `Chưa có` khi dòng `Xong`.
-- Dòng `Đã xác nhận` có tag ở mục 4, tag đó có hàng ở mục 5 (với dòng FR: hàng của một SPEC của dòng), và mọi SPEC của dòng FR có `status: implemented`.
-- Mục 5: một hàng cho mỗi lần một SPEC qua Gate 5: Tag (không lặp; lần thứ hai trở đi của cùng SPEC thêm hậu tố `-2`, `-3`), SPEC của dự án, Commit (hexa như mục 4), Ngày, Người duyệt, Cách rollback. Hàng mới nhất của mỗi SPEC có tag là tag của ít nhất một hàng ở mục 4, trừ khi SPEC đang được sửa lại theo PLAYBOOK mục 8 (dòng của nó đã về `Chưa làm`); hàng cũ hơn giữ để còn rollback được.
-- Mục 1: một hàng cho mỗi đợt ở SRS §6.1, không thiếu, không lặp, theo thứ tự đợt ở Intake (mục Mốc thời gian). Tổng là số dòng FR của đợt cộng số dòng NFR có Đợt đóng là đợt đó, không tính dòng `Bỏ`; Xong đếm dòng `Xong` hoặc `Đã xác nhận`; Đã xác nhận đếm dòng `Đã xác nhận`; Hoàn thành là Đã xác nhận chia Tổng nhân 100, làm tròn xuống, kèm `%`. Dòng `- Đang làm:` ghi `Không` khi không dòng nào `Đang làm`, nếu không thì ghi ID mọi dòng `Đang làm`, kèm SPEC và pha.
-- Ô bảng của roadmap có ký tự `|` ghi `\|`, như bảng của SRS; checker đọc `\|` là ký tự trong ô.
+- Part 3: the Decision column is `Pending`, `Raise change request` with the document to be changed, or `Dropped` with a reason. If there is no new request, one row `None`.
+- Part 4: each `Done` or `Confirmed` row in §2 has exactly one row, and there is no row for other rows. Evidence: an FR row records the IDs of the TCs that are in §9 of the SPEC of the row; an NFR row records evidence per SRS §8; when the Verification method is `Test`, it records the IDs of the TCs in SPEC §9 that name that NFR. Commit is a short or full hash (7 to 40 hexadecimal characters). Tag is `Not yet` when the row is `Done`.
+- A `Confirmed` row has a tag in §4, that tag has a row in §5 (for an FR row: the row of one SPEC of the row), and every SPEC of the FR row has `status: implemented`.
+- Part 5: one row each time a SPEC passes Gate 5: Tag (not repeated; from the second time of the same SPEC onward, add the suffix `-2`, `-3`), the SPEC of the project, Commit (hexadecimal as in §4), Date, Approver, Rollback method. The newest row of each SPEC has a tag that is the tag of at least one row in §4, unless the SPEC is being reworked per PLAYBOOK §8 (its row has returned to `Not started`); older rows are kept so that rollback is still possible.
+- Part 1: one row for each release in SRS §6.1, none missing, none repeated, in the order of releases in the Intake (the Timeline section). Total is the number of FR rows of the release plus the number of NFR rows whose Closing release is that release, not counting `Dropped` rows; Done counts `Done` or `Confirmed` rows; Confirmed counts `Confirmed` rows; Complete is Confirmed divided by Total times 100, rounded down, with `%`. The line `- In progress:` records `None` when no row is `In progress`, otherwise it records the ID of every `In progress` row, with the SPEC and phase.
+- A roadmap table cell that contains the character `|` is written `\|`, like the tables of the SRS; the checker reads `\|` as a character in the cell.
