@@ -18,6 +18,14 @@ set -uo pipefail
 # With pipefail, never end a pipeline in `grep -q`: an early exit sends SIGPIPE upstream and the
 # pipeline fails even on a match. Use `grep ... >/dev/null` so grep reads its whole input.
 
+# The checker uses bash 4 (mapfile, ${var,,}, declare -A). macOS ships bash 3.2, which would stop at the first
+# mapfile with an unclear error; stop here instead with what to do. Keep this test in bash 3.2 syntax.
+if [ "${BASH_VERSINFO[0]:-0}" -lt 4 ]; then
+  echo "check-templates.sh needs bash 4 or newer; this is bash ${BASH_VERSION:-unknown}." >&2
+  echo "On macOS: brew install bash, then run: \"\$(brew --prefix)/bin/bash\" $0 $*" >&2
+  exit 2
+fi
+
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 MODE="templates"

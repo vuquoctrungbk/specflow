@@ -26,6 +26,9 @@ documents, Vietnamese or English.
   The `BLOCKING` cell of a question must be exactly the yes or no word of the
   project language; any other value is an error and `gate.py approve` refuses
   it.
+- The document checker needs bash 4 or newer and now stops with an install hint
+  on older bash. On the bash 3.2 that macOS ships, it used to fail at its first
+  bash 4 command and still report 0 errors, so a check passed without running.
 - No compatibility layer for projects created with earlier rules: their
   documents have no `language` key and this version does not check them.
 
